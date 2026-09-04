@@ -3,92 +3,63 @@ let currentQuestion = null;
 
 
 // ============================================================
-// FULL-SCREEN CORRECT ANSWER SPARKLES
+// DIWALI FIREWORKS CELEBRATION
 // ============================================================
 
-let sparkleTimeout = null;
+let fireworksTimeout = null;
+let fireworksInterval = null;
 
 function showCorrectSparkles() {
 
-    // Remove any existing sparkle layer
-    const existingSparkles =
-        document.getElementById("correct-sparkles");
+    // Remove any existing celebration
+    stopFireworks();
 
-    if (existingSparkles) {
-        existingSparkles.remove();
-    }
-
-    // Create full-screen sparkle layer
-    const sparkleLayer =
+    // Create full-screen fireworks layer
+    const layer =
         document.createElement("div");
 
-    sparkleLayer.id =
-        "correct-sparkles";
+    layer.id = "diwali-fireworks";
 
-    Object.assign(
-        sparkleLayer.style,
-        {
-            position: "fixed",
-            inset: "0",
-            width: "100vw",
-            height: "100vh",
-            pointerEvents: "none",
-            zIndex: "99999",
-            overflow: "hidden"
-        }
-    );
+    Object.assign(layer.style, {
+        position: "fixed",
+        inset: "0",
+        width: "100vw",
+        height: "100vh",
+        pointerEvents: "none",
+        zIndex: "99999",
+        overflow: "hidden"
+    });
+
+    document.body.appendChild(layer);
 
 
-    // Sparkle colors matching AIBrainBox
-    const colors = [
-        "#4f46e5", // indigo
-        "#6366f1", // light indigo
-        "#7c3aed", // purple
-        "#22c55e", // green
-        "#facc15", // gold
-        "#ffffff"  // white
-    ];
+    // Add animation CSS once
+    addFireworksStyles();
 
 
-    // Number of sparkles
-    const sparkleCount = 120;
+    // --------------------------------------------------------
+    // Create fireworks bursts
+    // --------------------------------------------------------
 
+    function createFirework() {
 
-    for (let i = 0; i < sparkleCount; i++) {
-
-        const sparkle =
-            document.createElement("span");
-
-
-        // Use different sparkle shapes
-        sparkle.innerText =
-            Math.random() > 0.5
-                ? "✦"
-                : "✧";
-
-
-        // Random size
-        const size =
-            Math.random() * 18 + 8;
-
-
-        // Random screen position
-        const left =
+        const x =
             Math.random() * 100;
 
-        const top =
-            Math.random() * 100;
+        const y =
+            15 + Math.random() * 60;
 
+        const colors = [
+            "#FFD700", // gold
+            "#FF4500", // orange red
+            "#FF1744", // red
+            "#FFEA00", // yellow
+            "#00E676", // green
+            "#00E5FF", // cyan
+            "#7C4DFF", // purple
+            "#FFFFFF"  // white
+        ];
 
-        // Random animation timing
-        const delay =
-            Math.random() * 0.25;
-
-        const duration =
-            Math.random() * 0.8 + 1.1;
-
-
-        // Random color
         const color =
             colors[
                 Math.floor(
@@ -96,58 +67,162 @@ function showCorrectSparkles() {
                 )
             ];
 
+        const particleCount = 32 + Math.floor(
+            Math.random() * 20
+        );
 
-        Object.assign(
-            sparkle.style,
-            {
-                position: "absolute",
-                left: `${left}%`,
-                top: `${top}%`,
+
+        // Bright flash in the center
+        const flash =
+            document.createElement("div");
+
+        flash.className =
+            "diwali-flash";
+
+        Object.assign(flash.style, {
+            left: `${x}%`,
+            top: `${y}%`,
+            background: color,
+            boxShadow:
+                `0 0 15px ${color},
+                 0 0 35px ${color},
+                 0 0 60px ${color}`
+        });
+
+        layer.appendChild(flash);
+
+
+        // Create particles
+        for (
+            let i = 0;
+            i < particleCount;
+            i++
+        ) {
+
+            const particle =
+                document.createElement("span");
+
+            particle.className =
+                "diwali-particle";
+
+
+            const angle =
+                (Math.PI * 2 * i) /
+                particleCount +
+                (Math.random() * 0.15);
+
+
+            const distance =
+                60 +
+                Math.random() * 110;
+
+
+            const dx =
+                Math.cos(angle) *
+                distance;
+
+            const dy =
+                Math.sin(angle) *
+                distance;
+
+
+            const size =
+                3 +
+                Math.random() * 5;
+
+
+            Object.assign(
+                particle.style,
+                {
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    background: color,
+                    boxShadow:
+                        `0 0 5px ${color},
+                         0 0 12px ${color}`,
+                    "--dx": `${dx}px`,
+                    "--dy": `${dy}px`,
+                    animationDelay:
+                        `${Math.random() * 0.08}s`
+                }
+            );
+
+
+            layer.appendChild(
+                particle
+            );
+        }
+
+
+        // A few larger star particles
+        for (let i = 0; i < 8; i++) {
+
+            const star =
+                document.createElement("span");
+
+            star.className =
+                "diwali-star";
+
+            Object.assign(star.style, {
+                left: `${x}%`,
+                top: `${y}%`,
                 color: color,
-                fontSize: `${size}px`,
-                fontWeight: "700",
-                lineHeight: "1",
-                opacity: "0",
-                textShadow:
-                    `0 0 6px ${color},
-                     0 0 14px ${color},
-                     0 0 22px ${color}`,
-                transform:
-                    "translate(-50%, -50%) scale(0) rotate(0deg)",
-                animation:
-                    `aibrainboxSparkle ${duration}s ease-out ${delay}s forwards`
-            }
-        );
+                "--dx":
+                    `${(Math.random() - 0.5) * 260}px`,
+                "--dy":
+                    `${(Math.random() - 0.5) * 260}px`
+            });
 
+            star.innerText = "✦";
 
-        sparkleLayer.appendChild(
-            sparkle
-        );
+            layer.appendChild(star);
+        }
     }
 
 
-    // Add sparkle layer to page
-    document.body.appendChild(
-        sparkleLayer
+    // --------------------------------------------------------
+    // Initial fireworks
+    // --------------------------------------------------------
+
+    createFirework();
+
+    setTimeout(
+        createFirework,
+        150
+    );
+
+    setTimeout(
+        createFirework,
+        300
     );
 
 
-    // Remove automatically after 2 seconds
-    clearTimeout(
-        sparkleTimeout
-    );
+    // --------------------------------------------------------
+    // Continue fireworks for 2 seconds
+    // --------------------------------------------------------
+
+    fireworksInterval =
+        setInterval(
+            () => {
+
+                createFirework();
+
+            },
+            220
+        );
 
 
-    sparkleTimeout =
+    // --------------------------------------------------------
+    // Stop after exactly 2 seconds
+    // --------------------------------------------------------
+
+    fireworksTimeout =
         setTimeout(
             () => {
 
-                if (
-                    sparkleLayer &&
-                    sparkleLayer.parentNode
-                ) {
-                    sparkleLayer.remove();
-                }
+                stopFireworks();
 
             },
             2000
@@ -156,72 +231,273 @@ function showCorrectSparkles() {
 
 
 // ============================================================
-// SPARKLE ANIMATION CSS
+// STOP FIREWORKS
 // ============================================================
 
-if (
-    !document.getElementById(
-        "aibrainbox-sparkle-style"
-    )
-) {
+function stopFireworks() {
+
+    if (fireworksInterval) {
+
+        clearInterval(
+            fireworksInterval
+        );
+
+        fireworksInterval = null;
+    }
+
+
+    if (fireworksTimeout) {
+
+        clearTimeout(
+            fireworksTimeout
+        );
+
+        fireworksTimeout = null;
+    }
+
+
+    const layer =
+        document.getElementById(
+            "diwali-fireworks"
+        );
+
+    if (layer) {
+        layer.remove();
+    }
+}
+
+
+// ============================================================
+// FIREWORKS CSS
+// ============================================================
+
+function addFireworksStyles() {
+
+    if (
+        document.getElementById(
+            "aibrainbox-diwali-style"
+        )
+    ) {
+        return;
+    }
+
 
     const style =
         document.createElement("style");
 
 
     style.id =
-        "aibrainbox-sparkle-style";
+        "aibrainbox-diwali-style";
 
 
     style.innerHTML = `
 
-        @keyframes aibrainboxSparkle {
+        /*
+         * Bright center flash
+         */
+        .diwali-flash {
+
+            position: absolute;
+
+            width: 12px;
+            height: 12px;
+
+            border-radius: 50%;
+
+            transform:
+                translate(-50%, -50%)
+                scale(0);
+
+            animation:
+                diwaliFlash
+                0.45s
+                ease-out
+                forwards;
+        }
+
+
+        /*
+         * Firework particles
+         */
+        .diwali-particle {
+
+            position: absolute;
+
+            border-radius: 50%;
+
+            transform:
+                translate(-50%, -50%)
+                scale(1);
+
+            opacity: 1;
+
+            animation:
+                diwaliParticle
+                1.15s
+                cubic-bezier(
+                    0.15,
+                    0.75,
+                    0.3,
+                    1
+                )
+                forwards;
+        }
+
+
+        /*
+         * Star-shaped particles
+         */
+        .diwali-star {
+
+            position: absolute;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            text-shadow:
+                0 0 5px currentColor,
+                0 0 12px currentColor,
+                0 0 25px currentColor;
+
+            transform:
+                translate(-50%, -50%)
+                scale(0);
+
+            opacity: 1;
+
+            animation:
+                diwaliStar
+                1.1s
+                ease-out
+                forwards;
+        }
+
+
+        /*
+         * Flash animation
+         */
+        @keyframes diwaliFlash {
 
             0% {
                 opacity: 0;
                 transform:
                     translate(-50%, -50%)
-                    scale(0)
-                    rotate(0deg);
+                    scale(0);
             }
 
             15% {
                 opacity: 1;
                 transform:
                     translate(-50%, -50%)
-                    scale(1.4)
-                    rotate(30deg);
+                    scale(3);
             }
 
-            40% {
+            35% {
                 opacity: 1;
                 transform:
                     translate(-50%, -50%)
-                    scale(1)
-                    rotate(90deg);
-            }
-
-            70% {
-                opacity: 0.8;
-                transform:
-                    translate(-50%, -50%)
-                    scale(0.8)
-                    rotate(150deg);
+                    scale(1.5);
             }
 
             100% {
                 opacity: 0;
                 transform:
                     translate(-50%, -50%)
-                    scale(0.1)
-                    rotate(220deg);
+                    scale(0);
             }
         }
 
 
-        @media (prefers-reduced-motion: reduce) {
+        /*
+         * Particle explosion
+         */
+        @keyframes diwaliParticle {
 
-            #correct-sparkles {
+            0% {
+
+                opacity: 1;
+
+                transform:
+                    translate(-50%, -50%)
+                    translate(0, 0)
+                    scale(1.3);
+            }
+
+            15% {
+
+                opacity: 1;
+            }
+
+            75% {
+
+                opacity: 0.9;
+            }
+
+            100% {
+
+                opacity: 0;
+
+                transform:
+                    translate(-50%, -50%)
+                    translate(
+                        var(--dx),
+                        var(--dy)
+                    )
+                    scale(0.15);
+            }
+        }
+
+
+        /*
+         * Star explosion
+         */
+        @keyframes diwaliStar {
+
+            0% {
+
+                opacity: 1;
+
+                transform:
+                    translate(-50%, -50%)
+                    scale(0)
+                    rotate(0deg);
+            }
+
+            20% {
+
+                opacity: 1;
+
+                transform:
+                    translate(-50%, -50%)
+                    scale(1.5)
+                    rotate(45deg);
+            }
+
+            100% {
+
+                opacity: 0;
+
+                transform:
+                    translate(-50%, -50%)
+                    translate(
+                        var(--dx),
+                        var(--dy)
+                    )
+                    scale(0.2)
+                    rotate(180deg);
+            }
+        }
+
+
+        /*
+         * Respect reduced-motion settings
+         */
+        @media (
+            prefers-reduced-motion: reduce
+        ) {
+
+            #diwali-fireworks {
                 display: none !important;
             }
 
@@ -249,25 +525,20 @@ async function loadQuestions() {
                 "xi-questions.csv"
             );
 
-
         if (!response.ok) {
 
             throw new Error(
                 "Could not load xi-questions.csv"
             );
-
         }
-
 
         const csvText =
             await response.text();
-
 
         questions =
             parseCSV(
                 csvText
             );
-
 
         if (
             questions.length === 0
@@ -276,9 +547,7 @@ async function loadQuestions() {
             throw new Error(
                 "No questions found in the CSV file."
             );
-
         }
-
 
         loadQuestion();
 
@@ -290,25 +559,19 @@ async function loadQuestions() {
             .getElementById("loading")
             .classList.add("hidden");
 
-
         const errorBox =
             document.getElementById(
                 "error"
             );
 
-
         errorBox.classList.remove(
             "hidden"
         );
 
-
         errorBox.innerText =
             "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
 
-
-        console.error(
-            error
-        );
+        console.error(error);
     }
 }
 
@@ -322,11 +585,8 @@ function parseCSV(text) {
     const rows = [];
 
     let row = [];
-
     let cell = "";
-
     let insideQuotes = false;
-
 
     for (
         let i = 0;
@@ -372,9 +632,7 @@ function parseCSV(text) {
             !insideQuotes
         ) {
 
-            row.push(
-                cell
-            );
+            row.push(cell);
 
             cell = "";
 
@@ -396,14 +654,9 @@ function parseCSV(text) {
             ) {
 
                 i++;
-
             }
 
-
-            row.push(
-                cell
-            );
-
+            row.push(cell);
 
             if (
                 row.some(
@@ -412,19 +665,13 @@ function parseCSV(text) {
                 )
             ) {
 
-                rows.push(
-                    row
-                );
-
+                rows.push(row);
             }
 
-
             row = [];
-
             cell = "";
 
         }
-
 
         else {
 
@@ -440,10 +687,7 @@ function parseCSV(text) {
         row.length > 0
     ) {
 
-        row.push(
-            cell
-        );
-
+        row.push(cell);
 
         if (
             row.some(
@@ -452,9 +696,7 @@ function parseCSV(text) {
             )
         ) {
 
-            rows.push(
-                row
-            );
+            rows.push(row);
 
         }
     }
@@ -466,7 +708,6 @@ function parseCSV(text) {
     ) {
 
         return [];
-
     }
 
 
@@ -483,30 +724,24 @@ function parseCSV(text) {
     // Convert rows into objects
     return rows
         .slice(1)
-        .map(
-            row => {
+        .map(row => {
 
-                const question = {};
+            const question = {};
 
+            headers.forEach(
+                (
+                    header,
+                    index
+                ) => {
 
-                headers.forEach(
-                    (
-                        header,
-                        index
-                    ) => {
+                    question[header] =
+                        row[index] || "";
 
-                        question[header] =
-                            row[index] ||
-                            "";
+                }
+            );
 
-                    }
-                );
-
-
-                return question;
-
-            }
-        );
+            return question;
+        });
 }
 
 
@@ -520,7 +755,6 @@ function loadQuestion() {
         new URLSearchParams(
             window.location.search
         );
-
 
     const id =
         params.get("id");
@@ -542,12 +776,8 @@ function loadQuestion() {
         questions.find(
             q =>
                 q.id &&
-                q.id
-                    .trim()
-                    .toLowerCase() ===
-                id
-                    .trim()
-                    .toLowerCase()
+                q.id.trim().toLowerCase() ===
+                id.trim().toLowerCase()
         );
 
 
@@ -589,24 +819,21 @@ function displayQuestion() {
     document
         .getElementById("question-id")
         .innerText =
-        currentQuestion.id ||
-        "";
+        currentQuestion.id || "";
 
 
     // Topic
     document
         .getElementById("topic")
         .innerText =
-        currentQuestion.topic ||
-        "";
+        currentQuestion.topic || "";
 
 
     // Question text
     document
         .getElementById("question")
         .innerText =
-        currentQuestion.question ||
-        "";
+        currentQuestion.question || "";
 
 
     // Clear previous options
@@ -615,9 +842,7 @@ function displayQuestion() {
             "options"
         );
 
-
-    optionsContainer.innerHTML =
-        "";
+    optionsContainer.innerHTML = "";
 
 
     // Answer options
@@ -638,7 +863,6 @@ function displayQuestion() {
                     "label"
                 );
 
-
             option.className =
                 "option";
 
@@ -648,7 +872,6 @@ function displayQuestion() {
                 document.createElement(
                     "input"
                 );
-
 
             radio.type =
                 "radio";
@@ -666,10 +889,8 @@ function displayQuestion() {
                     "span"
                 );
 
-
             letterSpan.className =
                 "option-letter";
-
 
             letterSpan.innerText =
                 letter + ".";
@@ -681,10 +902,8 @@ function displayQuestion() {
                     "span"
                 );
 
-
             textSpan.className =
                 "option-text";
-
 
             textSpan.innerText =
                 currentQuestion[
@@ -697,11 +916,9 @@ function displayQuestion() {
                 radio
             );
 
-
             option.appendChild(
                 letterSpan
             );
-
 
             option.appendChild(
                 textSpan
@@ -719,7 +936,6 @@ function displayQuestion() {
                 "change",
                 () => {
 
-                    // Remove selected class
                     document
                         .querySelectorAll(
                             ".option"
@@ -732,7 +948,6 @@ function displayQuestion() {
                         );
 
 
-                    // Highlight current option
                     option.classList.add(
                         "selected"
                     );
@@ -750,10 +965,8 @@ function displayQuestion() {
             "result"
         );
 
-
     result.innerText =
         "";
-
 
     result.className =
         "";
@@ -765,7 +978,6 @@ function displayQuestion() {
             "explanation"
         );
 
-
     explanation.classList.add(
         "hidden"
     );
@@ -775,7 +987,6 @@ function displayQuestion() {
         document.getElementById(
             "explanation-text"
         );
-
 
     explanationText.innerText =
         "";
@@ -806,10 +1017,8 @@ function submitAnswer() {
         result.className =
             "incorrect";
 
-
         result.innerText =
             "Please select an answer first.";
-
 
         return;
     }
@@ -843,25 +1052,22 @@ function submitAnswer() {
         result.className =
             "correct";
 
-
         result.innerText =
             "✓ Correct!";
 
 
         // ====================================================
-        // TRIGGER FULL-SCREEN SPARKLES
+        // DIWALI FIREWORKS
         // ====================================================
 
         showCorrectSparkles();
 
     }
 
-
     else {
 
         result.className =
             "incorrect";
-
 
         result.innerText =
             "✗ Incorrect. Correct answer: " +
@@ -875,7 +1081,6 @@ function submitAnswer() {
         document.getElementById(
             "explanation"
         );
-
 
     explanation.classList.remove(
         "hidden"
@@ -940,7 +1145,6 @@ async function copyLink() {
 
     }
 
-
     catch (error) {
 
         console.error(
@@ -962,7 +1166,6 @@ async function copyLink() {
             },
             2000
         );
-
     }
 }
 
@@ -993,11 +1196,9 @@ function showError(message) {
             "error"
         );
 
-
     errorBox.classList.remove(
         "hidden"
     );
-
 
     errorBox.innerText =
         message;
