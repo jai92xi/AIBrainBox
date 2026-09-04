@@ -1,10 +1,17 @@
 /* ============================================================
+   AIBRAINBOX
+   AI QUIZ INTERFACE
+   ============================================================ */
+
+
+/* ============================================================
    GLOBAL RESET
    ============================================================ */
 
 * {
     box-sizing: border-box;
 }
+
 
 html,
 body {
@@ -14,12 +21,15 @@ body {
     padding: 0;
 }
 
+
 html {
     overflow-x: hidden;
 }
 
+
 body {
     font-family:
+        Inter,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
@@ -28,72 +38,30 @@ body {
         Arial,
         sans-serif;
 
-    background: #f5f7fb;
     color: #172033;
 
     overflow-x: hidden;
-}
 
-
-/* ============================================================
-   HEADER
-   ============================================================ */
-
-header {
-    width: 100%;
-
+    /*
+       AI-inspired background
+    */
     background:
-        linear-gradient(
-            135deg,
-            #4f46e5 0%,
-            #6d3fe8 50%,
-            #7c3aed 100%
-        );
-
-    color: #ffffff;
-
-    padding: 30px 20px;
-
-    text-align: center;
-}
-
-
-.header-content {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-
-header h1 {
-    margin: 0;
-
-    font-size: 32px;
-    font-weight: 700;
-
-    letter-spacing: -0.5px;
-}
-
-
-header p {
-    margin: 6px 0 0;
-
-    font-size: 15px;
-
-    opacity: 0.92;
-}
-
-
-/* ============================================================
-   MAIN
-   ============================================================ */
-
-main {
-    width: 100%;
-    max-width: 1000px;
-
-    margin: 40px auto;
-
-    padding: 0 24px;
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(99, 102, 241, 0.13),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(139, 92, 246, 0.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 90%,
+            rgba(59, 130, 246, 0.08),
+            transparent 30%
+        ),
+        #f5f7ff;
 }
 
 
@@ -107,35 +75,178 @@ main {
 
 
 /* ============================================================
-   LOADING / ERROR
+   HEADER
+   ============================================================ */
+
+header {
+    position: relative;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    padding: 34px 20px 38px;
+
+    color: #ffffff;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #312e81 0%,
+            #4f46e5 40%,
+            #7c3aed 75%,
+            #9333ea 100%
+        );
+
+    box-shadow:
+        0 8px 30px rgba(79, 70, 229, 0.20);
+}
+
+
+/*
+   AI network pattern
+*/
+
+header::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0.18;
+
+    background-image:
+        radial-gradient(
+            circle,
+            #ffffff 1px,
+            transparent 1px
+        );
+
+    background-size: 26px 26px;
+
+    pointer-events: none;
+}
+
+
+header::after {
+    content: "";
+
+    position: absolute;
+
+    width: 260px;
+    height: 260px;
+
+    top: -150px;
+    right: -70px;
+
+    border-radius: 50%;
+
+    border: 1px solid
+        rgba(255, 255, 255, 0.18);
+
+    box-shadow:
+        0 0 0 35px
+            rgba(255, 255, 255, 0.04),
+        0 0 0 70px
+            rgba(255, 255, 255, 0.025);
+
+    pointer-events: none;
+}
+
+
+.header-content {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 1000px;
+
+    margin: 0 auto;
+}
+
+
+header h1 {
+    margin: 0;
+
+    font-size: 34px;
+
+    font-weight: 800;
+
+    letter-spacing: -0.8px;
+
+    text-shadow:
+        0 2px 12px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+header p {
+    margin: 7px 0 0;
+
+    font-size: 15px;
+
+    opacity: 0.90;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+
+main {
+    position: relative;
+
+    width: 100%;
+
+    max-width: 960px;
+
+    margin: 42px auto;
+
+    padding: 0 24px;
+}
+
+
+/* ============================================================
+   LOADING
    ============================================================ */
 
 .status-message {
     width: 100%;
 
-    padding: 40px 20px;
+    padding: 50px 20px;
 
     text-align: center;
 
-    font-size: 16px;
     color: #64748b;
+
+    font-size: 16px;
 }
 
+
+/* ============================================================
+   ERROR
+   ============================================================ */
 
 #error {
     width: 100%;
 
-    background: #fff1f2;
-
-    border: 1px solid #fecdd3;
-
-    color: #be123c;
-
-    border-radius: 12px;
-
     padding: 18px 20px;
 
     margin-bottom: 20px;
+
+    border:
+        1px solid #fecdd3;
+
+    border-radius: 14px;
+
+    background: #fff1f2;
+
+    color: #be123c;
 
     line-height: 1.5;
 }
@@ -146,7 +257,10 @@ main {
    ============================================================ */
 
 #question-container {
+    position: relative;
+
     width: 100%;
+
     min-width: 0;
 }
 
@@ -156,17 +270,17 @@ main {
    ============================================================ */
 
 .question-header {
-    width: 100%;
-
     display: flex;
 
     justify-content: space-between;
 
     align-items: center;
 
-    gap: 16px;
+    width: 100%;
 
-    margin-bottom: 18px;
+    margin-bottom: 16px;
+
+    gap: 15px;
 }
 
 
@@ -178,17 +292,23 @@ main {
 
     min-height: 30px;
 
-    padding: 6px 12px;
+    padding: 6px 13px;
 
     border-radius: 999px;
 
-    background: #eef2ff;
+    background:
+        rgba(238, 242, 255, 0.95);
+
+    border:
+        1px solid #c7d2fe;
 
     color: #4338ca;
 
-    font-size: 13px;
+    font-size: 12px;
 
-    font-weight: 600;
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
 
     white-space: nowrap;
 }
@@ -199,46 +319,71 @@ main {
    ============================================================ */
 
 .question-card {
+    position: relative;
+
     width: 100%;
+
     min-width: 0;
 
-    background: #ffffff;
+    padding: 32px;
 
-    border-radius: 14px;
+    margin-bottom: 18px;
 
-    padding: 30px;
+    overflow: hidden;
 
-    margin-bottom: 20px;
+    border:
+        1px solid rgba(99, 102, 241, 0.13);
 
-    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.96);
 
     box-shadow:
-        0 4px 18px rgba(15, 23, 42, 0.06);
+        0 12px 35px
+        rgba(30, 41, 59, 0.08);
 
     font-size: 18px;
 
-    line-height: 1.7;
+    line-height: 1.72;
 
     white-space: pre-wrap;
 
     overflow-wrap: anywhere;
+}
 
-    word-break: normal;
+
+/*
+   Decorative AI glow
+*/
+
+.question-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    top: -100px;
+    right: -50px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(129, 140, 248, 0.20),
+            transparent 70%
+        );
+
+    pointer-events: none;
 }
 
 
 /* ============================================================
-   ANSWER OPTIONS CONTAINER
+   OPTIONS
    ============================================================ */
-
-/*
-   IMPORTANT:
-
-   The options MUST be a vertical column.
-
-   This is the main fix for the problem shown
-   in your screenshot.
-*/
 
 #options {
     display: flex;
@@ -247,92 +392,116 @@ main {
 
     align-items: stretch;
 
-    justify-content: flex-start;
-
     gap: 12px;
 
     width: 100%;
+
     min-width: 0;
 
     margin: 0;
+
     padding: 0;
 }
 
 
 /* ============================================================
-   INDIVIDUAL ANSWER OPTION
+   OPTION CARD
    ============================================================ */
 
 .option {
+    position: relative;
+
     display: flex;
 
     flex-direction: row;
 
-    align-items: flex-start;
+    align-items: center;
 
     gap: 13px;
 
     width: 100%;
+
     min-width: 0;
-    max-width: 100%;
+
+    min-height: 66px;
 
     margin: 0;
-    padding: 16px 18px;
+
+    padding: 14px 18px;
+
+    border:
+        1.5px solid #dbe1ec;
+
+    border-radius: 14px;
 
     background: #ffffff;
-
-    border: 1px solid #d7dce5;
-
-    border-radius: 11px;
 
     color: #172033;
 
     cursor: pointer;
 
+    overflow: hidden;
+
     user-select: none;
 
     transition:
+        transform 0.18s ease,
         border-color 0.18s ease,
         background 0.18s ease,
-        box-shadow 0.18s ease,
-        transform 0.1s ease;
+        box-shadow 0.18s ease;
 }
 
 
-/* ============================================================
-   OPTION HOVER
-   ============================================================ */
+/*
+   AI glow on hover
+*/
+
+.option::before {
+    content: "";
+
+    position: absolute;
+
+    left: -80px;
+    top: 0;
+
+    width: 80px;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(99, 102, 241, 0.12),
+            transparent
+        );
+
+    transition:
+        left 0.45s ease;
+
+    pointer-events: none;
+}
+
+
+.option:hover::before {
+    left: 100%;
+}
+
 
 .option:hover {
+    transform: translateY(-2px);
+
     border-color: #818cf8;
 
     background: #fafaff;
 
     box-shadow:
-        0 3px 10px rgba(79, 70, 229, 0.08);
+        0 8px 22px
+        rgba(79, 70, 229, 0.10);
 }
 
-
-/* ============================================================
-   OPTION ACTIVE
-   ============================================================ */
 
 .option:active {
-    transform: translateY(1px);
-}
-
-
-/* ============================================================
-   SELECTED OPTION
-   ============================================================ */
-
-.option.selected {
-    border-color: #4f46e5;
-
-    background: #eef2ff;
-
-    box-shadow:
-        0 3px 12px rgba(79, 70, 229, 0.10);
+    transform: translateY(0);
 }
 
 
@@ -346,9 +515,7 @@ main {
     width: 18px;
     height: 18px;
 
-    margin: 3px 0 0 0;
-
-    padding: 0;
+    margin: 0;
 
     accent-color: #4f46e5;
 
@@ -361,17 +528,32 @@ main {
    ============================================================ */
 
 .option-letter {
-    flex: 0 0 25px;
+    display: flex;
 
-    width: 25px;
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 9px;
+
+    background: #eef2ff;
 
     color: #4338ca;
 
-    font-size: 16px;
+    font-size: 13px;
 
-    font-weight: 700;
+    font-weight: 800;
 
-    line-height: 1.55;
+    line-height: 1;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease;
 }
 
 
@@ -382,18 +564,200 @@ main {
 .option-text {
     flex: 1 1 auto;
 
-    width: auto;
     min-width: 0;
 
-    color: #1f2937;
+    color: #334155;
 
     font-size: 16px;
 
-    line-height: 1.55;
+    line-height: 1.5;
 
     overflow-wrap: anywhere;
+}
 
-    word-break: normal;
+
+/* ============================================================
+   OPTION STATUS ICON
+   ============================================================ */
+
+.option-status {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: 28px;
+    height: 28px;
+
+    border-radius: 50%;
+
+    font-size: 16px;
+
+    font-weight: 800;
+}
+
+
+/* ============================================================
+   SELECTED
+   ============================================================ */
+
+.option.selected {
+    border-color: #6366f1;
+
+    background:
+        linear-gradient(
+            90deg,
+            #eef2ff,
+            #f8f7ff
+        );
+
+    box-shadow:
+        0 5px 18px
+        rgba(79, 70, 229, 0.12);
+}
+
+
+.option.selected .option-letter {
+    background: #4f46e5;
+
+    color: #ffffff;
+}
+
+
+/* ============================================================
+   CORRECT ANSWER
+   ============================================================ */
+
+.option.correct {
+    border-color: #22c55e !important;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ecfdf5,
+            #f0fdf4
+        ) !important;
+
+    box-shadow:
+        0 6px 20px
+        rgba(34, 197, 94, 0.15);
+}
+
+
+.option.correct .option-letter {
+    background: #22c55e;
+
+    color: #ffffff;
+}
+
+
+.option.correct .option-text {
+    color: #166534;
+
+    font-weight: 600;
+}
+
+
+.option.correct .option-status {
+    background: #22c55e;
+
+    color: #ffffff;
+}
+
+
+/* ============================================================
+   WRONG ANSWER
+   ============================================================ */
+
+.option.wrong {
+    border-color: #ef4444 !important;
+
+    background:
+        linear-gradient(
+            90deg,
+            #fff1f2,
+            #fef2f2
+        ) !important;
+
+    box-shadow:
+        0 6px 20px
+        rgba(239, 68, 68, 0.13);
+
+    animation:
+        wrongShake 0.35s ease;
+}
+
+
+.option.wrong .option-letter {
+    background: #ef4444;
+
+    color: #ffffff;
+}
+
+
+.option.wrong .option-text {
+    color: #991b1b;
+
+    font-weight: 600;
+}
+
+
+.option.wrong .option-status {
+    background: #ef4444;
+
+    color: #ffffff;
+}
+
+
+/* ============================================================
+   DISABLED OPTIONS AFTER SUBMISSION
+   ============================================================ */
+
+#options.answered .option {
+    cursor: default;
+}
+
+
+#options.answered .option:hover {
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+#options.answered .option::before {
+    display: none;
+}
+
+
+/* ============================================================
+   WRONG ANSWER SHAKE
+   ============================================================ */
+
+@keyframes wrongShake {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(5px);
+    }
+
+    75% {
+        transform: translateX(-3px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
 
 
@@ -408,13 +772,18 @@ main {
 
     margin-top: 20px;
 
-    padding: 14px 18px;
+    padding: 15px 20px;
 
     border: none;
 
-    border-radius: 10px;
+    border-radius: 12px;
 
-    background: #4f46e5;
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #7c3aed
+        );
 
     color: #ffffff;
 
@@ -422,36 +791,34 @@ main {
 
     font-size: 16px;
 
-    font-weight: 600;
-
-    line-height: 1.4;
+    font-weight: 700;
 
     cursor: pointer;
 
+    box-shadow:
+        0 7px 20px
+        rgba(79, 70, 229, 0.20);
+
     transition:
-        background 0.18s ease,
+        transform 0.18s ease,
         box-shadow 0.18s ease,
-        transform 0.1s ease;
+        filter 0.18s ease;
 }
 
 
 #submit-btn:hover {
-    background: #4338ca;
+    transform: translateY(-2px);
+
+    filter: brightness(1.05);
 
     box-shadow:
-        0 4px 12px rgba(79, 70, 229, 0.20);
+        0 10px 25px
+        rgba(79, 70, 229, 0.25);
 }
 
 
 #submit-btn:active {
-    transform: translateY(1px);
-}
-
-
-#submit-btn:focus-visible {
-    outline: 3px solid rgba(79, 70, 229, 0.25);
-
-    outline-offset: 2px;
+    transform: translateY(0);
 }
 
 
@@ -468,35 +835,59 @@ main {
 
     font-size: 16px;
 
-    font-weight: 600;
+    font-weight: 700;
 
     line-height: 1.5;
 }
 
 
 #result.correct {
-    padding: 14px 16px;
+    padding: 15px 18px;
 
-    border-radius: 10px;
+    border:
+        1px solid #86efac;
 
-    background: #ecfdf5;
+    border-radius: 12px;
 
-    border: 1px solid #a7f3d0;
+    background:
+        #ecfdf5;
 
-    color: #047857;
+    color: #15803d;
+
+    animation:
+        resultPop 0.35s ease;
 }
 
 
 #result.incorrect {
-    padding: 14px 16px;
+    padding: 15px 18px;
 
-    border-radius: 10px;
+    border:
+        1px solid #fda4af;
 
-    background: #fff1f2;
+    border-radius: 12px;
 
-    border: 1px solid #fecdd3;
+    background:
+        #fff1f2;
 
     color: #be123c;
+
+    animation:
+        resultPop 0.35s ease;
+}
+
+
+@keyframes resultPop {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 
@@ -509,31 +900,42 @@ main {
 
     margin-top: 18px;
 
-    padding: 20px;
+    padding: 22px;
 
-    background: #ffffff;
+    border:
+        1px solid #ddd6fe;
 
-    border: 1px solid #e5e7eb;
+    border-left:
+        4px solid #6366f1;
 
-    border-left: 4px solid #6366f1;
+    border-radius: 14px;
 
-    border-radius: 10px;
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f8f7ff
+        );
+
+    box-shadow:
+        0 6px 20px
+        rgba(79, 70, 229, 0.07);
 
     line-height: 1.65;
 
-    box-shadow:
-        0 3px 12px rgba(15, 23, 42, 0.04);
+    animation:
+        explanationIn 0.4s ease;
 }
 
 
 #explanation h3 {
-    margin: 0 0 8px;
+    margin: 0 0 9px;
 
-    color: #312e81;
+    color: #3730a3;
 
-    font-size: 16px;
+    font-size: 17px;
 
-    font-weight: 700;
+    font-weight: 800;
 }
 
 
@@ -542,11 +944,25 @@ main {
 
     font-size: 15px;
 
-    line-height: 1.65;
+    line-height: 1.7;
 
     white-space: pre-wrap;
 
     overflow-wrap: anywhere;
+}
+
+
+@keyframes explanationIn {
+
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
@@ -563,25 +979,27 @@ main {
 
     padding: 12px 18px;
 
+    border:
+        1px solid #c7d2fe;
+
+    border-radius: 11px;
+
     background: #ffffff;
 
     color: #4338ca;
 
-    border: 1px solid #c7d2fe;
-
-    border-radius: 10px;
-
     font-family: inherit;
 
-    font-size: 15px;
+    font-size: 14px;
 
-    font-weight: 600;
+    font-weight: 700;
 
     cursor: pointer;
 
     transition:
         background 0.18s ease,
-        border-color 0.18s ease;
+        border-color 0.18s ease,
+        transform 0.18s ease;
 }
 
 
@@ -589,13 +1007,89 @@ main {
     background: #eef2ff;
 
     border-color: #818cf8;
+
+    transform: translateY(-1px);
 }
 
 
-#copy-btn:focus-visible {
-    outline: 3px solid rgba(79, 70, 229, 0.20);
+/* ============================================================
+   AI CELEBRATION
+   ============================================================ */
 
-    outline-offset: 2px;
+.celebration {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    pointer-events: none;
+
+    overflow: hidden;
+}
+
+
+.celebration-particle {
+    position: absolute;
+
+    top: -70px;
+
+    display: block;
+
+    animation:
+        celebrationFall
+        2.7s
+        cubic-bezier(
+            0.18,
+            0.70,
+            0.30,
+            1
+        )
+        forwards;
+
+    filter:
+        drop-shadow(
+            0 4px 5px
+            rgba(0, 0, 0, 0.10)
+        );
+}
+
+
+@keyframes celebrationFall {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(-70px)
+            rotate(0deg)
+            scale(0.6);
+    }
+
+
+    10% {
+        opacity: 1;
+    }
+
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translateY(45vh)
+            rotate(180deg)
+            scale(1);
+    }
+
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translateY(105vh)
+            rotate(420deg)
+            scale(0.8);
+    }
 }
 
 
@@ -606,7 +1100,7 @@ main {
 footer {
     width: 100%;
 
-    padding: 25px 20px 35px;
+    padding: 30px 20px 40px;
 
     text-align: center;
 
@@ -628,33 +1122,36 @@ footer p {
 @media (max-width: 768px) {
 
     header {
-        padding: 26px 18px;
+        padding:
+            30px 18px 34px;
     }
 
 
     header h1 {
-        font-size: 29px;
+        font-size: 30px;
     }
 
 
     main {
         margin: 30px auto;
 
-        padding: 0 18px;
+        padding:
+            0 18px;
     }
 
 
     .question-card {
-        padding: 24px;
+        padding: 25px;
 
         font-size: 17px;
-
-        line-height: 1.65;
     }
 
 
     .option {
-        padding: 15px 16px;
+        min-height: 62px;
+
+        padding:
+            13px 15px;
     }
 }
 
@@ -666,7 +1163,8 @@ footer p {
 @media (max-width: 600px) {
 
     header {
-        padding: 24px 15px;
+        padding:
+            25px 15px 30px;
     }
 
 
@@ -676,18 +1174,17 @@ footer p {
 
 
     header p {
-        font-size: 14px;
+        font-size: 13px;
     }
 
 
     main {
         margin: 22px auto;
 
-        padding: 0 12px;
+        padding:
+            0 12px;
     }
 
-
-    /* Stack question ID and topic */
 
     .question-header {
         flex-direction: column;
@@ -696,26 +1193,25 @@ footer p {
 
         gap: 8px;
 
-        margin-bottom: 14px;
+        margin-bottom: 13px;
     }
 
 
     #question-id,
     #topic {
-        font-size: 12px;
-
         min-height: 28px;
 
-        padding: 5px 10px;
+        padding:
+            5px 10px;
+
+        font-size: 11px;
     }
 
-
-    /* Question */
 
     .question-card {
         padding: 20px;
 
-        border-radius: 12px;
+        border-radius: 14px;
 
         font-size: 16px;
 
@@ -723,45 +1219,51 @@ footer p {
     }
 
 
-    /* Options */
-
     #options {
         gap: 10px;
     }
 
 
     .option {
-        width: 100%;
+        min-height: 60px;
 
-        padding: 14px;
+        padding:
+            12px;
 
-        gap: 10px;
+        gap: 9px;
 
-        border-radius: 10px;
+        border-radius: 12px;
     }
 
 
     .option input[type="radio"] {
         width: 17px;
         height: 17px;
-
-        margin-top: 3px;
     }
 
 
     .option-letter {
-        flex: 0 0 22px;
+        width: 29px;
+        height: 29px;
 
-        width: 22px;
+        border-radius: 8px;
 
-        font-size: 15px;
+        font-size: 12px;
     }
 
 
     .option-text {
-        font-size: 15px;
+        font-size: 14px;
 
         line-height: 1.5;
+    }
+
+
+    .option-status {
+        width: 25px;
+        height: 25px;
+
+        font-size: 14px;
     }
 
 
@@ -773,7 +1275,7 @@ footer p {
 
 
     #explanation {
-        padding: 16px;
+        padding: 17px;
     }
 
 
@@ -790,7 +1292,8 @@ footer p {
 @media (max-width: 380px) {
 
     main {
-        padding: 0 10px;
+        padding:
+            0 10px;
     }
 
 
@@ -802,11 +1305,13 @@ footer p {
 
 
     .option {
-        padding: 12px;
+        padding: 11px;
+
+        gap: 8px;
     }
 
 
     .option-text {
-        font-size: 14px;
+        font-size: 13px;
     }
 }
