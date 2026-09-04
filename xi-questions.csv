@@ -7,7 +7,7 @@ Profiling shows that most of the latency comes from the self-attention layers. B
 
 The team is considering replacing BERT with an architecture designed to handle long sequences more efficiently, such as Longformer or BigBird.
 
-Which change would most directly address the computational bottleneck for long sequences?",Replace ReLU with GELU in BERT.,"Use an attention mechanism with reduced attention complexity, such as sparse/local attentionB.",Increase the number of Transformer layers,Increase the embedding dimension,B,"In standard Transformer self-attention, every token attends to every other token.
+Which change would most directly address the computational bottleneck for long sequences?",Replace ReLU with GELU in BERT.,"Use an attention mechanism with reduced attention complexity, such as sparse/local attentionB.",Increase the number of Transformer layers.,Increase the embedding dimension,B,"In standard Transformer self-attention, every token attends to every other token.
 
 For a sequence of length n, the attention computation is roughly:
 
