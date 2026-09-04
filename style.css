@@ -1,19 +1,34 @@
-/* =========================================================
-   AIBrainBox - AI Quiz Interface
-   ========================================================= */
+/* ============================================================
+   AIBrainBox
+   ============================================================ */
+
+
+/* ============================================================
+   GLOBAL RESET
+   ============================================================ */
 
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+
+    margin: 0;
+    padding: 0;
 }
 
+
+html {
+    overflow-x: hidden;
+}
+
+
 body {
-    min-height: 100vh;
+
     font-family:
         "Segoe UI",
         -apple-system,
@@ -23,47 +38,64 @@ body {
         Arial,
         sans-serif;
 
-    color: #1e293b;
+    color: #334155;
 
-    /* Classy AI background */
     background:
+
         radial-gradient(
             circle at 10% 20%,
-            rgba(99, 102, 241, 0.18),
+            rgba(99, 102, 241, 0.16),
             transparent 30%
         ),
+
         radial-gradient(
             circle at 90% 10%,
-            rgba(139, 92, 246, 0.18),
+            rgba(139, 92, 246, 0.16),
             transparent 30%
         ),
+
         radial-gradient(
             circle at 50% 90%,
-            rgba(14, 165, 233, 0.14),
+            rgba(14, 165, 233, 0.12),
             transparent 35%
         ),
+
         linear-gradient(
             135deg,
             #eef2ff 0%,
-            #f8fafc 45%,
+            #f8fafc 48%,
             #eef6ff 100%
         );
 
-    position: relative;
     overflow-x: hidden;
+
+    position: relative;
 }
 
-/* Subtle AI technology grid */
+
+/* ============================================================
+   AI GRID BACKGROUND
+   ============================================================ */
+
 body::before {
+
     content: "";
+
     position: fixed;
+
     inset: 0;
 
+    pointer-events: none;
+
+    z-index: -2;
+
     background-image:
+
         linear-gradient(
             rgba(99, 102, 241, 0.035) 1px,
             transparent 1px
         ),
+
         linear-gradient(
             90deg,
             rgba(99, 102, 241, 0.035) 1px,
@@ -71,14 +103,17 @@ body::before {
         );
 
     background-size: 45px 45px;
-
-    pointer-events: none;
-    z-index: -2;
 }
 
-/* Soft ambient glow */
+
+/* ============================================================
+   AMBIENT GLOW
+   ============================================================ */
+
 body::after {
+
     content: "";
+
     position: fixed;
 
     width: 500px;
@@ -87,23 +122,29 @@ body::after {
     top: -200px;
     right: -150px;
 
-    background: rgba(129, 140, 248, 0.14);
+    background:
+        rgba(129, 140, 248, 0.13);
 
     filter: blur(100px);
+
     border-radius: 50%;
 
     pointer-events: none;
+
     z-index: -1;
 }
 
-/* =========================================================
+
+/* ============================================================
    HEADER
-   ========================================================= */
+   ============================================================ */
 
 header {
+
     width: 100%;
 
     background:
+
         linear-gradient(
             135deg,
             #312e81 0%,
@@ -113,89 +154,151 @@ header {
 
     color: white;
 
-    padding: 18px 30px;
+    padding: 20px 30px;
 
     box-shadow:
-        0 8px 30px rgba(49, 46, 129, 0.25);
+        0 8px 30px
+        rgba(49, 46, 129, 0.25);
 
     position: relative;
+
     z-index: 10;
 }
 
+
 .header-content {
+
     max-width: 1250px;
+
     margin: auto;
 
     display: flex;
+
     align-items: center;
+
+    justify-content: center;
+
     gap: 14px;
+
+    text-align: left;
 }
 
+
 .logo {
+
     width: 48px;
     height: 48px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     font-size: 27px;
 
-    background: rgba(255, 255, 255, 0.14);
+    background:
+        rgba(255, 255, 255, 0.14);
 
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
 
     border-radius: 14px;
 
     box-shadow:
-        0 5px 20px rgba(0, 0, 0, 0.12);
+        0 5px 20px
+        rgba(0, 0, 0, 0.12);
 
     backdrop-filter: blur(10px);
 }
 
+
+.header-text {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+
 .header-content h1 {
+
+    margin: 0;
+
     font-size: 25px;
+
     font-weight: 700;
+
     letter-spacing: -0.3px;
 }
 
+
 .header-content p {
-    margin-top: 2px;
+
+    margin:
+        2px 0 0;
 
     font-size: 13px;
+
     font-weight: 400;
 
-    color: rgba(255, 255, 255, 0.82);
+    color:
+        rgba(255, 255, 255, 0.82);
 }
 
-/* =========================================================
+
+/* ============================================================
    MAIN
-   ========================================================= */
+   ============================================================ */
 
 main {
-    width: min(1200px, calc(100% - 40px));
 
-    margin: 35px auto 50px;
+    width: 100%;
 
-    position: relative;
+    max-width: 1200px;
+
+    margin:
+        35px auto 50px;
+
+    padding:
+        0 24px;
 }
 
-/* =========================================================
+
+/* ============================================================
+   HIDDEN
+   ============================================================ */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ============================================================
    LOADING
-   ========================================================= */
+   ============================================================ */
 
 #loading {
-    text-align: center;
 
-    padding: 60px 20px;
+    width: 100%;
+
+    padding:
+        60px 20px;
+
+    text-align: center;
 
     color: #475569;
 
     font-size: 16px;
+
     font-weight: 500;
 }
 
+
 #loading::before {
+
     content: "🧠";
 
     display: block;
@@ -204,123 +307,113 @@ main {
 
     margin-bottom: 12px;
 
-    animation: brainPulse 1.5s infinite ease-in-out;
+    animation:
+        brainPulse
+        1.5s
+        infinite
+        ease-in-out;
 }
 
+
 @keyframes brainPulse {
+
     0%,
     100% {
-        transform: scale(1);
+
+        transform:
+            scale(1);
+
         opacity: 0.7;
     }
 
     50% {
-        transform: scale(1.12);
+
+        transform:
+            scale(1.12);
+
         opacity: 1;
     }
+
 }
 
-/* =========================================================
+
+/* ============================================================
    ERROR
-   ========================================================= */
+   ============================================================ */
 
 #error {
-    background: rgba(254, 226, 226, 0.95);
 
-    border: 1px solid #fecaca;
+    width: 100%;
 
-    color: #991b1b;
+    padding:
+        18px 20px;
 
-    padding: 18px 20px;
+    margin-bottom: 20px;
 
     border-radius: 14px;
 
-    font-size: 15px;
+    background:
+        rgba(254, 226, 226, 0.95);
+
+    border:
+        1px solid
+        #fecaca;
+
+    color:
+        #991b1b;
+
+    font-size: 14px;
+
+    line-height: 1.5;
 
     box-shadow:
-        0 8px 25px rgba(127, 29, 29, 0.08);
+        0 8px 25px
+        rgba(127, 29, 29, 0.08);
 }
 
-.hidden {
-    display: none !important;
-}
 
-/* =========================================================
+/* ============================================================
    QUESTION CONTAINER
-   ========================================================= */
+   ============================================================ */
 
 #question-container {
-    animation: fadeIn 0.45s ease;
+
+    width: 100%;
+
+    animation:
+        fadeIn
+        0.45s
+        ease;
 }
 
+
 @keyframes fadeIn {
+
     from {
+
         opacity: 0;
-        transform: translateY(10px);
+
+        transform:
+            translateY(10px);
     }
 
     to {
+
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
+
 }
 
-/* =========================================================
-   QUESTION HEADER
-   ========================================================= */
 
-.question-header {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 16px;
-
-    padding: 0 4px;
-
-    gap: 12px;
-}
-
-#question-id,
-#topic {
-    display: inline-flex;
-
-    align-items: center;
-
-    min-height: 30px;
-
-    padding: 5px 12px;
-
-    border-radius: 999px;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    letter-spacing: 0.2px;
-}
-
-#question-id {
-    background: rgba(79, 70, 229, 0.10);
-
-    color: #4338ca;
-
-    border: 1px solid rgba(79, 70, 229, 0.14);
-}
-
-#topic {
-    background: rgba(14, 165, 233, 0.10);
-
-    color: #0369a1;
-
-    border: 1px solid rgba(14, 165, 233, 0.14);
-}
-
-/* =========================================================
-   TWO COLUMN QUIZ LAYOUT
-   ========================================================= */
+/* ============================================================
+   TWO COLUMN LAYOUT
+   ============================================================ */
 
 .quiz-layout {
+
     display: grid;
 
     grid-template-columns:
@@ -332,46 +425,62 @@ main {
     align-items: stretch;
 }
 
-/* =========================================================
+
+/* ============================================================
    PANELS
-   ========================================================= */
+   ============================================================ */
 
 .question-panel,
 .options-panel {
-    background:
-        rgba(255, 255, 255, 0.78);
 
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background:
+        rgba(255, 255, 255, 0.80);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.85);
 
     border-radius: 22px;
 
     padding: 28px;
 
     box-shadow:
-        0 15px 45px rgba(15, 23, 42, 0.08),
-        0 2px 8px rgba(15, 23, 42, 0.04);
 
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+        0 15px 45px
+        rgba(15, 23, 42, 0.08),
+
+        0 2px 8px
+        rgba(15, 23, 42, 0.04);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
 
     position: relative;
 
     overflow: hidden;
 }
 
+
 .question-panel::before,
 .options-panel::before {
+
     content: "";
 
     position: absolute;
 
     top: 0;
+
     left: 0;
+
     right: 0;
 
     height: 3px;
 
     background:
+
         linear-gradient(
             90deg,
             #4f46e5,
@@ -380,8 +489,11 @@ main {
         );
 }
 
+
 .options-panel::before {
+
     background:
+
         linear-gradient(
             90deg,
             #0ea5e9,
@@ -390,11 +502,13 @@ main {
         );
 }
 
-/* =========================================================
+
+/* ============================================================
    PANEL LABEL
-   ========================================================= */
+   ============================================================ */
 
 .panel-label {
+
     display: flex;
 
     align-items: center;
@@ -410,16 +524,13 @@ main {
     letter-spacing: 1.1px;
 }
 
-/* =========================================================
-   QUESTION TYPOGRAPHY
-   ========================================================= */
 
-/*
-   Smaller, regular-weight and eye-pleasing.
-   The question is intentionally NOT bold.
-*/
+/* ============================================================
+   QUESTION
+   ============================================================ */
 
 #question {
+
     width: 100%;
 
     color: #334155;
@@ -446,11 +557,13 @@ main {
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
+
+/* ============================================================
    OPTIONS
-   ========================================================= */
+   ============================================================ */
 
 #options {
+
     display: flex;
 
     flex-direction: column;
@@ -458,27 +571,29 @@ main {
     gap: 12px;
 }
 
+
 .option {
+
     width: 100%;
 
     position: relative;
 
-    cursor: pointer;
+    border-radius: 14px;
 
     transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        border-color 0.18s ease,
-        background 0.18s ease;
-
-    border-radius: 14px;
+        transform 0.18s ease;
 }
+
 
 .option:hover {
-    transform: translateY(-2px);
+
+    transform:
+        translateY(-1px);
 }
 
+
 .option input[type="radio"] {
+
     position: absolute;
 
     opacity: 0;
@@ -486,7 +601,9 @@ main {
     pointer-events: none;
 }
 
+
 .option label {
+
     display: flex;
 
     align-items: flex-start;
@@ -495,14 +612,19 @@ main {
 
     width: 100%;
 
-    padding: 15px 16px;
+    padding:
+        15px 16px;
 
     border-radius: 14px;
 
     background:
-        rgba(248, 250, 252, 0.90);
+        rgba(248, 250, 252, 0.95);
 
-    border: 1px solid #e2e8f0;
+    /* Visible thin border */
+
+    border:
+        1px solid
+        #cbd5e1;
 
     color: #334155;
 
@@ -515,22 +637,31 @@ main {
     cursor: pointer;
 
     transition:
-        all 0.18s ease;
 
-    box-shadow:
-        0 3px 10px rgba(15, 23, 42, 0.035);
+        background 0.18s ease,
+
+        border-color 0.18s ease,
+
+        box-shadow 0.18s ease;
 }
+
 
 .option label:hover {
-    background: white;
 
-    border-color: #a5b4fc;
+    background:
+        #ffffff;
+
+    border-color:
+        #94a3b8;
 
     box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.10);
+        0 6px 16px
+        rgba(79, 70, 229, 0.08);
 }
 
+
 .option-letter {
+
     flex-shrink: 0;
 
     width: 30px;
@@ -543,18 +674,20 @@ main {
 
     border-radius: 9px;
 
-    background: #eef2ff;
+    background:
+        #eef2ff;
 
-    color: #4f46e5;
+    color:
+        #4f46e5;
 
     font-size: 13px;
 
     font-weight: 700;
-
-    transition: all 0.18s ease;
 }
 
+
 .option-text {
+
     padding-top: 3px;
 
     flex: 1;
@@ -564,53 +697,50 @@ main {
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   SELECTED OPTION
-   ========================================================= */
 
-.option.selected label {
-    border-color: #818cf8;
-
-    background:
-        rgba(238, 242, 255, 0.95);
-
-    box-shadow:
-        0 7px 20px rgba(79, 70, 229, 0.10);
-}
-
-.option.selected .option-letter {
-    background: #4f46e5;
-
-    color: white;
-}
-
-/* =========================================================
-   CORRECT ANSWER
-   ========================================================= */
+/* ============================================================
+   CORRECT
+   ============================================================ */
 
 .option.correct-answer label {
+
     background:
+
         linear-gradient(
             135deg,
             #dcfce7,
             #f0fdf4
         );
 
-    border-color: #22c55e;
+    border-color:
+        #22c55e;
 
-    color: #166534;
+    color:
+        #166534;
 
     box-shadow:
-        0 8px 25px rgba(34, 197, 94, 0.16);
+        0 8px 25px
+        rgba(34, 197, 94, 0.16);
+
+    animation:
+        correctPop
+        0.35s
+        ease;
 }
+
 
 .option.correct-answer .option-letter {
-    background: #22c55e;
 
-    color: white;
+    background:
+        #22c55e;
+
+    color:
+        white;
 }
 
+
 .option.correct-answer label::after {
+
     content: "✓";
 
     margin-left: auto;
@@ -627,62 +757,84 @@ main {
 
     border-radius: 50%;
 
-    background: #22c55e;
+    background:
+        #22c55e;
 
-    color: white;
+    color:
+        white;
 
     font-size: 15px;
 
     font-weight: 800;
-
-    animation: correctPop 0.35s ease;
 }
 
+
 @keyframes correctPop {
+
     0% {
-        transform: scale(0.6);
-        opacity: 0;
+
+        transform:
+            scale(0.97);
     }
 
     70% {
-        transform: scale(1.15);
+
+        transform:
+            scale(1.015);
     }
 
     100% {
-        transform: scale(1);
-        opacity: 1;
+
+        transform:
+            scale(1);
     }
+
 }
 
-/* =========================================================
-   WRONG ANSWER
-   ========================================================= */
+
+/* ============================================================
+   WRONG
+   ============================================================ */
 
 .option.wrong-answer label {
+
     background:
+
         linear-gradient(
             135deg,
             #fee2e2,
             #fff1f2
         );
 
-    border-color: #ef4444;
+    border-color:
+        #ef4444;
 
-    color: #991b1b;
+    color:
+        #991b1b;
 
     box-shadow:
-        0 8px 25px rgba(239, 68, 68, 0.14);
+        0 8px 25px
+        rgba(239, 68, 68, 0.14);
 
-    animation: wrongShake 0.4s ease;
+    animation:
+        wrongShake
+        0.4s
+        ease;
 }
+
 
 .option.wrong-answer .option-letter {
-    background: #ef4444;
 
-    color: white;
+    background:
+        #ef4444;
+
+    color:
+        white;
 }
 
+
 .option.wrong-answer label::after {
+
     content: "✕";
 
     margin-left: auto;
@@ -699,76 +851,98 @@ main {
 
     border-radius: 50%;
 
-    background: #ef4444;
+    background:
+        #ef4444;
 
-    color: white;
+    color:
+        white;
 
     font-size: 14px;
 
     font-weight: 800;
 }
 
+
 @keyframes wrongShake {
+
     0%,
     100% {
-        transform: translateX(0);
+
+        transform:
+            translateX(0);
     }
 
     20% {
-        transform: translateX(-6px);
+
+        transform:
+            translateX(-5px);
     }
 
     40% {
-        transform: translateX(6px);
+
+        transform:
+            translateX(5px);
     }
 
     60% {
-        transform: translateX(-4px);
+
+        transform:
+            translateX(-3px);
     }
 
     80% {
-        transform: translateX(4px);
+
+        transform:
+            translateX(3px);
     }
+
 }
 
-/* =========================================================
+
+/* ============================================================
    RESULT
-   ========================================================= */
+   ============================================================ */
 
 #result {
+
     min-height: 0;
 
     margin: 0;
+
+    text-align: center;
 }
 
-/* No large congratulations text */
-#result:empty {
-    display: none;
-}
 
-/* =========================================================
-   SHOW EXPLANATION BUTTON
-   ========================================================= */
+/* ============================================================
+   EXPLANATION BUTTON
+   ============================================================ */
 
 #show-explanation-btn {
+
     display: block;
 
-    margin: 24px auto 0;
+    margin:
+        24px auto 0;
 
-    padding: 12px 20px;
+    padding:
+        12px 20px;
 
-    border: 1px solid rgba(99, 102, 241, 0.20);
+    border:
+        1px solid
+        rgba(99, 102, 241, 0.20);
 
     border-radius: 12px;
 
     background:
+
         linear-gradient(
             135deg,
             #eef2ff,
             #f5f3ff
         );
 
-    color: #4338ca;
+    color:
+        #4338ca;
 
     font-family: inherit;
 
@@ -779,15 +953,22 @@ main {
     cursor: pointer;
 
     transition:
+
         transform 0.18s ease,
+
         box-shadow 0.18s ease,
+
         background 0.18s ease;
 }
 
+
 #show-explanation-btn:hover {
-    transform: translateY(-2px);
+
+    transform:
+        translateY(-2px);
 
     background:
+
         linear-gradient(
             135deg,
             #e0e7ff,
@@ -795,18 +976,24 @@ main {
         );
 
     box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.12);
+        0 8px 20px
+        rgba(79, 70, 229, 0.12);
 }
+
 
 #show-explanation-btn:active {
-    transform: translateY(0);
+
+    transform:
+        translateY(0);
 }
 
-/* =========================================================
+
+/* ============================================================
    EXPLANATION
-   ========================================================= */
+   ============================================================ */
 
 #explanation {
+
     margin-top: 20px;
 
     padding: 22px;
@@ -816,40 +1003,39 @@ main {
     background:
         rgba(248, 250, 252, 0.92);
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        #e2e8f0;
 
     box-shadow:
-        0 8px 25px rgba(15, 23, 42, 0.05);
+        0 8px 25px
+        rgba(15, 23, 42, 0.05);
 
-    animation: explanationReveal 0.35s ease;
+    animation:
+        explanationReveal
+        0.35s
+        ease;
 }
 
-@keyframes explanationReveal {
-    from {
-        opacity: 0;
-
-        transform: translateY(-8px);
-    }
-
-    to {
-        opacity: 1;
-
-        transform: translateY(0);
-    }
-}
 
 #explanation h3 {
-    margin-bottom: 10px;
 
-    color: #4338ca;
+    margin:
+        0 0 10px;
+
+    color:
+        #4338ca;
 
     font-size: 16px;
 
     font-weight: 650;
 }
 
+
 #explanation-text {
-    color: #475569;
+
+    color:
+        #475569;
 
     font-size: 14px;
 
@@ -862,11 +1048,34 @@ main {
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   EMOJI REACTION OVERLAY
-   ========================================================= */
+
+@keyframes explanationReveal {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-8px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* ============================================================
+   EMOJI REACTION
+   ============================================================ */
 
 .reaction-container {
+
     position: fixed;
 
     inset: 0;
@@ -881,256 +1090,328 @@ main {
     z-index: 99999;
 }
 
-/* Happy center message */
+
+/* ============================================================
+   HAPPY CENTER
+   ============================================================ */
+
 .reaction-container::before {
-    content: "✨ 🎉 👏 🥳 🎊 ✨";
+
+    content:
+        "✨ 🎉 👏 🥳 🎊 ✨";
 
     position: absolute;
 
     top: 50%;
     left: 50%;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
 
-    font-size: clamp(30px, 5vw, 65px);
+    font-size:
+        clamp(
+            30px,
+            5vw,
+            65px
+        );
 
     white-space: nowrap;
 
     opacity: 0;
 
     animation:
-        centerCelebration 1.8s ease forwards;
-
-    filter:
-        drop-shadow(
-            0 8px 18px rgba(79, 70, 229, 0.18)
-        );
+        centerCelebration
+        1.8s
+        ease
+        forwards;
 }
 
-/* Sad center message */
+
+/* ============================================================
+   SAD CENTER
+   ============================================================ */
+
 .reaction-container.sad::before {
-    content: "😢 😞 🥺 💔 😔";
 
-    animation:
-        centerSadReaction 1.6s ease forwards;
+    content:
+        "😢 😞 🥺 💔 😔";
 }
+
 
 @keyframes centerCelebration {
+
     0% {
+
         opacity: 0;
 
         transform:
-            translate(-50%, -50%)
+            translate(
+                -50%,
+                -50%
+            )
             scale(0.4);
     }
 
     20% {
+
         opacity: 1;
 
         transform:
-            translate(-50%, -50%)
+            translate(
+                -50%,
+                -50%
+            )
             scale(1.1);
     }
 
     55% {
+
         opacity: 1;
 
         transform:
-            translate(-50%, -50%)
+            translate(
+                -50%,
+                -50%
+            )
             scale(1);
     }
 
     100% {
+
         opacity: 0;
 
         transform:
-            translate(-50%, -50%)
+            translate(
+                -50%,
+                -50%
+            )
             scale(1.3);
     }
+
 }
 
-@keyframes centerSadReaction {
-    0% {
-        opacity: 0;
 
-        transform:
-            translate(-50%, -50%)
-            scale(0.6);
-    }
-
-    20% {
-        opacity: 1;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.05);
-    }
-
-    60% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.15);
-    }
-}
-
-/* =========================================================
+/* ============================================================
    FLOATING EMOJIS
-   ========================================================= */
+   ============================================================ */
 
 .reaction-emoji {
+
     position: absolute;
 
-    left: var(--start-left);
+    left:
+        var(--start-left);
 
-    bottom: -70px;
+    bottom:
+        -70px;
 
-    font-size: var(--emoji-size);
+    font-size:
+        var(--emoji-size);
 
     line-height: 1;
 
     opacity: 0;
 
     animation:
-        emojiFly
-        var(--duration)
-        cubic-bezier(0.22, 0.61, 0.36, 1)
-        var(--delay)
-        forwards;
 
-    transform-origin: center;
+        emojiFly
+
+        var(--duration)
+
+        cubic-bezier(
+            0.22,
+            0.61,
+            0.36,
+            1
+        )
+
+        var(--delay)
+
+        forwards;
 
     will-change:
         transform,
         opacity;
 }
 
+
 @keyframes emojiFly {
+
     0% {
+
         opacity: 0;
 
         transform:
+
             translate3d(
                 0,
                 0,
                 0
             )
+
             rotate(0deg)
+
             scale(0.5);
     }
 
     10% {
+
         opacity: 1;
     }
 
     50% {
+
         opacity: 1;
 
         transform:
+
             translate3d(
                 var(--horizontal),
                 -50vh,
                 0
             )
-            rotate(var(--rotation))
+
+            rotate(
+                var(--rotation)
+            )
+
             scale(1);
     }
 
     100% {
+
         opacity: 0;
 
         transform:
+
             translate3d(
-                calc(var(--horizontal) * 1.4),
+                calc(
+                    var(--horizontal) * 1.4
+                ),
                 -115vh,
                 0
             )
-            rotate(calc(var(--rotation) * 1.5))
+
+            rotate(
+                calc(
+                    var(--rotation) * 1.5
+                )
+            )
+
             scale(0.8);
     }
+
 }
 
-/* =========================================================
+
+/* ============================================================
    FOOTER
-   ========================================================= */
+   ============================================================ */
 
 footer {
+
     width: 100%;
 
-    padding: 24px 20px 30px;
+    padding:
+        24px 20px 30px;
 
     text-align: center;
 
-    color: #64748b;
+    color:
+        #64748b;
 
     font-size: 12px;
 
     font-weight: 400;
 }
 
+
 footer p {
+
+    margin: 0;
+
     opacity: 0.85;
 }
 
-/* =========================================================
-   FOCUS / ACCESSIBILITY
-   ========================================================= */
+
+/* ============================================================
+   FOCUS
+   ============================================================ */
 
 button:focus-visible,
 label:focus-visible {
-    outline: 3px solid rgba(99, 102, 241, 0.35);
+
+    outline:
+        3px solid
+        rgba(99, 102, 241, 0.35);
 
     outline-offset: 3px;
 }
 
-/* =========================================================
+
+/* ============================================================
    TABLET
-   ========================================================= */
+   ============================================================ */
 
 @media (max-width: 900px) {
+
     main {
-        width: min(94%, 760px);
+
+        width: 100%;
 
         margin-top: 28px;
+
+        padding:
+            0 20px;
     }
 
+
     .quiz-layout {
+
         grid-template-columns: 1fr;
 
         gap: 18px;
     }
 
+
     .question-panel,
     .options-panel {
+
         padding: 24px;
     }
 
+
     #question {
+
         font-size: 17px;
 
         line-height: 1.65;
     }
+
 }
 
-/* =========================================================
+
+/* ============================================================
    MOBILE
-   ========================================================= */
+   ============================================================ */
 
 @media (max-width: 600px) {
+
     header {
-        padding: 15px 18px;
+
+        padding:
+            15px 18px;
     }
 
+
     .header-content {
+
         gap: 11px;
     }
 
+
     .logo {
+
         width: 42px;
         height: 42px;
 
@@ -1139,58 +1420,50 @@ label:focus-visible {
         border-radius: 12px;
     }
 
+
     .header-content h1 {
+
         font-size: 21px;
     }
 
+
     .header-content p {
+
         font-size: 11px;
     }
+
 
     main {
-        width: calc(100% - 24px);
 
-        margin: 22px auto 35px;
+        width: 100%;
+
+        margin:
+            22px auto 35px;
+
+        padding:
+            0 12px;
     }
 
-    .question-header {
-        margin-bottom: 12px;
-
-        flex-wrap: wrap;
-    }
-
-    #question-id,
-    #topic {
-        font-size: 11px;
-
-        min-height: 27px;
-
-        padding: 4px 10px;
-    }
-
-    .quiz-layout {
-        gap: 14px;
-    }
 
     .question-panel,
     .options-panel {
+
         padding: 20px;
 
         border-radius: 18px;
     }
 
+
     .panel-label {
+
         margin-bottom: 14px;
 
         font-size: 10px;
     }
 
-    /*
-       Mobile question:
-       smaller + regular weight
-    */
 
     #question {
+
         font-size: 16px;
 
         line-height: 1.6;
@@ -1198,12 +1471,17 @@ label:focus-visible {
         font-weight: 400;
     }
 
+
     #options {
+
         gap: 10px;
     }
 
+
     .option label {
-        padding: 13px;
+
+        padding:
+            13px;
 
         gap: 10px;
 
@@ -1212,68 +1490,87 @@ label:focus-visible {
         line-height: 1.5;
     }
 
+
     .option-letter {
+
         width: 28px;
         height: 28px;
 
         font-size: 12px;
     }
 
+
     #explanation {
+
         padding: 18px;
 
         border-radius: 15px;
     }
 
+
     #explanation-text {
+
         font-size: 13.5px;
     }
 
+
     .reaction-container::before {
+
         font-size: 32px;
     }
 
-    .reaction-emoji {
-        font-size: var(--emoji-size);
-    }
 }
 
-/* =========================================================
+
+/* ============================================================
    VERY SMALL SCREENS
-   ========================================================= */
+   ============================================================ */
 
 @media (max-width: 380px) {
+
     .question-panel,
     .options-panel {
+
         padding: 17px;
     }
 
+
     #question {
+
         font-size: 15.5px;
 
         line-height: 1.58;
     }
 
+
     .option label {
+
         font-size: 13.5px;
 
         padding: 12px;
     }
+
 }
 
-/* =========================================================
+
+/* ============================================================
    REDUCED MOTION
-   ========================================================= */
+   ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
-        scroll-behavior: auto !important;
 
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
+        animation-duration:
+            0.01ms !important;
 
-        transition-duration: 0.01ms !important;
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            0.01ms !important;
     }
+
 }
