@@ -2,227 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>AIBrainBox</title>
 
-    <title>AI BrainBox | Senior AI Engineer Quiz</title>
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- AI BACKGROUND -->
-    <div class="ai-background">
+    <header>
+        <h1>🧠 AIBrainBox</h1>
+        <p>AI Questions & Practice</p>
+    </header>
 
-        <div class="ai-glow glow-one"></div>
-        <div class="ai-glow glow-two"></div>
-        <div class="ai-glow glow-three"></div>
+    <main>
 
-        <div class="ai-node node-1">🧠</div>
-        <div class="ai-node node-2">🤖</div>
-        <div class="ai-node node-3">⚡</div>
-        <div class="ai-node node-4">🔗</div>
-        <div class="ai-node node-5">💡</div>
-        <div class="ai-node node-6">◉</div>
-
-    </div>
-
-
-    <!-- MAIN APP -->
-    <main class="app-container">
-
-        <!-- HEADER -->
-        <header class="app-header">
-
-            <div class="brand">
-
-                <div class="brand-icon">
-                    🧠
-                </div>
-
-                <div class="brand-text">
-
-                    <h1>
-                        AI BrainBox
-                    </h1>
-
-                    <p>
-                        Senior AI Engineer Challenge
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="ai-tags">
-
-                <span>LLM</span>
-                <span>RAG</span>
-                <span>Agents</span>
-                <span>MLOps</span>
-
-            </div>
-
-        </header>
-
-
-        <!-- LOADING -->
-        <div
-            id="loading"
-            class="loading"
-        >
-
-            <div class="loading-brain">
-                🧠
-            </div>
-
-            <p>
-                Loading AI challenge...
-            </p>
-
+        <div id="loading">
+            Loading question...
         </div>
 
+        <div id="error" class="hidden"></div>
 
-        <!-- ERROR -->
-        <div
-            id="error"
-            class="error hidden"
-        ></div>
+        <div id="question-container" class="hidden">
 
-
-        <!-- QUESTION CONTAINER -->
-        <section
-            id="question-container"
-            class="question-container hidden"
-        >
-
-            <!-- QUESTION HEADER -->
-            <div class="question-meta">
-
-                <div
-                    id="question-id"
-                    class="question-id"
-                ></div>
-
-                <div
-                    id="topic"
-                    class="topic"
-                ></div>
-
+            <div class="question-header">
+                <span id="question-id"></span>
+                <span id="topic"></span>
             </div>
 
+            <div class="quiz-layout">
 
-            <!-- QUESTION CARD -->
-            <div class="question-card">
+                <!-- LEFT: QUESTION -->
+                <div class="question-panel">
 
-                <div class="question-label">
-                    <span>AI ENGINEERING</span>
-                    <span>⚡ CHALLENGE</span>
-                </div>
-
-
-                <h2 id="question"></h2>
-
-
-                <!-- OPTIONS -->
-                <div
-                    id="options"
-                    class="options"
-                ></div>
-
-
-                <!-- SUBMIT -->
-                <button
-                    id="submit-btn"
-                    class="submit-btn"
-                    onclick="submitAnswer()"
-                >
-                    <span>Check Answer</span>
-                    <span class="button-icon">🚀</span>
-                </button>
-
-
-                <!-- RESULT -->
-                <div
-                    id="result"
-                    class="result"
-                ></div>
-
-
-                <!-- EXPLANATION -->
-                <div
-                    id="explanation"
-                    class="explanation hidden"
-                >
-
-                    <div class="explanation-header">
-                        <span>🧠</span>
-                        <span>AI ENGINEER INSIGHT</span>
+                    <div class="panel-label">
+                        🧠 QUESTION
                     </div>
 
-                    <div
-                        id="explanation-text"
-                        class="explanation-text"
-                    ></div>
+                    <div id="question"></div>
+
+                </div>
+
+                <!-- RIGHT: OPTIONS -->
+                <div class="options-panel">
+
+                    <div class="panel-label">
+                        🤖 SELECT YOUR ANSWER
+                    </div>
+
+                    <div id="options"></div>
+
+                    <button id="submit-btn" onclick="submitAnswer()">
+                        Check Answer 🚀
+                    </button>
 
                 </div>
 
             </div>
 
+            <!-- RESULT -->
+            <div id="result"></div>
+
+            <!-- EXPLANATION -->
+            <div id="explanation" class="hidden">
+
+                <h3>💡 Explanation</h3>
+
+                <div id="explanation-text"></div>
+
+            </div>
+
+            <!-- SHOW EXPLANATION -->
+            <button id="show-explanation-btn" class="hidden" onclick="toggleExplanation()">
+                💡 Show Explanation
+            </button>
 
             <!-- COPY LINK -->
-            <button
-                id="copy-btn"
-                class="copy-btn"
-                onclick="copyLink()"
-            >
+            <button id="copy-btn" onclick="copyLink()">
                 🔗 Copy Question Link
             </button>
 
-
-            <!-- AI FOOTER -->
-            <div class="ai-footer">
-
-                <span>🧠 Think like an AI Engineer</span>
-
-                <span>•</span>
-
-                <span>⚙️ Design for production</span>
-
-                <span>•</span>
-
-                <span>🚀 Build for scale</span>
-
-            </div>
-
-        </section>
+        </div>
 
     </main>
 
+    <footer>
+        <p>🧠 AIBrainBox • AI Questions & Practice</p>
+    </footer>
 
     <script src="app.js"></script>
 
