@@ -3,36 +3,66 @@ let currentQuestion = null;
 
 
 // ============================================================
-// LOAD QUESTIONS FROM CSV
+// LOAD QUESTIONS
 // ============================================================
 
 async function loadQuestions() {
+
     try {
-        const response = await fetch("xi-questions.csv");
+
+        const response =
+            await fetch("xi-questions.csv");
+
 
         if (!response.ok) {
-            throw new Error("Could not load xi-questions.csv");
+
+            throw new Error(
+                "Could not load xi-questions.csv"
+            );
+
         }
 
-        const csvText = await response.text();
 
-        questions = parseCSV(csvText);
+        const csvText =
+            await response.text();
+
+
+        questions =
+            parseCSV(csvText);
+
 
         if (questions.length === 0) {
-            throw new Error("No questions found in the CSV file.");
+
+            throw new Error(
+                "No questions found in the CSV file."
+            );
+
         }
+
 
         loadQuestion();
 
-    } catch (error) {
-        document.getElementById("loading").classList.add("hidden");
+    }
 
-        const errorBox = document.getElementById("error");
+    catch (error) {
 
-        errorBox.classList.remove("hidden");
+        document
+            .getElementById("loading")
+            .classList.add("hidden");
+
+
+        const errorBox =
+            document.getElementById("error");
+
+
+        errorBox.classList.remove(
+            "hidden"
+        );
+
 
         errorBox.innerText =
             "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
+
 
         console.error(error);
     }
@@ -48,94 +78,162 @@ function parseCSV(text) {
     const rows = [];
 
     let row = [];
+
     let cell = "";
+
     let insideQuotes = false;
 
-    for (let i = 0; i < text.length; i++) {
 
-        const char = text[i];
-        const nextChar = text[i + 1];
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
 
-        if (char === '"' && insideQuotes && nextChar === '"') {
+        const char =
+            text[i];
+
+        const nextChar =
+            text[i + 1];
+
+
+        if (
+            char === '"' &&
+            insideQuotes &&
+            nextChar === '"'
+        ) {
 
             cell += '"';
+
             i++;
 
-        } else if (char === '"') {
+        }
 
-            insideQuotes = !insideQuotes;
 
-        } else if (char === "," && !insideQuotes) {
+        else if (
+            char === '"'
+        ) {
 
-            row.push(cell);
-            cell = "";
+            insideQuotes =
+                !insideQuotes;
 
-        } else if (
-            (char === "\n" || char === "\r") &&
+        }
+
+
+        else if (
+            char === "," &&
             !insideQuotes
         ) {
 
-            if (char === "\r" && nextChar === "\n") {
+            row.push(cell);
+
+            cell = "";
+
+        }
+
+
+        else if (
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                nextChar === "\n"
+            ) {
+
                 i++;
             }
 
+
             row.push(cell);
+
 
             if (
                 row.some(
-                    value => value.trim() !== ""
+                    value =>
+                        value.trim() !== ""
                 )
             ) {
+
                 rows.push(row);
             }
 
+
             row = [];
+
             cell = "";
 
-        } else {
+        }
+
+
+        else {
 
             cell += char;
         }
     }
 
-    if (cell !== "" || row.length > 0) {
+
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
 
         row.push(cell);
 
+
         if (
             row.some(
-                value => value.trim() !== ""
+                value =>
+                    value.trim() !== ""
             )
         ) {
+
             rows.push(row);
         }
     }
 
-    if (rows.length === 0) {
+
+    if (
+        rows.length === 0
+    ) {
+
         return [];
     }
 
-    const headers = rows[0].map(
-        header =>
-            header
-                .trim()
-                .toLowerCase()
-    );
 
-    return rows.slice(1).map(row => {
-
-        const question = {};
-
-        headers.forEach(
-            (header, index) => {
-
-                question[header] =
-                    row[index] || "";
-            }
+    const headers =
+        rows[0].map(
+            header =>
+                header
+                    .trim()
+                    .toLowerCase()
         );
 
-        return question;
-    });
+
+    return rows
+        .slice(1)
+        .map(row => {
+
+            const question = {};
+
+
+            headers.forEach(
+                (header, index) => {
+
+                    question[header] =
+                        row[index] || "";
+
+                }
+            );
+
+
+            return question;
+
+        });
 }
 
 
@@ -150,7 +248,10 @@ function loadQuestion() {
             window.location.search
         );
 
-    const id = params.get("id");
+
+    const id =
+        params.get("id");
+
 
     if (!id) {
 
@@ -161,13 +262,19 @@ function loadQuestion() {
         return;
     }
 
+
     currentQuestion =
         questions.find(
             q =>
                 q.id &&
-                q.id.trim().toLowerCase() ===
-                id.trim().toLowerCase()
+                q.id
+                    .trim()
+                    .toLowerCase() ===
+                id
+                    .trim()
+                    .toLowerCase()
         );
+
 
     if (!currentQuestion) {
 
@@ -177,6 +284,7 @@ function loadQuestion() {
 
         return;
     }
+
 
     displayQuestion();
 }
@@ -192,29 +300,39 @@ function displayQuestion() {
         .getElementById("loading")
         .classList.add("hidden");
 
+
     document
         .getElementById("question-container")
         .classList.remove("hidden");
+
 
     document
         .getElementById("question-id")
         .innerText =
         currentQuestion.id || "";
 
+
     document
         .getElementById("topic")
         .innerText =
         currentQuestion.topic || "";
+
 
     document
         .getElementById("question")
         .innerText =
         currentQuestion.question || "";
 
-    const optionsContainer =
-        document.getElementById("options");
 
-    optionsContainer.innerHTML = "";
+    const optionsContainer =
+        document.getElementById(
+            "options"
+        );
+
+
+    optionsContainer.innerHTML =
+        "";
+
 
     const optionLetters = [
         "A",
@@ -223,116 +341,138 @@ function displayQuestion() {
         "D"
     ];
 
-    optionLetters.forEach(letter => {
 
-        const option =
-            document.createElement("label");
+    optionLetters.forEach(
+        letter => {
 
-        option.className = "option";
+            const option =
+                document.createElement(
+                    "label"
+                );
 
-        const radio =
-            document.createElement("input");
 
-        radio.type = "radio";
-        radio.name = "answer";
-        radio.value = letter;
+            option.className =
+                "option";
 
-        const letterSpan =
-            document.createElement("span");
 
-        letterSpan.className =
-            "option-letter";
+            const radio =
+                document.createElement(
+                    "input"
+                );
 
-        letterSpan.innerText =
-            letter + ".";
 
-        const textSpan =
-            document.createElement("span");
+            radio.type =
+                "radio";
 
-        textSpan.className =
-            "option-text";
+            radio.name =
+                "answer";
 
-        textSpan.innerText =
-            currentQuestion[
-                letter.toLowerCase()
-            ] || "";
+            radio.value =
+                letter;
 
-        option.appendChild(radio);
-        option.appendChild(letterSpan);
-        option.appendChild(textSpan);
 
-        optionsContainer.appendChild(option);
+            const letterSpan =
+                document.createElement(
+                    "span"
+                );
 
-        radio.addEventListener(
-            "change",
-            () => {
 
-                document
-                    .querySelectorAll(".option")
-                    .forEach(item => {
+            letterSpan.className =
+                "option-letter";
 
-                        item.classList.remove(
-                            "selected",
-                            "correct-answer",
-                            "wrong-answer"
-                        );
-                    });
 
-                option.classList.add("selected");
+            letterSpan.innerText =
+                letter + ".";
 
-                // Clear previous result when choosing another answer
-                const result =
-                    document.getElementById("result");
 
-                result.innerText = "";
-                result.className = "";
+            const textSpan =
+                document.createElement(
+                    "span"
+                );
 
-                // Hide explanation until answer is checked
-                document
-                    .getElementById("explanation")
-                    .classList.add("hidden");
 
-                document
-                    .getElementById("show-explanation-btn")
-                    .classList.add("hidden");
-            }
-        );
-    });
+            textSpan.className =
+                "option-text";
+
+
+            textSpan.innerText =
+                currentQuestion[
+                    letter.toLowerCase()
+                ] || "";
+
+
+            option.appendChild(
+                radio
+            );
+
+
+            option.appendChild(
+                letterSpan
+            );
+
+
+            option.appendChild(
+                textSpan
+            );
+
+
+            optionsContainer.appendChild(
+                option
+            );
+
+
+            // ====================================================
+            // IMMEDIATE ANSWER CHECK
+            // ====================================================
+
+            radio.addEventListener(
+                "change",
+                () => {
+
+                    checkAnswer(
+                        radio,
+                        option
+                    );
+
+                }
+            );
+
+        }
+    );
+
 
     resetAnswerState();
 }
 
 
 // ============================================================
-// RESET ANSWER STATE
+// CHECK ANSWER IMMEDIATELY
 // ============================================================
 
-function resetAnswerState() {
+function checkAnswer(
+    selected,
+    selectedOption
+) {
 
-    const result =
-        document.getElementById("result");
+    const userAnswer =
+        selected.value
+            .trim()
+            .toUpperCase();
 
-    result.innerText = "";
-    result.className = "";
 
-    const explanation =
-        document.getElementById("explanation");
+    const correctAnswer =
+        (
+            currentQuestion[
+                "correct answer"
+            ] || ""
+        )
+            .trim()
+            .toUpperCase();
 
-    explanation.classList.add("hidden");
 
-    const explanationText =
-        document.getElementById(
-            "explanation-text"
-        );
-
-    explanationText.innerText = "";
-
-    const explanationButton =
-        document.getElementById(
-            "show-explanation-btn"
-        );
-
-    explanationButton.classList.add("hidden");
+    // ----------------------------------------------------------
+    // Remove previous visual states
+    // ----------------------------------------------------------
 
     document
         .querySelectorAll(".option")
@@ -343,134 +483,146 @@ function resetAnswerState() {
                 "correct-answer",
                 "wrong-answer"
             );
+
         });
-}
 
 
-// ============================================================
-// SUBMIT ANSWER
-// ============================================================
+    // ----------------------------------------------------------
+    // CORRECT
+    // ----------------------------------------------------------
 
-function submitAnswer() {
+    if (
+        userAnswer ===
+        correctAnswer
+    ) {
 
-    const selected =
-        document.querySelector(
-            'input[name="answer"]:checked'
+        selectedOption.classList.add(
+            "correct-answer"
         );
 
-    const result =
-        document.getElementById("result");
-
-    if (!selected) {
-
-        result.className = "incorrect";
-
-        result.innerText =
-            "🤔 Please select an answer first.";
-
-        return;
-    }
-
-    const userAnswer =
-        selected.value
-            .trim()
-            .toUpperCase();
-
-    const correctAnswer =
-        (
-            currentQuestion["correct answer"] ||
-            ""
-        )
-        .trim()
-        .toUpperCase();
-
-    const selectedOption =
-        selected.closest(".option");
-
-    // Remove previous answer states
-    document
-        .querySelectorAll(".option")
-        .forEach(option => {
-
-            option.classList.remove(
-                "correct-answer",
-                "wrong-answer"
-            );
-        });
-
-
-    // ========================================================
-    // CORRECT ANSWER
-    // ========================================================
-
-    if (userAnswer === correctAnswer) {
-
-        selectedOption.classList.remove("selected");
-        selectedOption.classList.add("correct-answer");
-
-        result.className = "correct";
-
-        result.innerText =
-            "🎉👏👏 Congratulations! Correct! 🥳🎊✨🚀🤖🧠💡⭐🔥";
 
         showCorrectCelebration();
+
     }
 
 
-    // ========================================================
-    // WRONG ANSWER
-    // ========================================================
+    // ----------------------------------------------------------
+    // WRONG
+    // ----------------------------------------------------------
 
     else {
 
-        selectedOption.classList.remove("selected");
-        selectedOption.classList.add("wrong-answer");
+        selectedOption.classList.add(
+            "wrong-answer"
+        );
 
-        // Highlight correct answer in green
+
         const correctOption =
             document.querySelector(
                 `input[name="answer"][value="${correctAnswer}"]`
             );
 
+
         if (correctOption) {
 
             correctOption
                 .closest(".option")
-                .classList.add("correct-answer");
+                .classList.add(
+                    "correct-answer"
+                );
+
         }
 
-        result.className = "incorrect";
-
-        result.innerText =
-            "😢😞 Not quite! 💔🥺😔 Try again! 😕";
 
         showWrongReaction();
+
     }
 
 
-    // ========================================================
+    // ----------------------------------------------------------
     // PREPARE EXPLANATION
-    // ========================================================
+    // ----------------------------------------------------------
 
     const explanationValue =
         currentQuestion.explanation ||
         currentQuestion.explaination ||
         "";
 
+
     document.getElementById(
         "explanation-text"
     ).innerText =
         explanationValue;
 
-    // Show "Show Explanation" button
-    document
-        .getElementById("show-explanation-btn")
-        .classList.remove("hidden");
 
-    // Keep explanation hidden initially
     document
-        .getElementById("explanation")
-        .classList.add("hidden");
+        .getElementById(
+            "show-explanation-btn"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "explanation"
+        )
+        .classList.add(
+            "hidden"
+        );
+}
+
+
+// ============================================================
+// RESET ANSWER STATE
+// ============================================================
+
+function resetAnswerState() {
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    result.innerText =
+        "";
+
+
+    result.className =
+        "";
+
+
+    document
+        .getElementById(
+            "explanation"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "show-explanation-btn"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    document
+        .querySelectorAll(".option")
+        .forEach(option => {
+
+            option.classList.remove(
+                "selected",
+                "correct-answer",
+                "wrong-answer"
+            );
+
+        });
 }
 
 
@@ -481,28 +633,45 @@ function submitAnswer() {
 function toggleExplanation() {
 
     const explanation =
-        document.getElementById("explanation");
+        document.getElementById(
+            "explanation"
+        );
+
 
     const button =
         document.getElementById(
             "show-explanation-btn"
         );
 
-    if (explanation.classList.contains("hidden")) {
 
-        explanation.classList.remove("hidden");
+    if (
+        explanation.classList.contains(
+            "hidden"
+        )
+    ) {
+
+        explanation.classList.remove(
+            "hidden"
+        );
+
 
         button.innerText =
             "🙈 Hide Explanation";
+
 
         explanation.scrollIntoView({
             behavior: "smooth",
             block: "nearest"
         });
 
-    } else {
+    }
 
-        explanation.classList.add("hidden");
+    else {
+
+        explanation.classList.add(
+            "hidden"
+        );
+
 
         button.innerText =
             "💡 Show Explanation";
@@ -511,7 +680,7 @@ function toggleExplanation() {
 
 
 // ============================================================
-// HAPPY CELEBRATION
+// CORRECT ANSWER CELEBRATION
 // ============================================================
 
 function showCorrectCelebration() {
@@ -537,12 +706,16 @@ function showCorrectCelebration() {
         "🚀"
     ];
 
-    createEmojiBurst(emojis);
+
+    createEmojiBurst(
+        emojis,
+        false
+    );
 }
 
 
 // ============================================================
-// SAD REACTION
+// WRONG ANSWER REACTION
 // ============================================================
 
 function showWrongReaction() {
@@ -558,7 +731,11 @@ function showWrongReaction() {
         "🥲"
     ];
 
-    createEmojiBurst(emojis);
+
+    createEmojiBurst(
+        emojis,
+        true
+    );
 }
 
 
@@ -566,116 +743,145 @@ function showWrongReaction() {
 // EMOJI BURST
 // ============================================================
 
-function createEmojiBurst(emojis) {
+function createEmojiBurst(
+    emojis,
+    isSad = false
+) {
+
+    // Remove any previous reaction
+    // before starting a new one.
+
+    document
+        .querySelectorAll(
+            ".reaction-container"
+        )
+        .forEach(
+            container =>
+                container.remove()
+        );
+
 
     const container =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     container.className =
         "reaction-container";
 
-    document.body.appendChild(container);
 
-    emojis.forEach((emoji, index) => {
+    // IMPORTANT:
+    // Sad class ONLY for wrong answers.
 
-        const element =
-            document.createElement("span");
+    if (isSad) {
 
-        element.className =
-            "reaction-emoji";
-
-        element.innerText = emoji;
-
-        const left =
-            10 + Math.random() * 80;
-
-        const delay =
-            Math.random() * 0.25;
-
-        const duration =
-            1.8 + Math.random() * 1.4;
-
-        const rotation =
-            -35 + Math.random() * 70;
-
-        element.style.left =
-            left + "%";
-
-        element.style.animationDelay =
-            delay + "s";
-
-        element.style.animationDuration =
-            duration + "s";
-
-        element.style.setProperty(
-            "--rotation",
-            rotation + "deg"
-        );
-
-        element.style.fontSize =
-            (1.8 + Math.random() * 1.8) + "rem";
-
-        container.appendChild(element);
-    });
-
-    setTimeout(() => {
-
-        container.remove();
-
-    }, 4000);
-}
-
-
-// ============================================================
-// COPY QUESTION LINK
-// ============================================================
-
-async function copyLink() {
-
-    const button =
-        document.getElementById(
-            "copy-btn"
-        );
-
-    try {
-
-        await navigator.clipboard.writeText(
-            window.location.href
-        );
-
-        button.innerText =
-            "✓ Link Copied!";
-
-        setTimeout(
-            () => {
-
-                button.innerText =
-                    "🔗 Copy Question Link";
-
-            },
-            2000
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Unable to copy link:",
-            error
-        );
-
-        button.innerText =
-            "Unable to copy link";
-
-        setTimeout(
-            () => {
-
-                button.innerText =
-                    "🔗 Copy Question Link";
-
-            },
-            2000
+        container.classList.add(
+            "sad"
         );
     }
+
+
+    document.body.appendChild(
+        container
+    );
+
+
+    emojis.forEach(
+        emoji => {
+
+            const element =
+                document.createElement(
+                    "span"
+                );
+
+
+            element.className =
+                "reaction-emoji";
+
+
+            element.innerText =
+                emoji;
+
+
+            const left =
+                5 +
+                Math.random() * 90;
+
+
+            const delay =
+                Math.random() * 0.25;
+
+
+            const duration =
+                1.8 +
+                Math.random() * 1.4;
+
+
+            const rotation =
+                -35 +
+                Math.random() * 70;
+
+
+            const horizontal =
+                -120 +
+                Math.random() * 240;
+
+
+            element.style.left =
+                left + "%";
+
+
+            element.style.animationDelay =
+                delay + "s";
+
+
+            element.style.animationDuration =
+                duration + "s";
+
+
+            element.style.fontSize =
+                (
+                    1.8 +
+                    Math.random() * 1.8
+                ) +
+                "rem";
+
+
+            element.style.setProperty(
+                "--rotation",
+                rotation + "deg"
+            );
+
+
+            element.style.setProperty(
+                "--horizontal",
+                horizontal + "px"
+            );
+
+
+            container.appendChild(
+                element
+            );
+
+        }
+    );
+
+
+    setTimeout(
+        () => {
+
+            if (
+                container &&
+                container.parentNode
+            ) {
+
+                container.remove();
+            }
+
+        },
+        4000
+    );
 }
 
 
@@ -687,16 +893,30 @@ function showError(message) {
 
     document
         .getElementById("loading")
-        .classList.add("hidden");
+        .classList.add(
+            "hidden"
+        );
+
 
     document
-        .getElementById("question-container")
-        .classList.add("hidden");
+        .getElementById(
+            "question-container"
+        )
+        .classList.add(
+            "hidden"
+        );
+
 
     const errorBox =
-        document.getElementById("error");
+        document.getElementById(
+            "error"
+        );
 
-    errorBox.classList.remove("hidden");
+
+    errorBox.classList.remove(
+        "hidden"
+    );
+
 
     errorBox.innerText =
         message;
@@ -704,7 +924,7 @@ function showError(message) {
 
 
 // ============================================================
-// LOAD APPLICATION
+// START APPLICATION
 // ============================================================
 
 loadQuestions();
