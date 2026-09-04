@@ -1,65 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AIBrainBox</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <meta
+        name="description"
+        content="AIBrainBox - AI Questions & Practice"
+    >
+
+    <title>AIBrainBox | AI Questions & Practice</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
     <header>
-        <h1>🧠 AIBrainBox</h1>
-        <p>AI Questions & Practice</p>
+
+        <div class="header-content">
+
+            <h1>
+                🧠 AIBrainBox
+            </h1>
+
+            <p>
+                AI Questions &amp; Practice
+            </p>
+
+        </div>
+
     </header>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
 
     <main>
 
-        <div id="loading">
+        <!-- Loading State -->
+
+        <div
+            id="loading"
+            class="status-message"
+        >
             Loading question...
         </div>
 
-        <div id="error" class="hidden">
+
+        <!-- Error State -->
+
+        <div
+            id="error"
+            class="hidden"
+            role="alert"
+        >
         </div>
 
-        <div id="question-container" class="hidden">
+
+        <!-- =================================================
+             QUESTION CONTAINER
+             ================================================= -->
+
+        <section
+            id="question-container"
+            class="hidden"
+            aria-label="Quiz question"
+        >
+
+
+            <!-- Question Header -->
 
             <div class="question-header">
+
                 <span id="question-id"></span>
+
                 <span id="topic"></span>
+
             </div>
 
-            <div id="question"></div>
 
-            <div id="options"></div>
+            <!-- Question -->
 
-            <button id="submit-btn" onclick="submitAnswer()">
+            <div
+                id="question"
+                class="question-card"
+            >
+            </div>
+
+
+            <!-- =================================================
+                 ANSWER OPTIONS
+                 ================================================= -->
+
+            <div
+                id="options"
+                role="radiogroup"
+                aria-label="Answer options"
+            >
+            </div>
+
+
+            <!-- =================================================
+                 SUBMIT BUTTON
+                 ================================================= -->
+
+            <button
+                id="submit-btn"
+                type="button"
+                onclick="submitAnswer()"
+            >
                 Submit Answer
             </button>
 
-            <div id="result"></div>
 
-            <div id="explanation" class="hidden">
-                <h3>Explanation</h3>
-                <div id="explanation-text"></div>
+            <!-- =================================================
+                 RESULT
+                 ================================================= -->
+
+            <div
+                id="result"
+                role="status"
+                aria-live="polite"
+            >
             </div>
 
-            <button id="copy-btn" onclick="copyLink()">
+
+            <!-- =================================================
+                 EXPLANATION
+                 ================================================= -->
+
+            <div
+                id="explanation"
+                class="hidden"
+            >
+
+                <h3>
+                    Explanation
+                </h3>
+
+                <div
+                    id="explanation-text"
+                >
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 COPY QUESTION LINK
+                 ================================================= -->
+
+            <button
+                id="copy-btn"
+                type="button"
+                onclick="copyLink()"
+            >
                 🔗 Copy Question Link
             </button>
 
-        </div>
+
+        </section>
 
     </main>
 
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
     <footer>
-        <p>AIBrainBox</p>
+
+        <p>
+            AIBrainBox
+        </p>
+
     </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
 
     <script src="app.js"></script>
 
 </body>
+
 </html>
