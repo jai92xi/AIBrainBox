@@ -2,7 +2,10 @@ let questions = [];
 let currentQuestion = null;
 
 
-// Load CSV
+// ============================================================
+// LOAD QUESTIONS FROM CSV
+// ============================================================
+
 async function loadQuestions() {
 
     try {
@@ -10,7 +13,7 @@ async function loadQuestions() {
         const response = await fetch("xi-questions.csv");
 
         if (!response.ok) {
-            throw new Error("CSV could not be loaded");
+            throw new Error("Could not load xi-questions.csv");
         }
 
         const csvText = await response.text();
@@ -18,14 +21,12 @@ async function loadQuestions() {
         questions = parseCSV(csvText);
 
         if (questions.length === 0) {
-            throw new Error("No questions found in CSV");
+            throw new Error("No questions found in the CSV file.");
         }
 
         loadQuestion();
 
     } catch (error) {
-
-        console.error(error);
 
         document.getElementById("loading").classList.add("hidden");
 
@@ -34,61 +35,78 @@ async function loadQuestions() {
         errorBox.classList.remove("hidden");
 
         errorBox.innerText =
-            "Unable to load the question database.";
+            "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
+
+        console.error(error);
     }
 }
 
 
-// Robust CSV parser supporting quoted multiline cells
+// ============================================================
+// CSV PARSER
+// ============================================================
+
 function parseCSV(text) {
 
     const rows = [];
 
     let row = [];
     let cell = "";
-
     let insideQuotes = false;
 
     for (let i = 0; i < text.length; i++) {
 
         const char = text[i];
+        const nextChar = text[i + 1];
 
-        if (char === '"') {
+        // Handle escaped quotes: ""
+        if (char === '"' && insideQuotes && nextChar === '"') {
 
-            if (insideQuotes && text[i + 1] === '"') {
+            cell += '"';
 
-                cell += '"';
-
-                i++;
-
-            } else {
-
-                insideQuotes = !insideQuotes;
-            }
+            i++;
 
         }
 
+        // Start / end quoted field
+        else if (char === '"') {
+
+            insideQuotes = !insideQuotes;
+
+        }
+
+        // Comma separates cells
         else if (char === "," && !insideQuotes) {
 
             row.push(cell);
 
             cell = "";
+
         }
 
-        else if ((char === "\n" || char === "\r") && !insideQuotes) {
+        // New row
+        else if (
+            (char === "\n" || char === "\r") &&
+            !insideQuotes
+        ) {
 
-            if (char === "\r" && text[i + 1] === "\n") {
+            if (char === "\r" && nextChar === "\n") {
                 i++;
             }
 
             row.push(cell);
 
-            if (row.some(value => value.trim() !== "")) {
+            if (
+                row.some(
+                    value => value.trim() !== ""
+                )
+            ) {
                 rows.push(row);
             }
 
             row = [];
             cell = "";
+
         }
 
         else {
@@ -98,72 +116,90 @@ function parseCSV(text) {
     }
 
 
-    // Last row
+    // Add final row
     if (cell !== "" || row.length > 0) {
 
         row.push(cell);
 
-        if (row.some(value => value.trim() !== "")) {
+        if (
+            row.some(
+                value => value.trim() !== ""
+            )
+        ) {
             rows.push(row);
         }
     }
 
 
-    if (rows.length < 2) {
+    // No data
+    if (rows.length === 0) {
         return [];
     }
 
 
-    // Headers
-    const headers = rows[0].map(header =>
-        header.trim().toLowerCase()
+    // First row = headers
+    const headers = rows[0].map(
+        header =>
+            header
+                .trim()
+                .toLowerCase()
     );
 
 
-    // Convert rows to objects
+    // Convert rows into objects
     return rows.slice(1).map(row => {
 
         const question = {};
 
-        headers.forEach((header, index) => {
+        headers.forEach(
+            (header, index) => {
 
-            question[header] =
-                row[index] !== undefined
-                    ? row[index].trim()
-                    : "";
-        });
+                question[header] =
+                    row[index] || "";
+            }
+        );
 
         return question;
     });
 }
 
 
-// Find question from URL
+// ============================================================
+// LOAD QUESTION USING URL ID
+// ============================================================
+
 function loadQuestion() {
 
     const params =
-        new URLSearchParams(window.location.search);
+        new URLSearchParams(
+            window.location.search
+        );
 
     const id = params.get("id");
 
 
+    // No ID supplied
     if (!id) {
 
         showError(
-            "No question ID was provided."
+            "No question ID was provided. Please use a question link such as ?id=Xi-00001"
         );
 
         return;
     }
 
 
-    currentQuestion = questions.find(
-        q =>
-            q.id.trim().toLowerCase() ===
-            id.trim().toLowerCase()
-    );
+    // Find question
+    currentQuestion =
+        questions.find(
+            q =>
+                q.id &&
+                q.id.trim().toLowerCase() ===
+                id.trim().toLowerCase()
+        );
 
 
+    // Question not found
     if (!currentQuestion) {
 
         showError(
@@ -178,112 +214,172 @@ function loadQuestion() {
 }
 
 
-// Display question
+// ============================================================
+// DISPLAY QUESTION
+// ============================================================
+
 function displayQuestion() {
 
+    // Hide loading
     document
         .getElementById("loading")
         .classList.add("hidden");
 
 
+    // Show question container
     document
         .getElementById("question-container")
         .classList.remove("hidden");
 
 
+    // Question ID
     document
         .getElementById("question-id")
         .innerText =
-            currentQuestion.id;
+        currentQuestion.id || "";
 
 
+    // Topic
     document
         .getElementById("topic")
         .innerText =
-            currentQuestion.topic;
+        currentQuestion.topic || "";
 
 
+    // Question text
     document
         .getElementById("question")
         .innerText =
-            currentQuestion.question;
+        currentQuestion.question || "";
 
 
+    // Clear previous options
     const optionsContainer =
         document.getElementById("options");
-
 
     optionsContainer.innerHTML = "";
 
 
-    const optionLetters =
-        ["A", "B", "C", "D"];
+    // Answer options
+    const optionLetters = [
+        "A",
+        "B",
+        "C",
+        "D"
+    ];
 
 
-    optionLetters.forEach(letter => {
+    optionLetters.forEach(
+        letter => {
 
-        const label =
-            document.createElement("label");
+            // Create label
+            const option =
+                document.createElement("label");
 
-
-        label.className = "option";
-
-
-        label.innerHTML = `
-
-            <input
-                type="radio"
-                name="answer"
-                value="${letter}"
-            >
-
-            <span class="option-letter">
-                ${letter}
-            </span>
-
-            <span class="option-text">
-                ${escapeHTML(
-                    currentQuestion[
-                        letter.toLowerCase()
-                    ]
-                )}
-            </span>
-
-        `;
+            option.className = "option";
 
 
-        optionsContainer.appendChild(label);
+            // Create radio button
+            const radio =
+                document.createElement("input");
+
+            radio.type = "radio";
+            radio.name = "answer";
+            radio.value = letter;
 
 
-        // Highlight selected option
-        const radio =
-            label.querySelector("input");
+            // Create answer letter
+            const letterSpan =
+                document.createElement("span");
+
+            letterSpan.className =
+                "option-letter";
+
+            letterSpan.innerText =
+                letter + ".";
 
 
-        radio.addEventListener(
-            "change",
-            function () {
+            // Create answer text
+            const textSpan =
+                document.createElement("span");
 
-                document
-                    .querySelectorAll(".option")
-                    .forEach(option =>
-                        option.classList.remove(
-                            "selected"
+            textSpan.className =
+                "option-text";
+
+            textSpan.innerText =
+                currentQuestion[
+                    letter.toLowerCase()
+                ] || "";
+
+
+            // Put everything inside option
+            option.appendChild(radio);
+
+            option.appendChild(letterSpan);
+
+            option.appendChild(textSpan);
+
+
+            // Add option to container
+            optionsContainer.appendChild(option);
+
+
+            // Highlight selected option
+            radio.addEventListener(
+                "change",
+                () => {
+
+                    // Remove selected class
+                    document
+                        .querySelectorAll(
+                            ".option"
                         )
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "selected"
+                                )
+                        );
+
+
+                    // Highlight current option
+                    option.classList.add(
+                        "selected"
                     );
+                }
+            );
+        }
+    );
 
 
-                label.classList.add(
-                    "selected"
-                );
-            }
+    // Reset result
+    const result =
+        document.getElementById("result");
+
+    result.innerText = "";
+    result.className = "";
+
+
+    // Reset explanation
+    const explanation =
+        document.getElementById("explanation");
+
+    explanation.classList.add("hidden");
+
+
+    const explanationText =
+        document.getElementById(
+            "explanation-text"
         );
 
-    });
+    explanationText.innerText = "";
 }
 
 
-// Submit answer
+// ============================================================
+// SUBMIT ANSWER
+// ============================================================
+
 function submitAnswer() {
 
     const selected =
@@ -296,9 +392,11 @@ function submitAnswer() {
         document.getElementById("result");
 
 
+    // No answer selected
     if (!selected) {
 
-        result.className = "incorrect";
+        result.className =
+            "incorrect";
 
         result.innerText =
             "Please select an answer first.";
@@ -307,28 +405,40 @@ function submitAnswer() {
     }
 
 
+    // User answer
     const userAnswer =
-        selected.value.toUpperCase();
+        selected.value
+            .trim()
+            .toUpperCase();
 
 
+    // Correct answer
     const correctAnswer =
-        currentQuestion[
-            "correct answer"
-        ]
+        (
+            currentQuestion["correct answer"] ||
+            ""
+        )
         .trim()
         .toUpperCase();
 
 
-    if (userAnswer === correctAnswer) {
+    // Check answer
+    if (
+        userAnswer === correctAnswer
+    ) {
 
-        result.className = "correct";
+        result.className =
+            "correct";
 
         result.innerText =
             "✓ Correct!";
 
-    } else {
+    }
 
-        result.className = "incorrect";
+    else {
+
+        result.className =
+            "incorrect";
 
         result.innerText =
             "✗ Incorrect. Correct answer: " +
@@ -336,78 +446,136 @@ function submitAnswer() {
     }
 
 
-    document
-        .getElementById("explanation")
-        .classList.remove("hidden");
+    // Show explanation
+    const explanation =
+        document.getElementById(
+            "explanation"
+        );
 
-
-    document
-        .getElementById("explanation-text")
-        .innerText =
-            currentQuestion.explaination || "";
-}
-
-
-// Copy link
-function copyLink() {
-
-    navigator.clipboard.writeText(
-        window.location.href
+    explanation.classList.remove(
+        "hidden"
     );
 
 
-    const button =
-        document.getElementById("copy-btn");
+    /*
+       Support both spellings.
+
+       Preferred:
+       explanation
+
+       Older CSV:
+       explaination
+    */
+
+    const explanationValue =
+        currentQuestion.explanation ||
+        currentQuestion.explaination ||
+        "";
 
 
-    button.innerText =
-        "✓ Link Copied!";
-
-
-    setTimeout(() => {
-
-        button.innerText =
-            "🔗 Copy Question Link";
-
-    }, 2000);
+    document.getElementById(
+        "explanation-text"
+    ).innerText =
+        explanationValue;
 }
 
 
-// Error message
+// ============================================================
+// COPY QUESTION LINK
+// ============================================================
+
+async function copyLink() {
+
+    const button =
+        document.getElementById(
+            "copy-btn"
+        );
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            window.location.href
+        );
+
+
+        button.innerText =
+            "✓ Link Copied!";
+
+
+        setTimeout(
+            () => {
+
+                button.innerText =
+                    "🔗 Copy Question Link";
+
+            },
+            2000
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unable to copy link:",
+            error
+        );
+
+        button.innerText =
+            "Unable to copy link";
+
+
+        setTimeout(
+            () => {
+
+                button.innerText =
+                    "🔗 Copy Question Link";
+
+            },
+            2000
+        );
+    }
+}
+
+
+// ============================================================
+// SHOW ERROR
+// ============================================================
+
 function showError(message) {
 
+    // Hide loading
     document
         .getElementById("loading")
         .classList.add("hidden");
 
 
+    // Hide question
     document
-        .getElementById("question-container")
+        .getElementById(
+            "question-container"
+        )
         .classList.add("hidden");
 
 
+    // Show error
     const errorBox =
-        document.getElementById("error");
+        document.getElementById(
+            "error"
+        );
 
-
-    errorBox.classList.remove("hidden");
-
+    errorBox.classList.remove(
+        "hidden"
+    );
 
     errorBox.innerText =
         message;
 }
 
 
-// Prevent HTML injection
-function escapeHTML(text) {
-
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
+// ============================================================
+// LOAD APPLICATION
+// ============================================================
 
 loadQuestions();
