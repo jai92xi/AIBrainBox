@@ -11,7 +11,7 @@ async function loadQuestions() {
 
 
         if (!response.ok) {
-            throw new Error("Could not load questions.csv");
+            throw new Error("Could not load xi-questions.csv");
         }
 
         const csvText = await response.text();
@@ -29,7 +29,7 @@ async function loadQuestions() {
         errorBox.classList.remove("hidden");
 
         errorBox.innerText =
-            "Unable to load the question database. Please check that questions.csv exists in the repository.";
+            "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
 
         console.error(error);
     }
