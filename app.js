@@ -1,556 +1,859 @@
+let questions = [];
+let currentQuestion = null;
+
+
 // ============================================================
-// DIWALI CRACKER SPARKLES
+// LOAD QUESTIONS FROM CSV
 // ============================================================
 
-let sparkleTimeout = null;
-let sparkleInterval = null;
+async function loadQuestions() {
 
-function showCorrectSparkles() {
+    try {
 
-    stopCorrectSparkles();
+        const response = await fetch("xi-questions.csv");
 
-    const layer = document.createElement("div");
+        if (!response.ok) {
+            throw new Error("Could not load xi-questions.csv");
+        }
 
-    layer.id = "diwali-sparkles";
+        const csvText = await response.text();
 
-    Object.assign(layer.style, {
-        position: "fixed",
-        inset: "0",
-        width: "100vw",
-        height: "100vh",
-        pointerEvents: "none",
-        zIndex: "99999",
-        overflow: "hidden"
-    });
+        questions = parseCSV(csvText);
 
-    document.body.appendChild(layer);
+        if (questions.length === 0) {
+            throw new Error("No questions found in the CSV file.");
+        }
 
-    addDiwaliSparkleStyles();
+        loadQuestion();
 
-    const colors = [
-        "#FFD700",
-        "#FFA500",
-        "#FFF4A3",
-        "#FFFFFF",
-        "#FFCC33",
-        "#FF6B35",
-        "#FF4081",
-        "#B388FF"
+    } catch (error) {
+
+        document
+            .getElementById("loading")
+            .classList.add("hidden");
+
+        const errorBox =
+            document.getElementById("error");
+
+        errorBox.classList.remove("hidden");
+
+        errorBox.innerText =
+            "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
+
+        console.error(error);
+    }
+}
+
+
+// ============================================================
+// CSV PARSER
+// ============================================================
+
+function parseCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+    let cell = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+
+        // Escaped quote
+        if (
+            char === '"' &&
+            insideQuotes &&
+            nextChar === '"'
+        ) {
+
+            cell += '"';
+
+            i++;
+        }
+
+
+        // Opening / closing quote
+        else if (char === '"') {
+
+            insideQuotes = !insideQuotes;
+        }
+
+
+        // Comma
+        else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+
+            cell = "";
+        }
+
+
+        // New line
+        else if (
+            (char === "\n" || char === "\r") &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                nextChar === "\n"
+            ) {
+                i++;
+            }
+
+            row.push(cell);
+
+            if (
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+            ) {
+                rows.push(row);
+            }
+
+            row = [];
+            cell = "";
+        }
+
+
+        else {
+
+            cell += char;
+        }
+    }
+
+
+    // Final row
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(cell);
+
+        if (
+            row.some(
+                value =>
+                    value.trim() !== ""
+            )
+        ) {
+            rows.push(row);
+        }
+    }
+
+
+    if (rows.length === 0) {
+        return [];
+    }
+
+
+    // Headers
+    const headers =
+        rows[0].map(
+            header =>
+                header
+                    .trim()
+                    .toLowerCase()
+        );
+
+
+    // Convert CSV rows to objects
+    return rows
+        .slice(1)
+        .map(row => {
+
+            const question = {};
+
+            headers.forEach(
+                (header, index) => {
+
+                    question[header] =
+                        row[index] || "";
+                }
+            );
+
+            return question;
+        });
+}
+
+
+// ============================================================
+// LOAD QUESTION USING URL ID
+// ============================================================
+
+function loadQuestion() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const id = params.get("id");
+
+
+    if (!id) {
+
+        showError(
+            "No question ID was provided."
+        );
+
+        return;
+    }
+
+
+    currentQuestion =
+        questions.find(
+            q =>
+                q.id &&
+                q.id
+                    .trim()
+                    .toLowerCase() ===
+                id
+                    .trim()
+                    .toLowerCase()
+        );
+
+
+    if (!currentQuestion) {
+
+        showError(
+            "Question not found: " + id
+        );
+
+        return;
+    }
+
+
+    displayQuestion();
+}
+
+
+// ============================================================
+// DISPLAY QUESTION
+// ============================================================
+
+function displayQuestion() {
+
+    document
+        .getElementById("loading")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("question-container")
+        .classList.remove("hidden");
+
+
+    // Question ID
+    document
+        .getElementById("question-id")
+        .innerText =
+        currentQuestion.id || "";
+
+
+    // Topic
+    document
+        .getElementById("topic")
+        .innerText =
+        currentQuestion.topic || "";
+
+
+    // Question
+    document
+        .getElementById("question")
+        .innerText =
+        currentQuestion.question || "";
+
+
+    // Options container
+    const optionsContainer =
+        document.getElementById("options");
+
+    optionsContainer.innerHTML = "";
+
+
+    // A / B / C / D
+    const optionLetters = [
+        "A",
+        "B",
+        "C",
+        "D"
     ];
 
 
-    // --------------------------------------------------------
-    // Create one Diwali-style sparkle burst
-    // --------------------------------------------------------
+    optionLetters.forEach(
+        letter => {
 
-    function createSparkleBurst() {
+            // ------------------------------------------------
+            // OPTION CARD
+            // ------------------------------------------------
 
-        const x = 5 + Math.random() * 90;
-        const y = 8 + Math.random() * 82;
+            const option =
+                document.createElement("label");
 
-        const color =
-            colors[
-                Math.floor(
-                    Math.random() * colors.length
-                )
-            ];
+            option.className = "option";
 
-
-        // Main star
-        const star =
-            document.createElement("div");
-
-        star.className =
-            "diwali-star";
-
-        star.innerHTML = "✦";
-
-        Object.assign(star.style, {
-            left: `${x}%`,
-            top: `${y}%`,
-            color: color,
-            textShadow:
-                `0 0 5px ${color},
-                 0 0 12px ${color},
-                 0 0 25px ${color}`
-        });
-
-        layer.appendChild(star);
+            option.dataset.answer =
+                letter;
 
 
-        // ----------------------------------------------------
-        // Sharp cracker sparks
-        // ----------------------------------------------------
+            // ------------------------------------------------
+            // RADIO
+            // ------------------------------------------------
 
-        const sparkCount =
-            12 + Math.floor(
-                Math.random() * 10
-            );
+            const radio =
+                document.createElement("input");
+
+            radio.type = "radio";
+
+            radio.name = "answer";
+
+            radio.value = letter;
 
 
-        for (
-            let i = 0;
-            i < sparkCount;
-            i++
-        ) {
+            // ------------------------------------------------
+            // LETTER
+            // ------------------------------------------------
 
-            const spark =
+            const letterSpan =
                 document.createElement("span");
 
-            spark.className =
-                "diwali-spark";
+            letterSpan.className =
+                "option-letter";
+
+            letterSpan.innerText =
+                letter;
 
 
-            const angle =
-                Math.random() * 360;
+            // ------------------------------------------------
+            // TEXT
+            // ------------------------------------------------
 
-
-            const length =
-                18 +
-                Math.random() * 42;
-
-
-            const distance =
-                15 +
-                Math.random() * 65;
-
-
-            const radians =
-                angle * Math.PI / 180;
-
-
-            const dx =
-                Math.cos(radians) *
-                distance;
-
-
-            const dy =
-                Math.sin(radians) *
-                distance;
-
-
-            Object.assign(
-                spark.style,
-                {
-                    left: `${x}%`,
-                    top: `${y}%`,
-                    background: color,
-                    width: `${length}px`,
-                    boxShadow:
-                        `0 0 5px ${color},
-                         0 0 10px ${color}`,
-                    "--dx": `${dx}px`,
-                    "--dy": `${dy}px`,
-                    "--angle": `${angle}deg`,
-                    animationDelay:
-                        `${Math.random() * 0.08}s`
-                }
-            );
-
-
-            layer.appendChild(
-                spark
-            );
-        }
-
-
-        // ----------------------------------------------------
-        // Tiny twinkling stars
-        // ----------------------------------------------------
-
-        for (let i = 0; i < 5; i++) {
-
-            const tiny =
+            const textSpan =
                 document.createElement("span");
 
-            tiny.className =
-                "diwali-twinkle";
+            textSpan.className =
+                "option-text";
 
-            tiny.innerHTML =
-                Math.random() > 0.5
-                    ? "✧"
-                    : "⋆";
+            textSpan.innerText =
+                currentQuestion[
+                    letter.toLowerCase()
+                ] || "";
 
 
-            Object.assign(
-                tiny.style,
-                {
-                    left:
-                        `${x + (Math.random() - 0.5) * 12}%`,
-                    top:
-                        `${y + (Math.random() - 0.5) * 12}%`,
-                    color: color,
-                    textShadow:
-                        `0 0 8px ${color},
-                         0 0 18px ${color}`
+            // ------------------------------------------------
+            // CHECK ICON
+            // ------------------------------------------------
+
+            const statusIcon =
+                document.createElement("span");
+
+            statusIcon.className =
+                "option-status";
+
+            statusIcon.innerText = "";
+
+
+            // ------------------------------------------------
+            // BUILD OPTION
+            // ------------------------------------------------
+
+            option.appendChild(radio);
+
+            option.appendChild(letterSpan);
+
+            option.appendChild(textSpan);
+
+            option.appendChild(statusIcon);
+
+
+            optionsContainer.appendChild(option);
+
+
+            // ------------------------------------------------
+            // SELECT OPTION
+            // ------------------------------------------------
+
+            radio.addEventListener(
+                "change",
+                () => {
+
+                    // Don't allow changing after answer
+                    // has been submitted
+                    if (
+                        optionsContainer.classList.contains(
+                            "answered"
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    // Remove selected state
+                    document
+                        .querySelectorAll(".option")
+                        .forEach(
+                            item => {
+
+                                item.classList.remove(
+                                    "selected"
+                                );
+                            }
+                        );
+
+
+                    // Add selected state
+                    option.classList.add(
+                        "selected"
+                    );
                 }
             );
-
-
-            layer.appendChild(
-                tiny
-            );
         }
-    }
-
-
-    // --------------------------------------------------------
-    // Start celebration
-    // --------------------------------------------------------
-
-    createSparkleBurst();
-
-
-    setTimeout(
-        createSparkleBurst,
-        120
-    );
-
-    setTimeout(
-        createSparkleBurst,
-        240
     );
 
 
-    // More cracker-style bursts
-    sparkleInterval =
-        setInterval(
-            createSparkleBurst,
-            180
-        );
+    // Reset result
+    const result =
+        document.getElementById("result");
+
+    result.innerText = "";
+
+    result.className = "";
 
 
-    // Exactly 2 seconds
-    sparkleTimeout =
-        setTimeout(
-            stopCorrectSparkles,
-            2000
-        );
-}
-
-
-// ============================================================
-// STOP SPARKLES
-// ============================================================
-
-function stopCorrectSparkles() {
-
-    if (sparkleInterval) {
-
-        clearInterval(
-            sparkleInterval
-        );
-
-        sparkleInterval = null;
-    }
-
-
-    if (sparkleTimeout) {
-
-        clearTimeout(
-            sparkleTimeout
-        );
-
-        sparkleTimeout = null;
-    }
-
-
-    const layer =
+    // Reset explanation
+    const explanation =
         document.getElementById(
-            "diwali-sparkles"
+            "explanation"
         );
 
+    explanation.classList.add(
+        "hidden"
+    );
 
-    if (layer) {
-        layer.remove();
-    }
+
+    document
+        .getElementById("explanation-text")
+        .innerText = "";
+
+
+    // Reset options
+    optionsContainer.classList.remove(
+        "answered"
+    );
 }
 
 
 // ============================================================
-// DIWALI SPARKLE ANIMATIONS
+// SUBMIT ANSWER
 // ============================================================
 
-function addDiwaliSparkleStyles() {
+function submitAnswer() {
+
+    const selected =
+        document.querySelector(
+            'input[name="answer"]:checked'
+        );
+
+
+    const result =
+        document.getElementById("result");
+
+
+    const optionsContainer =
+        document.getElementById("options");
+
+
+    // --------------------------------------------------------
+    // NO ANSWER
+    // --------------------------------------------------------
+
+    if (!selected) {
+
+        result.className =
+            "incorrect";
+
+        result.innerText =
+            "Please select an answer first.";
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // PREVENT SECOND SUBMISSION
+    // --------------------------------------------------------
 
     if (
-        document.getElementById(
-            "diwali-sparkle-style"
+        optionsContainer.classList.contains(
+            "answered"
         )
     ) {
         return;
     }
 
 
-    const style =
-        document.createElement("style");
+    // --------------------------------------------------------
+    // GET ANSWERS
+    // --------------------------------------------------------
+
+    const userAnswer =
+        selected.value
+            .trim()
+            .toUpperCase();
 
 
-    style.id =
-        "diwali-sparkle-style";
+    const correctAnswer =
+        (
+            currentQuestion["correct answer"] ||
+            ""
+        )
+            .trim()
+            .toUpperCase();
 
 
-    style.innerHTML = `
+    // --------------------------------------------------------
+    // LOCK OPTIONS
+    // --------------------------------------------------------
 
-        /*
-         * Main bright star
-         */
-        .diwali-star {
+    optionsContainer.classList.add(
+        "answered"
+    );
 
-            position: absolute;
 
-            font-size: 28px;
+    document
+        .querySelectorAll(
+            'input[name="answer"]'
+        )
+        .forEach(
+            input => {
 
-            font-weight: 900;
+                input.disabled = true;
+            }
+        );
 
-            line-height: 1;
 
-            transform:
-                translate(-50%, -50%)
-                scale(0);
+    // --------------------------------------------------------
+    // FIND SELECTED OPTION
+    // --------------------------------------------------------
 
-            opacity: 0;
+    const selectedOption =
+        selected.closest(".option");
 
-            animation:
-                diwaliStarBurst
-                0.75s
-                ease-out
-                forwards;
+
+    // --------------------------------------------------------
+    // CORRECT ANSWER
+    // --------------------------------------------------------
+
+    if (
+        userAnswer === correctAnswer
+    ) {
+
+        // Selected answer = green
+        selectedOption.classList.remove(
+            "selected"
+        );
+
+        selectedOption.classList.add(
+            "correct"
+        );
+
+
+        const selectedIcon =
+            selectedOption.querySelector(
+                ".option-status"
+            );
+
+        selectedIcon.innerText = "✓";
+
+
+        // Result message
+        result.className =
+            "correct";
+
+        result.innerText =
+            "🎉 Correct! Excellent work.";
+
+
+        // Celebration
+        launchCelebration();
+
+    }
+
+
+    // --------------------------------------------------------
+    // WRONG ANSWER
+    // --------------------------------------------------------
+
+    else {
+
+        // Selected answer = red
+        selectedOption.classList.remove(
+            "selected"
+        );
+
+        selectedOption.classList.add(
+            "wrong"
+        );
+
+
+        const selectedIcon =
+            selectedOption.querySelector(
+                ".option-status"
+            );
+
+        selectedIcon.innerText = "✕";
+
+
+        // Find correct option
+        const correctOption =
+            document.querySelector(
+                `.option[data-answer="${correctAnswer}"]`
+            );
+
+
+        // Highlight correct answer green
+        if (correctOption) {
+
+            correctOption.classList.add(
+                "correct"
+            );
+
+
+            const correctIcon =
+                correctOption.querySelector(
+                    ".option-status"
+                );
+
+            correctIcon.innerText = "✓";
         }
 
 
-        /*
-         * Thin sharp sparks
-         * These are NOT bubbles.
-         */
-        .diwali-spark {
+        // Result
+        result.className =
+            "incorrect";
 
-            position: absolute;
+        result.innerText =
+            "✗ Not quite. The correct answer is " +
+            correctAnswer + ".";
+    }
 
-            height: 2px;
 
-            border-radius: 2px;
+    // --------------------------------------------------------
+    // SHOW EXPLANATION
+    // --------------------------------------------------------
 
-            transform-origin: left center;
+    const explanation =
+        document.getElementById(
+            "explanation"
+        );
 
-            transform:
-                translate(0, 0)
-                rotate(var(--angle))
-                scaleX(0);
+    explanation.classList.remove(
+        "hidden"
+    );
 
-            opacity: 0;
 
-            animation:
-                diwaliSparkShoot
-                0.85s
-                cubic-bezier(
-                    0.15,
-                    0.75,
-                    0.25,
-                    1
-                )
-                forwards;
+    const explanationValue =
+        currentQuestion.explanation ||
+        currentQuestion.explaination ||
+        "";
+
+
+    document.getElementById(
+        "explanation-text"
+    ).innerText =
+        explanationValue;
+}
+
+
+// ============================================================
+// AI CELEBRATION
+// ============================================================
+
+function launchCelebration() {
+
+    const celebration =
+        document.createElement("div");
+
+    celebration.className =
+        "celebration";
+
+
+    document.body.appendChild(
+        celebration
+    );
+
+
+    // AI-style clapping celebration
+    const emojis = [
+        "👏",
+        "👏",
+        "🎉",
+        "👏",
+        "✨",
+        "👏",
+        "🧠",
+        "🎊",
+        "👏",
+        "⭐",
+        "👏",
+        "🎉"
+    ];
+
+
+    emojis.forEach(
+        (emoji, index) => {
+
+            const particle =
+                document.createElement(
+                    "span"
+                );
+
+            particle.className =
+                "celebration-particle";
+
+            particle.innerText =
+                emoji;
+
+
+            // Random horizontal position
+            particle.style.left =
+                Math.random() * 100 + "%";
+
+
+            // Random animation delay
+            particle.style.animationDelay =
+                Math.random() * 0.6 + "s";
+
+
+            // Random size
+            particle.style.fontSize =
+                (22 + Math.random() * 18) +
+                "px";
+
+
+            celebration.appendChild(
+                particle
+            );
         }
+    );
 
 
-        /*
-         * Small twinkling stars
-         */
-        .diwali-twinkle {
+    // Remove celebration
+    setTimeout(
+        () => {
 
-            position: absolute;
+            celebration.remove();
 
-            font-size: 17px;
-
-            font-weight: bold;
-
-            line-height: 1;
-
-            transform:
-                translate(-50%, -50%)
-                scale(0);
-
-            opacity: 0;
-
-            animation:
-                diwaliTwinkle
-                0.9s
-                ease-out
-                forwards;
-        }
-
-
-        /*
-         * Main star burst
-         */
-        @keyframes diwaliStarBurst {
-
-            0% {
-
-                opacity: 0;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(0)
-                    rotate(0deg);
-            }
-
-            20% {
-
-                opacity: 1;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(1.5)
-                    rotate(20deg);
-            }
-
-            45% {
-
-                opacity: 1;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(0.9)
-                    rotate(45deg);
-            }
-
-            70% {
-
-                opacity: 0.9;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(1.15)
-                    rotate(70deg);
-            }
-
-            100% {
-
-                opacity: 0;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(0)
-                    rotate(120deg);
-            }
-        }
-
-
-        /*
-         * Sharp sparks shooting outward
-         */
-        @keyframes diwaliSparkShoot {
-
-            0% {
-
-                opacity: 0;
-
-                transform:
-                    translate(0, 0)
-                    rotate(var(--angle))
-                    scaleX(0);
-            }
-
-            10% {
-
-                opacity: 1;
-
-                transform:
-                    translate(0, 0)
-                    rotate(var(--angle))
-                    scaleX(0.4);
-            }
-
-            55% {
-
-                opacity: 1;
-
-                transform:
-                    translate(
-                        calc(var(--dx) * 0.55),
-                        calc(var(--dy) * 0.55)
-                    )
-                    rotate(var(--angle))
-                    scaleX(1);
-            }
-
-            100% {
-
-                opacity: 0;
-
-                transform:
-                    translate(
-                        var(--dx),
-                        var(--dy)
-                    )
-                    rotate(var(--angle))
-                    scaleX(0.25);
-            }
-        }
-
-
-        /*
-         * Tiny star twinkle
-         */
-        @keyframes diwaliTwinkle {
-
-            0% {
-
-                opacity: 0;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(0)
-                    rotate(0deg);
-            }
-
-            25% {
-
-                opacity: 1;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(1.4)
-                    rotate(45deg);
-            }
-
-            60% {
-
-                opacity: 1;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(0.8)
-                    rotate(90deg);
-            }
-
-            100% {
-
-                opacity: 0;
-
-                transform:
-                    translate(-50%, -50%)
-                    scale(0)
-                    rotate(180deg);
-            }
-        }
-
-
-        @media (
-            prefers-reduced-motion: reduce
-        ) {
-
-            #diwali-sparkles {
-                display: none !important;
-            }
-
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        style
+        },
+        3000
     );
 }
+
+
+// ============================================================
+// COPY QUESTION LINK
+// ============================================================
+
+async function copyLink() {
+
+    const button =
+        document.getElementById(
+            "copy-btn"
+        );
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            window.location.href
+        );
+
+
+        button.innerText =
+            "✓ Link Copied!";
+
+
+        setTimeout(
+            () => {
+
+                button.innerText =
+                    "🔗 Copy Question Link";
+
+            },
+            2000
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unable to copy link:",
+            error
+        );
+
+        button.innerText =
+            "Unable to copy link";
+
+
+        setTimeout(
+            () => {
+
+                button.innerText =
+                    "🔗 Copy Question Link";
+
+            },
+            2000
+        );
+    }
+}
+
+
+// ============================================================
+// SHOW ERROR
+// ============================================================
+
+function showError(message) {
+
+    document
+        .getElementById("loading")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById(
+            "question-container"
+        )
+        .classList.add("hidden");
+
+
+    const errorBox =
+        document.getElementById(
+            "error"
+        );
+
+
+    errorBox.classList.remove(
+        "hidden"
+    );
+
+
+    errorBox.innerText =
+        message;
+}
+
+
+// ============================================================
+// START APPLICATION
+// ============================================================
+
+loadQuestions();
