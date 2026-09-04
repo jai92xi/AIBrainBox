@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AIBrainBox</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <meta
+        name="description"
+        content="AIBrainBox - AI Questions & Practice"
+    >
+
+    <title>AIBrainBox | AI Questions & Practice</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
+
 
 <body>
 
@@ -16,6 +30,7 @@
          ===================================================== -->
 
     <header>
+
         <div class="header-content">
 
             <div class="logo">
@@ -23,38 +38,64 @@
             </div>
 
             <div class="header-text">
-                <h1>AIBrainBox</h1>
-                <p>AI Questions &amp; Practice</p>
+
+                <h1>
+                    AIBrainBox
+                </h1>
+
+                <p>
+                    AI Questions &amp; Practice
+                </p>
+
             </div>
 
         </div>
+
     </header>
 
 
     <!-- =====================================================
-         MAIN CONTENT
+         MAIN
          ===================================================== -->
 
     <main>
 
         <!-- Loading -->
-        <div id="loading">
+
+        <div
+            id="loading"
+            class="status-message"
+        >
             Loading question...
         </div>
 
 
         <!-- Error -->
-        <div id="error" class="hidden"></div>
+
+        <div
+            id="error"
+            class="hidden"
+            role="alert"
+        >
+        </div>
 
 
-        <!-- Quiz -->
-        <div id="question-container" class="hidden">
+        <!-- =================================================
+             QUESTION CONTAINER
+             ================================================= -->
+
+        <section
+            id="question-container"
+            class="hidden"
+            aria-label="Quiz question"
+        >
 
             <!-- =================================================
-                 QUESTION + OPTIONS
+                 TWO COLUMN LAYOUT
                  ================================================= -->
 
             <div class="quiz-layout">
+
 
                 <!-- ================= QUESTION ================= -->
 
@@ -64,7 +105,8 @@
                         🧠 QUESTION
                     </div>
 
-                    <div id="question"></div>
+                    <div id="question">
+                    </div>
 
                 </section>
 
@@ -77,7 +119,12 @@
                         🤖 SELECT YOUR ANSWER
                     </div>
 
-                    <div id="options"></div>
+                    <div
+                        id="options"
+                        role="radiogroup"
+                        aria-label="Answer options"
+                    >
+                    </div>
 
                 </section>
 
@@ -88,7 +135,11 @@
                  RESULT
                  ================================================= -->
 
-            <div id="result"></div>
+            <div
+                id="result"
+                aria-live="polite"
+            >
+            </div>
 
 
             <!-- =================================================
@@ -98,6 +149,7 @@
             <button
                 id="show-explanation-btn"
                 class="hidden"
+                type="button"
                 onclick="toggleExplanation()"
             >
                 💡 Show Explanation
@@ -108,17 +160,21 @@
                  EXPLANATION
                  ================================================= -->
 
-            <div id="explanation" class="hidden">
+            <div
+                id="explanation"
+                class="hidden"
+            >
 
                 <h3>
                     💡 Explanation
                 </h3>
 
-                <div id="explanation-text"></div>
+                <div id="explanation-text">
+                </div>
 
             </div>
 
-        </div>
+        </section>
 
     </main>
 
@@ -128,9 +184,11 @@
          ===================================================== -->
 
     <footer>
+
         <p>
             🧠 AIBrainBox • AI Questions &amp; Practice
         </p>
+
     </footer>
 
 
@@ -141,4 +199,5 @@
     <script src="app.js"></script>
 
 </body>
+
 </html>
