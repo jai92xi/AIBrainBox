@@ -6,6 +6,7 @@
     box-sizing: border-box;
 }
 
+
 html,
 body {
     width: 100%;
@@ -14,11 +15,18 @@ body {
     padding: 0;
 }
 
+
 html {
     overflow-x: hidden;
 }
 
+
+/* ============================================================
+   BODY
+   ============================================================ */
+
 body {
+
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -28,40 +36,54 @@ body {
         Arial,
         sans-serif;
 
-    background:
-        radial-gradient(
-            circle at 8% 18%,
-            rgba(99, 102, 241, 0.10),
-            transparent 23%
-        ),
-        radial-gradient(
-            circle at 92% 25%,
-            rgba(14, 165, 233, 0.09),
-            transparent 24%
-        ),
-        radial-gradient(
-            circle at 15% 88%,
-            rgba(168, 85, 247, 0.08),
-            transparent 24%
-        ),
-        radial-gradient(
-            circle at 88% 85%,
-            rgba(34, 197, 94, 0.06),
-            transparent 22%
-        ),
-        #f5f7fb;
-
     color: #172033;
 
     overflow-x: hidden;
+
+    background:
+
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(99, 102, 241, 0.25),
+            transparent 25%
+        ),
+
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(14, 165, 233, 0.20),
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 15% 90%,
+            rgba(168, 85, 247, 0.18),
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 90% 85%,
+            rgba(34, 211, 238, 0.14),
+            transparent 25%
+        ),
+
+        linear-gradient(
+            135deg,
+            #eef2ff 0%,
+            #f8fafc 45%,
+            #eef2ff 100%
+        );
+
+    background-attachment:
+        fixed;
 }
 
 
 /* ============================================================
-   SUBTLE AI BACKGROUND
+   CLASSY AI BACKGROUND
    ============================================================ */
 
 body::before {
+
     content: "";
 
     position: fixed;
@@ -72,21 +94,69 @@ body::before {
 
     z-index: -1;
 
+    opacity: 0.45;
+
     background-image:
-        radial-gradient(
-            circle,
-            rgba(79, 70, 229, 0.12) 1px,
-            transparent 1.5px
+
+        linear-gradient(
+            rgba(99, 102, 241, 0.08) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.08) 1px,
+            transparent 1px
         );
 
-    background-size: 30px 30px;
+    background-size:
+        70px 70px;
 
     mask-image:
-        linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.8),
-            transparent 85%
+        radial-gradient(
+            ellipse at center,
+            black 20%,
+            transparent 80%
         );
+}
+
+
+/* ============================================================
+   SECOND AI GLOW LAYER
+   ============================================================ */
+
+body::after {
+
+    content: "";
+
+    position: fixed;
+
+    width: 650px;
+
+    height: 650px;
+
+    left: 50%;
+
+    top: 55%;
+
+    transform:
+        translate(-50%, -50%);
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(99, 102, 241, 0.08),
+            transparent 68%
+        );
+
+    filter:
+        blur(30px);
 }
 
 
@@ -95,42 +165,149 @@ body::before {
    ============================================================ */
 
 header {
+
     width: 100%;
 
+    color: white;
+
+    padding:
+        24px 20px;
+
     background:
+
         linear-gradient(
             135deg,
-            #4f46e5 0%,
-            #6d3fe8 50%,
+            #312e81 0%,
+            #4f46e5 45%,
             #7c3aed 100%
         );
 
-    color: #ffffff;
+    box-shadow:
+        0 10px 35px
+        rgba(49, 46, 129, 0.25);
 
-    padding: 30px 20px;
+    position: relative;
 
-    text-align: center;
+    overflow: hidden;
+}
+
+
+header::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 300px;
+
+    height: 300px;
+
+    right: -100px;
+
+    top: -180px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.10);
+}
+
+
+header::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 200px;
+
+    height: 200px;
+
+    left: -80px;
+
+    bottom: -140px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+}
+
+
+/* ============================================================
+   HEADER CONTENT
+   ============================================================ */
+
+.header-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 1180px;
+
+    margin: auto;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 14px;
+
+    text-align: left;
+}
+
+
+.logo {
+
+    width: 52px;
+
+    height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background:
+        rgba(255, 255, 255, 0.14);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.20);
+
+    font-size: 28px;
 
     box-shadow:
-        0 5px 20px rgba(79, 70, 229, 0.18);
+        0 8px 25px
+        rgba(0, 0, 0, 0.12);
 }
+
 
 header h1 {
+
     margin: 0;
 
-    font-size: 32px;
+    font-size: 30px;
 
-    font-weight: 700;
+    font-weight: 750;
 
-    letter-spacing: -0.5px;
+    letter-spacing: -0.7px;
 }
 
+
 header p {
-    margin: 6px 0 0;
 
-    font-size: 15px;
+    margin: 3px 0 0;
 
-    opacity: 0.92;
+    font-size: 14px;
+
+    opacity: 0.85;
 }
 
 
@@ -139,13 +316,16 @@ header p {
    ============================================================ */
 
 main {
+
     width: 100%;
 
     max-width: 1180px;
 
-    margin: 40px auto;
+    margin:
+        36px auto 50px;
 
-    padding: 0 24px;
+    padding:
+        0 24px;
 }
 
 
@@ -163,9 +343,9 @@ main {
    ============================================================ */
 
 #loading {
-    width: 100%;
 
-    padding: 40px 20px;
+    padding:
+        45px 20px;
 
     text-align: center;
 
@@ -180,19 +360,23 @@ main {
    ============================================================ */
 
 #error {
+
     width: 100%;
 
-    background: #fff1f2;
-
-    border: 1px solid #fecdd3;
-
-    color: #be123c;
-
-    border-radius: 12px;
-
-    padding: 18px 20px;
+    padding:
+        18px 20px;
 
     margin-bottom: 20px;
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 241, 242, 0.95);
+
+    border:
+        1px solid #fecdd3;
+
+    color: #be123c;
 
     line-height: 1.5;
 }
@@ -203,6 +387,7 @@ main {
    ============================================================ */
 
 #question-container {
+
     width: 100%;
 
     min-width: 0;
@@ -214,7 +399,6 @@ main {
    ============================================================ */
 
 .question-header {
-    width: 100%;
 
     display: flex;
 
@@ -227,35 +411,51 @@ main {
     margin-bottom: 18px;
 }
 
+
 #question-id,
 #topic {
+
     display: inline-flex;
 
     align-items: center;
 
     min-height: 30px;
 
-    padding: 6px 12px;
+    padding:
+        6px 13px;
 
     border-radius: 999px;
 
-    background: #eef2ff;
+    background:
+        rgba(255, 255, 255, 0.80);
+
+    border:
+        1px solid
+        rgba(99, 102, 241, 0.14);
 
     color: #4338ca;
 
     font-size: 13px;
 
-    font-weight: 600;
+    font-weight: 700;
 
     white-space: nowrap;
+
+    box-shadow:
+        0 4px 14px
+        rgba(15, 23, 42, 0.04);
+
+    backdrop-filter:
+        blur(10px);
 }
 
 
 /* ============================================================
-   TWO COLUMN QUIZ LAYOUT
+   TWO COLUMN LAYOUT
    ============================================================ */
 
 .quiz-layout {
+
     display: grid;
 
     grid-template-columns:
@@ -264,28 +464,23 @@ main {
 
     gap: 24px;
 
-    align-items: stretch;
-
     width: 100%;
+
+    align-items: stretch;
 }
 
 
 /* ============================================================
-   QUESTION PANEL - LEFT
+   QUESTION PANEL
    ============================================================ */
 
 .question-panel {
+
     position: relative;
 
-    background: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 16px;
-
-    padding: 30px;
-
     min-height: 390px;
+
+    padding: 32px;
 
     display: flex;
 
@@ -293,31 +488,52 @@ main {
 
     justify-content: flex-start;
 
-    box-shadow:
-        0 8px 25px rgba(15, 23, 42, 0.06);
-
     overflow: hidden;
+
+    border-radius: 22px;
+
+    background:
+        rgba(255, 255, 255, 0.88);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.95);
+
+    box-shadow:
+        0 18px 50px
+        rgba(15, 23, 42, 0.08),
+
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.90);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
 }
 
+
 .question-panel::before {
+
     content: "";
 
     position: absolute;
 
-    width: 150px;
+    width: 220px;
 
-    height: 150px;
+    height: 220px;
 
-    right: -65px;
+    right: -100px;
 
-    top: -65px;
+    top: -100px;
 
     border-radius: 50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(99, 102, 241, 0.14),
+            rgba(99, 102, 241, 0.16),
             transparent 70%
         );
 
@@ -325,23 +541,58 @@ main {
 }
 
 
+.question-panel::after {
+
+    content: "AI";
+
+    position: absolute;
+
+    right: 25px;
+
+    bottom: 15px;
+
+    font-size: 90px;
+
+    font-weight: 900;
+
+    color:
+        rgba(99, 102, 241, 0.035);
+
+    pointer-events: none;
+}
+
+
 /* ============================================================
-   OPTIONS PANEL - RIGHT
+   OPTIONS PANEL
    ============================================================ */
 
 .options-panel {
-    background: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 16px;
-
-    padding: 30px;
 
     min-height: 390px;
 
+    padding: 32px;
+
+    border-radius: 22px;
+
+    background:
+        rgba(255, 255, 255, 0.88);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.95);
+
     box-shadow:
-        0 8px 25px rgba(15, 23, 42, 0.06);
+        0 18px 50px
+        rgba(15, 23, 42, 0.08),
+
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.90);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
 }
 
 
@@ -350,7 +601,8 @@ main {
    ============================================================ */
 
 .panel-label {
-    margin-bottom: 18px;
+
+    margin-bottom: 20px;
 
     color: #6366f1;
 
@@ -358,7 +610,7 @@ main {
 
     font-weight: 800;
 
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
 }
 
 
@@ -367,6 +619,7 @@ main {
    ============================================================ */
 
 #question {
+
     width: 100%;
 
     color: #172033;
@@ -380,8 +633,6 @@ main {
     white-space: pre-wrap;
 
     overflow-wrap: anywhere;
-
-    word-break: normal;
 }
 
 
@@ -390,19 +641,14 @@ main {
    ============================================================ */
 
 #options {
+
     display: flex;
 
     flex-direction: column;
 
-    align-items: stretch;
-
-    gap: 12px;
+    gap: 13px;
 
     width: 100%;
-
-    margin: 0;
-
-    padding: 0;
 }
 
 
@@ -411,193 +657,64 @@ main {
    ============================================================ */
 
 .option {
+
     position: relative;
 
     display: flex;
 
-    flex-direction: row;
+    align-items: center;
 
-    align-items: flex-start;
-
-    gap: 11px;
+    gap: 12px;
 
     width: 100%;
 
-    margin: 0;
+    min-height: 62px;
 
-    padding: 15px 16px;
+    padding:
+        12px 16px;
 
-    background: #ffffff;
+    border-radius: 14px;
 
-    border: 1.5px solid #d7dce5;
+    border:
+        1px solid #e2e8f0;
 
-    border-radius: 11px;
-
-    color: #172033;
+    background:
+        rgba(248, 250, 252, 0.90);
 
     cursor: pointer;
-
-    user-select: none;
 
     transition:
-        border-color 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
-
-/* ============================================================
-   OPTION HOVER
-   ============================================================ */
 
 .option:hover {
-    border-color: #818cf8;
 
-    background: #fafaff;
+    transform:
+        translateY(-2px);
 
-    box-shadow:
-        0 4px 14px rgba(79, 70, 229, 0.10);
+    border-color:
+        #a5b4fc;
 
-    transform: translateY(-1px);
-}
-
-
-/* ============================================================
-   SELECTED OPTION
-   ============================================================ */
-
-.option.selected {
-    border-color: #4f46e5;
-
-    background: #eef2ff;
+    background:
+        #f8f7ff;
 
     box-shadow:
-        0 4px 15px rgba(79, 70, 229, 0.12);
+        0 8px 20px
+        rgba(79, 70, 229, 0.08);
 }
 
 
-/* ============================================================
-   CORRECT ANSWER
-   ============================================================ */
+.option input {
 
-.option.correct-answer {
-    border-color: #16a34a !important;
+    position: absolute;
 
-    background: #ecfdf3 !important;
+    opacity: 0;
 
-    color: #166534;
-
-    box-shadow:
-        0 5px 18px rgba(22, 163, 74, 0.16);
-
-    animation:
-        correctAnswerPop 0.6s ease;
-}
-
-.option.correct-answer .option-letter,
-.option.correct-answer .option-text {
-    color: #166534;
-}
-
-
-/* ============================================================
-   WRONG ANSWER
-   ============================================================ */
-
-.option.wrong-answer {
-    border-color: #ef4444 !important;
-
-    background: #fff1f2 !important;
-
-    color: #b91c1c;
-
-    box-shadow:
-        0 5px 18px rgba(239, 68, 68, 0.14);
-
-    animation:
-        wrongShake 0.45s ease;
-}
-
-.option.wrong-answer .option-letter,
-.option.wrong-answer .option-text {
-    color: #b91c1c;
-}
-
-
-/* ============================================================
-   CORRECT ANSWER POP
-   ============================================================ */
-
-@keyframes correctAnswerPop {
-
-    0% {
-        transform: scale(1);
-    }
-
-    30% {
-        transform: scale(1.045);
-    }
-
-    55% {
-        transform: scale(0.99);
-    }
-
-    75% {
-        transform: scale(1.025);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-
-/* ============================================================
-   WRONG ANSWER SHAKE
-   ============================================================ */
-
-@keyframes wrongShake {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    20% {
-        transform: translateX(-7px);
-    }
-
-    40% {
-        transform: translateX(7px);
-    }
-
-    60% {
-        transform: translateX(-5px);
-    }
-
-    80% {
-        transform: translateX(5px);
-    }
-}
-
-
-/* ============================================================
-   RADIO BUTTON
-   ============================================================ */
-
-.option input[type="radio"] {
-    flex: 0 0 auto;
-
-    width: 18px;
-
-    height: 18px;
-
-    margin: 3px 0 0;
-
-    accent-color: #4f46e5;
-
-    cursor: pointer;
+    pointer-events: none;
 }
 
 
@@ -606,17 +723,30 @@ main {
    ============================================================ */
 
 .option-letter {
-    flex: 0 0 25px;
 
-    width: 25px;
+    flex-shrink: 0;
 
-    color: #4338ca;
+    width: 34px;
 
-    font-size: 16px;
+    height: 34px;
 
-    font-weight: 700;
+    display: flex;
 
-    line-height: 1.55;
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        #eef2ff;
+
+    color:
+        #4f46e5;
+
+    font-size: 14px;
+
+    font-weight: 800;
 }
 
 
@@ -625,76 +755,173 @@ main {
    ============================================================ */
 
 .option-text {
-    flex: 1 1 auto;
 
-    min-width: 0;
+    flex: 1;
 
-    color: #1f2937;
+    color: #334155;
 
-    font-size: 15.5px;
+    font-size: 15px;
 
-    line-height: 1.55;
+    font-weight: 500;
 
-    overflow-wrap: anywhere;
+    line-height: 1.45;
 }
 
 
 /* ============================================================
-   CHECK ANSWER BUTTON
+   CORRECT ANSWER
    ============================================================ */
 
-#submit-btn {
-    display: block;
+.option.correct-answer {
 
-    width: 100%;
-
-    margin-top: 18px;
-
-    padding: 14px 18px;
-
-    border: none;
-
-    border-radius: 10px;
+    border-color:
+        #22c55e !important;
 
     background:
         linear-gradient(
             135deg,
-            #4f46e5,
-            #7c3aed
-        );
+            #f0fdf4,
+            #dcfce7
+        ) !important;
 
-    color: #ffffff;
-
-    font-family: inherit;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    line-height: 1.4;
-
-    cursor: pointer;
-
-    transition:
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
-}
-
-#submit-btn:hover {
     box-shadow:
-        0 6px 18px rgba(79, 70, 229, 0.25);
+        0 8px 25px
+        rgba(34, 197, 94, 0.18);
 
-    transform: translateY(-1px);
+    animation:
+        correctAnswerPop
+        0.45s ease;
 }
 
-#submit-btn:active {
-    transform: translateY(1px);
+
+.option.correct-answer
+.option-letter {
+
+    background:
+        #22c55e;
+
+    color:
+        white;
 }
 
-#submit-btn:focus-visible {
-    outline: 3px solid rgba(79, 70, 229, 0.25);
 
-    outline-offset: 2px;
+.option.correct-answer
+.option-text {
+
+    color:
+        #166534;
+
+    font-weight:
+        700;
+}
+
+
+/* ============================================================
+   WRONG ANSWER
+   ============================================================ */
+
+.option.wrong-answer {
+
+    border-color:
+        #ef4444 !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff1f2,
+            #ffe4e6
+        ) !important;
+
+    box-shadow:
+        0 8px 25px
+        rgba(239, 68, 68, 0.16);
+
+    animation:
+        wrongShake
+        0.45s ease;
+}
+
+
+.option.wrong-answer
+.option-letter {
+
+    background:
+        #ef4444;
+
+    color:
+        white;
+}
+
+
+.option.wrong-answer
+.option-text {
+
+    color:
+        #b91c1c;
+
+    font-weight:
+        700;
+}
+
+
+/* ============================================================
+   CORRECT ANIMATION
+   ============================================================ */
+
+@keyframes correctAnswerPop {
+
+    0% {
+        transform:
+            scale(1);
+    }
+
+    50% {
+        transform:
+            scale(1.025);
+    }
+
+    100% {
+        transform:
+            scale(1);
+    }
+}
+
+
+/* ============================================================
+   WRONG ANIMATION
+   ============================================================ */
+
+@keyframes wrongShake {
+
+    0% {
+        transform:
+            translateX(0);
+    }
+
+    20% {
+        transform:
+            translateX(-7px);
+    }
+
+    40% {
+        transform:
+            translateX(7px);
+    }
+
+    60% {
+        transform:
+            translateX(-5px);
+    }
+
+    80% {
+        transform:
+            translateX(5px);
+    }
+
+    100% {
+        transform:
+            translateX(0);
+    }
 }
 
 
@@ -702,82 +929,142 @@ main {
    RESULT
    ============================================================ */
 
+/*
+   Result is intentionally kept empty.
+   We don't want the large:
+   "Congratulations! Correct!"
+   message anymore.
+*/
+
 #result {
-    width: 100%;
 
-    margin-top: 20px;
+    min-height: 0;
 
-    padding: 0;
+    margin-top: 15px;
+}
 
-    font-size: 17px;
+
+/* ============================================================
+   EXPLANATION BUTTON
+   ============================================================ */
+
+#show-explanation-btn {
+
+    display: block;
+
+    margin:
+        24px auto 0;
+
+    padding:
+        11px 20px;
+
+    border:
+        1px solid #c7d2fe;
+
+    border-radius: 12px;
+
+    background:
+        rgba(238, 242, 255, 0.90);
+
+    color:
+        #4338ca;
+
+    font-size: 14px;
 
     font-weight: 700;
 
-    line-height: 1.5;
+    cursor: pointer;
 
-    text-align: center;
+    transition:
+        all 0.2s ease;
+
+    box-shadow:
+        0 6px 18px
+        rgba(79, 70, 229, 0.08);
 }
 
-#result.correct {
-    padding: 16px;
 
-    border-radius: 12px;
+#show-explanation-btn:hover {
 
-    background: #ecfdf5;
+    transform:
+        translateY(-2px);
 
-    border: 1px solid #a7f3d0;
+    background:
+        #eef2ff;
 
-    color: #047857;
+    border-color:
+        #818cf8;
 
-    animation:
-        resultAppear 0.35s ease;
-}
-
-#result.incorrect {
-    padding: 16px;
-
-    border-radius: 12px;
-
-    background: #fff1f2;
-
-    border: 1px solid #fecdd3;
-
-    color: #be123c;
-
-    animation:
-        resultAppear 0.35s ease;
+    box-shadow:
+        0 10px 24px
+        rgba(79, 70, 229, 0.12);
 }
 
 
 /* ============================================================
-   RESULT APPEAR
+   EXPLANATION
    ============================================================ */
 
-@keyframes resultAppear {
+#explanation {
 
-    from {
-        opacity: 0;
+    margin-top: 18px;
 
-        transform:
-            translateY(10px)
-            scale(0.98);
-    }
+    padding:
+        24px;
 
-    to {
-        opacity: 1;
+    border-radius: 18px;
 
-        transform:
-            translateY(0)
-            scale(1);
-    }
+    background:
+        rgba(255, 255, 255, 0.90);
+
+    border:
+        1px solid
+        rgba(99, 102, 241, 0.12);
+
+    box-shadow:
+        0 12px 30px
+        rgba(15, 23, 42, 0.06);
+
+    backdrop-filter:
+        blur(14px);
+}
+
+
+#explanation h3 {
+
+    margin:
+        0 0 12px;
+
+    color:
+        #4338ca;
+
+    font-size:
+        17px;
+}
+
+
+#explanation-text {
+
+    color:
+        #475569;
+
+    font-size:
+        15px;
+
+    line-height:
+        1.7;
+
+    white-space:
+        pre-wrap;
 }
 
 
 /* ============================================================
-   EMOJI REACTION CONTAINER
+   REACTION CONTAINER
    ============================================================ */
 
 .reaction-container {
+
     position: fixed;
 
     inset: 0;
@@ -795,131 +1082,134 @@ main {
 
 
 /* ============================================================
-   INDIVIDUAL EMOJI
+   REACTION EMOJI
    ============================================================ */
 
 .reaction-emoji {
+
     position: absolute;
 
     bottom: -100px;
 
-    display: block;
-
     opacity: 0;
 
-    font-size: 3rem;
-
-    line-height: 1;
-
-    will-change:
-        transform,
-        opacity;
-
-    animation-name:
-        emojiPopAndRoll;
-
-    animation-timing-function:
-        cubic-bezier(
-            0.22,
-            1,
-            0.36,
-            1
-        );
-
-    animation-fill-mode:
-        forwards;
+    user-select: none;
 
     filter:
         drop-shadow(
-            0 6px 8px
-            rgba(0, 0, 0, 0.18)
+            0 4px 8px
+            rgba(0, 0, 0, 0.12)
         );
+
+    animation:
+        emojiPopAndRoll
+        2.5s
+        ease-out
+        forwards;
 }
 
 
 /* ============================================================
-   EMOJI POP + ROLL
+   EMOJI POP / ROLL
    ============================================================ */
 
 @keyframes emojiPopAndRoll {
 
     0% {
-        opacity: 0;
 
         transform:
             translateY(0)
             translateX(0)
             rotate(0deg)
-            scale(0.2);
+            scale(0.3);
+
+        opacity: 0;
     }
+
 
     10% {
+
         opacity: 1;
 
         transform:
-            translateY(-80px)
-            translateX(0)
-            rotate(-10deg)
-            scale(1.35);
+            translateY(-12vh)
+            translateX(
+                calc(
+                    var(--horizontal) * 0.15
+                )
+            )
+            rotate(
+                calc(
+                    var(--rotation) * 0.15
+                )
+            )
+            scale(1);
     }
 
-    25% {
-        opacity: 1;
-
-        transform:
-            translateY(-220px)
-            translateX(-15px)
-            rotate(25deg)
-            scale(1.15);
-    }
 
     45% {
+
         opacity: 1;
 
         transform:
-            translateY(-400px)
-            translateX(25px)
-            rotate(-35deg)
-            scale(1.3);
+            translateY(-48vh)
+            translateX(
+                calc(
+                    var(--horizontal) * 0.55
+                )
+            )
+            rotate(
+                calc(
+                    var(--rotation) * 0.55
+                )
+            )
+            scale(1.08);
     }
 
-    65% {
-        opacity: 1;
+
+    75% {
+
+        opacity: 0.85;
 
         transform:
-            translateY(-600px)
-            translateX(-20px)
-            rotate(45deg)
-            scale(1.05);
+            translateY(-78vh)
+            translateX(
+                calc(
+                    var(--horizontal) * 0.85
+                )
+            )
+            rotate(
+                calc(
+                    var(--rotation) * 0.85
+                )
+            )
+            scale(0.95);
     }
 
-    82% {
-        opacity: 0.9;
-
-        transform:
-            translateY(-760px)
-            translateX(20px)
-            rotate(-55deg)
-            scale(1.2);
-    }
 
     100% {
+
         opacity: 0;
 
         transform:
-            translateY(-100vh)
-            translateX(-10px)
-            rotate(90deg)
+            translateY(-110vh)
+            translateX(
+                var(--horizontal)
+            )
+            rotate(
+                var(--rotation)
+            )
             scale(0.8);
     }
 }
 
 
 /* ============================================================
-   CENTER CELEBRATION POP
+   HAPPY CENTER CELEBRATION
    ============================================================ */
 
 .reaction-container::before {
+
     content:
         "✨ 🎉 👏 🥳 🎊 ✨";
 
@@ -927,29 +1217,51 @@ main {
 
     left: 50%;
 
-    top: 48%;
+    top: 45%;
 
     transform:
         translate(-50%, -50%)
-        scale(0.2);
-
-    font-size: 3rem;
+        scale(0);
 
     white-space: nowrap;
+
+    font-size: 42px;
 
     opacity: 0;
 
     animation:
         celebrationCenterPop
-        0.9s
+        1.8s
         ease-out
         forwards;
 }
 
 
+/* ============================================================
+   SAD CENTER REACTION
+   ============================================================ */
+
+.reaction-container.sad::before {
+
+    content:
+        "😢 😞 🥺 💔 😔";
+
+    animation:
+        sadCenterPop
+        1.6s
+        ease-out
+        forwards;
+}
+
+
+/* ============================================================
+   HAPPY CENTER ANIMATION
+   ============================================================ */
+
 @keyframes celebrationCenterPop {
 
     0% {
+
         opacity: 0;
 
         transform:
@@ -957,59 +1269,9 @@ main {
             scale(0.2);
     }
 
-    35% {
-        opacity: 1;
 
-        transform:
-            translate(-50%, -50%)
-            scale(1.3);
-    }
+    20% {
 
-    65% {
-        opacity: 1;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1);
-    }
-
-    100% {
-        opacity: 0;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.8);
-    }
-}
-
-
-/* ============================================================
-   SAD CENTER POP
-   ============================================================ */
-
-.reaction-container.sad::before {
-    content:
-        "😢 😞 🥺 💔 😔";
-
-    animation:
-        sadCenterPop
-        0.9s
-        ease-out
-        forwards;
-}
-
-
-@keyframes sadCenterPop {
-
-    0% {
-        opacity: 0;
-
-        transform:
-            translate(-50%, -50%)
-            scale(0.3);
-    }
-
-    35% {
         opacity: 1;
 
         transform:
@@ -1017,7 +1279,9 @@ main {
             scale(1.25);
     }
 
-    65% {
+
+    45% {
+
         opacity: 1;
 
         transform:
@@ -1025,170 +1289,62 @@ main {
             scale(1);
     }
 
+
     100% {
+
         opacity: 0;
 
         transform:
             translate(-50%, -50%)
-            scale(1.6);
+            scale(1.4);
     }
 }
 
 
 /* ============================================================
-   SHOW EXPLANATION BUTTON
+   SAD CENTER ANIMATION
    ============================================================ */
 
-#show-explanation-btn {
-    display: block;
+@keyframes sadCenterPop {
 
-    width: 100%;
+    0% {
 
-    margin-top: 14px;
-
-    padding: 13px 18px;
-
-    background: #ffffff;
-
-    color: #4338ca;
-
-    border: 1px solid #c7d2fe;
-
-    border-radius: 10px;
-
-    font-family: inherit;
-
-    font-size: 15px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.15s ease;
-}
-
-#show-explanation-btn:hover {
-    background: #eef2ff;
-
-    border-color: #818cf8;
-
-    transform: translateY(-1px);
-}
-
-
-/* ============================================================
-   EXPLANATION
-   ============================================================ */
-
-#explanation {
-    width: 100%;
-
-    margin-top: 16px;
-
-    padding: 22px;
-
-    background: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-left: 4px solid #6366f1;
-
-    border-radius: 12px;
-
-    line-height: 1.65;
-
-    box-shadow:
-        0 5px 18px rgba(15, 23, 42, 0.05);
-
-    animation:
-        explanationAppear
-        0.3s
-        ease;
-}
-
-
-@keyframes explanationAppear {
-
-    from {
         opacity: 0;
 
         transform:
-            translateY(-8px);
+            translate(-50%, -50%)
+            scale(0.3);
     }
 
-    to {
+
+    20% {
+
         opacity: 1;
 
         transform:
-            translateY(0);
+            translate(-50%, -50%)
+            scale(1.1);
     }
-}
-
-#explanation h3 {
-    margin:
-        0 0 9px;
-
-    color: #312e81;
-
-    font-size: 17px;
-
-    font-weight: 700;
-}
-
-#explanation-text {
-    color: #475569;
-
-    font-size: 15px;
-
-    line-height: 1.7;
-
-    white-space: pre-wrap;
-
-    overflow-wrap: anywhere;
-}
 
 
-/* ============================================================
-   COPY LINK BUTTON
-   ============================================================ */
+    45% {
 
-#copy-btn {
-    display: block;
+        opacity: 1;
 
-    width: 100%;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
 
-    margin-top: 12px;
 
-    padding: 12px 18px;
+    100% {
 
-    background: #ffffff;
+        opacity: 0;
 
-    color: #4338ca;
-
-    border: 1px solid #c7d2fe;
-
-    border-radius: 10px;
-
-    font-family: inherit;
-
-    font-size: 15px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease;
-}
-
-#copy-btn:hover {
-    background: #eef2ff;
-
-    border-color: #818cf8;
+        transform:
+            translate(-50%, -50%)
+            scale(0.95);
+    }
 }
 
 
@@ -1197,22 +1353,26 @@ main {
    ============================================================ */
 
 footer {
+
     width: 100%;
 
     padding:
-        25px
-        20px
-        35px;
+        25px 20px;
 
     text-align: center;
 
-    color: #94a3b8;
+    color:
+        #64748b;
 
-    font-size: 13px;
+    font-size:
+        13px;
 }
 
+
 footer p {
-    margin: 0;
+
+    margin:
+        0;
 }
 
 
@@ -1220,41 +1380,45 @@ footer p {
    TABLET
    ============================================================ */
 
-@media (max-width: 800px) {
+@media (
+    max-width: 800px
+) {
 
     main {
-        max-width: 720px;
 
-        margin:
-            30px
-            auto;
+        margin-top:
+            25px;
 
         padding:
-            0
+            0 16px;
+    }
+
+
+    .quiz-layout {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
             18px;
     }
 
-    .quiz-layout {
-        grid-template-columns: 1fr;
-
-        gap: 18px;
-    }
 
     .question-panel,
     .options-panel {
-        min-height: auto;
+
+        min-height:
+            auto;
+
+        padding:
+            24px;
     }
 
-    .question-panel {
-        padding: 25px;
-    }
-
-    .options-panel {
-        padding: 25px;
-    }
 
     #question {
-        font-size: 19px;
+
+        font-size:
+            19px;
     }
 }
 
@@ -1263,159 +1427,126 @@ footer p {
    MOBILE
    ============================================================ */
 
-@media (max-width: 600px) {
+@media (
+    max-width: 520px
+) {
 
     header {
+
         padding:
-            24px
-            15px;
+            20px 15px;
     }
+
+
+    .header-content {
+
+        justify-content:
+            flex-start;
+    }
+
+
+    .logo {
+
+        width:
+            44px;
+
+        height:
+            44px;
+
+        font-size:
+            24px;
+    }
+
 
     header h1 {
-        font-size: 27px;
+
+        font-size:
+            25px;
     }
+
 
     header p {
-        font-size: 14px;
+
+        font-size:
+            13px;
     }
+
 
     main {
+
         margin:
-            22px
-            auto;
+            20px auto 35px;
 
         padding:
-            0
-            12px;
+            0 12px;
     }
+
 
     .question-header {
-        flex-direction: column;
 
-        align-items: flex-start;
+        align-items:
+            flex-start;
 
-        gap: 8px;
+        flex-direction:
+            column;
 
-        margin-bottom: 14px;
+        gap:
+            8px;
     }
 
-    #question-id,
-    #topic {
-        font-size: 12px;
-
-        min-height: 28px;
-
-        padding:
-            5px
-            10px;
-    }
 
     .question-panel,
     .options-panel {
-        padding: 20px;
 
-        border-radius: 12px;
+        padding:
+            20px;
+
+        border-radius:
+            18px;
     }
+
 
     #question {
-        font-size: 17px;
 
-        line-height: 1.6;
+        font-size:
+            18px;
+
+        line-height:
+            1.55;
     }
 
-    .panel-label {
-        margin-bottom: 14px;
-
-        font-size: 11px;
-    }
-
-    #options {
-        gap: 10px;
-    }
 
     .option {
-        padding: 13px;
 
-        gap: 9px;
+        min-height:
+            58px;
 
-        border-radius: 10px;
+        padding:
+            10px 12px;
     }
 
-    .option input[type="radio"] {
-        width: 17px;
-
-        height: 17px;
-    }
 
     .option-letter {
-        flex:
-            0 0 22px;
 
-        width: 22px;
+        width:
+            32px;
 
-        font-size: 15px;
+        height:
+            32px;
     }
+
 
     .option-text {
-        font-size: 14.5px;
 
-        line-height: 1.5;
+        font-size:
+            14px;
     }
 
-    #submit-btn {
-        margin-top: 15px;
-
-        padding: 13px;
-    }
-
-    #result {
-        font-size: 15px;
-    }
-
-    #explanation {
-        padding: 17px;
-    }
-
-    #explanation-text {
-        font-size: 14px;
-    }
-
-    .reaction-emoji {
-        font-size: 2.4rem;
-    }
 
     .reaction-container::before {
-        font-size: 2rem;
-    }
-}
 
-
-/* ============================================================
-   VERY SMALL SCREENS
-   ============================================================ */
-
-@media (max-width: 380px) {
-
-    main {
-        padding:
-            0
-            10px;
+        font-size:
+            30px;
     }
 
-    .question-panel,
-    .options-panel {
-        padding: 17px;
-    }
-
-    #question {
-        font-size: 16px;
-    }
-
-    .option {
-        padding: 12px;
-    }
-
-    .option-text {
-        font-size: 14px;
-    }
 }
