@@ -29,13 +29,30 @@ body {
         sans-serif;
 
     background:
-        radial-gradient(circle at 8% 18%, rgba(99, 102, 241, 0.10), transparent 23%),
-        radial-gradient(circle at 92% 25%, rgba(14, 165, 233, 0.09), transparent 24%),
-        radial-gradient(circle at 15% 88%, rgba(168, 85, 247, 0.08), transparent 24%),
-        radial-gradient(circle at 88% 85%, rgba(34, 197, 94, 0.06), transparent 22%),
+        radial-gradient(
+            circle at 8% 18%,
+            rgba(99, 102, 241, 0.10),
+            transparent 23%
+        ),
+        radial-gradient(
+            circle at 92% 25%,
+            rgba(14, 165, 233, 0.09),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 15% 88%,
+            rgba(168, 85, 247, 0.08),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 88% 85%,
+            rgba(34, 197, 94, 0.06),
+            transparent 22%
+        ),
         #f5f7fb;
 
     color: #172033;
+
     overflow-x: hidden;
 }
 
@@ -46,14 +63,21 @@ body {
 
 body::before {
     content: "";
+
     position: fixed;
+
     inset: 0;
 
     pointer-events: none;
+
     z-index: -1;
 
     background-image:
-        radial-gradient(circle, rgba(79, 70, 229, 0.12) 1px, transparent 1.5px);
+        radial-gradient(
+            circle,
+            rgba(79, 70, 229, 0.12) 1px,
+            transparent 1.5px
+        );
 
     background-size: 30px 30px;
 
@@ -95,6 +119,7 @@ header h1 {
     margin: 0;
 
     font-size: 32px;
+
     font-weight: 700;
 
     letter-spacing: -0.5px;
@@ -104,6 +129,7 @@ header p {
     margin: 6px 0 0;
 
     font-size: 15px;
+
     opacity: 0.92;
 }
 
@@ -114,6 +140,7 @@ header p {
 
 main {
     width: 100%;
+
     max-width: 1180px;
 
     margin: 40px auto;
@@ -132,7 +159,7 @@ main {
 
 
 /* ============================================================
-   LOADING / ERROR
+   LOADING
    ============================================================ */
 
 #loading {
@@ -143,8 +170,14 @@ main {
     text-align: center;
 
     font-size: 16px;
+
     color: #64748b;
 }
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
 
 #error {
     width: 100%;
@@ -171,6 +204,7 @@ main {
 
 #question-container {
     width: 100%;
+
     min-width: 0;
 }
 
@@ -218,7 +252,7 @@ main {
 
 
 /* ============================================================
-   TWO-COLUMN QUIZ LAYOUT
+   TWO COLUMN QUIZ LAYOUT
    ============================================================ */
 
 .quiz-layout {
@@ -237,7 +271,7 @@ main {
 
 
 /* ============================================================
-   LEFT QUESTION PANEL
+   QUESTION PANEL - LEFT
    ============================================================ */
 
 .question-panel {
@@ -271,9 +305,11 @@ main {
     position: absolute;
 
     width: 150px;
+
     height: 150px;
 
     right: -65px;
+
     top: -65px;
 
     border-radius: 50%;
@@ -290,7 +326,7 @@ main {
 
 
 /* ============================================================
-   RIGHT OPTIONS PANEL
+   OPTIONS PANEL - RIGHT
    ============================================================ */
 
 .options-panel {
@@ -350,7 +386,7 @@ main {
 
 
 /* ============================================================
-   OPTIONS CONTAINER
+   OPTIONS
    ============================================================ */
 
 #options {
@@ -365,12 +401,13 @@ main {
     width: 100%;
 
     margin: 0;
+
     padding: 0;
 }
 
 
 /* ============================================================
-   INDIVIDUAL OPTION
+   OPTION
    ============================================================ */
 
 .option {
@@ -427,7 +464,7 @@ main {
 
 
 /* ============================================================
-   OPTION SELECTED
+   SELECTED OPTION
    ============================================================ */
 
 .option.selected {
@@ -455,7 +492,7 @@ main {
         0 5px 18px rgba(22, 163, 74, 0.16);
 
     animation:
-        correctPulse 0.55s ease;
+        correctAnswerPop 0.6s ease;
 }
 
 .option.correct-answer .option-letter,
@@ -489,16 +526,24 @@ main {
 
 
 /* ============================================================
-   CORRECT ANIMATION
+   CORRECT ANSWER POP
    ============================================================ */
 
-@keyframes correctPulse {
+@keyframes correctAnswerPop {
 
     0% {
         transform: scale(1);
     }
 
-    45% {
+    30% {
+        transform: scale(1.045);
+    }
+
+    55% {
+        transform: scale(0.99);
+    }
+
+    75% {
         transform: scale(1.025);
     }
 
@@ -509,7 +554,7 @@ main {
 
 
 /* ============================================================
-   WRONG ANIMATION
+   WRONG ANSWER SHAKE
    ============================================================ */
 
 @keyframes wrongShake {
@@ -520,19 +565,19 @@ main {
     }
 
     20% {
-        transform: translateX(-5px);
+        transform: translateX(-7px);
     }
 
     40% {
-        transform: translateX(5px);
+        transform: translateX(7px);
     }
 
     60% {
-        transform: translateX(-4px);
+        transform: translateX(-5px);
     }
 
     80% {
-        transform: translateX(4px);
+        transform: translateX(5px);
     }
 }
 
@@ -545,6 +590,7 @@ main {
     flex: 0 0 auto;
 
     width: 18px;
+
     height: 18px;
 
     margin: 3px 0 0;
@@ -594,7 +640,7 @@ main {
 
 
 /* ============================================================
-   SUBMIT BUTTON
+   CHECK ANSWER BUTTON
    ============================================================ */
 
 #submit-btn {
@@ -683,7 +729,8 @@ main {
 
     color: #047857;
 
-    animation: resultAppear 0.35s ease;
+    animation:
+        resultAppear 0.35s ease;
 }
 
 #result.incorrect {
@@ -697,25 +744,37 @@ main {
 
     color: #be123c;
 
-    animation: resultAppear 0.35s ease;
+    animation:
+        resultAppear 0.35s ease;
 }
+
+
+/* ============================================================
+   RESULT APPEAR
+   ============================================================ */
 
 @keyframes resultAppear {
 
     from {
         opacity: 0;
-        transform: translateY(8px);
+
+        transform:
+            translateY(10px)
+            scale(0.98);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0)
+            scale(1);
     }
 }
 
 
 /* ============================================================
-   HAPPY / SAD EMOJI OVERLAY
+   EMOJI REACTION CONTAINER
    ============================================================ */
 
 .reaction-container {
@@ -723,62 +782,255 @@ main {
 
     inset: 0;
 
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+
+    height: 100vh;
 
     pointer-events: none;
 
-    z-index: 9999;
-
     overflow: hidden;
+
+    z-index: 99999;
 }
+
+
+/* ============================================================
+   INDIVIDUAL EMOJI
+   ============================================================ */
 
 .reaction-emoji {
     position: absolute;
 
-    bottom: -80px;
+    bottom: -100px;
 
     display: block;
 
     opacity: 0;
 
-    animation-name: emojiFloat;
+    font-size: 3rem;
 
-    animation-timing-function: ease-out;
+    line-height: 1;
 
-    animation-fill-mode: forwards;
+    will-change:
+        transform,
+        opacity;
+
+    animation-name:
+        emojiPopAndRoll;
+
+    animation-timing-function:
+        cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        );
+
+    animation-fill-mode:
+        forwards;
 
     filter:
         drop-shadow(
-            0 4px 5px rgba(15, 23, 42, 0.12)
+            0 6px 8px
+            rgba(0, 0, 0, 0.18)
         );
 }
 
-@keyframes emojiFloat {
+
+/* ============================================================
+   EMOJI POP + ROLL
+   ============================================================ */
+
+@keyframes emojiPopAndRoll {
 
     0% {
         opacity: 0;
+
         transform:
             translateY(0)
+            translateX(0)
             rotate(0deg)
-            scale(0.7);
+            scale(0.2);
     }
 
-    12% {
+    10% {
         opacity: 1;
+
+        transform:
+            translateY(-80px)
+            translateX(0)
+            rotate(-10deg)
+            scale(1.35);
     }
 
-    70% {
+    25% {
         opacity: 1;
+
+        transform:
+            translateY(-220px)
+            translateX(-15px)
+            rotate(25deg)
+            scale(1.15);
+    }
+
+    45% {
+        opacity: 1;
+
+        transform:
+            translateY(-400px)
+            translateX(25px)
+            rotate(-35deg)
+            scale(1.3);
+    }
+
+    65% {
+        opacity: 1;
+
+        transform:
+            translateY(-600px)
+            translateX(-20px)
+            rotate(45deg)
+            scale(1.05);
+    }
+
+    82% {
+        opacity: 0.9;
+
+        transform:
+            translateY(-760px)
+            translateX(20px)
+            rotate(-55deg)
+            scale(1.2);
     }
 
     100% {
         opacity: 0;
 
         transform:
-            translateY(-90vh)
-            rotate(var(--rotation))
+            translateY(-100vh)
+            translateX(-10px)
+            rotate(90deg)
+            scale(0.8);
+    }
+}
+
+
+/* ============================================================
+   CENTER CELEBRATION POP
+   ============================================================ */
+
+.reaction-container::before {
+    content:
+        "✨ 🎉 👏 🥳 🎊 ✨";
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 48%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.2);
+
+    font-size: 3rem;
+
+    white-space: nowrap;
+
+    opacity: 0;
+
+    animation:
+        celebrationCenterPop
+        0.9s
+        ease-out
+        forwards;
+}
+
+
+@keyframes celebrationCenterPop {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.2);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.3);
+    }
+
+    65% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.8);
+    }
+}
+
+
+/* ============================================================
+   SAD CENTER POP
+   ============================================================ */
+
+.reaction-container.sad::before {
+    content:
+        "😢 😞 🥺 💔 😔";
+
+    animation:
+        sadCenterPop
+        0.9s
+        ease-out
+        forwards;
+}
+
+
+@keyframes sadCenterPop {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.3);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
             scale(1.25);
+    }
+
+    65% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.6);
     }
 }
 
@@ -852,24 +1104,32 @@ main {
         0 5px 18px rgba(15, 23, 42, 0.05);
 
     animation:
-        explanationAppear 0.3s ease;
+        explanationAppear
+        0.3s
+        ease;
 }
+
 
 @keyframes explanationAppear {
 
     from {
         opacity: 0;
-        transform: translateY(-6px);
+
+        transform:
+            translateY(-8px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
 }
 
 #explanation h3 {
-    margin: 0 0 9px;
+    margin:
+        0 0 9px;
 
     color: #312e81;
 
@@ -939,7 +1199,10 @@ main {
 footer {
     width: 100%;
 
-    padding: 25px 20px 35px;
+    padding:
+        25px
+        20px
+        35px;
 
     text-align: center;
 
@@ -962,9 +1225,13 @@ footer p {
     main {
         max-width: 720px;
 
-        margin: 30px auto;
+        margin:
+            30px
+            auto;
 
-        padding: 0 18px;
+        padding:
+            0
+            18px;
     }
 
     .quiz-layout {
@@ -999,7 +1266,9 @@ footer p {
 @media (max-width: 600px) {
 
     header {
-        padding: 24px 15px;
+        padding:
+            24px
+            15px;
     }
 
     header h1 {
@@ -1011,9 +1280,13 @@ footer p {
     }
 
     main {
-        margin: 22px auto;
+        margin:
+            22px
+            auto;
 
-        padding: 0 12px;
+        padding:
+            0
+            12px;
     }
 
     .question-header {
@@ -1032,7 +1305,9 @@ footer p {
 
         min-height: 28px;
 
-        padding: 5px 10px;
+        padding:
+            5px
+            10px;
     }
 
     .question-panel,
@@ -1068,11 +1343,13 @@ footer p {
 
     .option input[type="radio"] {
         width: 17px;
+
         height: 17px;
     }
 
     .option-letter {
-        flex: 0 0 22px;
+        flex:
+            0 0 22px;
 
         width: 22px;
 
@@ -1104,7 +1381,11 @@ footer p {
     }
 
     .reaction-emoji {
-        font-size: 2rem !important;
+        font-size: 2.4rem;
+    }
+
+    .reaction-container::before {
+        font-size: 2rem;
     }
 }
 
@@ -1116,7 +1397,9 @@ footer p {
 @media (max-width: 380px) {
 
     main {
-        padding: 0 10px;
+        padding:
+            0
+            10px;
     }
 
     .question-panel,
