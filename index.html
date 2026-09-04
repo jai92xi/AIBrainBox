@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,71 +11,52 @@
 
 <body>
 
-    <!-- =========================================================
+    <!-- =====================================================
          HEADER
-         ========================================================= -->
+         ===================================================== -->
 
     <header>
-
         <div class="header-content">
 
             <div class="logo">
                 🧠
             </div>
 
-            <div>
+            <div class="header-text">
                 <h1>AIBrainBox</h1>
-                <p>AI Questions & Practice...</p>
+                <p>AI Questions &amp; Practice</p>
             </div>
 
         </div>
-
     </header>
 
 
-    <!-- =========================================================
-         MAIN
-         ========================================================= -->
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
 
     <main>
 
         <!-- Loading -->
-
         <div id="loading">
             Loading question...
         </div>
 
 
         <!-- Error -->
-
         <div id="error" class="hidden"></div>
 
 
-        <!-- Question -->
-
+        <!-- Quiz -->
         <div id="question-container" class="hidden">
 
-            <!-- Question Header -->
-
-            <div class="question-header">
-
-                <span id="question-id"></span>
-
-                <span id="topic"></span>
-
-            </div>
-
-
             <!-- =================================================
-                 TWO COLUMN QUIZ
+                 QUESTION + OPTIONS
                  ================================================= -->
 
             <div class="quiz-layout">
 
-
-                <!-- =================================================
-                     LEFT : QUESTION
-                     ================================================= -->
+                <!-- ================= QUESTION ================= -->
 
                 <section class="question-panel">
 
@@ -89,9 +69,7 @@
                 </section>
 
 
-                <!-- =================================================
-                     RIGHT : OPTIONS
-                     ================================================= -->
+                <!-- ================= OPTIONS ================= -->
 
                 <section class="options-panel">
 
@@ -114,7 +92,7 @@
 
 
             <!-- =================================================
-                 EXPLANATION
+                 EXPLANATION BUTTON
                  ================================================= -->
 
             <button
@@ -126,10 +104,11 @@
             </button>
 
 
-            <div
-                id="explanation"
-                class="hidden"
-            >
+            <!-- =================================================
+                 EXPLANATION
+                 ================================================= -->
+
+            <div id="explanation" class="hidden">
 
                 <h3>
                     💡 Explanation
@@ -144,21 +123,22 @@
     </main>
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          FOOTER
-         ========================================================= -->
+         ===================================================== -->
 
     <footer>
-
         <p>
-            🧠 AIBrainBox • AI Questions & Practice
+            🧠 AIBrainBox • AI Questions &amp; Practice
         </p>
-
     </footer>
 
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
 
     <script src="app.js"></script>
 
 </body>
-
 </html>
