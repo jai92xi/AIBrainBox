@@ -1,271 +1,414 @@
+/* ============================================================
+   GLOBAL RESET
+   ============================================================ */
+
 * {
     box-sizing: border-box;
 }
 
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    overflow-x: hidden;
+}
 
 body {
-    margin: 0;
-
     font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
+        Roboto,
+        Helvetica,
         Arial,
         sans-serif;
 
-    background: #f3f4f6;
+    background: #f5f7fb;
+    color: #172033;
 
-    color: #1f2937;
-
-    line-height: 1.6;
+    overflow-x: hidden;
 }
 
 
-/* HEADER */
+/* ============================================================
+   HEADER
+   ============================================================ */
 
 header {
+    width: 100%;
 
     background:
         linear-gradient(
             135deg,
-            #4f46e5,
-            #7c3aed
+            #4f46e5 0%,
+            #6d3fe8 50%,
+            #7c3aed 100%
         );
 
-    color: white;
+    color: #ffffff;
+
+    padding: 30px 20px;
 
     text-align: center;
+}
 
-    padding: 32px 20px;
 
+.header-content {
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 
 header h1 {
-
     margin: 0;
 
-    font-size: 34px;
+    font-size: 32px;
+    font-weight: 700;
 
+    letter-spacing: -0.5px;
 }
 
 
 header p {
+    margin: 6px 0 0;
 
-    margin:
-        5px 0 0;
+    font-size: 15px;
 
-    font-size: 16px;
-
-    opacity: 0.9;
-
+    opacity: 0.92;
 }
 
 
-/* MAIN */
+/* ============================================================
+   MAIN
+   ============================================================ */
 
 main {
+    width: 100%;
+    max-width: 1000px;
 
+    margin: 40px auto;
+
+    padding: 0 24px;
+}
+
+
+/* ============================================================
+   HIDDEN
+   ============================================================ */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ============================================================
+   LOADING / ERROR
+   ============================================================ */
+
+.status-message {
     width: 100%;
 
-    max-width: 900px;
+    padding: 40px 20px;
 
-    margin:
-        40px auto;
+    text-align: center;
 
-    padding:
-        0 20px;
-
+    font-size: 16px;
+    color: #64748b;
 }
 
 
-/* QUESTION HEADER */
-
-.question-header {
-
-    display: flex;
-
-    justify-content:
-        space-between;
-
-    align-items: center;
-
-    gap: 15px;
-
-    margin-bottom: 20px;
-
-}
-
-
-#question-id,
-#topic {
-
-    display: inline-block;
-
-    background: #e0e7ff;
-
-    color: #4338ca;
-
-    padding:
-        6px 12px;
-
-    border-radius: 20px;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-}
-
-
-/* QUESTION */
-
-#question {
-
-    background: white;
-
-    padding: 30px;
-
-    border-radius: 14px;
-
-    box-shadow:
-        0 4px 20px
-        rgba(0, 0, 0, 0.07);
-
-    font-size: 18px;
-
-    line-height: 1.8;
-
-    white-space: pre-wrap;
-
-    overflow-wrap: anywhere;
-
-    margin-bottom: 25px;
-
-}
-
-
-/* OPTIONS */
-
-#options {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 14px;
-
-}
-
-
-.option {
-
-    display: flex;
-
-    align-items: flex-start;
-
-    gap: 14px;
-
+#error {
     width: 100%;
 
-    background: white;
+    background: #fff1f2;
 
-    border: 2px solid #e5e7eb;
+    border: 1px solid #fecdd3;
+
+    color: #be123c;
 
     border-radius: 12px;
 
     padding: 18px 20px;
 
-    cursor: pointer;
+    margin-bottom: 20px;
 
-    transition:
-        border-color 0.2s,
-        background 0.2s,
-        box-shadow 0.2s;
-
+    line-height: 1.5;
 }
 
 
-.option:hover {
+/* ============================================================
+   QUESTION CONTAINER
+   ============================================================ */
 
-    border-color: #818cf8;
-
-    background: #f8f7ff;
-
+#question-container {
+    width: 100%;
+    min-width: 0;
 }
 
 
-.option.selected {
+/* ============================================================
+   QUESTION HEADER
+   ============================================================ */
 
-    border-color: #4f46e5;
+.question-header {
+    width: 100%;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 18px;
+}
+
+
+#question-id,
+#topic {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 30px;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
 
     background: #eef2ff;
 
-    box-shadow:
-        0 2px 8px
-        rgba(79, 70, 229, 0.12);
-
-}
-
-
-/* RADIO BUTTON */
-
-.option input {
-
-    flex-shrink: 0;
-
-    width: 18px;
-
-    height: 18px;
-
-    margin-top: 3px;
-
-    cursor: pointer;
-
-}
-
-
-/* A / B / C / D */
-
-.option-letter {
-
-    flex-shrink: 0;
-
-    font-weight: 700;
-
     color: #4338ca;
 
-    min-width: 22px;
+    font-size: 13px;
 
+    font-weight: 600;
+
+    white-space: nowrap;
 }
 
 
-/* OPTION TEXT */
+/* ============================================================
+   QUESTION CARD
+   ============================================================ */
 
-.option-text {
-
-    flex: 1;
-
+.question-card {
+    width: 100%;
     min-width: 0;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    padding: 30px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 4px 18px rgba(15, 23, 42, 0.06);
+
+    font-size: 18px;
+
+    line-height: 1.7;
 
     white-space: pre-wrap;
 
     overflow-wrap: anywhere;
 
-    line-height: 1.6;
-
+    word-break: normal;
 }
 
 
-/* SUBMIT */
+/* ============================================================
+   ANSWER OPTIONS CONTAINER
+   ============================================================ */
+
+/*
+   IMPORTANT:
+
+   The options MUST be a vertical column.
+
+   This is the main fix for the problem shown
+   in your screenshot.
+*/
+
+#options {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    justify-content: flex-start;
+
+    gap: 12px;
+
+    width: 100%;
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ============================================================
+   INDIVIDUAL ANSWER OPTION
+   ============================================================ */
+
+.option {
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    margin: 0;
+    padding: 16px 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #d7dce5;
+
+    border-radius: 11px;
+
+    color: #172033;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.1s ease;
+}
+
+
+/* ============================================================
+   OPTION HOVER
+   ============================================================ */
+
+.option:hover {
+    border-color: #818cf8;
+
+    background: #fafaff;
+
+    box-shadow:
+        0 3px 10px rgba(79, 70, 229, 0.08);
+}
+
+
+/* ============================================================
+   OPTION ACTIVE
+   ============================================================ */
+
+.option:active {
+    transform: translateY(1px);
+}
+
+
+/* ============================================================
+   SELECTED OPTION
+   ============================================================ */
+
+.option.selected {
+    border-color: #4f46e5;
+
+    background: #eef2ff;
+
+    box-shadow:
+        0 3px 12px rgba(79, 70, 229, 0.10);
+}
+
+
+/* ============================================================
+   RADIO BUTTON
+   ============================================================ */
+
+.option input[type="radio"] {
+    flex: 0 0 auto;
+
+    width: 18px;
+    height: 18px;
+
+    margin: 3px 0 0 0;
+
+    padding: 0;
+
+    accent-color: #4f46e5;
+
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   OPTION LETTER
+   ============================================================ */
+
+.option-letter {
+    flex: 0 0 25px;
+
+    width: 25px;
+
+    color: #4338ca;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    line-height: 1.55;
+}
+
+
+/* ============================================================
+   OPTION TEXT
+   ============================================================ */
+
+.option-text {
+    flex: 1 1 auto;
+
+    width: auto;
+    min-width: 0;
+
+    color: #1f2937;
+
+    font-size: 16px;
+
+    line-height: 1.55;
+
+    overflow-wrap: anywhere;
+
+    word-break: normal;
+}
+
+
+/* ============================================================
+   SUBMIT BUTTON
+   ============================================================ */
 
 #submit-btn {
+    display: block;
 
     width: 100%;
 
-    margin-top: 22px;
+    margin-top: 20px;
 
-    padding: 15px;
+    padding: 14px 18px;
 
     border: none;
 
@@ -273,235 +416,397 @@ main {
 
     background: #4f46e5;
 
-    color: white;
+    color: #ffffff;
 
-    font-size: 17px;
+    font-family: inherit;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.1s ease;
+}
+
+
+#submit-btn:hover {
+    background: #4338ca;
+
+    box-shadow:
+        0 4px 12px rgba(79, 70, 229, 0.20);
+}
+
+
+#submit-btn:active {
+    transform: translateY(1px);
+}
+
+
+#submit-btn:focus-visible {
+    outline: 3px solid rgba(79, 70, 229, 0.25);
+
+    outline-offset: 2px;
+}
+
+
+/* ============================================================
+   RESULT
+   ============================================================ */
+
+#result {
+    width: 100%;
+
+    margin-top: 16px;
+
+    padding: 0;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    line-height: 1.5;
+}
+
+
+#result.correct {
+    padding: 14px 16px;
+
+    border-radius: 10px;
+
+    background: #ecfdf5;
+
+    border: 1px solid #a7f3d0;
+
+    color: #047857;
+}
+
+
+#result.incorrect {
+    padding: 14px 16px;
+
+    border-radius: 10px;
+
+    background: #fff1f2;
+
+    border: 1px solid #fecdd3;
+
+    color: #be123c;
+}
+
+
+/* ============================================================
+   EXPLANATION
+   ============================================================ */
+
+#explanation {
+    width: 100%;
+
+    margin-top: 18px;
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-left: 4px solid #6366f1;
+
+    border-radius: 10px;
+
+    line-height: 1.65;
+
+    box-shadow:
+        0 3px 12px rgba(15, 23, 42, 0.04);
+}
+
+
+#explanation h3 {
+    margin: 0 0 8px;
+
+    color: #312e81;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+#explanation-text {
+    color: #475569;
+
+    font-size: 15px;
+
+    line-height: 1.65;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ============================================================
+   COPY LINK BUTTON
+   ============================================================ */
+
+#copy-btn {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 12px 18px;
+
+    background: #ffffff;
+
+    color: #4338ca;
+
+    border: 1px solid #c7d2fe;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+
+    font-size: 15px;
 
     font-weight: 600;
 
     cursor: pointer;
 
-}
-
-
-#submit-btn:hover {
-
-    background: #4338ca;
-
-}
-
-
-/* RESULT */
-
-#result {
-
-    margin-top: 22px;
-
-    padding: 15px;
-
-    border-radius: 10px;
-
-    font-size: 18px;
-
-    font-weight: 700;
-
-}
-
-
-.correct {
-
-    color: #166534;
-
-    background: #dcfce7;
-
-}
-
-
-.incorrect {
-
-    color: #991b1b;
-
-    background: #fee2e2;
-
-}
-
-
-/* EXPLANATION */
-
-#explanation {
-
-    margin-top: 25px;
-
-    background: white;
-
-    border-left:
-        5px solid #6366f1;
-
-    padding: 25px;
-
-    border-radius: 10px;
-
-    box-shadow:
-        0 3px 12px
-        rgba(0, 0, 0, 0.05);
-
-}
-
-
-#explanation h3 {
-
-    margin-top: 0;
-
-    color: #4338ca;
-
-}
-
-
-#explanation-text {
-
-    white-space: pre-wrap;
-
-    overflow-wrap: anywhere;
-
-    line-height: 1.8;
-
-}
-
-
-/* COPY BUTTON */
-
-#copy-btn {
-
-    width: 100%;
-
-    margin-top: 25px;
-
-    padding: 14px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    background: #111827;
-
-    color: white;
-
-    font-size: 16px;
-
-    cursor: pointer;
-
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease;
 }
 
 
 #copy-btn:hover {
+    background: #eef2ff;
 
-    background: #374151;
-
+    border-color: #818cf8;
 }
 
 
-/* LOADING */
+#copy-btn:focus-visible {
+    outline: 3px solid rgba(79, 70, 229, 0.20);
 
-#loading {
-
-    text-align: center;
-
-    padding: 50px;
-
-    font-size: 18px;
-
+    outline-offset: 2px;
 }
 
 
-/* ERROR */
-
-#error {
-
-    background: #fee2e2;
-
-    color: #991b1b;
-
-    padding: 20px;
-
-    border-radius: 10px;
-
-}
-
-
-/* HIDDEN */
-
-.hidden {
-
-    display: none !important;
-
-}
-
-
-/* FOOTER */
+/* ============================================================
+   FOOTER
+   ============================================================ */
 
 footer {
+    width: 100%;
+
+    padding: 25px 20px 35px;
 
     text-align: center;
 
-    padding: 35px 20px;
+    color: #94a3b8;
 
-    color: #6b7280;
-
+    font-size: 13px;
 }
 
 
-/* MOBILE */
+footer p {
+    margin: 0;
+}
 
-@media (max-width: 600px) {
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 26px 18px;
+    }
+
 
     header h1 {
-
-        font-size: 27px;
-
+        font-size: 29px;
     }
 
 
     main {
+        margin: 30px auto;
 
-        margin-top: 20px;
-
-        padding:
-            0 12px;
-
+        padding: 0 18px;
     }
 
 
-    .question-header {
-
-        align-items: flex-start;
-
-        flex-direction: column;
-
-    }
-
-
-    #question {
-
-        padding: 20px;
+    .question-card {
+        padding: 24px;
 
         font-size: 17px;
 
+        line-height: 1.65;
     }
 
 
     .option {
+        padding: 15px 16px;
+    }
+}
 
-        padding: 15px;
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    header {
+        padding: 24px 15px;
+    }
+
+
+    header h1 {
+        font-size: 27px;
+    }
+
+
+    header p {
+        font-size: 14px;
+    }
+
+
+    main {
+        margin: 22px auto;
+
+        padding: 0 12px;
+    }
+
+
+    /* Stack question ID and topic */
+
+    .question-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+
+        margin-bottom: 14px;
+    }
+
+
+    #question-id,
+    #topic {
+        font-size: 12px;
+
+        min-height: 28px;
+
+        padding: 5px 10px;
+    }
+
+
+    /* Question */
+
+    .question-card {
+        padding: 20px;
+
+        border-radius: 12px;
+
+        font-size: 16px;
+
+        line-height: 1.65;
+    }
+
+
+    /* Options */
+
+    #options {
+        gap: 10px;
+    }
+
+
+    .option {
+        width: 100%;
+
+        padding: 14px;
 
         gap: 10px;
 
+        border-radius: 10px;
+    }
+
+
+    .option input[type="radio"] {
+        width: 17px;
+        height: 17px;
+
+        margin-top: 3px;
+    }
+
+
+    .option-letter {
+        flex: 0 0 22px;
+
+        width: 22px;
+
+        font-size: 15px;
     }
 
 
     .option-text {
+        font-size: 15px;
 
-        font-size: 16px;
-
+        line-height: 1.5;
     }
 
+
+    #submit-btn {
+        margin-top: 16px;
+
+        padding: 14px;
+    }
+
+
+    #explanation {
+        padding: 16px;
+    }
+
+
+    #copy-btn {
+        padding: 12px;
+    }
+}
+
+
+/* ============================================================
+   VERY SMALL SCREENS
+   ============================================================ */
+
+@media (max-width: 380px) {
+
+    main {
+        padding: 0 10px;
+    }
+
+
+    .question-card {
+        padding: 17px;
+
+        font-size: 15px;
+    }
+
+
+    .option {
+        padding: 12px;
+    }
+
+
+    .option-text {
+        font-size: 14px;
+    }
 }
