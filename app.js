@@ -44,6 +44,7 @@ async function loadQuestions() {
 // ============================================================
 
 function parseCSV(text) {
+
     const rows = [];
 
     let row = [];
@@ -56,23 +57,24 @@ function parseCSV(text) {
         const nextChar = text[i + 1];
 
         if (char === '"' && insideQuotes && nextChar === '"') {
+
             cell += '"';
             i++;
-        }
 
-        else if (char === '"') {
+        } else if (char === '"') {
+
             insideQuotes = !insideQuotes;
-        }
 
-        else if (char === "," && !insideQuotes) {
+        } else if (char === "," && !insideQuotes) {
+
             row.push(cell);
             cell = "";
-        }
 
-        else if (
+        } else if (
             (char === "\n" || char === "\r") &&
             !insideQuotes
         ) {
+
             if (char === "\r" && nextChar === "\n") {
                 i++;
             }
@@ -89,14 +91,15 @@ function parseCSV(text) {
 
             row = [];
             cell = "";
-        }
 
-        else {
+        } else {
+
             cell += char;
         }
     }
 
     if (cell !== "" || row.length > 0) {
+
         row.push(cell);
 
         if (
@@ -125,6 +128,7 @@ function parseCSV(text) {
 
         headers.forEach(
             (header, index) => {
+
                 question[header] =
                     row[index] || "";
             }
@@ -207,12 +211,10 @@ function displayQuestion() {
         .innerText =
         currentQuestion.question || "";
 
-
     const optionsContainer =
         document.getElementById("options");
 
     optionsContainer.innerHTML = "";
-
 
     const optionLetters = [
         "A",
@@ -221,76 +223,91 @@ function displayQuestion() {
         "D"
     ];
 
+    optionLetters.forEach(letter => {
 
-    optionLetters.forEach(
-        letter => {
+        const option =
+            document.createElement("label");
 
-            const option =
-                document.createElement("label");
+        option.className = "option";
 
-            option.className = "option";
+        const radio =
+            document.createElement("input");
 
+        radio.type = "radio";
+        radio.name = "answer";
+        radio.value = letter;
 
-            const radio =
-                document.createElement("input");
+        const letterSpan =
+            document.createElement("span");
 
-            radio.type = "radio";
-            radio.name = "answer";
-            radio.value = letter;
+        letterSpan.className =
+            "option-letter";
 
+        letterSpan.innerText =
+            letter + ".";
 
-            const letterSpan =
-                document.createElement("span");
+        const textSpan =
+            document.createElement("span");
 
-            letterSpan.className =
-                "option-letter";
+        textSpan.className =
+            "option-text";
 
-            letterSpan.innerText =
-                letter + ".";
+        textSpan.innerText =
+            currentQuestion[
+                letter.toLowerCase()
+            ] || "";
 
+        option.appendChild(radio);
+        option.appendChild(letterSpan);
+        option.appendChild(textSpan);
 
-            const textSpan =
-                document.createElement("span");
+        optionsContainer.appendChild(option);
 
-            textSpan.className =
-                "option-text";
+        radio.addEventListener(
+            "change",
+            () => {
 
-            textSpan.innerText =
-                currentQuestion[
-                    letter.toLowerCase()
-                ] || "";
+                document
+                    .querySelectorAll(".option")
+                    .forEach(item => {
 
-
-            option.appendChild(radio);
-            option.appendChild(letterSpan);
-            option.appendChild(textSpan);
-
-            optionsContainer.appendChild(option);
-
-
-            radio.addEventListener(
-                "change",
-                () => {
-
-                    document
-                        .querySelectorAll(".option")
-                        .forEach(
-                            item =>
-                                item.classList.remove(
-                                    "selected"
-                                )
+                        item.classList.remove(
+                            "selected",
+                            "correct-answer",
+                            "wrong-answer"
                         );
+                    });
 
-                    option.classList.add(
-                        "selected"
-                    );
+                option.classList.add("selected");
 
-                    clearAnswerStates();
-                }
-            );
-        }
-    );
+                // Clear previous result when choosing another answer
+                const result =
+                    document.getElementById("result");
 
+                result.innerText = "";
+                result.className = "";
+
+                // Hide explanation until answer is checked
+                document
+                    .getElementById("explanation")
+                    .classList.add("hidden");
+
+                document
+                    .getElementById("show-explanation-btn")
+                    .classList.add("hidden");
+            }
+        );
+    });
+
+    resetAnswerState();
+}
+
+
+// ============================================================
+// RESET ANSWER STATE
+// ============================================================
+
+function resetAnswerState() {
 
     const result =
         document.getElementById("result");
@@ -298,12 +315,10 @@ function displayQuestion() {
     result.innerText = "";
     result.className = "";
 
-
     const explanation =
         document.getElementById("explanation");
 
     explanation.classList.add("hidden");
-
 
     const explanationText =
         document.getElementById(
@@ -311,32 +326,24 @@ function displayQuestion() {
         );
 
     explanationText.innerText = "";
-}
 
+    const explanationButton =
+        document.getElementById(
+            "show-explanation-btn"
+        );
 
-// ============================================================
-// CLEAR ANSWER STATES
-// ============================================================
-
-function clearAnswerStates() {
+    explanationButton.classList.add("hidden");
 
     document
         .querySelectorAll(".option")
         .forEach(option => {
 
             option.classList.remove(
+                "selected",
                 "correct-answer",
-                "wrong-answer",
-                "selected"
+                "wrong-answer"
             );
-
         });
-
-    const result =
-        document.getElementById("result");
-
-    result.innerText = "";
-    result.className = "";
 }
 
 
@@ -351,28 +358,23 @@ function submitAnswer() {
             'input[name="answer"]:checked'
         );
 
-
     const result =
         document.getElementById("result");
 
-
     if (!selected) {
 
-        result.className =
-            "incorrect";
+        result.className = "incorrect";
 
         result.innerText =
-            "😕 Please select an answer first.";
+            "🤔 Please select an answer first.";
 
         return;
     }
-
 
     const userAnswer =
         selected.value
             .trim()
             .toUpperCase();
-
 
     const correctAnswer =
         (
@@ -382,45 +384,36 @@ function submitAnswer() {
         .trim()
         .toUpperCase();
 
+    const selectedOption =
+        selected.closest(".option");
 
-    const allOptions =
-        document.querySelectorAll(".option");
+    // Remove previous answer states
+    document
+        .querySelectorAll(".option")
+        .forEach(option => {
 
-
-    allOptions.forEach(option => {
-
-        option.classList.remove(
-            "correct-answer",
-            "wrong-answer"
-        );
-
-    });
+            option.classList.remove(
+                "correct-answer",
+                "wrong-answer"
+            );
+        });
 
 
     // ========================================================
     // CORRECT ANSWER
     // ========================================================
 
-    if (
-        userAnswer === correctAnswer
-    ) {
+    if (userAnswer === correctAnswer) {
 
-        selected
-            .closest(".option")
-            .classList.add(
-                "correct-answer"
-            );
+        selectedOption.classList.remove("selected");
+        selectedOption.classList.add("correct-answer");
 
-
-        result.className =
-            "correct";
+        result.className = "correct";
 
         result.innerText =
-            "🎉👏👏 Excellent! Correct! 🥳🎊✨🚀";
-
+            "🎉👏👏 Congratulations! Correct! 🥳🎊✨🚀🤖🧠💡⭐🔥";
 
         showCorrectCelebration();
-
     }
 
 
@@ -430,204 +423,102 @@ function submitAnswer() {
 
     else {
 
-        selected
-            .closest(".option")
-            .classList.add(
-                "wrong-answer"
+        selectedOption.classList.remove("selected");
+        selectedOption.classList.add("wrong-answer");
+
+        // Highlight correct answer in green
+        const correctOption =
+            document.querySelector(
+                `input[name="answer"][value="${correctAnswer}"]`
             );
 
+        if (correctOption) {
 
-        allOptions.forEach(option => {
+            correctOption
+                .closest(".option")
+                .classList.add("correct-answer");
+        }
 
-            const radio =
-                option.querySelector(
-                    'input[type="radio"]'
-                );
-
-            if (
-                radio &&
-                radio.value.toUpperCase() ===
-                correctAnswer
-            ) {
-                option.classList.add(
-                    "correct-answer"
-                );
-            }
-
-        });
-
-
-        result.className =
-            "incorrect";
+        result.className = "incorrect";
 
         result.innerText =
-            "😢😞 Oh no! Not quite! 💔🥺 Try again!";
-
+            "😢😞 Not quite! 💔🥺😔 Try again! 😕";
 
         showWrongReaction();
     }
 
 
     // ========================================================
-    // SHOW EXPLANATION
+    // PREPARE EXPLANATION
     // ========================================================
-
-    const explanation =
-        document.getElementById(
-            "explanation"
-        );
-
-    explanation.classList.remove(
-        "hidden"
-    );
-
 
     const explanationValue =
         currentQuestion.explanation ||
         currentQuestion.explaination ||
         "";
 
-
     document.getElementById(
         "explanation-text"
     ).innerText =
         explanationValue;
+
+    // Show "Show Explanation" button
+    document
+        .getElementById("show-explanation-btn")
+        .classList.remove("hidden");
+
+    // Keep explanation hidden initially
+    document
+        .getElementById("explanation")
+        .classList.add("hidden");
 }
 
 
 // ============================================================
-// CORRECT CELEBRATION
+// SHOW / HIDE EXPLANATION
+// ============================================================
+
+function toggleExplanation() {
+
+    const explanation =
+        document.getElementById("explanation");
+
+    const button =
+        document.getElementById(
+            "show-explanation-btn"
+        );
+
+    if (explanation.classList.contains("hidden")) {
+
+        explanation.classList.remove("hidden");
+
+        button.innerText =
+            "🙈 Hide Explanation";
+
+        explanation.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+
+    } else {
+
+        explanation.classList.add("hidden");
+
+        button.innerText =
+            "💡 Show Explanation";
+    }
+}
+
+
+// ============================================================
+// HAPPY CELEBRATION
 // ============================================================
 
 function showCorrectCelebration() {
 
-    removeReaction();
-
-
-    const reaction =
-        document.createElement("div");
-
-    reaction.id =
-        "answer-reaction";
-
-    reaction.className =
-        "correct-reaction";
-
-
-    reaction.innerHTML = `
-        <div class="reaction-emojis">
-            🎉 👏 🥳 🎊 👏 ✨ 🚀 🤖 🧠 💡 👏 🎉
-        </div>
-
-        <div class="reaction-message">
-            Correct!
-        </div>
-
-        <div class="reaction-subtitle">
-            Senior AI Engineer mode activated 🚀
-        </div>
-    `;
-
-
-    document.body.appendChild(
-        reaction
-    );
-
-
-    createConfetti();
-
-
-    setTimeout(
-        () => {
-            removeReaction();
-        },
-        3200
-    );
-}
-
-
-// ============================================================
-// WRONG REACTION
-// ============================================================
-
-function showWrongReaction() {
-
-    removeReaction();
-
-
-    const reaction =
-        document.createElement("div");
-
-    reaction.id =
-        "answer-reaction";
-
-    reaction.className =
-        "wrong-reaction";
-
-
-    reaction.innerHTML = `
-        <div class="reaction-emojis">
-            😢 😞 😔 🥺 💔 😭 😕
-        </div>
-
-        <div class="reaction-message">
-            Not quite!
-        </div>
-
-        <div class="reaction-subtitle">
-            Review the explanation and try again 💡
-        </div>
-    `;
-
-
-    document.body.appendChild(
-        reaction
-    );
-
-
-    setTimeout(
-        () => {
-            removeReaction();
-        },
-        2800
-    );
-}
-
-
-// ============================================================
-// REMOVE REACTION
-// ============================================================
-
-function removeReaction() {
-
-    const existing =
-        document.getElementById(
-            "answer-reaction"
-        );
-
-    if (existing) {
-        existing.remove();
-    }
-
-
-    document
-        .querySelectorAll(
-            ".ai-confetti"
-        )
-        .forEach(
-            item => item.remove()
-        );
-}
-
-
-// ============================================================
-// CONFETTI
-// ============================================================
-
-function createConfetti() {
-
     const emojis = [
         "🎉",
+        "👏",
         "👏",
         "🥳",
         "🎊",
@@ -638,53 +529,100 @@ function createConfetti() {
         "💡",
         "⭐",
         "🔥",
-        "👏"
+        "👏",
+        "🎉",
+        "🥳",
+        "✨",
+        "🎊",
+        "🚀"
     ];
 
-
-    for (let i = 0; i < 35; i++) {
-
-        const particle =
-            document.createElement("div");
-
-        particle.className =
-            "ai-confetti";
-
-        particle.innerText =
-            emojis[
-                Math.floor(
-                    Math.random() *
-                    emojis.length
-                )
-            ];
+    createEmojiBurst(emojis);
+}
 
 
-        particle.style.left =
-            Math.random() * 100 + "vw";
+// ============================================================
+// SAD REACTION
+// ============================================================
+
+function showWrongReaction() {
+
+    const emojis = [
+        "😢",
+        "😞",
+        "🥺",
+        "💔",
+        "😔",
+        "😕",
+        "😭",
+        "🥲"
+    ];
+
+    createEmojiBurst(emojis);
+}
 
 
-        particle.style.animationDelay =
-            Math.random() * 0.8 + "s";
+// ============================================================
+// EMOJI BURST
+// ============================================================
 
+function createEmojiBurst(emojis) {
 
-        particle.style.animationDuration =
-            2.2 +
-            Math.random() * 1.8 +
-            "s";
+    const container =
+        document.createElement("div");
 
+    container.className =
+        "reaction-container";
 
-        document.body.appendChild(
-            particle
+    document.body.appendChild(container);
+
+    emojis.forEach((emoji, index) => {
+
+        const element =
+            document.createElement("span");
+
+        element.className =
+            "reaction-emoji";
+
+        element.innerText = emoji;
+
+        const left =
+            10 + Math.random() * 80;
+
+        const delay =
+            Math.random() * 0.25;
+
+        const duration =
+            1.8 + Math.random() * 1.4;
+
+        const rotation =
+            -35 + Math.random() * 70;
+
+        element.style.left =
+            left + "%";
+
+        element.style.animationDelay =
+            delay + "s";
+
+        element.style.animationDuration =
+            duration + "s";
+
+        element.style.setProperty(
+            "--rotation",
+            rotation + "deg"
         );
 
+        element.style.fontSize =
+            (1.8 + Math.random() * 1.8) + "rem";
 
-        setTimeout(
-            () => {
-                particle.remove();
-            },
-            4500
-        );
-    }
+        container.appendChild(element);
+    });
+
+    setTimeout(() => {
+
+        container.remove();
+
+    }, 4000);
 }
 
 
@@ -699,17 +637,14 @@ async function copyLink() {
             "copy-btn"
         );
 
-
     try {
 
         await navigator.clipboard.writeText(
             window.location.href
         );
 
-
         button.innerText =
             "✓ Link Copied!";
-
 
         setTimeout(
             () => {
@@ -721,19 +656,15 @@ async function copyLink() {
             2000
         );
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Unable to copy link:",
             error
         );
 
-
         button.innerText =
             "Unable to copy link";
-
 
         setTimeout(
             () => {
@@ -758,24 +689,14 @@ function showError(message) {
         .getElementById("loading")
         .classList.add("hidden");
 
-
     document
-        .getElementById(
-            "question-container"
-        )
+        .getElementById("question-container")
         .classList.add("hidden");
 
-
     const errorBox =
-        document.getElementById(
-            "error"
-        );
+        document.getElementById("error");
 
-
-    errorBox.classList.remove(
-        "hidden"
-    );
-
+    errorBox.classList.remove("hidden");
 
     errorBox.innerText =
         message;
