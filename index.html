@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AIBrainBox</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>🧠 AIBrainBox</h1>
+        <p>AI Questions & Practice</p>
+    </header>
+
+    <main>
+
+        <div id="loading">
+            Loading question...
+        </div>
+
+        <div id="error" class="hidden">
+        </div>
+
+        <div id="question-container" class="hidden">
+
+            <div class="question-header">
+                <span id="question-id"></span>
+                <span id="topic"></span>
+            </div>
+
+            <div id="question"></div>
+
+            <div id="options"></div>
+
+            <button id="submit-btn" onclick="submitAnswer()">
+                Submit Answer
+            </button>
+
+            <div id="result"></div>
+
+            <div id="explanation" class="hidden">
+                <h3>Explanation</h3>
+                <div id="explanation-text"></div>
+            </div>
+
+            <button id="copy-btn" onclick="copyLink()">
+                🔗 Copy Question Link
+            </button>
+
+        </div>
+
+    </main>
+
+    <footer>
+        <p>AIBrainBox</p>
+    </footer>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
