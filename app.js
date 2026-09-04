@@ -3,6 +3,14 @@ let currentQuestion = null;
 
 
 // ============================================================
+// CSV LOCATION
+// ============================================================
+
+const CSV_URL =
+    "https://raw.githubusercontent.com/jai92xi/AIBrainBox/main/xi-questions.csv";
+
+
+// ============================================================
 // LOAD QUESTIONS
 // ============================================================
 
@@ -10,14 +18,15 @@ async function loadQuestions() {
 
     try {
 
-        const response =
-            await fetch("xi-questions.csv");
-
+        const response = await fetch(
+            CSV_URL + "?v=" + Date.now()
+        );
 
         if (!response.ok) {
 
             throw new Error(
-                "Could not load xi-questions.csv"
+                "Unable to load xi-questions.csv. HTTP status: " +
+                response.status
             );
 
         }
@@ -27,14 +36,23 @@ async function loadQuestions() {
             await response.text();
 
 
+        if (!csvText.trim()) {
+
+            throw new Error(
+                "The CSV file is empty."
+            );
+
+        }
+
+
         questions =
             parseCSV(csvText);
 
 
-        if (questions.length === 0) {
+        if (!questions.length) {
 
             throw new Error(
-                "No questions found in the CSV file."
+                "No questions were found in the CSV file."
             );
 
         }
@@ -46,9 +64,16 @@ async function loadQuestions() {
 
     catch (error) {
 
+        console.error(
+            "CSV loading error:",
+            error
+        );
+
+
         document
             .getElementById("loading")
-            .classList.add("hidden");
+            .classList
+            .add("hidden");
 
 
         const errorBox =
@@ -63,9 +88,8 @@ async function loadQuestions() {
         errorBox.innerText =
             "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
 
-
-        console.error(error);
     }
+
 }
 
 
@@ -97,6 +121,8 @@ function parseCSV(text) {
             text[i + 1];
 
 
+        // Double quote inside quoted field
+
         if (
             char === '"' &&
             insideQuotes &&
@@ -110,6 +136,8 @@ function parseCSV(text) {
         }
 
 
+        // Start/end quoted field
+
         else if (
             char === '"'
         ) {
@@ -119,6 +147,8 @@ function parseCSV(text) {
 
         }
 
+
+        // Column separator
 
         else if (
             char === "," &&
@@ -131,6 +161,8 @@ function parseCSV(text) {
 
         }
 
+
+        // New line
 
         else if (
             (
@@ -146,6 +178,7 @@ function parseCSV(text) {
             ) {
 
                 i++;
+
             }
 
 
@@ -155,11 +188,13 @@ function parseCSV(text) {
             if (
                 row.some(
                     value =>
-                        value.trim() !== ""
+                        value
+                            .trim() !== ""
                 )
             ) {
 
                 rows.push(row);
+
             }
 
 
@@ -170,12 +205,18 @@ function parseCSV(text) {
         }
 
 
+        // Normal character
+
         else {
 
             cell += char;
+
         }
+
     }
 
+
+    // Last row
 
     if (
         cell !== "" ||
@@ -188,12 +229,15 @@ function parseCSV(text) {
         if (
             row.some(
                 value =>
-                    value.trim() !== ""
+                    value
+                        .trim() !== ""
             )
         ) {
 
             rows.push(row);
+
         }
+
     }
 
 
@@ -202,8 +246,11 @@ function parseCSV(text) {
     ) {
 
         return [];
+
     }
 
+
+    // Normalize headers
 
     const headers =
         rows[0].map(
@@ -214,6 +261,8 @@ function parseCSV(text) {
         );
 
 
+    // Convert rows into objects
+
     return rows
         .slice(1)
         .map(row => {
@@ -222,10 +271,16 @@ function parseCSV(text) {
 
 
             headers.forEach(
-                (header, index) => {
+                (
+                    header,
+                    index
+                ) => {
 
                     question[header] =
-                        row[index] || "";
+                        (
+                            row[index] ||
+                            ""
+                        ).trim();
 
                 }
             );
@@ -234,6 +289,7 @@ function parseCSV(text) {
             return question;
 
         });
+
 }
 
 
@@ -260,19 +316,25 @@ function loadQuestion() {
         );
 
         return;
+
     }
 
 
     currentQuestion =
         questions.find(
-            q =>
-                q.id &&
-                q.id
-                    .trim()
-                    .toLowerCase() ===
-                id
-                    .trim()
-                    .toLowerCase()
+            question => {
+
+                return (
+                    question.id &&
+                    question.id
+                        .trim()
+                        .toLowerCase() ===
+                    id
+                        .trim()
+                        .toLowerCase()
+                );
+
+            }
         );
 
 
@@ -283,10 +345,12 @@ function loadQuestion() {
         );
 
         return;
+
     }
 
 
     displayQuestion();
+
 }
 
 
@@ -298,25 +362,23 @@ function displayQuestion() {
 
     document
         .getElementById("loading")
-        .classList.add("hidden");
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById("error")
+        .classList
+        .add("hidden");
 
 
     document
         .getElementById("question-container")
-        .classList.remove("hidden");
+        .classList
+        .remove("hidden");
 
 
-    document
-        .getElementById("question-id")
-        .innerText =
-        currentQuestion.id || "";
-
-
-    document
-        .getElementById("topic")
-        .innerText =
-        currentQuestion.topic || "";
-
+    // Display question only
 
     document
         .getElementById("question")
@@ -330,8 +392,7 @@ function displayQuestion() {
         );
 
 
-    optionsContainer.innerHTML =
-        "";
+    optionsContainer.innerHTML = "";
 
 
     const optionLetters = [
@@ -347,13 +408,15 @@ function displayQuestion() {
 
             const option =
                 document.createElement(
-                    "label"
+                    "div"
                 );
 
 
             option.className =
                 "option";
 
+
+            // Radio
 
             const radio =
                 document.createElement(
@@ -370,6 +433,11 @@ function displayQuestion() {
             radio.value =
                 letter;
 
+            radio.id =
+                "option-" + letter;
+
+
+            // Letter
 
             const letterSpan =
                 document.createElement(
@@ -384,6 +452,8 @@ function displayQuestion() {
             letterSpan.innerText =
                 letter + ".";
 
+
+            // Text
 
             const textSpan =
                 document.createElement(
@@ -401,18 +471,35 @@ function displayQuestion() {
                 ] || "";
 
 
+            // Label
+
+            const label =
+                document.createElement(
+                    "label"
+                );
+
+
+            label.htmlFor =
+                "option-" + letter;
+
+
+            label.appendChild(
+                letterSpan
+            );
+
+
+            label.appendChild(
+                textSpan
+            );
+
+
             option.appendChild(
                 radio
             );
 
 
             option.appendChild(
-                letterSpan
-            );
-
-
-            option.appendChild(
-                textSpan
+                label
             );
 
 
@@ -421,9 +508,9 @@ function displayQuestion() {
             );
 
 
-            // ====================================================
+            // ==================================================
             // IMMEDIATE ANSWER CHECK
-            // ====================================================
+            // ==================================================
 
             radio.addEventListener(
                 "change",
@@ -442,11 +529,12 @@ function displayQuestion() {
 
 
     resetAnswerState();
+
 }
 
 
 // ============================================================
-// CHECK ANSWER IMMEDIATELY
+// CHECK ANSWER
 // ============================================================
 
 function checkAnswer(
@@ -466,39 +554,43 @@ function checkAnswer(
                 "correct answer"
             ] || ""
         )
-            .trim()
-            .toUpperCase();
+        .trim()
+        .toUpperCase();
 
 
-    // ----------------------------------------------------------
-    // Remove previous visual states
-    // ----------------------------------------------------------
+    // Remove old states
 
     document
-        .querySelectorAll(".option")
-        .forEach(option => {
+        .querySelectorAll(
+            ".option"
+        )
+        .forEach(
+            option => {
 
-            option.classList.remove(
-                "selected",
-                "correct-answer",
-                "wrong-answer"
-            );
+                option.classList.remove(
+                    "selected",
+                    "correct-answer",
+                    "wrong-answer"
+                );
 
-        });
+            }
+        );
 
 
-    // ----------------------------------------------------------
+    // =========================================================
     // CORRECT
-    // ----------------------------------------------------------
+    // =========================================================
 
     if (
         userAnswer ===
         correctAnswer
     ) {
 
-        selectedOption.classList.add(
-            "correct-answer"
-        );
+        selectedOption
+            .classList
+            .add(
+                "correct-answer"
+            );
 
 
         showCorrectCelebration();
@@ -506,28 +598,35 @@ function checkAnswer(
     }
 
 
-    // ----------------------------------------------------------
+    // =========================================================
     // WRONG
-    // ----------------------------------------------------------
+    // =========================================================
 
     else {
 
-        selectedOption.classList.add(
-            "wrong-answer"
-        );
-
-
-        const correctOption =
-            document.querySelector(
-                `input[name="answer"][value="${correctAnswer}"]`
+        selectedOption
+            .classList
+            .add(
+                "wrong-answer"
             );
 
 
-        if (correctOption) {
+        // Find correct option
 
-            correctOption
+        const correctRadio =
+            document.querySelector(
+                'input[name="answer"][value="' +
+                correctAnswer +
+                '"]'
+            );
+
+
+        if (correctRadio) {
+
+            correctRadio
                 .closest(".option")
-                .classList.add(
+                .classList
+                .add(
                     "correct-answer"
                 );
 
@@ -539,38 +638,54 @@ function checkAnswer(
     }
 
 
-    // ----------------------------------------------------------
+    // =========================================================
     // PREPARE EXPLANATION
-    // ----------------------------------------------------------
+    // =========================================================
 
-    const explanationValue =
+    const explanation =
         currentQuestion.explanation ||
         currentQuestion.explaination ||
         "";
 
 
-    document.getElementById(
-        "explanation-text"
-    ).innerText =
-        explanationValue;
+    document
+        .getElementById(
+            "explanation-text"
+        )
+        .innerText =
+        explanation;
 
+
+    // Show explanation button
 
     document
         .getElementById(
             "show-explanation-btn"
         )
-        .classList.remove(
-            "hidden"
-        );
+        .classList
+        .remove("hidden");
 
+
+    // Keep explanation hidden
 
     document
         .getElementById(
             "explanation"
         )
-        .classList.add(
-            "hidden"
+        .classList
+        .add("hidden");
+
+
+    // No large result text
+
+    const result =
+        document.getElementById(
+            "result"
         );
+
+
+    result.innerText = "";
+
 }
 
 
@@ -586,43 +701,64 @@ function resetAnswerState() {
         );
 
 
-    result.innerText =
-        "";
+    result.innerText = "";
 
 
-    result.className =
-        "";
+    result.className = "";
 
 
-    document
-        .getElementById(
+    const explanation =
+        document.getElementById(
             "explanation"
-        )
-        .classList.add(
-            "hidden"
         );
 
 
-    document
-        .getElementById(
+    explanation
+        .classList
+        .add("hidden");
+
+
+    const explanationText =
+        document.getElementById(
+            "explanation-text"
+        );
+
+
+    explanationText.innerText =
+        "";
+
+
+    const explanationButton =
+        document.getElementById(
             "show-explanation-btn"
-        )
-        .classList.add(
-            "hidden"
         );
 
 
+    explanationButton
+        .classList
+        .add("hidden");
+
+
+    explanationButton.innerText =
+        "💡 Show Explanation";
+
+
     document
-        .querySelectorAll(".option")
-        .forEach(option => {
+        .querySelectorAll(
+            ".option"
+        )
+        .forEach(
+            option => {
 
-            option.classList.remove(
-                "selected",
-                "correct-answer",
-                "wrong-answer"
-            );
+                option.classList.remove(
+                    "selected",
+                    "correct-answer",
+                    "wrong-answer"
+                );
 
-        });
+            }
+        );
+
 }
 
 
@@ -650,9 +786,9 @@ function toggleExplanation() {
         )
     ) {
 
-        explanation.classList.remove(
-            "hidden"
-        );
+        explanation
+            .classList
+            .remove("hidden");
 
 
         button.innerText =
@@ -668,14 +804,16 @@ function toggleExplanation() {
 
     else {
 
-        explanation.classList.add(
-            "hidden"
-        );
+        explanation
+            .classList
+            .add("hidden");
 
 
         button.innerText =
             "💡 Show Explanation";
+
     }
+
 }
 
 
@@ -686,6 +824,7 @@ function toggleExplanation() {
 function showCorrectCelebration() {
 
     const emojis = [
+
         "🎉",
         "👏",
         "👏",
@@ -704,6 +843,7 @@ function showCorrectCelebration() {
         "✨",
         "🎊",
         "🚀"
+
     ];
 
 
@@ -711,6 +851,7 @@ function showCorrectCelebration() {
         emojis,
         false
     );
+
 }
 
 
@@ -721,6 +862,7 @@ function showCorrectCelebration() {
 function showWrongReaction() {
 
     const emojis = [
+
         "😢",
         "😞",
         "🥺",
@@ -729,6 +871,7 @@ function showWrongReaction() {
         "😕",
         "😭",
         "🥲"
+
     ];
 
 
@@ -736,11 +879,12 @@ function showWrongReaction() {
         emojis,
         true
     );
+
 }
 
 
 // ============================================================
-// EMOJI BURST
+// CREATE EMOJI BURST
 // ============================================================
 
 function createEmojiBurst(
@@ -748,16 +892,18 @@ function createEmojiBurst(
     isSad = false
 ) {
 
-    // Remove any previous reaction
-    // before starting a new one.
+    // Remove old reactions
 
     document
         .querySelectorAll(
             ".reaction-container"
         )
         .forEach(
-            container =>
-                container.remove()
+            oldContainer => {
+
+                oldContainer.remove();
+
+            }
         );
 
 
@@ -771,14 +917,12 @@ function createEmojiBurst(
         "reaction-container";
 
 
-    // IMPORTANT:
-    // Sad class ONLY for wrong answers.
-
     if (isSad) {
 
         container.classList.add(
             "sad"
         );
+
     }
 
 
@@ -810,17 +954,17 @@ function createEmojiBurst(
 
 
             const delay =
-                Math.random() * 0.25;
+                Math.random() * 0.3;
 
 
             const duration =
-                1.8 +
+                2.0 +
                 Math.random() * 1.4;
 
 
             const rotation =
-                -35 +
-                Math.random() * 70;
+                -40 +
+                Math.random() * 80;
 
 
             const horizontal =
@@ -828,24 +972,27 @@ function createEmojiBurst(
                 Math.random() * 240;
 
 
-            element.style.left =
-                left + "%";
+            const size =
+                1.7 +
+                Math.random() * 1.8;
 
 
-            element.style.animationDelay =
-                delay + "s";
+            element.style.setProperty(
+                "--start-left",
+                left + "%"
+            );
 
 
-            element.style.animationDuration =
-                duration + "s";
+            element.style.setProperty(
+                "--delay",
+                delay + "s"
+            );
 
 
-            element.style.fontSize =
-                (
-                    1.8 +
-                    Math.random() * 1.8
-                ) +
-                "rem";
+            element.style.setProperty(
+                "--duration",
+                duration + "s"
+            );
 
 
             element.style.setProperty(
@@ -857,6 +1004,12 @@ function createEmojiBurst(
             element.style.setProperty(
                 "--horizontal",
                 horizontal + "px"
+            );
+
+
+            element.style.setProperty(
+                "--emoji-size",
+                size + "rem"
             );
 
 
@@ -872,16 +1025,17 @@ function createEmojiBurst(
         () => {
 
             if (
-                container &&
                 container.parentNode
             ) {
 
                 container.remove();
+
             }
 
         },
-        4000
+        4500
     );
+
 }
 
 
@@ -889,22 +1043,24 @@ function createEmojiBurst(
 // SHOW ERROR
 // ============================================================
 
-function showError(message) {
+function showError(
+    message
+) {
 
     document
-        .getElementById("loading")
-        .classList.add(
-            "hidden"
-        );
+        .getElementById(
+            "loading"
+        )
+        .classList
+        .add("hidden");
 
 
     document
         .getElementById(
             "question-container"
         )
-        .classList.add(
-            "hidden"
-        );
+        .classList
+        .add("hidden");
 
 
     const errorBox =
@@ -913,13 +1069,14 @@ function showError(message) {
         );
 
 
-    errorBox.classList.remove(
-        "hidden"
-    );
+    errorBox
+        .classList
+        .remove("hidden");
 
 
     errorBox.innerText =
         message;
+
 }
 
 
