@@ -7,9 +7,7 @@ let currentQuestion = null;
 // ============================================================
 
 async function loadQuestions() {
-
     try {
-
         const response = await fetch("xi-questions.csv");
 
         if (!response.ok) {
@@ -27,13 +25,9 @@ async function loadQuestions() {
         loadQuestion();
 
     } catch (error) {
+        document.getElementById("loading").classList.add("hidden");
 
-        document
-            .getElementById("loading")
-            .classList.add("hidden");
-
-        const errorBox =
-            document.getElementById("error");
+        const errorBox = document.getElementById("error");
 
         errorBox.classList.remove("hidden");
 
@@ -50,7 +44,6 @@ async function loadQuestions() {
 // ============================================================
 
 function parseCSV(text) {
-
     const rows = [];
 
     let row = [];
@@ -62,49 +55,25 @@ function parseCSV(text) {
         const char = text[i];
         const nextChar = text[i + 1];
 
-
-        // Escaped quote
-        if (
-            char === '"' &&
-            insideQuotes &&
-            nextChar === '"'
-        ) {
-
+        if (char === '"' && insideQuotes && nextChar === '"') {
             cell += '"';
-
             i++;
         }
 
-
-        // Opening / closing quote
         else if (char === '"') {
-
             insideQuotes = !insideQuotes;
         }
 
-
-        // Comma
-        else if (
-            char === "," &&
-            !insideQuotes
-        ) {
-
+        else if (char === "," && !insideQuotes) {
             row.push(cell);
-
             cell = "";
         }
 
-
-        // New line
         else if (
             (char === "\n" || char === "\r") &&
             !insideQuotes
         ) {
-
-            if (
-                char === "\r" &&
-                nextChar === "\n"
-            ) {
+            if (char === "\r" && nextChar === "\n") {
                 i++;
             }
 
@@ -112,8 +81,7 @@ function parseCSV(text) {
 
             if (
                 row.some(
-                    value =>
-                        value.trim() !== ""
+                    value => value.trim() !== ""
                 )
             ) {
                 rows.push(row);
@@ -123,65 +91,47 @@ function parseCSV(text) {
             cell = "";
         }
 
-
         else {
-
             cell += char;
         }
     }
 
-
-    // Final row
-    if (
-        cell !== "" ||
-        row.length > 0
-    ) {
-
+    if (cell !== "" || row.length > 0) {
         row.push(cell);
 
         if (
             row.some(
-                value =>
-                    value.trim() !== ""
+                value => value.trim() !== ""
             )
         ) {
             rows.push(row);
         }
     }
 
-
     if (rows.length === 0) {
         return [];
     }
 
+    const headers = rows[0].map(
+        header =>
+            header
+                .trim()
+                .toLowerCase()
+    );
 
-    // Headers
-    const headers =
-        rows[0].map(
-            header =>
-                header
-                    .trim()
-                    .toLowerCase()
+    return rows.slice(1).map(row => {
+
+        const question = {};
+
+        headers.forEach(
+            (header, index) => {
+                question[header] =
+                    row[index] || "";
+            }
         );
 
-
-    // Convert CSV rows to objects
-    return rows
-        .slice(1)
-        .map(row => {
-
-            const question = {};
-
-            headers.forEach(
-                (header, index) => {
-
-                    question[header] =
-                        row[index] || "";
-                }
-            );
-
-            return question;
-        });
+        return question;
+    });
 }
 
 
@@ -198,29 +148,22 @@ function loadQuestion() {
 
     const id = params.get("id");
 
-
     if (!id) {
 
         showError(
-            "No question ID was provided."
+            "No question ID was provided. Please use a question link such as ?id=Xi-00001"
         );
 
         return;
     }
 
-
     currentQuestion =
         questions.find(
             q =>
                 q.id &&
-                q.id
-                    .trim()
-                    .toLowerCase() ===
-                id
-                    .trim()
-                    .toLowerCase()
+                q.id.trim().toLowerCase() ===
+                id.trim().toLowerCase()
         );
-
 
     if (!currentQuestion) {
 
@@ -230,7 +173,6 @@ function loadQuestion() {
 
         return;
     }
-
 
     displayQuestion();
 }
@@ -246,41 +188,32 @@ function displayQuestion() {
         .getElementById("loading")
         .classList.add("hidden");
 
-
     document
         .getElementById("question-container")
         .classList.remove("hidden");
 
-
-    // Question ID
     document
         .getElementById("question-id")
         .innerText =
         currentQuestion.id || "";
 
-
-    // Topic
     document
         .getElementById("topic")
         .innerText =
         currentQuestion.topic || "";
 
-
-    // Question
     document
         .getElementById("question")
         .innerText =
         currentQuestion.question || "";
 
 
-    // Options container
     const optionsContainer =
         document.getElementById("options");
 
     optionsContainer.innerHTML = "";
 
 
-    // A / B / C / D
     const optionLetters = [
         "A",
         "B",
@@ -292,36 +225,19 @@ function displayQuestion() {
     optionLetters.forEach(
         letter => {
 
-            // ------------------------------------------------
-            // OPTION CARD
-            // ------------------------------------------------
-
             const option =
                 document.createElement("label");
 
             option.className = "option";
 
-            option.dataset.answer =
-                letter;
-
-
-            // ------------------------------------------------
-            // RADIO
-            // ------------------------------------------------
 
             const radio =
                 document.createElement("input");
 
             radio.type = "radio";
-
             radio.name = "answer";
-
             radio.value = letter;
 
-
-            // ------------------------------------------------
-            // LETTER
-            // ------------------------------------------------
 
             const letterSpan =
                 document.createElement("span");
@@ -330,12 +246,8 @@ function displayQuestion() {
                 "option-letter";
 
             letterSpan.innerText =
-                letter;
+                letter + ".";
 
-
-            // ------------------------------------------------
-            // TEXT
-            // ------------------------------------------------
 
             const textSpan =
                 document.createElement("span");
@@ -349,106 +261,82 @@ function displayQuestion() {
                 ] || "";
 
 
-            // ------------------------------------------------
-            // CHECK ICON
-            // ------------------------------------------------
-
-            const statusIcon =
-                document.createElement("span");
-
-            statusIcon.className =
-                "option-status";
-
-            statusIcon.innerText = "";
-
-
-            // ------------------------------------------------
-            // BUILD OPTION
-            // ------------------------------------------------
-
             option.appendChild(radio);
-
             option.appendChild(letterSpan);
-
             option.appendChild(textSpan);
-
-            option.appendChild(statusIcon);
-
 
             optionsContainer.appendChild(option);
 
-
-            // ------------------------------------------------
-            // SELECT OPTION
-            // ------------------------------------------------
 
             radio.addEventListener(
                 "change",
                 () => {
 
-                    // Don't allow changing after answer
-                    // has been submitted
-                    if (
-                        optionsContainer.classList.contains(
-                            "answered"
-                        )
-                    ) {
-                        return;
-                    }
-
-
-                    // Remove selected state
                     document
                         .querySelectorAll(".option")
                         .forEach(
-                            item => {
-
+                            item =>
                                 item.classList.remove(
                                     "selected"
-                                );
-                            }
+                                )
                         );
 
-
-                    // Add selected state
                     option.classList.add(
                         "selected"
                     );
+
+                    clearAnswerStates();
                 }
             );
         }
     );
 
 
-    // Reset result
     const result =
         document.getElementById("result");
 
     result.innerText = "";
-
     result.className = "";
 
 
-    // Reset explanation
     const explanation =
+        document.getElementById("explanation");
+
+    explanation.classList.add("hidden");
+
+
+    const explanationText =
         document.getElementById(
-            "explanation"
+            "explanation-text"
         );
 
-    explanation.classList.add(
-        "hidden"
-    );
+    explanationText.innerText = "";
+}
 
+
+// ============================================================
+// CLEAR ANSWER STATES
+// ============================================================
+
+function clearAnswerStates() {
 
     document
-        .getElementById("explanation-text")
-        .innerText = "";
+        .querySelectorAll(".option")
+        .forEach(option => {
 
+            option.classList.remove(
+                "correct-answer",
+                "wrong-answer",
+                "selected"
+            );
 
-    // Reset options
-    optionsContainer.classList.remove(
-        "answered"
-    );
+        });
+
+    const result =
+        document.getElementById("result");
+
+    result.innerText = "";
+    result.className = "";
 }
 
 
@@ -468,42 +356,17 @@ function submitAnswer() {
         document.getElementById("result");
 
 
-    const optionsContainer =
-        document.getElementById("options");
-
-
-    // --------------------------------------------------------
-    // NO ANSWER
-    // --------------------------------------------------------
-
     if (!selected) {
 
         result.className =
             "incorrect";
 
         result.innerText =
-            "Please select an answer first.";
+            "😕 Please select an answer first.";
 
         return;
     }
 
-
-    // --------------------------------------------------------
-    // PREVENT SECOND SUBMISSION
-    // --------------------------------------------------------
-
-    if (
-        optionsContainer.classList.contains(
-            "answered"
-        )
-    ) {
-        return;
-    }
-
-
-    // --------------------------------------------------------
-    // GET ANSWERS
-    // --------------------------------------------------------
 
     const userAnswer =
         selected.value
@@ -516,140 +379,98 @@ function submitAnswer() {
             currentQuestion["correct answer"] ||
             ""
         )
-            .trim()
-            .toUpperCase();
+        .trim()
+        .toUpperCase();
 
 
-    // --------------------------------------------------------
-    // LOCK OPTIONS
-    // --------------------------------------------------------
-
-    optionsContainer.classList.add(
-        "answered"
-    );
+    const allOptions =
+        document.querySelectorAll(".option");
 
 
-    document
-        .querySelectorAll(
-            'input[name="answer"]'
-        )
-        .forEach(
-            input => {
+    allOptions.forEach(option => {
 
-                input.disabled = true;
-            }
+        option.classList.remove(
+            "correct-answer",
+            "wrong-answer"
         );
 
-
-    // --------------------------------------------------------
-    // FIND SELECTED OPTION
-    // --------------------------------------------------------
-
-    const selectedOption =
-        selected.closest(".option");
+    });
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // CORRECT ANSWER
-    // --------------------------------------------------------
+    // ========================================================
 
     if (
         userAnswer === correctAnswer
     ) {
 
-        // Selected answer = green
-        selectedOption.classList.remove(
-            "selected"
-        );
-
-        selectedOption.classList.add(
-            "correct"
-        );
-
-
-        const selectedIcon =
-            selectedOption.querySelector(
-                ".option-status"
+        selected
+            .closest(".option")
+            .classList.add(
+                "correct-answer"
             );
 
-        selectedIcon.innerText = "✓";
 
-
-        // Result message
         result.className =
             "correct";
 
         result.innerText =
-            "🎉 Correct! Excellent work.";
+            "🎉👏👏 Excellent! Correct! 🥳🎊✨🚀";
 
 
-        // Celebration
-        launchCelebration();
+        showCorrectCelebration();
 
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // WRONG ANSWER
-    // --------------------------------------------------------
+    // ========================================================
 
     else {
 
-        // Selected answer = red
-        selectedOption.classList.remove(
-            "selected"
-        );
-
-        selectedOption.classList.add(
-            "wrong"
-        );
-
-
-        const selectedIcon =
-            selectedOption.querySelector(
-                ".option-status"
-            );
-
-        selectedIcon.innerText = "✕";
-
-
-        // Find correct option
-        const correctOption =
-            document.querySelector(
-                `.option[data-answer="${correctAnswer}"]`
+        selected
+            .closest(".option")
+            .classList.add(
+                "wrong-answer"
             );
 
 
-        // Highlight correct answer green
-        if (correctOption) {
+        allOptions.forEach(option => {
 
-            correctOption.classList.add(
-                "correct"
-            );
-
-
-            const correctIcon =
-                correctOption.querySelector(
-                    ".option-status"
+            const radio =
+                option.querySelector(
+                    'input[type="radio"]'
                 );
 
-            correctIcon.innerText = "✓";
-        }
+            if (
+                radio &&
+                radio.value.toUpperCase() ===
+                correctAnswer
+            ) {
+                option.classList.add(
+                    "correct-answer"
+                );
+            }
+
+        });
 
 
-        // Result
         result.className =
             "incorrect";
 
         result.innerText =
-            "✗ Not quite. The correct answer is " +
-            correctAnswer + ".";
+            "😢😞 Oh no! Not quite! 💔🥺 Try again!";
+
+
+        showWrongReaction();
     }
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // SHOW EXPLANATION
-    // --------------------------------------------------------
+    // ========================================================
 
     const explanation =
         document.getElementById(
@@ -675,87 +496,195 @@ function submitAnswer() {
 
 
 // ============================================================
-// AI CELEBRATION
+// CORRECT CELEBRATION
 // ============================================================
 
-function launchCelebration() {
+function showCorrectCelebration() {
 
-    const celebration =
+    removeReaction();
+
+
+    const reaction =
         document.createElement("div");
 
-    celebration.className =
-        "celebration";
+    reaction.id =
+        "answer-reaction";
+
+    reaction.className =
+        "correct-reaction";
+
+
+    reaction.innerHTML = `
+        <div class="reaction-emojis">
+            🎉 👏 🥳 🎊 👏 ✨ 🚀 🤖 🧠 💡 👏 🎉
+        </div>
+
+        <div class="reaction-message">
+            Correct!
+        </div>
+
+        <div class="reaction-subtitle">
+            Senior AI Engineer mode activated 🚀
+        </div>
+    `;
 
 
     document.body.appendChild(
-        celebration
+        reaction
     );
 
 
-    // AI-style clapping celebration
+    createConfetti();
+
+
+    setTimeout(
+        () => {
+            removeReaction();
+        },
+        3200
+    );
+}
+
+
+// ============================================================
+// WRONG REACTION
+// ============================================================
+
+function showWrongReaction() {
+
+    removeReaction();
+
+
+    const reaction =
+        document.createElement("div");
+
+    reaction.id =
+        "answer-reaction";
+
+    reaction.className =
+        "wrong-reaction";
+
+
+    reaction.innerHTML = `
+        <div class="reaction-emojis">
+            😢 😞 😔 🥺 💔 😭 😕
+        </div>
+
+        <div class="reaction-message">
+            Not quite!
+        </div>
+
+        <div class="reaction-subtitle">
+            Review the explanation and try again 💡
+        </div>
+    `;
+
+
+    document.body.appendChild(
+        reaction
+    );
+
+
+    setTimeout(
+        () => {
+            removeReaction();
+        },
+        2800
+    );
+}
+
+
+// ============================================================
+// REMOVE REACTION
+// ============================================================
+
+function removeReaction() {
+
+    const existing =
+        document.getElementById(
+            "answer-reaction"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+
+    document
+        .querySelectorAll(
+            ".ai-confetti"
+        )
+        .forEach(
+            item => item.remove()
+        );
+}
+
+
+// ============================================================
+// CONFETTI
+// ============================================================
+
+function createConfetti() {
+
     const emojis = [
-        "👏",
-        "👏",
         "🎉",
         "👏",
-        "✨",
-        "👏",
-        "🧠",
+        "🥳",
         "🎊",
-        "👏",
+        "✨",
+        "🚀",
+        "🤖",
+        "🧠",
+        "💡",
         "⭐",
-        "👏",
-        "🎉"
+        "🔥",
+        "👏"
     ];
 
 
-    emojis.forEach(
-        (emoji, index) => {
+    for (let i = 0; i < 35; i++) {
 
-            const particle =
-                document.createElement(
-                    "span"
-                );
+        const particle =
+            document.createElement("div");
 
-            particle.className =
-                "celebration-particle";
+        particle.className =
+            "ai-confetti";
 
-            particle.innerText =
-                emoji;
-
-
-            // Random horizontal position
-            particle.style.left =
-                Math.random() * 100 + "%";
+        particle.innerText =
+            emojis[
+                Math.floor(
+                    Math.random() *
+                    emojis.length
+                )
+            ];
 
 
-            // Random animation delay
-            particle.style.animationDelay =
-                Math.random() * 0.6 + "s";
+        particle.style.left =
+            Math.random() * 100 + "vw";
 
 
-            // Random size
-            particle.style.fontSize =
-                (22 + Math.random() * 18) +
-                "px";
+        particle.style.animationDelay =
+            Math.random() * 0.8 + "s";
 
 
-            celebration.appendChild(
-                particle
-            );
-        }
-    );
+        particle.style.animationDuration =
+            2.2 +
+            Math.random() * 1.8 +
+            "s";
 
 
-    // Remove celebration
-    setTimeout(
-        () => {
+        document.body.appendChild(
+            particle
+        );
 
-            celebration.remove();
 
-        },
-        3000
-    );
+        setTimeout(
+            () => {
+                particle.remove();
+            },
+            4500
+        );
+    }
 }
 
 
@@ -800,6 +729,7 @@ async function copyLink() {
             "Unable to copy link:",
             error
         );
+
 
         button.innerText =
             "Unable to copy link";
@@ -853,7 +783,7 @@ function showError(message) {
 
 
 // ============================================================
-// START APPLICATION
+// LOAD APPLICATION
 // ============================================================
 
 loadQuestions();
