@@ -1,5 +1,7 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,30 +13,73 @@
 
 <body>
 
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
     <header>
-        <h1>🧠 AIBrainBox</h1>
-        <p>AI Questions & Practice</p>
+
+        <div class="header-content">
+
+            <div class="logo">
+                🧠
+            </div>
+
+            <div>
+                <h1>AIBrainBox</h1>
+                <p>AI Questions & Practice</p>
+            </div>
+
+        </div>
+
     </header>
 
+
+    <!-- =========================================================
+         MAIN
+         ========================================================= -->
+
     <main>
+
+        <!-- Loading -->
 
         <div id="loading">
             Loading question...
         </div>
 
+
+        <!-- Error -->
+
         <div id="error" class="hidden"></div>
+
+
+        <!-- Question -->
 
         <div id="question-container" class="hidden">
 
+            <!-- Question Header -->
+
             <div class="question-header">
+
                 <span id="question-id"></span>
+
                 <span id="topic"></span>
+
             </div>
+
+
+            <!-- =================================================
+                 TWO COLUMN QUIZ
+                 ================================================= -->
 
             <div class="quiz-layout">
 
-                <!-- LEFT: QUESTION -->
-                <div class="question-panel">
+
+                <!-- =================================================
+                     LEFT : QUESTION
+                     ================================================= -->
+
+                <section class="question-panel">
 
                     <div class="panel-label">
                         🧠 QUESTION
@@ -42,10 +87,14 @@
 
                     <div id="question"></div>
 
-                </div>
+                </section>
 
-                <!-- RIGHT: OPTIONS -->
-                <div class="options-panel">
+
+                <!-- =================================================
+                     RIGHT : OPTIONS
+                     ================================================= -->
+
+                <section class="options-panel">
 
                     <div class="panel-label">
                         🤖 SELECT YOUR ANSWER
@@ -53,45 +102,65 @@
 
                     <div id="options"></div>
 
-                    <button id="submit-btn" onclick="submitAnswer()">
-                        Check Answer 🚀
-                    </button>
-
-                </div>
+                </section>
 
             </div>
 
-            <!-- RESULT -->
+
+            <!-- =================================================
+                 RESULT
+                 ================================================= -->
+
             <div id="result"></div>
 
-            <!-- EXPLANATION -->
-            <div id="explanation" class="hidden">
 
-                <h3>💡 Explanation</h3>
+            <!-- =================================================
+                 EXPLANATION
+                 ================================================= -->
+
+            <button
+                id="show-explanation-btn"
+                class="hidden"
+                onclick="toggleExplanation()"
+            >
+                💡 Show Explanation
+            </button>
+
+
+            <div
+                id="explanation"
+                class="hidden"
+            >
+
+                <h3>
+                    💡 Explanation
+                </h3>
 
                 <div id="explanation-text"></div>
 
             </div>
 
-            <!-- SHOW EXPLANATION -->
-            <button id="show-explanation-btn" class="hidden" onclick="toggleExplanation()">
-                💡 Show Explanation
-            </button>
-
-            <!-- COPY LINK -->
-            <button id="copy-btn" onclick="copyLink()">
-                🔗 Copy Question Link
-            </button>
-
         </div>
 
     </main>
 
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+
     <footer>
-        <p>🧠 AIBrainBox • AI Questions & Practice</p>
+
+        <p>
+            🧠 AIBrainBox • AI Questions & Practice
+        </p>
+
     </footer>
+
 
     <script src="app.js"></script>
 
 </body>
+
 </html>
+```
