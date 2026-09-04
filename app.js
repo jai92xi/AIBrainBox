@@ -7,7 +7,8 @@ async function loadQuestions() {
 
     try {
 
-        const response = await fetch("questions.csv");
+        const response = await fetch("xi-questions.csv");
+
 
         if (!response.ok) {
             throw new Error("Could not load questions.csv");
