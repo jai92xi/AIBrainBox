@@ -9,10 +9,13 @@ let answeredQuestions = new Set();
 let questionResults = new Map();
 let savedAnswers = new Map();
 
-const HIGHLIGHT_STORAGE_KEY = "aibrainbox-highlights-v1";
+const HIGHLIGHT_STORAGE_KEY =
+    "aibrainbox-highlights-v1";
 
 let highlighterActive = false;
-let currentHighlightColor = "#fff176";
+
+let currentHighlightColor =
+    "#fff176";
 
 const HIGHLIGHT_COLORS = {
     yellow: "#fff176",
@@ -23,332 +26,496 @@ const HIGHLIGHT_COLORS = {
 
 const FALLBACK_QUOTES = [
     {
-        quote: "You do not rise to the level of your goals. You fall to the level of your systems.",
-        author: "James Clear"
+        quote:
+            "You do not rise to the level of your goals. You fall to the level of your systems.",
+        author:
+            "James Clear"
     },
     {
-        quote: "The future depends on what you do today.",
-        author: "Mahatma Gandhi"
+        quote:
+            "The future depends on what you do today.",
+        author:
+            "Mahatma Gandhi"
     },
     {
-        quote: "Dreams become plans when you give them a deadline.",
-        author: "AIBrainBox"
+        quote:
+            "Dreams become plans when you give them a deadline.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "The secret of getting ahead is getting started.",
-        author: "Mark Twain"
+        quote:
+            "The secret of getting ahead is getting started.",
+        author:
+            "Mark Twain"
     },
     {
-        quote: "Nobody is coming to build the life you keep imagining. Start building it.",
-        author: "AIBrainBox"
+        quote:
+            "Nobody is coming to build the life you keep imagining. Start building it.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "He who conquers others is strong; he who conquers himself is mighty.",
-        author: "Lao Tzu"
+        quote:
+            "He who conquers others is strong; he who conquers himself is mighty.",
+        author:
+            "Lao Tzu"
     },
     {
-        quote: "Your comfort zone is a beautiful place, but nothing grows there.",
-        author: "AIBrainBox"
+        quote:
+            "Your comfort zone is a beautiful place, but nothing grows there.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "It is never too late to be what you might have been.",
-        author: "George Eliot"
+        quote:
+            "It is never too late to be what you might have been.",
+        author:
+            "George Eliot"
     },
     {
-        quote: "Discipline is choosing between what you want now and what you want most.",
-        author: "Abraham Lincoln"
+        quote:
+            "Discipline is choosing between what you want now and what you want most.",
+        author:
+            "Abraham Lincoln"
     },
     {
-        quote: "You will never always be motivated. You must learn to be disciplined.",
-        author: "AIBrainBox"
+        quote:
+            "You will never always be motivated. You must learn to be disciplined.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "The pain of discipline weighs ounces; the pain of regret weighs tons.",
-        author: "Jim Rohn"
+        quote:
+            "The pain of discipline weighs ounces; the pain of regret weighs tons.",
+        author:
+            "Jim Rohn"
     },
     {
-        quote: "If you are tired of starting over, stop giving up.",
-        author: "AIBrainBox"
+        quote:
+            "If you are tired of starting over, stop giving up.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "Success is the sum of small efforts, repeated day in and day out.",
-        author: "Robert Collier"
+        quote:
+            "Success is the sum of small efforts, repeated day in and day out.",
+        author:
+            "Robert Collier"
     },
     {
-        quote: "Do something today that your future self will thank you for.",
-        author: "AIBrainBox"
+        quote:
+            "Do something today that your future self will thank you for.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "The man who moves a mountain begins by carrying away small stones.",
-        author: "Confucius"
+        quote:
+            "The man who moves a mountain begins by carrying away small stones.",
+        author:
+            "Confucius"
     },
     {
-        quote: "Your excuses will never be stronger than your reasons to succeed.",
-        author: "AIBrainBox"
+        quote:
+            "Your excuses will never be stronger than your reasons to succeed.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "Act as if what you do makes a difference. It does.",
-        author: "William James"
+        quote:
+            "Act as if what you do makes a difference. It does.",
+        author:
+            "William James"
     },
     {
-        quote: "You cannot change your life until you change something you do daily.",
-        author: "John C. Maxwell"
+        quote:
+            "You cannot change your life until you change something you do daily.",
+        author:
+            "John C. Maxwell"
     },
     {
-        quote: "A year from now, you will wish you had started today.",
-        author: "AIBrainBox"
+        quote:
+            "A year from now, you will wish you had started today.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "Great things are done by a series of small things brought together.",
-        author: "Vincent van Gogh"
+        quote:
+            "Great things are done by a series of small things brought together.",
+        author:
+            "Vincent van Gogh"
     },
     {
-        quote: "The harder you work for something, the greater you will feel when you finally achieve it.",
-        author: "AIBrainBox"
+        quote:
+            "The harder you work for something, the greater you will feel when you finally achieve it.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "Don't watch the clock; do what it does. Keep going.",
-        author: "Sam Levenson"
+        quote:
+            "Don't watch the clock; do what it does. Keep going.",
+        author:
+            "Sam Levenson"
     },
     {
-        quote: "Fall seven times, stand up eight.",
-        author: "Japanese Proverb"
+        quote:
+            "Fall seven times, stand up eight.",
+        author:
+            "Japanese Proverb"
     },
     {
-        quote: "Failure is not the opposite of success; it is part of success.",
-        author: "AIBrainBox"
+        quote:
+            "Failure is not the opposite of success; it is part of success.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "Whether you think you can or you think you can't, you're right.",
-        author: "Henry Ford"
+        quote:
+            "Whether you think you can or you think you can't, you're right.",
+        author:
+            "Henry Ford"
     },
     {
-        quote: "It always seems impossible until it's done.",
-        author: "Nelson Mandela"
+        quote:
+            "It always seems impossible until it's done.",
+        author:
+            "Nelson Mandela"
     },
     {
-        quote: "Start where you are. Use what you have. Do what you can.",
-        author: "Arthur Ashe"
+        quote:
+            "Start where you are. Use what you have. Do what you can.",
+        author:
+            "Arthur Ashe"
     },
     {
-        quote: "The only way to do great work is to love what you do.",
-        author: "Steve Jobs"
+        quote:
+            "The only way to do great work is to love what you do.",
+        author:
+            "Steve Jobs"
     },
     {
-        quote: "Success is walking from failure to failure with no loss of enthusiasm.",
-        author: "Winston Churchill"
+        quote:
+            "Success is walking from failure to failure with no loss of enthusiasm.",
+        author:
+            "Winston Churchill"
     },
     {
-        quote: "The journey of a thousand miles begins with one step.",
-        author: "Lao Tzu"
+        quote:
+            "The journey of a thousand miles begins with one step.",
+        author:
+            "Lao Tzu"
     },
     {
-        quote: "Nothing will work unless you do.",
-        author: "Maya Angelou"
+        quote:
+            "Nothing will work unless you do.",
+        author:
+            "Maya Angelou"
     },
     {
-        quote: "Believe you can and you're halfway there.",
-        author: "Theodore Roosevelt"
+        quote:
+            "Believe you can and you're halfway there.",
+        author:
+            "Theodore Roosevelt"
     },
     {
-        quote: "Great things never come from comfort zones.",
-        author: "Roy T. Bennett"
+        quote:
+            "Great things never come from comfort zones.",
+        author:
+            "Roy T. Bennett"
     },
     {
-        quote: "The future starts today, not tomorrow.",
-        author: "Pope John Paul II"
+        quote:
+            "The future starts today, not tomorrow.",
+        author:
+            "Pope John Paul II"
     },
     {
-        quote: "Small progress is still progress. Keep moving.",
-        author: "AIBrainBox"
+        quote:
+            "Small progress is still progress. Keep moving.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "You may have to fight a battle more than once to win it.",
-        author: "Margaret Thatcher"
+        quote:
+            "You may have to fight a battle more than once to win it.",
+        author:
+            "Margaret Thatcher"
     },
     {
-        quote: "Your future self is watching what you do with today.",
-        author: "AIBrainBox"
+        quote:
+            "Your future self is watching what you do with today.",
+        author:
+            "AIBrainBox"
     },
     {
-        quote: "You don't have to see the whole staircase. Just take the first step.",
-        author: "Martin Luther King Jr."
+        quote:
+            "You don't have to see the whole staircase. Just take the first step.",
+        author:
+            "Martin Luther King Jr."
     },
     {
-        quote: "The best time to plant a tree was 20 years ago. The second best time is now.",
-        author: "Chinese Proverb"
+        quote:
+            "The best time to plant a tree was 20 years ago. The second best time is now.",
+        author:
+            "Chinese Proverb"
     },
     {
-        quote: "The way to get started is to quit talking and begin doing.",
-        author: "Walt Disney"
+        quote:
+            "The way to get started is to quit talking and begin doing.",
+        author:
+            "Walt Disney"
     },
     {
-        quote: "All our dreams can come true, if we have the courage to pursue them.",
-        author: "Walt Disney"
+        quote:
+            "All our dreams can come true, if we have the courage to pursue them.",
+        author:
+            "Walt Disney"
     },
     {
-        quote: "Do not let what you cannot do interfere with what you can do.",
-        author: "John Wooden"
+        quote:
+            "Do not let what you cannot do interfere with what you can do.",
+        author:
+            "John Wooden"
     },
     {
-        quote: "Make each day your masterpiece.",
-        author: "John Wooden"
+        quote:
+            "Make each day your masterpiece.",
+        author:
+            "John Wooden"
     },
     {
-        quote: "Don't wish it were easier. Wish you were better.",
-        author: "Jim Rohn"
+        quote:
+            "Don't wish it were easier. Wish you were better.",
+        author:
+            "Jim Rohn"
     },
     {
-        quote: "Discipline is the bridge between goals and accomplishment.",
-        author: "Jim Rohn"
+        quote:
+            "Discipline is the bridge between goals and accomplishment.",
+        author:
+            "Jim Rohn"
     },
     {
-        quote: "Either you run the day, or the day runs you.",
-        author: "Jim Rohn"
+        quote:
+            "Either you run the day, or the day runs you.",
+        author:
+            "Jim Rohn"
     },
     {
-        quote: "Motivation is what gets you started. Habit is what keeps you going.",
-        author: "Jim Rohn"
+        quote:
+            "Motivation is what gets you started. Habit is what keeps you going.",
+        author:
+            "Jim Rohn"
     },
     {
-        quote: "A goal is a dream with a deadline.",
-        author: "Napoleon Hill"
+        quote:
+            "A goal is a dream with a deadline.",
+        author:
+            "Napoleon Hill"
     },
     {
-        quote: "Whatever the mind of man can conceive and believe, it can achieve.",
-        author: "Napoleon Hill"
+        quote:
+            "Whatever the mind of man can conceive and believe, it can achieve.",
+        author:
+            "Napoleon Hill"
     },
     {
-        quote: "The successful warrior is the average man, with laser-like focus.",
-        author: "Bruce Lee"
+        quote:
+            "The successful warrior is the average man, with laser-like focus.",
+        author:
+            "Bruce Lee"
     },
     {
-        quote: "Knowing is not enough; we must apply. Willing is not enough; we must do.",
-        author: "Bruce Lee"
+        quote:
+            "Knowing is not enough; we must apply. Willing is not enough; we must do.",
+        author:
+            "Bruce Lee"
     },
     {
-        quote: "The impediment to action advances action. What stands in the way becomes the way.",
-        author: "Marcus Aurelius"
+        quote:
+            "The impediment to action advances action. What stands in the way becomes the way.",
+        author:
+            "Marcus Aurelius"
     },
     {
-        quote: "Waste no more time arguing about what a good man should be. Be one.",
-        author: "Marcus Aurelius"
+        quote:
+            "Waste no more time arguing about what a good man should be. Be one.",
+        author:
+            "Marcus Aurelius"
     },
     {
-        quote: "Difficulties strengthen the mind, as labor does the body.",
-        author: "Seneca"
+        quote:
+            "Difficulties strengthen the mind, as labor does the body.",
+        author:
+            "Seneca"
     },
     {
-        quote: "We suffer more often in imagination than in reality.",
-        author: "Seneca"
+        quote:
+            "We suffer more often in imagination than in reality.",
+        author:
+            "Seneca"
     },
     {
-        quote: "The future belongs to those who believe in the beauty of their dreams.",
-        author: "Eleanor Roosevelt"
+        quote:
+            "The future belongs to those who believe in the beauty of their dreams.",
+        author:
+            "Eleanor Roosevelt"
     },
     {
-        quote: "You must do the thing you think you cannot do.",
-        author: "Eleanor Roosevelt"
+        quote:
+            "You must do the thing you think you cannot do.",
+        author:
+            "Eleanor Roosevelt"
     },
     {
-        quote: "No one can make you feel inferior without your consent.",
-        author: "Eleanor Roosevelt"
+        quote:
+            "No one can make you feel inferior without your consent.",
+        author:
+            "Eleanor Roosevelt"
     },
     {
-        quote: "Education is the most powerful weapon which you can use to change the world.",
-        author: "Nelson Mandela"
+        quote:
+            "Education is the most powerful weapon which you can use to change the world.",
+        author:
+            "Nelson Mandela"
     },
     {
-        quote: "You may encounter many defeats, but you must not be defeated.",
-        author: "Nelson Mandela"
+        quote:
+            "You may encounter many defeats, but you must not be defeated.",
+        author:
+            "Nelson Mandela"
     },
     {
-        quote: "I never lose. I either win or learn.",
-        author: "Nelson Mandela"
+        quote:
+            "I never lose. I either win or learn.",
+        author:
+            "Nelson Mandela"
     },
     {
-        quote: "I have not failed. I've just found 10,000 ways that won't work.",
-        author: "Thomas Edison"
+        quote:
+            "I have not failed. I've just found 10,000 ways that won't work.",
+        author:
+            "Thomas Edison"
     },
     {
-        quote: "There is no substitute for hard work.",
-        author: "Thomas Edison"
+        quote:
+            "There is no substitute for hard work.",
+        author:
+            "Thomas Edison"
     },
     {
-        quote: "If you can't outplay them, outwork them.",
-        author: "Ben Hogan"
+        quote:
+            "If you can't outplay them, outwork them.",
+        author:
+            "Ben Hogan"
     },
     {
-        quote: "I've failed over and over and over again in my life. And that is why I succeed.",
-        author: "Michael Jordan"
+        quote:
+            "I've failed over and over and over again in my life. And that is why I succeed.",
+        author:
+            "Michael Jordan"
     },
     {
-        quote: "Some people want it to happen, some wish it would happen, others make it happen.",
-        author: "Michael Jordan"
+        quote:
+            "Some people want it to happen, some wish it would happen, others make it happen.",
+        author:
+            "Michael Jordan"
     },
     {
-        quote: "You miss 100% of the shots you don't take.",
-        author: "Wayne Gretzky"
+        quote:
+            "You miss 100% of the shots you don't take.",
+        author:
+            "Wayne Gretzky"
     },
     {
-        quote: "You can't be afraid to fail. It's the only way you succeed.",
-        author: "LeBron James"
+        quote:
+            "You can't be afraid to fail. It's the only way you succeed.",
+        author:
+            "LeBron James"
     },
     {
-        quote: "I never dreamed about success. I worked for it.",
-        author: "Estée Lauder"
+        quote:
+            "I never dreamed about success. I worked for it.",
+        author:
+            "Estée Lauder"
     },
     {
-        quote: "Don't count the days, make the days count.",
-        author: "Muhammad Ali"
+        quote:
+            "Don't count the days, make the days count.",
+        author:
+            "Muhammad Ali"
     },
     {
-        quote: "He who is not courageous enough to take risks will accomplish nothing in life.",
-        author: "Muhammad Ali"
+        quote:
+            "He who is not courageous enough to take risks will accomplish nothing in life.",
+        author:
+            "Muhammad Ali"
     },
     {
-        quote: "What would life be if we had no courage to attempt anything?",
-        author: "Vincent van Gogh"
+        quote:
+            "What would life be if we had no courage to attempt anything?",
+        author:
+            "Vincent van Gogh"
     },
     {
-        quote: "If you hear a voice within you say 'you cannot paint,' then by all means paint.",
-        author: "Vincent van Gogh"
+        quote:
+            "If you hear a voice within you say 'you cannot paint,' then by all means paint.",
+        author:
+            "Vincent van Gogh"
     },
     {
-        quote: "Act as if what you do makes a difference. It does.",
-        author: "William James"
+        quote:
+            "Act as if what you do makes a difference. It does.",
+        author:
+            "William James"
     },
     {
-        quote: "Nothing is particularly hard if you divide it into small jobs.",
-        author: "Henry Ford"
+        quote:
+            "Nothing is particularly hard if you divide it into small jobs.",
+        author:
+            "Henry Ford"
     },
     {
-        quote: "Failure is simply the opportunity to begin again, this time more intelligently.",
-        author: "Henry Ford"
+        quote:
+            "Failure is simply the opportunity to begin again, this time more intelligently.",
+        author:
+            "Henry Ford"
     },
     {
-        quote: "The best way to predict the future is to create it.",
-        author: "Peter Drucker"
+        quote:
+            "The best way to predict the future is to create it.",
+        author:
+            "Peter Drucker"
     },
     {
-        quote: "Efficiency is doing things right; effectiveness is doing the right things.",
-        author: "Peter Drucker"
+        quote:
+            "Efficiency is doing things right; effectiveness is doing the right things.",
+        author:
+            "Peter Drucker"
     },
     {
-        quote: "If you want to be happy, set a goal that commands your thoughts, liberates your energy and inspires your hopes.",
-        author: "Andrew Carnegie"
+        quote:
+            "If you want to be happy, set a goal that commands your thoughts, liberates your energy and inspires your hopes.",
+        author:
+            "Andrew Carnegie"
     },
     {
-        quote: "The only person you are destined to become is the person you decide to be.",
-        author: "Ralph Waldo Emerson"
+        quote:
+            "The only person you are destined to become is the person you decide to be.",
+        author:
+            "Ralph Waldo Emerson"
     },
     {
-        quote: "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
-        author: "Ralph Waldo Emerson"
+        quote:
+            "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+        author:
+            "Ralph Waldo Emerson"
     },
     {
-        quote: "Nothing great was ever achieved without enthusiasm.",
-        author: "Ralph Waldo Emerson"
+        quote:
+            "Nothing great was ever achieved without enthusiasm.",
+        author:
+            "Ralph Waldo Emerson"
     }
 ];
 
@@ -418,26 +585,37 @@ function initializeApp() {
 async function loadQuestions() {
 
     const loading =
-        document.getElementById("loading");
+        document.getElementById(
+            "loading"
+        );
 
     const errorBox =
-        document.getElementById("error");
+        document.getElementById(
+            "error"
+        );
 
     try {
 
         if (loading) {
-            loading.classList.remove("hidden");
+            loading.classList.remove(
+                "hidden"
+            );
         }
 
         if (errorBox) {
-            errorBox.classList.add("hidden");
+            errorBox.classList.add(
+                "hidden"
+            );
         }
 
         const response =
             await fetch(
-                CSV_URL + "?v=" + Date.now(),
+                CSV_URL +
+                "?v=" +
+                Date.now(),
                 {
-                    cache: "no-store"
+                    cache:
+                        "no-store"
                 }
             );
 
@@ -462,7 +640,9 @@ async function loadQuestions() {
         }
 
         questions =
-            parseCSV(csvText);
+            parseCSV(
+                csvText
+            );
 
         if (!questions.length) {
 
@@ -477,7 +657,9 @@ async function loadQuestions() {
         );
 
         if (loading) {
-            loading.classList.add("hidden");
+            loading.classList.add(
+                "hidden"
+            );
         }
 
         loadQuestion();
@@ -490,7 +672,9 @@ async function loadQuestions() {
         );
 
         if (loading) {
-            loading.classList.add("hidden");
+            loading.classList.add(
+                "hidden"
+            );
         }
 
         if (errorBox) {
@@ -528,8 +712,11 @@ function parseCSV(text) {
         i++
     ) {
 
-        const char = text[i];
-        const nextChar = text[i + 1];
+        const char =
+            text[i];
+
+        const nextChar =
+            text[i + 1];
 
         if (
             char === '"' &&
@@ -538,6 +725,7 @@ function parseCSV(text) {
         ) {
 
             cell += '"';
+
             i++;
 
         } else if (
@@ -553,6 +741,7 @@ function parseCSV(text) {
         ) {
 
             row.push(cell);
+
             cell = "";
 
         } else if (
@@ -630,29 +819,41 @@ function parseCSV(text) {
 
                     question[header] =
                         (
-                            row[index] || ""
+                            row[index] ||
+                            ""
                         ).trim();
                 }
             );
 
             return question;
         })
-        .filter(question =>
-            Object.values(question).some(
-                value =>
-                    value !== ""
-            )
+        .filter(
+            question =>
+                Object.values(
+                    question
+                ).some(
+                    value =>
+                        value !== ""
+                )
         );
 }
 
 
-function normalizeHeader(header) {
+function normalizeHeader(
+    header
+) {
 
     return header
-        .replace(/^\uFEFF/, "")
+        .replace(
+            /^\uFEFF/,
+            ""
+        )
         .trim()
         .toLowerCase()
-        .replace(/\s+/g, " ");
+        .replace(
+            /\s+/g,
+            " "
+        );
 }
 
 
@@ -715,8 +916,8 @@ function loadQuestion() {
                 String(
                     question.id || ""
                 )
-                .trim()
-                .toLowerCase() ===
+                    .trim()
+                    .toLowerCase() ===
                 String(id)
                     .trim()
                     .toLowerCase()
@@ -743,25 +944,39 @@ function loadQuestion() {
 
 function displayQuestion() {
 
-    document
-        .getElementById(
+    const container =
+        document.getElementById(
             "question-container"
-        )
-        .classList.remove("hidden");
+        );
 
-    document
-        .getElementById(
+    const error =
+        document.getElementById(
             "error"
-        )
-        .classList.add("hidden");
+        );
 
-    document
-        .getElementById(
+    const questionElement =
+        document.getElementById(
             "question"
-        )
-        .innerText =
+        );
+
+    if (container) {
+        container.classList.remove(
+            "hidden"
+        );
+    }
+
+    if (error) {
+        error.classList.add(
+            "hidden"
+        );
+    }
+
+    if (questionElement) {
+
+        questionElement.innerText =
             currentQuestion.question ||
             "Question unavailable.";
+    }
 
     createOptions();
 
@@ -773,8 +988,14 @@ function displayQuestion() {
 
     loadMotivationalQuote();
 
+    /*
+     * Restore saved highlights after
+     * the question DOM is fully rendered.
+     */
     requestAnimationFrame(
-        restoreHighlights
+        () => {
+            restoreHighlights();
+        }
     );
 }
 
@@ -790,7 +1011,12 @@ function createOptions() {
             "options"
         );
 
-    optionsContainer.innerHTML = "";
+    if (!optionsContainer) {
+        return;
+    }
+
+    optionsContainer.innerHTML =
+        "";
 
     const letters = [
         "A",
@@ -799,89 +1025,110 @@ function createOptions() {
         "D"
     ];
 
-    letters.forEach(letter => {
+    letters.forEach(
+        letter => {
 
-        const optionText =
-            currentQuestion[
-                letter.toLowerCase()
-            ];
+            const optionText =
+                currentQuestion[
+                    letter.toLowerCase()
+                ];
 
-        if (
-            !optionText ||
-            !optionText.trim()
-        ) {
-            return;
-        }
-
-        const option =
-            document.createElement("div");
-
-        option.className =
-            "option";
-
-        const radio =
-            document.createElement("input");
-
-        radio.type = "radio";
-        radio.name = "answer";
-        radio.value = letter;
-        radio.id = "option-" + letter;
-
-        const label =
-            document.createElement("label");
-
-        label.htmlFor =
-            "option-" + letter;
-
-        const letterSpan =
-            document.createElement("span");
-
-        letterSpan.className =
-            "option-letter";
-
-        letterSpan.innerText =
-            letter;
-
-        const textSpan =
-            document.createElement("span");
-
-        textSpan.className =
-            "option-text";
-
-        textSpan.innerText =
-            optionText;
-
-        label.appendChild(
-            letterSpan
-        );
-
-        label.appendChild(
-            textSpan
-        );
-
-        option.appendChild(
-            radio
-        );
-
-        option.appendChild(
-            label
-        );
-
-        optionsContainer.appendChild(
-            option
-        );
-
-        radio.addEventListener(
-            "change",
-            () => {
-
-                checkAnswer(
-                    radio,
-                    option
-                );
+            if (
+                !optionText ||
+                !optionText.trim()
+            ) {
+                return;
             }
-        );
-    });
+
+            const option =
+                document.createElement(
+                    "div"
+                );
+
+            option.className =
+                "option";
+
+            const radio =
+                document.createElement(
+                    "input"
+                );
+
+            radio.type =
+                "radio";
+
+            radio.name =
+                "answer";
+
+            radio.value =
+                letter;
+
+            radio.id =
+                "option-" +
+                letter;
+
+            const label =
+                document.createElement(
+                    "label"
+                );
+
+            label.htmlFor =
+                "option-" +
+                letter;
+
+            const letterSpan =
+                document.createElement(
+                    "span"
+                );
+
+            letterSpan.className =
+                "option-letter";
+
+            letterSpan.innerText =
+                letter;
+
+            const textSpan =
+                document.createElement(
+                    "span"
+                );
+
+            textSpan.className =
+                "option-text";
+
+            textSpan.innerText =
+                optionText;
+
+            label.appendChild(
+                letterSpan
+            );
+
+            label.appendChild(
+                textSpan
+            );
+
+            option.appendChild(
+                radio
+            );
+
+            option.appendChild(
+                label
+            );
+
+            optionsContainer.appendChild(
+                option
+            );
+
+            radio.addEventListener(
+                "change",
+                () => {
+
+                    checkAnswer(
+                        radio,
+                        option
+                    );
+                }
+            );
+        }
+    );
 }
 
 
@@ -916,7 +1163,9 @@ function checkAnswer(
                 questionId
             );
 
-        if (previousResult === true) {
+        if (
+            previousResult === true
+        ) {
             score--;
         }
     }
@@ -948,6 +1197,7 @@ function checkAnswer(
     );
 
     if (!isCorrect) {
+
         highlightCorrectAnswer(
             correctAnswer
         );
@@ -959,29 +1209,37 @@ function checkAnswer(
 
         showCorrectCelebration();
 
-        document
-            .getElementById("result")
-            .innerText =
-            "Correct! 🎉";
+        const result =
+            document.getElementById(
+                "result"
+            );
 
-        document
-            .getElementById("result")
-            .style.color =
-            "#16a34a";
+        if (result) {
+
+            result.innerText =
+                "Correct! 🎉";
+
+            result.style.color =
+                "#16a34a";
+        }
 
     } else {
 
         showWrongReaction();
 
-        document
-            .getElementById("result")
-            .innerText =
-            "Not quite. Keep learning!";
+        const result =
+            document.getElementById(
+                "result"
+            );
 
-        document
-            .getElementById("result")
-            .style.color =
-            "#dc2626";
+        if (result) {
+
+            result.innerText =
+                "Not quite. Keep learning!";
+
+            result.style.color =
+                "#dc2626";
+        }
     }
 
     createExplanationButton();
@@ -1001,15 +1259,19 @@ function checkAnswer(
 function clearOptionStates() {
 
     document
-        .querySelectorAll(".option")
-        .forEach(option => {
+        .querySelectorAll(
+            ".option"
+        )
+        .forEach(
+            option => {
 
-            option.classList.remove(
-                "selected",
-                "correct-answer",
-                "wrong-answer"
-            );
-        });
+                option.classList.remove(
+                    "selected",
+                    "correct-answer",
+                    "wrong-answer"
+                );
+            }
+        );
 }
 
 
@@ -1033,12 +1295,18 @@ function createExplanationButton() {
             "explanation"
         );
 
+    if (!explanation) {
+        return;
+    }
+
     explanation.classList.add(
         "hidden"
     );
 
     const button =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
     button.id =
         "show-explanation-btn";
@@ -1092,10 +1360,16 @@ function createExplanationButton() {
             "options"
         );
 
-    optionsContainer.parentNode.insertBefore(
-        button,
-        explanation
-    );
+    if (
+        optionsContainer &&
+        optionsContainer.parentNode
+    ) {
+
+        optionsContainer.parentNode.insertBefore(
+            button,
+            explanation
+        );
+    }
 }
 
 
@@ -1115,6 +1389,10 @@ function showExplanation() {
         document.getElementById(
             "explanation-text"
         );
+
+    if (!explanationText) {
+        return;
+    }
 
     const text =
         currentQuestion.explanation ||
@@ -1154,6 +1432,10 @@ function hideExplanation() {
         document.getElementById(
             "explanation"
         );
+
+    if (!explanation) {
+        return;
+    }
 
     explanation.classList.add(
         "hidden"
@@ -1199,12 +1481,21 @@ function restoreAnswerState() {
             "result"
         );
 
-    explanation.classList.add(
-        "hidden"
-    );
+    if (explanation) {
+        explanation.classList.add(
+            "hidden"
+        );
+    }
 
-    explanationText.innerText = "";
-    result.innerText = "";
+    if (explanationText) {
+        explanationText.innerText =
+            "";
+    }
+
+    if (result) {
+        result.innerText =
+            "";
+    }
 
     const oldButton =
         document.getElementById(
@@ -1230,13 +1521,20 @@ function restoreAnswerState() {
         return;
     }
 
-    radio.checked = true;
+    radio.checked =
+        true;
 
     const option =
-        radio.closest(".option");
+        radio.closest(
+            ".option"
+        );
 
     const correctAnswer =
         getCorrectAnswer();
+
+    if (!option) {
+        return;
+    }
 
     if (
         savedAnswer ===
@@ -1247,11 +1545,14 @@ function restoreAnswerState() {
             "correct-answer"
         );
 
-        result.innerText =
-            "Correct! 🎉";
+        if (result) {
 
-        result.style.color =
-            "#16a34a";
+            result.innerText =
+                "Correct! 🎉";
+
+            result.style.color =
+                "#16a34a";
+        }
 
     } else {
 
@@ -1263,11 +1564,14 @@ function restoreAnswerState() {
             correctAnswer
         );
 
-        result.innerText =
-            "Not quite. Keep learning!";
+        if (result) {
 
-        result.style.color =
-            "#dc2626";
+            result.innerText =
+                "Not quite. Keep learning!";
+
+            result.style.color =
+                "#dc2626";
+        }
     }
 
     createExplanationButton();
@@ -1290,9 +1594,12 @@ function highlightCorrectAnswer(
     }
 
     const option =
-        radio.closest(".option");
+        radio.closest(
+            ".option"
+        );
 
     if (option) {
+
         option.classList.add(
             "correct-answer"
         );
@@ -1322,11 +1629,13 @@ function updateNavigation() {
         );
 
     if (previousButton) {
+
         previousButton.disabled =
             currentQuestionIndex <= 0;
     }
 
     if (nextButton) {
+
         nextButton.disabled =
             currentQuestionIndex >=
             questions.length - 1;
@@ -1336,7 +1645,10 @@ function updateNavigation() {
 
         position.innerText =
             "Question " +
-            (currentQuestionIndex + 1) +
+            (
+                currentQuestionIndex +
+                1
+            ) +
             " of " +
             questions.length;
     }
@@ -1385,7 +1697,8 @@ function goToPreviousQuestion() {
 
     navigateToQuestion(
         questions[
-            currentQuestionIndex - 1
+            currentQuestionIndex -
+            1
         ]
     );
 }
@@ -1402,7 +1715,8 @@ function goToNextQuestion() {
 
     navigateToQuestion(
         questions[
-            currentQuestionIndex + 1
+            currentQuestionIndex +
+            1
         ]
     );
 }
@@ -1475,7 +1789,8 @@ function loadMotivationalQuote() {
 
         index =
             (
-                index + 1
+                index +
+                1
             ) %
             FALLBACK_QUOTES.length;
     }
@@ -1484,7 +1799,9 @@ function loadMotivationalQuote() {
         index;
 
     const quote =
-        FALLBACK_QUOTES[index];
+        FALLBACK_QUOTES[
+            index
+        ];
 
     quoteText.innerText =
         "“" +
@@ -1503,6 +1820,13 @@ function loadMotivationalQuote() {
 
 function getQuestionId() {
 
+    if (
+        !currentQuestion ||
+        !currentQuestion.id
+    ) {
+        return "";
+    }
+
     return String(
         currentQuestion.id
     );
@@ -1512,8 +1836,12 @@ function getQuestionId() {
 function getCorrectAnswer() {
 
     return (
-        currentQuestion["correct answer"] ||
-        currentQuestion["correct_answer"] ||
+        currentQuestion[
+            "correct answer"
+        ] ||
+        currentQuestion[
+            "correct_answer"
+        ] ||
         currentQuestion.answer ||
         currentQuestion.correct ||
         ""
@@ -1598,7 +1926,8 @@ function createEmojiBurst(
                 "--start-left",
                 (
                     5 +
-                    Math.random() * 90
+                    Math.random() *
+                    90
                 ) +
                 "%"
             );
@@ -1606,7 +1935,8 @@ function createEmojiBurst(
             element.style.setProperty(
                 "--delay",
                 (
-                    Math.random() * 0.3
+                    Math.random() *
+                    0.3
                 ) +
                 "s"
             );
@@ -1615,7 +1945,8 @@ function createEmojiBurst(
                 "--duration",
                 (
                     2 +
-                    Math.random() * 1.4
+                    Math.random() *
+                    1.4
                 ) +
                 "s"
             );
@@ -1624,7 +1955,8 @@ function createEmojiBurst(
                 "--rotation",
                 (
                     -40 +
-                    Math.random() * 80
+                    Math.random() *
+                    80
                 ) +
                 "deg"
             );
@@ -1633,7 +1965,8 @@ function createEmojiBurst(
                 "--horizontal",
                 (
                     -120 +
-                    Math.random() * 240
+                    Math.random() *
+                    240
                 ) +
                 "px"
             );
@@ -1642,7 +1975,8 @@ function createEmojiBurst(
                 "--emoji-size",
                 (
                     1.7 +
-                    Math.random() * 1.5
+                    Math.random() *
+                    1.5
                 ) +
                 "rem"
             );
@@ -1659,6 +1993,7 @@ function createEmojiBurst(
             if (
                 container.parentNode
             ) {
+
                 container.remove();
             }
 
@@ -1682,22 +2017,27 @@ function handleKeyboardNavigation(
     if (
         activeElement &&
         (
-            activeElement.tagName === "INPUT" ||
-            activeElement.tagName === "TEXTAREA" ||
-            activeElement.tagName === "BUTTON"
+            activeElement.tagName ===
+                "INPUT" ||
+            activeElement.tagName ===
+                "TEXTAREA" ||
+            activeElement.tagName ===
+                "BUTTON"
         )
     ) {
         return;
     }
 
     if (
-        event.key === "ArrowLeft"
+        event.key ===
+        "ArrowLeft"
     ) {
 
         goToPreviousQuestion();
 
     } else if (
-        event.key === "ArrowRight"
+        event.key ===
+        "ArrowRight"
     ) {
 
         goToNextQuestion();
@@ -1706,9 +2046,7 @@ function handleKeyboardNavigation(
 
 
 /* ============================================================
-   ============================================================
    HIGHLIGHTER
-   ============================================================
    ============================================================ */
 
 function initializeHighlighter() {
@@ -1730,6 +2068,7 @@ function initializeHighlighter() {
         button.addEventListener(
             "mousedown",
             event => {
+
                 event.preventDefault();
             }
         );
@@ -1745,25 +2084,60 @@ function initializeHighlighter() {
         );
     }
 
+    /*
+     * Support color buttons whether they are
+     * buttons, spans or other elements.
+     */
     document.addEventListener(
-        "mousedown",
-        handleHighlighterMouseDown
+        "click",
+        handleHighlightColorClick
     );
 
-    document.addEventListener(
-        "mouseup",
-        handleHighlighterMouseUp
-    );
-
+    /*
+     * Remove an existing highlight when
+     * clicked while highlighter mode is active.
+     */
     document.addEventListener(
         "click",
         handleHighlightClick
     );
 
+    /*
+     * Mouse selection.
+     */
     document.addEventListener(
-        "click",
-        handleHighlightColorClick
+        "mouseup",
+        handleHighlighterMouseUp
     );
+
+    /*
+     * Touch selection support.
+     */
+    document.addEventListener(
+        "touchend",
+        handleHighlighterTouchEnd
+    );
+
+    /*
+     * Clear highlights button.
+     */
+    const clearButton =
+        document.getElementById(
+            "clear-highlights-btn"
+        );
+
+    if (clearButton) {
+
+        clearButton.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                clearAllHighlights();
+            }
+        );
+    }
 }
 
 
@@ -1776,6 +2150,12 @@ function toggleHighlighter() {
     highlighterActive =
         !highlighterActive;
 
+    updateHighlighterUI();
+}
+
+
+function updateHighlighterUI() {
+
     const button =
         document.getElementById(
             "highlighter-btn"
@@ -1786,55 +2166,36 @@ function toggleHighlighter() {
         highlighterActive
     );
 
-    if (button) {
+    if (!button) {
+        return;
+    }
 
-        button.classList.toggle(
-            "active",
-            highlighterActive
-        );
+    button.classList.toggle(
+        "active",
+        highlighterActive
+    );
 
-        button.setAttribute(
-            "aria-pressed",
+    button.setAttribute(
+        "aria-pressed",
+        highlighterActive
+            ? "true"
+            : "false"
+    );
+
+    if (
+        button.dataset.defaultText
+    ) {
+
+        button.innerText =
             highlighterActive
-                ? "true"
-                : "false"
-        );
+                ? "🔴 Highlighting"
+                : button.dataset.defaultText;
     }
 }
 
 
 /* ============================================================
-   HIGHLIGHTER MOUSE DOWN
-   ============================================================ */
-
-function handleHighlighterMouseDown(
-    event
-) {
-
-    if (!highlighterActive) {
-        return;
-    }
-
-    if (
-        event.target.closest(
-            "#highlighter-btn"
-        )
-    ) {
-        return;
-    }
-
-    if (
-        event.target.closest(
-            ".aib-highlight"
-        )
-    ) {
-        return;
-    }
-}
-
-
-/* ============================================================
-   HIGHLIGHTER MOUSE UP
+   MOUSE UP
    ============================================================ */
 
 function handleHighlighterMouseUp(
@@ -1853,6 +2214,22 @@ function handleHighlighterMouseUp(
         return;
     }
 
+    if (
+        event.target.closest(
+            "[data-highlight-color]"
+        )
+    ) {
+        return;
+    }
+
+    if (
+        event.target.closest(
+            "#clear-highlights-btn"
+        )
+    ) {
+        return;
+    }
+
     setTimeout(
         applyHighlightFromSelection,
         20
@@ -1861,7 +2238,24 @@ function handleHighlighterMouseUp(
 
 
 /* ============================================================
-   APPLY HIGHLIGHT
+   TOUCH END
+   ============================================================ */
+
+function handleHighlighterTouchEnd() {
+
+    if (!highlighterActive) {
+        return;
+    }
+
+    setTimeout(
+        applyHighlightFromSelection,
+        50
+    );
+}
+
+
+/* ============================================================
+   APPLY HIGHLIGHT FROM SELECTION
    ============================================================ */
 
 function applyHighlightFromSelection() {
@@ -1877,16 +2271,18 @@ function applyHighlightFromSelection() {
         return;
     }
 
-    const range =
-        selection.getRangeAt(0);
-
     const text =
         selection.toString();
 
     if (!text.trim()) {
+
         selection.removeAllRanges();
+
         return;
     }
+
+    const range =
+        selection.getRangeAt(0);
 
     const startElement =
         getElementFromNode(
@@ -1908,10 +2304,16 @@ function applyHighlightFromSelection() {
         !startElement ||
         !endElement
     ) {
+
         selection.removeAllRanges();
+
         return;
     }
 
+    /*
+     * Do not allow a selection spanning
+     * question/options/explanation areas.
+     */
     if (
         getHighlightContainer(
             range.startContainer
@@ -1920,20 +2322,37 @@ function applyHighlightFromSelection() {
             range.endContainer
         ) !== container
     ) {
+
         selection.removeAllRanges();
+
         return;
     }
 
     /*
-     * Do not allow highlighting UI controls.
+     * Do not highlight controls.
      */
-
     if (
         container.closest(
             "button,input,textarea,select"
         )
     ) {
+
         selection.removeAllRanges();
+
+        return;
+    }
+
+    /*
+     * Do not create nested highlights.
+     */
+    if (
+        rangeContainsHighlight(
+            range
+        )
+    ) {
+
+        selection.removeAllRanges();
+
         return;
     }
 
@@ -1947,10 +2366,10 @@ function applyHighlightFromSelection() {
         mark.className =
             "aib-highlight";
 
-        mark.style.backgroundColor =
+        mark.dataset.highlightColor =
             currentHighlightColor;
 
-        mark.dataset.highlightColor =
+        mark.style.backgroundColor =
             currentHighlightColor;
 
         mark.title =
@@ -1981,9 +2400,30 @@ function applyHighlightFromSelection() {
             "Highlight error:",
             error
         );
-    }
 
-    selection.removeAllRanges();
+    } finally {
+
+        selection.removeAllRanges();
+    }
+}
+
+
+/* ============================================================
+   CHECK FOR EXISTING HIGHLIGHT
+   ============================================================ */
+
+function rangeContainsHighlight(
+    range
+) {
+
+    const contents =
+        range.cloneContents();
+
+    return Boolean(
+        contents.querySelector(
+            ".aib-highlight"
+        )
+    );
 }
 
 
@@ -2044,21 +2484,27 @@ function getHighlightContainer(
 
     if (
         question &&
-        question.contains(element)
+        question.contains(
+            element
+        )
     ) {
         return question;
     }
 
     if (
         options &&
-        options.contains(element)
+        options.contains(
+            element
+        )
     ) {
         return options;
     }
 
     if (
         explanation &&
-        explanation.contains(element)
+        explanation.contains(
+            element
+        )
     ) {
         return explanation;
     }
@@ -2068,7 +2514,7 @@ function getHighlightContainer(
 
 
 /* ============================================================
-   REMOVE / MERGE HIGHLIGHTS
+   REMOVE HIGHLIGHT
    ============================================================ */
 
 function handleHighlightClick(
@@ -2088,15 +2534,8 @@ function handleHighlightClick(
         return;
     }
 
-    if (
-        event.target.closest(
-            "#highlighter-btn"
-        )
-    ) {
-        return;
-    }
-
     event.preventDefault();
+
     event.stopPropagation();
 
     removeHighlight(
@@ -2138,6 +2577,10 @@ function removeHighlight(
 }
 
 
+/* ============================================================
+   MERGE ADJACENT HIGHLIGHTS
+   ============================================================ */
+
 function mergeAdjacentHighlights(
     container
 ) {
@@ -2149,44 +2592,47 @@ function mergeAdjacentHighlights(
             )
         );
 
-    marks.forEach(mark => {
+    marks.forEach(
+        mark => {
 
-        let next =
-            mark.nextSibling;
-
-        while (
-            next &&
-            next.nodeType ===
-            Node.TEXT_NODE &&
-            !next.textContent.trim()
-        ) {
-            next =
-                next.nextSibling;
-        }
-
-        if (
-            next &&
-            next.nodeType ===
-            Node.ELEMENT_NODE &&
-            next.classList.contains(
-                "aib-highlight"
-            ) &&
-            next.dataset.highlightColor ===
-            mark.dataset.highlightColor
-        ) {
+            let next =
+                mark.nextSibling;
 
             while (
-                next.firstChild
+                next &&
+                next.nodeType ===
+                    Node.TEXT_NODE &&
+                !next.textContent.trim()
             ) {
 
-                mark.appendChild(
-                    next.firstChild
-                );
+                next =
+                    next.nextSibling;
             }
 
-            next.remove();
+            if (
+                next &&
+                next.nodeType ===
+                    Node.ELEMENT_NODE &&
+                next.classList.contains(
+                    "aib-highlight"
+                ) &&
+                next.dataset.highlightColor ===
+                    mark.dataset.highlightColor
+            ) {
+
+                while (
+                    next.firstChild
+                ) {
+
+                    mark.appendChild(
+                        next.firstChild
+                    );
+                }
+
+                next.remove();
+            }
         }
-    });
+    );
 }
 
 
@@ -2207,11 +2653,24 @@ function handleHighlightColorClick(
         return;
     }
 
-    const color =
+    /*
+     * Ignore the main highlighter button
+     * if it ever receives a data attribute.
+     */
+    if (
+        button.id ===
+        "highlighter-btn"
+    ) {
+        return;
+    }
+
+    const colorName =
         button.dataset.highlightColor;
 
     if (
-        !HIGHLIGHT_COLORS[color]
+        !HIGHLIGHT_COLORS[
+            colorName
+        ]
     ) {
         return;
     }
@@ -2219,17 +2678,27 @@ function handleHighlightColorClick(
     event.preventDefault();
 
     currentHighlightColor =
-        HIGHLIGHT_COLORS[color];
+        HIGHLIGHT_COLORS[
+            colorName
+        ];
 
     document
         .querySelectorAll(
             "[data-highlight-color]"
         )
         .forEach(
-            item =>
-                item.classList.remove(
-                    "active"
-                )
+            item => {
+
+                if (
+                    item.id !==
+                    "highlighter-btn"
+                ) {
+
+                    item.classList.remove(
+                        "active"
+                    );
+                }
+            }
         );
 
     button.classList.add(
@@ -2274,16 +2743,30 @@ function saveHighlights() {
         );
 
     if (question) {
+
         data.question =
             question.innerHTML;
     }
 
     if (options) {
-        data.options =
-            options.innerHTML;
+
+        /*
+         * Only option text is stored.
+         * This prevents radio/label HTML
+         * from being overwritten later.
+         */
+        data.options = Array.from(
+            options.querySelectorAll(
+                ".option-text"
+            )
+        ).map(
+            element =>
+                element.innerHTML
+        );
     }
 
     if (explanation) {
+
         data.explanation =
             explanation.innerHTML;
     }
@@ -2294,15 +2777,19 @@ function saveHighlights() {
             JSON.parse(
                 localStorage.getItem(
                     HIGHLIGHT_STORAGE_KEY
-                ) || "{}"
+                ) ||
+                "{}"
             );
 
-        stored[questionId] =
-            data;
+        stored[
+            questionId
+        ] = data;
 
         localStorage.setItem(
             HIGHLIGHT_STORAGE_KEY,
-            JSON.stringify(stored)
+            JSON.stringify(
+                stored
+            )
         );
 
     } catch (error) {
@@ -2336,7 +2823,8 @@ function restoreHighlights() {
             JSON.parse(
                 localStorage.getItem(
                     HIGHLIGHT_STORAGE_KEY
-                ) || "{}"
+                ) ||
+                "{}"
             );
 
     } catch (error) {
@@ -2388,14 +2876,27 @@ function restoreHighlights() {
 
     if (
         options &&
-        data.options
+        Array.isArray(
+            data.options
+        )
+    ) {
+
+        restoreOptionHighlights(
+            options,
+            data.options
+        );
+
+    } else if (
+        options &&
+        typeof data.options ===
+            "string"
     ) {
 
         /*
-         * Only restore the highlight
-         * markup, not arbitrary HTML.
+         * Backward compatibility with
+         * the previous storage format.
          */
-        restoreOptionHighlights(
+        restoreOptionHighlightsLegacy(
             options,
             data.options
         );
@@ -2419,6 +2920,44 @@ function restoreHighlights() {
    ============================================================ */
 
 function restoreOptionHighlights(
+    container,
+    savedOptions
+) {
+
+    const currentTexts =
+        Array.from(
+            container.querySelectorAll(
+                ".option-text"
+            )
+        );
+
+    savedOptions.forEach(
+        (
+            savedHTML,
+            index
+        ) => {
+
+            const current =
+                currentTexts[index];
+
+            if (!current) {
+                return;
+            }
+
+            current.innerHTML =
+                sanitizeHighlightHTML(
+                    savedHTML
+                );
+        }
+    );
+}
+
+
+/* ============================================================
+   LEGACY OPTION RESTORE
+   ============================================================ */
+
+function restoreOptionHighlightsLegacy(
     container,
     savedHTML
 ) {
@@ -2493,9 +3032,13 @@ function sanitizeHighlightHTML(
     elements.forEach(
         element => {
 
+            /*
+             * Only MARK elements with our
+             * exact highlight class are allowed.
+             */
             if (
                 element.tagName !==
-                "MARK" ||
+                    "MARK" ||
                 !element.classList.contains(
                     "aib-highlight"
                 )
@@ -2514,8 +3057,16 @@ function sanitizeHighlightHTML(
                 return;
             }
 
+            /*
+             * Remove any classes other than
+             * the expected class.
+             */
+            element.className =
+                "aib-highlight";
+
             const color =
-                element.dataset.highlightColor;
+                element.dataset
+                    .highlightColor;
 
             if (
                 color &&
@@ -2527,9 +3078,17 @@ function sanitizeHighlightHTML(
                 element.style.backgroundColor =
                     color;
 
+                element.dataset
+                    .highlightColor =
+                    color;
+
             } else {
 
                 element.style.backgroundColor =
+                    currentHighlightColor;
+
+                element.dataset
+                    .highlightColor =
                     currentHighlightColor;
             }
 
@@ -2576,8 +3135,30 @@ function clearAllHighlights() {
                     ".aib-highlight"
                 )
                 .forEach(
-                    removeHighlight
+                    highlight => {
+
+                        const parent =
+                            highlight.parentNode;
+
+                        if (!parent) {
+                            return;
+                        }
+
+                        while (
+                            highlight.firstChild
+                        ) {
+
+                            parent.insertBefore(
+                                highlight.firstChild,
+                                highlight
+                            );
+                        }
+
+                        highlight.remove();
+                    }
                 );
+
+            container.normalize();
         }
     );
 
@@ -2587,7 +3168,8 @@ function clearAllHighlights() {
             JSON.parse(
                 localStorage.getItem(
                     HIGHLIGHT_STORAGE_KEY
-                ) || "{}"
+                ) ||
+                "{}"
             );
 
         delete stored[
@@ -2598,7 +3180,9 @@ function clearAllHighlights() {
 
         localStorage.setItem(
             HIGHLIGHT_STORAGE_KEY,
-            JSON.stringify(stored)
+            JSON.stringify(
+                stored
+            )
         );
 
     } catch (error) {
@@ -2613,53 +3197,45 @@ function clearAllHighlights() {
 
 /* ============================================================
    KEYBOARD SHORTCUTS
-   ALT + H = HIGHLIGHTER
-   ESC = TURN OFF HIGHLIGHTER
+   ============================================================
+
+   ALT + H = Toggle highlighter
+   ESC     = Turn off highlighter
    ============================================================ */
 
 document.addEventListener(
     "keydown",
     event => {
 
+        /*
+         * Alt + H
+         */
         if (
             event.altKey &&
             event.key.toLowerCase() ===
-            "h"
+                "h"
         ) {
 
             event.preventDefault();
 
             toggleHighlighter();
+
+            return;
         }
 
+        /*
+         * Escape
+         */
         if (
-            event.key === "Escape" &&
+            event.key ===
+                "Escape" &&
             highlighterActive
         ) {
 
             highlighterActive =
                 false;
 
-            document.body.classList.remove(
-                "highlighter-active"
-            );
-
-            const button =
-                document.getElementById(
-                    "highlighter-btn"
-                );
-
-            if (button) {
-
-                button.classList.remove(
-                    "active"
-                );
-
-                button.setAttribute(
-                    "aria-pressed",
-                    "false"
-                );
-            }
+            updateHighlighterUI();
         }
     }
 );
@@ -2715,18 +3291,37 @@ function injectHighlighterStyles() {
             cursor: text;
         }
 
+        body.highlighter-active
+        #question,
+        body.highlighter-active
+        .option-text,
+        body.highlighter-active
+        #explanation-text {
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
         #highlighter-btn.active {
-            background: #fff176 !important;
-            color: #4a3f00 !important;
-            border-color: #e6c900 !important;
+            background:
+                #fee2e2 !important;
+
+            color:
+                #991b1b !important;
+
+            border-color:
+                #ef4444 !important;
+
             box-shadow:
-                0 0 0 3px rgba(255, 241, 118, 0.35);
+                0 0 0 3px
+                rgba(239, 68, 68, 0.14);
         }
 
         [data-highlight-color].active {
             outline:
                 2px solid #333 !important;
-            outline-offset: 2px;
+
+            outline-offset:
+                2px;
         }
 
         .reaction-container {
@@ -2742,6 +3337,7 @@ function injectHighlighterStyles() {
             left: var(--start-left);
             bottom: -60px;
             font-size: var(--emoji-size);
+
             animation:
                 aibReaction
                 var(--duration)
@@ -2761,6 +3357,7 @@ function injectHighlighterStyles() {
                     )
                     rotate(0deg)
                     scale(0.7);
+
                 opacity: 0;
             }
 
@@ -2777,6 +3374,7 @@ function injectHighlighterStyles() {
                     )
                     rotate(var(--rotation))
                     scale(1.15);
+
                 opacity: 0;
             }
         }
@@ -2812,12 +3410,14 @@ function showError(
         );
 
     if (loading) {
+
         loading.classList.add(
             "hidden"
         );
     }
 
     if (container) {
+
         container.classList.add(
             "hidden"
         );
