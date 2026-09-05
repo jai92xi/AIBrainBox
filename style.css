@@ -39,9 +39,7 @@ body {
 
 .container {
     width: 100%;
-
     margin: 0 auto;
-
     padding: 0 0 30px;
 }
 
@@ -59,21 +57,22 @@ body {
 
     margin-bottom: 22px;
 
+    /* Slightly darker header for better contrast */
     background:
         linear-gradient(
             135deg,
-            #dff4f0 0%,
-            #e8e5ff 55%,
-            #e2efff 100%
+            #c9e5df 0%,
+            #d5d1f2 55%,
+            #cddff2 100%
         );
 
     border-bottom:
         1px solid
-        rgba(99, 102, 241, 0.10);
+        rgba(71, 85, 105, 0.15);
 
     box-shadow:
-        0 4px 18px
-        rgba(71, 85, 105, 0.05);
+        0 5px 20px
+        rgba(71, 85, 105, 0.10);
 }
 
 .header-top {
@@ -92,8 +91,12 @@ body {
 
 
 /* ============================================================
-   BRAND
+   BRAND SECTION
    ============================================================ */
+
+.brand-section {
+    flex: 0 0 auto;
+}
 
 .brand {
     display: flex;
@@ -107,7 +110,6 @@ body {
 
 .brand-icon {
     font-size: 34px;
-
     line-height: 1;
 }
 
@@ -127,18 +129,17 @@ body {
    ============================================================ */
 
 .tagline {
-    max-width: 1180px;
-
     margin:
-        5px
-        auto
-        0;
+        6px
+        0
+        0
+        47px;
 
-    padding-left: 47px;
-
-    color: #64748b;
+    color: #526176;
 
     font-size: 13px;
+
+    font-weight: 600;
 
     letter-spacing: 0.1px;
 }
@@ -151,34 +152,53 @@ body {
 .motivational-quote {
     display: flex;
 
-    align-items: center;
+    flex-direction: column;
 
-    gap: 5px;
+    align-items: flex-end;
 
-    max-width: 500px;
+    justify-content: center;
 
-    color: #64748b;
+    gap: 4px;
+
+    max-width: 520px;
+
+    color: #475569;
 
     font-family:
         Georgia,
         "Times New Roman",
         serif;
 
-    font-size: 13px;
+    font-size: 14px;
 
     font-style: italic;
 
     text-align: right;
 
-    line-height: 1.4;
+    line-height: 1.45;
+}
+
+#quote-text {
+    display: block;
 }
 
 .quote-author {
-    color: #94a3b8;
+    display: block;
 
-    font-size: 11px;
+    color: #64748b;
 
-    white-space: nowrap;
+    font-size: 12px;
+
+    font-style: normal;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
 }
 
 
@@ -197,7 +217,6 @@ body {
         );
 
     margin-left: auto;
-
     margin-right: auto;
 }
 
@@ -284,33 +303,6 @@ body {
 
     cursor: pointer;
 
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        background 0.15s ease,
-        opacity 0.15s ease;
-}
-
-
-/* Previous button */
-
-#previous-question-btn {
-    background:
-        linear-gradient(
-            135deg,
-            #64748b,
-            #475569
-        );
-
-    box-shadow:
-        0 5px 12px
-        rgba(71, 85, 105, 0.20);
-}
-
-
-/* Next button */
-
-#next-question-btn {
     background:
         linear-gradient(
             135deg,
@@ -321,27 +313,18 @@ body {
     box-shadow:
         0 5px 12px
         rgba(79, 70, 229, 0.20);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease,
+        opacity 0.15s ease;
 }
 
 
-/* Hover */
+/* Same hover color for both buttons */
 
-#previous-question-btn:hover:not(:disabled) {
-    background:
-        linear-gradient(
-            135deg,
-            #475569,
-            #334155
-        );
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 8px 17px
-        rgba(71, 85, 105, 0.28);
-}
-
-#next-question-btn:hover:not(:disabled) {
+.question-navigation button:hover:not(:disabled) {
     background:
         linear-gradient(
             135deg,
@@ -487,11 +470,6 @@ body {
         Inter,
         Arial,
         sans-serif;
-
-    /*
-     * Reduced from the previous version.
-     * Comfortable and eye pleasing.
-     */
 
     font-size: 17px;
 
@@ -921,7 +899,11 @@ label:focus-visible {
 
         flex-direction: column;
 
-        gap: 8px;
+        gap: 9px;
+    }
+
+    .brand-section {
+        width: 100%;
     }
 
     .brand-icon {
@@ -932,20 +914,44 @@ label:focus-visible {
         font-size: 30px;
     }
 
+    /*
+     * Tagline stays directly below AIBrainBox
+     * instead of appearing after the quote.
+     */
+
+    .tagline {
+        margin:
+            5px
+            0
+            0
+            41px;
+
+        padding: 0;
+
+        font-size: 12px;
+    }
+
+    /*
+     * Quote comes below the brand/tagline.
+     * Author is always on its own line.
+     */
+
     .motivational-quote {
+        width: 100%;
+
         max-width: 100%;
+
+        align-items: flex-start;
 
         font-size: 12px;
 
         text-align: left;
+
+        line-height: 1.45;
     }
 
-    .tagline {
-        margin-top: 5px;
-
-        padding-left: 41px;
-
-        font-size: 12px;
+    .quote-author {
+        font-size: 11px;
     }
 
     .question-navigation {
