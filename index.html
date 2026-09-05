@@ -1,112 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AIBrainBox</title>
 
     <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        name="description"
+        content="AIBrainBox — practice AI questions, test your knowledge, and improve your skills."
     >
 
-    <title>AI BrainBox</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <header>
-        <div class="header-content">
-            <h1>🧠 AI BrainBox</h1>
-            <p>Test your AI knowledge</p>
-        </div>
-    </header>
+    <main class="container">
 
-    <main>
+        <header class="header">
+            <h1>AIBrainBox</h1>
+            <p>AI Questions • Practice • Learn • Improve</p>
+        </header>
 
-        <div
+
+        <!-- Motivational quote is injected here by app.js -->
+
+
+        <section
             id="loading"
             class="loading"
         >
-            Loading questions...
-        </div>
+            Loading question...
+        </section>
 
-        <div
+
+        <section
             id="error"
             class="error hidden"
-        >
-            Unable to load questions.
-        </div>
+            role="alert"
+        ></section>
+
 
         <section
             id="question-container"
             class="hidden"
-            aria-label="Quiz question"
         >
 
-            <div id="quiz-navigation-toolbar"></div>
+            <div class="question-card">
 
-            <div class="quiz-layout">
+                <div
+                    id="question"
+                    class="question"
+                ></div>
 
-                <div class="question-section">
+
+                <div
+                    id="options"
+                    class="options"
+                ></div>
+
+
+                <div
+                    id="result"
+                    aria-live="polite"
+                ></div>
+
+
+                <button
+                    id="show-explanation-btn"
+                    class="explanation-button hidden"
+                    type="button"
+                    onclick="toggleExplanation()"
+                >
+                    💡 Show Explanation
+                </button>
+
+
+                <div
+                    id="explanation"
+                    class="explanation hidden"
+                >
+
+                    <h2>Explanation</h2>
 
                     <div
-                        id="question"
-                        class="question"
+                        id="explanation-text"
                     ></div>
-
-                    <div
-                        id="options"
-                        class="options"
-                    ></div>
-
-                    <div
-                        id="result"
-                        class="result"
-                    ></div>
-
-                    <button
-                        id="show-explanation-btn"
-                        type="button"
-                        class="hidden"
-                        onclick="toggleExplanation()"
-                    >
-                        💡 Show Explanation
-                    </button>
-
-                    <div
-                        id="explanation"
-                        class="explanation hidden"
-                    >
-
-                        <h3>
-                            💡 Explanation
-                        </h3>
-
-                        <div
-                            id="explanation-text"
-                        ></div>
-
-                    </div>
 
                 </div>
+
+
+                <!-- Previous / Next navigation is
+                     automatically inserted by app.js -->
 
             </div>
 
         </section>
 
+
+        <footer class="footer">
+
+            <p>
+                Keep learning. Keep improving. 🚀
+            </p>
+
+        </footer>
+
     </main>
 
-    <footer>
-        <p>AI BrainBox</p>
-    </footer>
 
     <script src="app.js"></script>
 
 </body>
-
 </html>
