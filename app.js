@@ -1,14 +1,8 @@
 let questions = [];
 let currentQuestion = null;
 
-// ============================================================
-// USER ANSWER STATE
-// ============================================================
-//
-// Keeps the answer selected for every question.
-//
+// Stores answers for every question during the current session.
 // Example:
-//
 // {
 //     "Xi-00001": {
 //         answer: "B",
@@ -19,8 +13,6 @@ let currentQuestion = null;
 //         correct: false
 //     }
 // }
-//
-
 const answerState = {};
 
 
@@ -40,11 +32,9 @@ async function loadQuestions() {
 
     try {
 
-        const response =
-            await fetch(
-                CSV_URL + "?v=" + Date.now()
-            );
-
+        const response = await fetch(
+            CSV_URL + "?v=" + Date.now()
+        );
 
         if (!response.ok) {
 
@@ -55,10 +45,8 @@ async function loadQuestions() {
 
         }
 
-
         const csvText =
             await response.text();
-
 
         if (!csvText.trim()) {
 
@@ -68,10 +56,8 @@ async function loadQuestions() {
 
         }
 
-
         questions =
             parseCSV(csvText);
-
 
         if (!questions.length) {
 
@@ -80,15 +66,6 @@ async function loadQuestions() {
             );
 
         }
-
-
-        /*
-         * Create the navigation/score UI.
-         * This is done from JavaScript so no HTML
-         * changes are required.
-         */
-        createQuizToolbar();
-
 
         loadQuestion();
 
@@ -101,388 +78,22 @@ async function loadQuestions() {
             error
         );
 
-
-        const loading =
-            document.getElementById(
-                "loading"
-            );
-
-        if (loading) {
-
-            loading
-                .classList
-                .add("hidden");
-
-        }
-
+        document
+            .getElementById("loading")
+            .classList
+            .add("hidden");
 
         const errorBox =
-            document.getElementById(
-                "error"
-            );
+            document.getElementById("error");
 
-        if (errorBox) {
+        errorBox.classList.remove(
+            "hidden"
+        );
 
-            errorBox
-                .classList
-                .remove("hidden");
-
-
-            errorBox.innerText =
-                "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
-
-        }
+        errorBox.innerText =
+            "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
 
     }
-
-}
-
-
-// ============================================================
-// CREATE QUIZ TOOLBAR
-// ============================================================
-//
-// Creates:
-//
-// [ Previous Question ]   Score: 0 / 0   [ Next Question ]
-//
-// No index.html changes are needed.
-//
-
-function createQuizToolbar() {
-
-    const questionContainer =
-        document.getElementById(
-            "question-container"
-        );
-
-
-    if (!questionContainer) {
-        return;
-    }
-
-
-    /*
-     * Don't create it twice.
-     */
-    if (
-        document.getElementById(
-            "quiz-navigation-toolbar"
-        )
-    ) {
-        return;
-    }
-
-
-    const toolbar =
-        document.createElement(
-            "div"
-        );
-
-
-    toolbar.id =
-        "quiz-navigation-toolbar";
-
-
-    toolbar.style.display =
-        "flex";
-
-
-    toolbar.style.alignItems =
-        "center";
-
-
-    toolbar.style.justifyContent =
-        "space-between";
-
-
-    toolbar.style.gap =
-        "12px";
-
-
-    toolbar.style.marginBottom =
-        "20px";
-
-
-    toolbar.style.padding =
-        "12px 16px";
-
-
-    toolbar.style.background =
-        "#ffffff";
-
-
-    toolbar.style.border =
-        "1px solid #e2e8f0";
-
-
-    toolbar.style.borderRadius =
-        "12px";
-
-
-    toolbar.style.boxSizing =
-        "border-box";
-
-
-    /*
-     * Previous button
-     */
-    const previousButton =
-        document.createElement(
-            "button"
-        );
-
-
-    previousButton.id =
-        "previous-question-btn";
-
-
-    previousButton.type =
-        "button";
-
-
-    previousButton.innerText =
-        "← Previous Question";
-
-
-    previousButton.addEventListener(
-        "click",
-        previousQuestion
-    );
-
-
-    /*
-     * Score
-     */
-    const score =
-        document.createElement(
-            "div"
-        );
-
-
-    score.id =
-        "quiz-score";
-
-
-    score.innerText =
-        "Score: 0 / 0";
-
-
-    score.style.fontWeight =
-        "700";
-
-
-    score.style.fontSize =
-        "18px";
-
-
-    score.style.color =
-        "#4338ca";
-
-
-    score.style.textAlign =
-        "center";
-
-
-    score.style.whiteSpace =
-        "nowrap";
-
-
-    /*
-     * Next button
-     */
-    const nextButton =
-        document.createElement(
-            "button"
-        );
-
-
-    nextButton.id =
-        "next-question-btn";
-
-
-    nextButton.type =
-        "button";
-
-
-    nextButton.innerText =
-        "Next Question →";
-
-
-    nextButton.addEventListener(
-        "click",
-        nextQuestion
-    );
-
-
-    /*
-     * Basic button styling
-     */
-    [
-        previousButton,
-        nextButton
-    ].forEach(
-        button => {
-
-            button.style.border =
-                "none";
-
-
-            button.style.borderRadius =
-                "8px";
-
-
-            button.style.padding =
-                "10px 14px";
-
-
-            button.style.background =
-                "#4f46e5";
-
-
-            button.style.color =
-                "#ffffff";
-
-
-            button.style.fontSize =
-                "14px";
-
-
-            button.style.fontWeight =
-                "600";
-
-
-            button.style.cursor =
-                "pointer";
-
-
-        }
-    );
-
-
-    /*
-     * Disabled button styling
-     */
-    [
-        previousButton,
-        nextButton
-    ].forEach(
-        button => {
-
-            button.addEventListener(
-                "mouseenter",
-                () => {
-
-                    if (
-                        !button.disabled
-                    ) {
-
-                        button.style.background =
-                            "#4338ca";
-
-                    }
-
-                }
-            );
-
-
-            button.addEventListener(
-                "mouseleave",
-                () => {
-
-                    if (
-                        !button.disabled
-                    ) {
-
-                        button.style.background =
-                            "#4f46e5";
-
-                    }
-
-                }
-            );
-
-        }
-    );
-
-
-    toolbar.appendChild(
-        previousButton
-    );
-
-
-    toolbar.appendChild(
-        score
-    );
-
-
-    toolbar.appendChild(
-        nextButton
-    );
-
-
-    /*
-     * Put toolbar at the very top
-     * of the question container.
-     */
-    questionContainer.insertBefore(
-        toolbar,
-        questionContainer.firstChild
-    );
-
-
-    /*
-     * Responsive styling.
-     */
-    const style =
-        document.createElement(
-            "style"
-        );
-
-
-    style.id =
-        "quiz-navigation-style";
-
-
-    style.innerHTML = `
-
-        #quiz-navigation-toolbar button:disabled {
-            background: #cbd5e1 !important;
-            color: #64748b !important;
-            cursor: not-allowed !important;
-        }
-
-        @media (max-width: 600px) {
-
-            #quiz-navigation-toolbar {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px !important;
-            }
-
-            #quiz-score {
-                grid-column: 1 / -1;
-                grid-row: 1;
-            }
-
-            #previous-question-btn {
-                grid-column: 1;
-                grid-row: 2;
-            }
-
-            #next-question-btn {
-                grid-column: 2;
-                grid-row: 2;
-            }
-
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        style
-    );
 
 }
 
@@ -496,11 +107,9 @@ function parseCSV(text) {
     const rows = [];
 
     let row = [];
-
     let cell = "";
 
-    let insideQuotes =
-        false;
+    let insideQuotes = false;
 
 
     for (
@@ -512,14 +121,12 @@ function parseCSV(text) {
         const char =
             text[i];
 
-
         const nextChar =
             text[i + 1];
 
 
-        /*
-         * Double quote inside quoted field
-         */
+        // Double quote inside quoted field
+
         if (
             char === '"' &&
             insideQuotes &&
@@ -533,9 +140,8 @@ function parseCSV(text) {
         }
 
 
-        /*
-         * Start/end quoted field
-         */
+        // Start/end quoted field
+
         else if (
             char === '"'
         ) {
@@ -546,26 +152,22 @@ function parseCSV(text) {
         }
 
 
-        /*
-         * Column separator
-         */
+        // Column separator
+
         else if (
             char === "," &&
             !insideQuotes
         ) {
 
-            row.push(
-                cell
-            );
+            row.push(cell);
 
             cell = "";
 
         }
 
 
-        /*
-         * New line
-         */
+        // New line
+
         else if (
             (
                 char === "\n" ||
@@ -583,10 +185,7 @@ function parseCSV(text) {
 
             }
 
-
-            row.push(
-                cell
-            );
+            row.push(cell);
 
 
             if (
@@ -597,9 +196,7 @@ function parseCSV(text) {
                 )
             ) {
 
-                rows.push(
-                    row
-                );
+                rows.push(row);
 
             }
 
@@ -611,9 +208,8 @@ function parseCSV(text) {
         }
 
 
-        /*
-         * Normal character
-         */
+        // Normal character
+
         else {
 
             cell += char;
@@ -623,17 +219,14 @@ function parseCSV(text) {
     }
 
 
-    /*
-     * Last row
-     */
+    // Last row
+
     if (
         cell !== "" ||
         row.length > 0
     ) {
 
-        row.push(
-            cell
-        );
+        row.push(cell);
 
 
         if (
@@ -644,9 +237,7 @@ function parseCSV(text) {
             )
         ) {
 
-            rows.push(
-                row
-            );
+            rows.push(row);
 
         }
 
@@ -662,9 +253,8 @@ function parseCSV(text) {
     }
 
 
-    /*
-     * Normalize headers
-     */
+    // Normalize headers
+
     const headers =
         rows[0].map(
             header =>
@@ -674,37 +264,34 @@ function parseCSV(text) {
         );
 
 
-    /*
-     * Convert rows into objects
-     */
+    // Convert rows into objects
+
     return rows
         .slice(1)
-        .map(
-            row => {
+        .map(row => {
 
-                const question = {};
-
-
-                headers.forEach(
-                    (
-                        header,
-                        index
-                    ) => {
-
-                        question[header] =
-                            (
-                                row[index] ||
-                                ""
-                            ).trim();
-
-                    }
-                );
+            const question = {};
 
 
-                return question;
+            headers.forEach(
+                (
+                    header,
+                    index
+                ) => {
 
-            }
-        );
+                    question[header] =
+                        (
+                            row[index] ||
+                            ""
+                        ).trim();
+
+                }
+            );
+
+
+            return question;
+
+        });
 
 }
 
@@ -722,9 +309,7 @@ function loadQuestion() {
 
 
     const id =
-        params.get(
-            "id"
-        );
+        params.get("id");
 
 
     if (!id) {
@@ -759,8 +344,7 @@ function loadQuestion() {
     if (!currentQuestion) {
 
         showError(
-            "Question not found: " +
-            id
+            "Question not found: " + id
         );
 
         return;
@@ -780,39 +364,29 @@ function loadQuestion() {
 function displayQuestion() {
 
     document
-        .getElementById(
-            "loading"
-        )
+        .getElementById("loading")
         .classList
         .add("hidden");
 
 
     document
-        .getElementById(
-            "error"
-        )
+        .getElementById("error")
         .classList
         .add("hidden");
 
 
     document
-        .getElementById(
-            "question-container"
-        )
+        .getElementById("question-container")
         .classList
         .remove("hidden");
 
 
-    /*
-     * Display question
-     */
+    // Display question only
+
     document
-        .getElementById(
-            "question"
-        )
+        .getElementById("question")
         .innerText =
-        currentQuestion.question ||
-        "";
+        currentQuestion.question || "";
 
 
     const optionsContainer =
@@ -821,8 +395,7 @@ function displayQuestion() {
         );
 
 
-    optionsContainer.innerHTML =
-        "";
+    optionsContainer.innerHTML = "";
 
 
     const optionLetters = [
@@ -841,14 +414,12 @@ function displayQuestion() {
                     "div"
                 );
 
-
             option.className =
                 "option";
 
 
-            /*
-             * Radio
-             */
+            // Radio
+
             const radio =
                 document.createElement(
                     "input"
@@ -858,23 +429,18 @@ function displayQuestion() {
             radio.type =
                 "radio";
 
-
             radio.name =
                 "answer";
-
 
             radio.value =
                 letter;
 
-
             radio.id =
-                "option-" +
-                letter;
+                "option-" + letter;
 
 
-            /*
-             * Letter
-             */
+            // Letter
+
             const letterSpan =
                 document.createElement(
                     "span"
@@ -884,14 +450,12 @@ function displayQuestion() {
             letterSpan.className =
                 "option-letter";
 
-
             letterSpan.innerText =
                 letter + ".";
 
 
-            /*
-             * Text
-             */
+            // Text
+
             const textSpan =
                 document.createElement(
                     "span"
@@ -901,17 +465,14 @@ function displayQuestion() {
             textSpan.className =
                 "option-text";
 
-
             textSpan.innerText =
                 currentQuestion[
                     letter.toLowerCase()
-                ] ||
-                "";
+                ] || "";
 
 
-            /*
-             * Label
-             */
+            // Label
+
             const label =
                 document.createElement(
                     "label"
@@ -919,8 +480,7 @@ function displayQuestion() {
 
 
             label.htmlFor =
-                "option-" +
-                letter;
+                "option-" + letter;
 
 
             label.appendChild(
@@ -948,9 +508,10 @@ function displayQuestion() {
             );
 
 
-            /*
-             * Immediate answer check
-             */
+            // ==================================================
+            // IMMEDIATE ANSWER CHECK
+            // ==================================================
+
             radio.addEventListener(
                 "change",
                 () => {
@@ -967,28 +528,12 @@ function displayQuestion() {
     );
 
 
-    /*
-     * First clear the current visual state.
-     */
     resetAnswerState();
 
-
-    /*
-     * Restore saved answer if
-     * this question was answered.
-     */
     restoreAnswerState();
 
-
-    /*
-     * Update navigation buttons.
-     */
     updateNavigationButtons();
 
-
-    /*
-     * Update score.
-     */
     updateScore();
 
 }
@@ -1013,8 +558,7 @@ function checkAnswer(
         (
             currentQuestion[
                 "correct answer"
-            ] ||
-            ""
+            ] || ""
         )
         .trim()
         .toUpperCase();
@@ -1025,13 +569,10 @@ function checkAnswer(
         correctAnswer;
 
 
-    /*
-     * Save the answer.
-     *
-     * IMPORTANT:
-     * This means navigation will not
-     * lose the user's answer.
-     */
+    // ========================================================
+    // SAVE ANSWER
+    // ========================================================
+
     answerState[
         currentQuestion.id
     ] = {
@@ -1045,9 +586,8 @@ function checkAnswer(
     };
 
 
-    /*
-     * Remove old visual states.
-     */
+    // Remove old states
+
     document
         .querySelectorAll(
             ".option"
@@ -1065,11 +605,9 @@ function checkAnswer(
         );
 
 
-    /*
-     * ========================================================
-     * CORRECT
-     * ========================================================
-     */
+    // ========================================================
+    // CORRECT
+    // ========================================================
 
     if (isCorrect) {
 
@@ -1085,11 +623,9 @@ function checkAnswer(
     }
 
 
-    /*
-     * ========================================================
-     * WRONG
-     * ========================================================
-     */
+    // ========================================================
+    // WRONG
+    // ========================================================
 
     else {
 
@@ -1100,9 +636,8 @@ function checkAnswer(
             );
 
 
-        /*
-         * Find correct option
-         */
+        // Find correct option
+
         const correctRadio =
             document.querySelector(
                 'input[name="answer"][value="' +
@@ -1114,9 +649,7 @@ function checkAnswer(
         if (correctRadio) {
 
             correctRadio
-                .closest(
-                    ".option"
-                )
+                .closest(".option")
                 .classList
                 .add(
                     "correct-answer"
@@ -1130,17 +663,16 @@ function checkAnswer(
     }
 
 
-    /*
-     * Update score immediately.
-     */
+    // ========================================================
+    // UPDATE SCORE
+    // ========================================================
+
     updateScore();
 
 
-    /*
-     * ========================================================
-     * PREPARE EXPLANATION
-     * ========================================================
-     */
+    // ========================================================
+    // PREPARE EXPLANATION
+    // ========================================================
 
     const explanation =
         currentQuestion.explanation ||
@@ -1156,9 +688,8 @@ function checkAnswer(
         explanation;
 
 
-    /*
-     * Show explanation button
-     */
+    // Show explanation button
+
     document
         .getElementById(
             "show-explanation-btn"
@@ -1167,9 +698,8 @@ function checkAnswer(
         .remove("hidden");
 
 
-    /*
-     * Keep explanation hidden
-     */
+    // Keep explanation hidden
+
     document
         .getElementById(
             "explanation"
@@ -1178,17 +708,15 @@ function checkAnswer(
         .add("hidden");
 
 
-    /*
-     * No large result text
-     */
+    // No large result text
+
     const result =
         document.getElementById(
             "result"
         );
 
 
-    result.innerText =
-        "";
+    result.innerText = "";
 
 }
 
@@ -1196,16 +724,13 @@ function checkAnswer(
 // ============================================================
 // RESTORE ANSWER STATE
 // ============================================================
-//
-// When the user goes:
-//
-// Q1 -> Q2 -> Q3 -> Q2
-//
-// Q2 should still show the answer selected
-// earlier.
-//
 
 function restoreAnswerState() {
+
+    if (!currentQuestion) {
+        return;
+    }
+
 
     const state =
         answerState[
@@ -1213,10 +738,8 @@ function restoreAnswerState() {
         ];
 
 
-    /*
-     * This question has not
-     * been answered yet.
-     */
+    // Question has not been answered
+
     if (!state) {
 
         return;
@@ -1224,9 +747,8 @@ function restoreAnswerState() {
     }
 
 
-    /*
-     * Find saved radio button.
-     */
+    // Find saved radio button
+
     const radio =
         document.querySelector(
             'input[name="answer"][value="' +
@@ -1242,9 +764,8 @@ function restoreAnswerState() {
     }
 
 
-    /*
-     * Restore selection.
-     */
+    // Restore selection
+
     radio.checked =
         true;
 
@@ -1255,9 +776,8 @@ function restoreAnswerState() {
         );
 
 
-    /*
-     * Remove old visual states.
-     */
+    // Remove old visual states
+
     document
         .querySelectorAll(
             ".option"
@@ -1275,9 +795,10 @@ function restoreAnswerState() {
         );
 
 
-    /*
-     * Restore correct/wrong state.
-     */
+    // ========================================================
+    // CORRECT ANSWER
+    // ========================================================
+
     if (state.correct) {
 
         selectedOption
@@ -1288,6 +809,11 @@ function restoreAnswerState() {
 
     }
 
+
+    // ========================================================
+    // WRONG ANSWER
+    // ========================================================
+
     else {
 
         selectedOption
@@ -1297,15 +823,13 @@ function restoreAnswerState() {
             );
 
 
-        /*
-         * Show correct answer as well.
-         */
+        // Show correct answer
+
         const correctAnswer =
             (
                 currentQuestion[
                     "correct answer"
-                ] ||
-                ""
+                ] || ""
             )
             .trim()
             .toUpperCase();
@@ -1335,9 +859,8 @@ function restoreAnswerState() {
     }
 
 
-    /*
-     * Restore explanation.
-     */
+    // Restore explanation
+
     const explanation =
         currentQuestion.explanation ||
         currentQuestion.explaination ||
@@ -1360,10 +883,8 @@ function restoreAnswerState() {
         .remove("hidden");
 
 
-    /*
-     * Explanation stays hidden
-     * until the user clicks the button.
-     */
+    // Keep explanation hidden
+
     document
         .getElementById(
             "explanation"
@@ -1372,9 +893,6 @@ function restoreAnswerState() {
         .add("hidden");
 
 
-    /*
-     * No result text.
-     */
     document
         .getElementById(
             "result"
@@ -1390,6 +908,17 @@ function restoreAnswerState() {
 // ============================================================
 
 function updateScore() {
+
+    const scoreElement =
+        document.getElementById(
+            "quiz-score"
+        );
+
+
+    if (!scoreElement) {
+        return;
+    }
+
 
     const states =
         Object.values(
@@ -1408,27 +937,17 @@ function updateScore() {
         ).length;
 
 
-    const scoreElement =
-        document.getElementById(
-            "quiz-score"
-        );
-
-
-    if (scoreElement) {
-
-        scoreElement.innerText =
-            "Score: " +
-            correctCount +
-            " / " +
-            answeredCount;
-
-    }
+    scoreElement.innerText =
+        "Score: " +
+        correctCount +
+        " / " +
+        answeredCount;
 
 }
 
 
 // ============================================================
-// NAVIGATION - GET CURRENT INDEX
+// GET CURRENT QUESTION INDEX
 // ============================================================
 
 function getCurrentQuestionIndex() {
@@ -1461,6 +980,140 @@ function getCurrentQuestionIndex() {
 
 
 // ============================================================
+// NAVIGATION TOOLBAR
+// ============================================================
+
+function initializeNavigation() {
+
+    const toolbar =
+        document.getElementById(
+            "quiz-navigation-toolbar"
+        );
+
+
+    if (!toolbar) {
+
+        return;
+
+    }
+
+
+    // Prevent duplicate initialization
+
+    if (
+        toolbar.dataset.initialized ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    toolbar.dataset.initialized =
+        "true";
+
+
+    toolbar.innerHTML = "";
+
+
+    // ========================================================
+    // PREVIOUS BUTTON
+    // ========================================================
+
+    const previousButton =
+        document.createElement(
+            "button"
+        );
+
+
+    previousButton.id =
+        "previous-question-btn";
+
+
+    previousButton.type =
+        "button";
+
+
+    previousButton.innerText =
+        "← Previous Question";
+
+
+    previousButton.addEventListener(
+        "click",
+        previousQuestion
+    );
+
+
+    // ========================================================
+    // SCORE
+    // ========================================================
+
+    const score =
+        document.createElement(
+            "div"
+        );
+
+
+    score.id =
+        "quiz-score";
+
+
+    score.innerText =
+        "Score: 0 / 0";
+
+
+    // ========================================================
+    // NEXT BUTTON
+    // ========================================================
+
+    const nextButton =
+        document.createElement(
+            "button"
+        );
+
+
+    nextButton.id =
+        "next-question-btn";
+
+
+    nextButton.type =
+        "button";
+
+
+    nextButton.innerText =
+        "Next Question →";
+
+
+    nextButton.addEventListener(
+        "click",
+        nextQuestion
+    );
+
+
+    toolbar.appendChild(
+        previousButton
+    );
+
+
+    toolbar.appendChild(
+        score
+    );
+
+
+    toolbar.appendChild(
+        nextButton
+    );
+
+
+    updateNavigationButtons();
+
+    updateScore();
+
+}
+
+
+// ============================================================
 // PREVIOUS QUESTION
 // ============================================================
 
@@ -1470,9 +1123,6 @@ function previousQuestion() {
         getCurrentQuestionIndex();
 
 
-    /*
-     * Already at first question.
-     */
     if (
         currentIndex <= 0
     ) {
@@ -1505,9 +1155,6 @@ function nextQuestion() {
         getCurrentQuestionIndex();
 
 
-    /*
-     * Invalid question.
-     */
     if (
         currentIndex < 0
     ) {
@@ -1517,9 +1164,6 @@ function nextQuestion() {
     }
 
 
-    /*
-     * Already at last question.
-     */
     if (
         currentIndex >=
         questions.length - 1
@@ -1562,10 +1206,8 @@ function navigateToQuestion(
         question;
 
 
-    /*
-     * Update URL without
-     * reloading the page.
-     */
+    // Update URL without reloading page
+
     const url =
         new URL(
             window.location.href
@@ -1588,16 +1230,11 @@ function navigateToQuestion(
     );
 
 
-    /*
-     * Display new question.
-     */
     displayQuestion();
 
 
-    /*
-     * Scroll to top of
-     * question area.
-     */
+    // Scroll to question
+
     const questionContainer =
         document.getElementById(
             "question-container"
@@ -1648,55 +1285,24 @@ function updateNavigationButtons() {
     }
 
 
-    /*
-     * Previous disabled
-     * on first question.
-     */
+    // Disable previous on first question
+
     previousButton.disabled =
         currentIndex <= 0;
 
 
-    /*
-     * Next disabled
-     * on last question.
-     */
+    // Disable next on last question
+
     nextButton.disabled =
         currentIndex < 0 ||
         currentIndex >=
         questions.length - 1;
 
-
-    /*
-     * Optional text showing
-     * question position.
-     */
-    const total =
-        questions.length;
-
-
-    const position =
-        currentIndex + 1;
-
-
-    previousButton.title =
-        currentIndex > 0
-            ? "Go to question " +
-              currentIndex
-            : "Already at first question";
-
-
-    nextButton.title =
-        currentIndex <
-        total - 1
-            ? "Go to question " +
-              (position + 1)
-            : "Already at last question";
-
 }
 
 
 // ============================================================
-// RESET CURRENT QUESTION VISUAL STATE
+// RESET ANSWER STATE - VISUAL STATE ONLY
 // ============================================================
 
 function resetAnswerState() {
@@ -1709,12 +1315,9 @@ function resetAnswerState() {
 
     if (result) {
 
-        result.innerText =
-            "";
+        result.innerText = "";
 
-
-        result.className =
-            "";
+        result.className = "";
 
     }
 
@@ -1815,9 +1418,9 @@ function toggleExplanation() {
 
 
     if (
-        explanation
-            .classList
-            .contains("hidden")
+        explanation.classList.contains(
+            "hidden"
+        )
     ) {
 
         explanation
@@ -1926,9 +1529,8 @@ function createEmojiBurst(
     isSad = false
 ) {
 
-    /*
-     * Remove old reactions.
-     */
+    // Remove old reactions
+
     document
         .querySelectorAll(
             ".reaction-container"
@@ -2082,34 +1684,20 @@ function showError(
     message
 ) {
 
-    const loading =
-        document.getElementById(
+    document
+        .getElementById(
             "loading"
-        );
+        )
+        .classList
+        .add("hidden");
 
 
-    if (loading) {
-
-        loading
-            .classList
-            .add("hidden");
-
-    }
-
-
-    const questionContainer =
-        document.getElementById(
+    document
+        .getElementById(
             "question-container"
-        );
-
-
-    if (questionContainer) {
-
-        questionContainer
-            .classList
-            .add("hidden");
-
-    }
+        )
+        .classList
+        .add("hidden");
 
 
     const errorBox =
@@ -2118,17 +1706,13 @@ function showError(
         );
 
 
-    if (errorBox) {
-
-        errorBox
-            .classList
-            .remove("hidden");
+    errorBox
+        .classList
+        .remove("hidden");
 
 
-        errorBox.innerText =
-            message;
-
-    }
+    errorBox.innerText =
+        message;
 
 }
 
@@ -2157,4 +1741,13 @@ window.addEventListener(
 // START APPLICATION
 // ============================================================
 
-loadQuestions();
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        initializeNavigation();
+
+        loadQuestions();
+
+    }
+);
