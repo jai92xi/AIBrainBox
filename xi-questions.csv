@@ -1,74 +1,200 @@
 ID,Question,A,B,C,D,Correct Answer,Explaination,Topic,Sub Topics
-Xi-00001,"A production NLP system uses BERT (Bidirectional Encoder Representations from Transformers) to classify customer support tickets.
-The model performs well during training and validation. However, after deployment, latency becomes too high when the ticket text is long.
-Profiling shows that most of the latency comes from the self-attention layers. BERT uses standard full self-attention, where every token attends to every other token.
+Xi-00001,"Your RAG system retrieves 10 chunks for every query. Testing shows that 7 of those chunks contain almost identical information, while some useful information is missing.
+What would be the best approach?",Increase top-k from 10 to 30,Use MMR or another diversity-aware retrieval/reranking strategy,Increase LLM temperature,Increase chunk size,B,"A traditional similarity search asks:
 
-The team is considering replacing BERT with an architecture designed to handle long sequences more efficiently, such as Longformer or BigBird.
+> **“Which chunks are most similar to my query?” (User query ? Search vector DB ? Retrieve relevant chunks)**
+> 
 
-Which change would most directly address the computational bottleneck for long sequences?",Replace ReLU with GELU in BERT,"Use an attention mechanism with reduced attention complexity, such as sparse/local attentionB.",Increase the number of Transformer layers,Increase the embedding dimension,B,"In standard Transformer self-attention, every token attends to every other token.
+But what if the retrieved chunks contain nearly identical information?
+We are effectively **wasting the context window** on duplicate information, while potentially missing other useful information.
 
-For a sequence of length n, the attention computation is roughly:
+**This is where MMR helps.**
 
-O(n²)
+**MMR — Maximal Marginal Relevance** helps retrieve **less redundant and more diverse/complementary chunks**.
 
-So if the ticket becomes longer, the attention cost grows rapidly.
+<aside>
+??
 
-For example:
+MMR considers two things:
+*** Relevant to the query
+* Different from the chunks already selected**
 
-512 tokens ? attention matrix ? 512 × 512
-2,048 tokens ? ? 2,048 × 2,048
-4,096 tokens ? ? 4,096 × 4,096
+</aside>
 
-That's why long insurance complaints/ticket descriptions can create significant latency.
+So instead of retrieving:
+**Chunk 1:** Coverage details
+**Chunk 2:** Same coverage details
+**Chunk 3:** Same coverage details
+**Chunk 4:** Same coverage details
 
-What is sparse/local attention?
+MMR can select:
+**Chunk 1:** Coverage details
+**Chunk 2:** Waiting period
+**Chunk 3:** Exclusions
+**Chunk 4:** Claim process
 
-Instead of allowing every token to attend to every other token, attention is restricted.
+Now the LLM gets **relevant + complementary information** instead of repeated information.
+That's why **MMR is a diversity-aware retrieval technique**.
+It helps improve **context utilization** and reduces wasting the LLM's context window on duplicate information.",RAG,MMR
+Xi-00002,"You are building a fraud detection model for a fintech company. The model has 20 hidden layers and a large number of parameters. During training, the model reaches a point where adding more hidden layers or increasing the number of neurons provides almost no improvement. The model performs well on simple patterns but struggles to learn complex relationships between transaction amount, location, device, transaction frequency, and user behavior.
+You have two possible architectural changes. Which one you choose?",Change the hidden-layer design so that each layer can introduce non-linear transformations,Add few more hidden layers and increase the number of neurons in the existing layers,,,A,"Regardless of how many layers a deep neural network has, without activation functions, it would **behave like a linear model**. Activation functions **introduce non-linearity** into the model.
 
-Full attention:
+But what does Introducing non-linearity means?
+The model can learn curves, complex patterns, and non-linear relationships, not just straight-line relationships.
 
-Token 1 ? Token 1,2,3,4,...,n
+Suppose we have two layers without activation functions:
 
-Local attention:
+y? = w?x + b?
+y? = w?y? + b?
 
-Token 1 ? nearby tokens only
+Substitute y?:
+y? = w?(w?x + b?) + b?
+y? = w?w?x + w?b? + b?
+y? = (w?w?)x + (w?b? + b?)
+y? = w’x + b’
 
-For example, each token might attend only to a window of 128 neighboring tokens.",Transformers,self attention; sparse attention; local attention
-Xi-00002,"A production NLP system uses BERT (Bidirectional Encoder Representations from Transformers) to classify customer support tickets.
+This shows that without an activation function, multiple layers can be mathematically collapsed into a single linear transformation.
+Even if we have 10, 100, or 1000 layers, we can effectively combine the weights and biases and reduce the whole network to: y = Wx + b
+So, simply adding more linear layers does not allow the network to learn more complex patterns.
 
-The model performs well during training and validation. However, after deployment, latency becomes too high when the ticket text is long.
+Now, let's introduce an activation function such as ReLU:
+y? = ReLU(w?x + b?)
+where:	ReLU(z) = max(0, z)
 
-Profiling shows that most of the latency comes from the self-attention layers. BERT uses standard full self-attention, where every token attends to every other token.
+Then:	y? = w?y? + b?	or:	y? = w?ReLU(w?x + b?) + b?
 
-The team is considering replacing BERT with an architecture designed to handle long sequences more efficiently, such as Longformer or BigBird.
+Now we cannot simply multiply w? and w? together, because ReLU is applied between the two layers and changes the output non-linearly.
 
-Which change would most directly address the computational bottleneck for long sequences?",Replace ReLU with GELU in BERT.,"Use an attention mechanism with reduced attention complexity, such as sparse/local attentionB. Use an attention mechanism with reduced attention complexity, such as sparse/local attention",Increase the number of Transformer layers,Increase the embedding dimension,B,"In standard Transformer self-attention, every token attends to every other token.
+So the structure becomes:
 
-For a sequence of length n, the attention computation is roughly:
+Input ? Linear ? ReLU ? Linear ? Output
 
-O(n²)
+The linear layers transform the data, while the activation function introduces non-linearity.
 
-So if the ticket becomes longer, the attention cost grows rapidly.
+This allows the neural network to learn complex patterns, curves, and non-linear decision boundaries.",Neural Network,Activation Functions
+Xi-00003,"A production NLP system uses a Transformer-based model for classifying customer support tickets. The model performs well during training and validation. However, after deployment, latency becomes too high when ticket text is long.
 
-For example:
+Profiling shows that most of the latency comes from the **self-attention** layers. The model uses standard full self-attention, where every token attends to every other token.
 
-512 tokens ? attention matrix ? 512 × 512
-2,048 tokens ? ? 2,048 × 2,048
-4,096 tokens ? ? 4,096 × 4,096
+Which change would most directly address the computational bottleneck for long sequences?",Replace ReLU with GELU,Increase the number of Transformer layers,"Use an attention mechanism with reduced attention complexity, such as sparse/local attention",Increase the embedding dimension,C,"In standard Transformer self-attention, every token attends to every other token.
 
-That's why long insurance complaints/ticket descriptions can create significant latency.
+For **n tokens**, the attention matrix has **n × n** entries, so the computational complexity with respect to sequence length is approximately **O(n²)**.
 
-What is sparse/local attention?
+- **1,000 tokens ? 1 million attention relationships**
+- **100,000 tokens ? ~10 billion**
 
-Instead of allowing every token to attend to every other token, attention is restricted.
+As the sequence becomes longer, the computational and memory cost increases rapidly, which can lead to significant latency.
 
-Full attention:
+### Do we have to live with this latency?
 
-Token 1 ? Token 1,2,3,4,...,n
+**local attention, sparse attention, and global + local attention** helps here
 
-Local attention:
+Instead of attending all tokens - the key idea is to **restrict which tokens can attend to which other tokens**.
 
-Token 1 ? nearby tokens only
+**Full attention:** `Token 1 ? Token 1, Token 2, Token 3, ..., Token n` 
 
-For example, each token might attend only to a window of 128 neighboring tokens.",Transformers,self attention; sparse attention; local attention
-,,,,,,,,,
+**Local attention:** `Token 1 ? nearby tokens only`
+
+Each token attends only to tokens within a predefined local window.
+
+### Types of attention
+
+| Type | What does each token attend to? |
+| --- | --- |
+| **Full attention** | Every token in the sequence |
+| **Local attention** | Nearby tokens within a fixed window |
+| **Sparse attention** | Selected tokens according to a predefined pattern |
+| **Global + local attention** | Nearby tokens + selected global/important tokens |",Transformers,Self-attention; Sparse/Local Attention
+Xi-00004,"A **production team is fine-tuning BERT for an insurance ticket-classification system with 8 intent classes such as ""Health Claim"", ""Auto Claim"", ""Policy Renewal"", and ""Claim Rejection"".**
+
+During training:
+
+- Training loss steadily decreases.
+- Validation loss decreases initially but starts increasing after several epochs.
+- Training accuracy reaches 99%.
+- Validation accuracy remains around 91%.
+- The gap continues to grow with additional training.
+
+Which change would most directly address the problem?",Increase the learning rate significantly,Add regularization such as dropout and use early stopping,Increase the number of BERT layers,Train for more epochs,B,"The key signal
+
+Training loss ? + Training accuracy ? 99% + Validation loss ? + Validation accuracy stagnates
+
+This is a classic overfitting pattern.
+
+### What does overfitting mean?
+
+The model learns the training data too well, including its specific patterns and noise, but doesn't perform as well on new/unseen data.
+
+Here:
+
+Training data ? 99% accuracy
+New/unseen validation data ? 91% accuracy
+
+So the model is becoming very good at the training examples, but its ability to generalize to new examples is not improving.
+
+### So, how do we reduce overfitting?
+
+**One approach is early stopping.**
+
+If the model keeps training even after validation performance has stopped improving, there is little benefit in continuing.
+
+So, early stopping tells training to stop when validation performance no longer improves for a predefined number of epochs (patience).
+
+**Another approach is dropout**.
+
+Dropout randomly turns off a portion of neurons during training. This prevents the model from becoming too dependent on specific neurons or patterns and encourages it to learn more robust representations.
+
+So: Overfitting ? use regularization such as dropout + early stopping",Neural Network,Regularization; Dropout; Early Stopping
+Xi-00005,"A production team is training a CNN-based image classifier to identify damaged vs. undamaged vehicle parts for an insurance claims system.
+The model achieves:
+Training accuracy: 99%
+Validation accuracy: 72%
+Training loss: continues decreasing
+Validation loss: continues increasing
+
+The dataset is relatively small, and the model is trained from scratch.
+What is the most appropriate first approach?","Use transfer learning with a pretrained CNN such as ResNet or EfficientNet, along with appropriate data augmentation
+",Add more CNN layers and increase the number of parameters,Train for many more epochs,,A,"### Key hints in the question
+
+1. **Training loss ? + validation loss ?** ? strong sign of **overfitting**.
+2. **Training accuracy 99% vs validation accuracy 72%** ? model fits training data much better than unseen data.
+3. **Small dataset + training from scratch** ? not enough data to effectively learn robust visual features.
+
+### Problem 1 — Small dataset
+
+If the data is limited, how will a CNN learn enough patterns to distinguish:
+
+`Damaged vehicle part` vs `Undamaged vehicle part`
+
+Instead of training from scratch, use a **pretrained CNN** such as **ResNet or EfficientNet**.
+
+These models have already learned general visual features such as:
+
+- Edges
+- Shapes
+- Textures
+- Patterns
+
+Then **fine-tune** the pretrained model using the vehicle-damage dataset.
+
+### Problem 2 — Limited variety in training data
+
+Even with the available images, the model may see very similar examples and start memorizing them.
+
+**Data augmentation** helps by creating varied versions of existing training images using:
+
+- Rotation
+- Cropping
+- Flipping
+- Scaling
+- Brightness/contrast changes
+
+This increases the **variety of training examples** and helps improve generalization.
+
+So the solution is:
+
+**Small dataset ? Pretrained CNN + Fine-tuning**
+
+**Limited data variety ? Data augmentation**
+
+**Both ? Better generalization and reduced overfitting**",CNN,Fine tunnig; Data Augmentation
