@@ -11,7 +11,7 @@
 
     <meta
         name="description"
-        content="AIBrainBox — practice AI questions, test your knowledge, and improve your skills."
+        content="AIBrainBox — AI Questions, Practice, Learn and Improve."
     >
 
     <title>AIBrainBox</title>
@@ -26,14 +26,20 @@
 
     <main class="container">
 
-        <!-- Simple top header -->
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
         <header class="header">
 
             <div class="header-top">
 
+                <!-- Brand -->
                 <div class="brand">
 
-                    <span class="brand-icon">🧠</span>
+                    <span class="brand-icon">
+                        🧠
+                    </span>
 
                     <span class="brand-name">
                         AIBrainBox
@@ -41,6 +47,8 @@
 
                 </div>
 
+
+                <!-- Motivational Quote -->
                 <aside
                     id="motivational-quote"
                     class="motivational-quote"
@@ -62,14 +70,19 @@
 
             </div>
 
+
+            <!-- Tagline -->
             <p class="tagline">
-                AI Questions3 • Practice • Learn • Improve
+                AI Questions • Practice • Learn • Improve
             </p>
 
         </header>
 
 
-        <!-- Loading -->
+        <!-- =====================================================
+             LOADING
+             ===================================================== -->
+
         <section
             id="loading"
             class="loading"
@@ -78,7 +91,10 @@
         </section>
 
 
-        <!-- Error -->
+        <!-- =====================================================
+             ERROR
+             ===================================================== -->
+
         <section
             id="error"
             class="error hidden"
@@ -86,13 +102,19 @@
         ></section>
 
 
-        <!-- Quiz -->
+        <!-- =====================================================
+             QUIZ
+             ===================================================== -->
+
         <section
             id="question-container"
             class="hidden"
         >
 
-            <!-- Navigation / score -->
+            <!-- =================================================
+                 TOP NAVIGATION
+                 ================================================= -->
+
             <nav
                 id="question-navigation"
                 class="question-navigation"
@@ -134,12 +156,19 @@
             </nav>
 
 
-            <!-- Question and options -->
+            <!-- =================================================
+                 QUESTION CARD
+                 ================================================= -->
+
             <div class="question-card">
 
                 <div class="quiz-layout">
 
-                    <!-- LEFT: QUESTION -->
+
+                    <!-- =========================================
+                         QUESTION - LEFT
+                         ========================================= -->
+
                     <section class="question-panel">
 
                         <div class="panel-label">
@@ -154,7 +183,10 @@
                     </section>
 
 
-                    <!-- RIGHT: OPTIONS -->
+                    <!-- =========================================
+                         OPTIONS - RIGHT
+                         ========================================= -->
+
                     <section class="options-panel">
 
                         <div class="panel-label">
@@ -170,12 +202,16 @@
                         ></div>
 
 
+                        <!-- Answer result -->
+
                         <div
                             id="result"
                             class="result"
                             aria-live="polite"
                         ></div>
 
+
+                        <!-- Explanation -->
 
                         <div
                             id="explanation"
@@ -201,6 +237,10 @@
 
         </section>
 
+
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
 
         <footer class="footer">
 
