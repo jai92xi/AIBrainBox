@@ -55,12 +55,18 @@ function initializeApp() {
     );
 
     loadQuestions();
+
+    /*
+     * Load quotes separately.
+     * The question app does not have to wait for quotes
+     * before displaying the first question.
+     */
     loadQuotes();
 }
 
 
 /* ============================================================
-   LOAD QUESTIONS
+   LOAD QUESTIONS CSV
    ============================================================ */
 
 async function loadQuestions() {
@@ -145,7 +151,7 @@ async function loadQuestions() {
 
 
 /* ============================================================
-   LOAD QUOTES
+   LOAD QUOTES CSV
    ============================================================ */
 
 async function loadQuotes() {
@@ -180,84 +186,25 @@ async function loadQuotes() {
             );
         }
 
-        const rows =
-            parseCSV(csvText);
-
-        quotes = rows
-            .map(row => {
-
-                /*
-                 * Expected CSV:
-                 *
-                 * Quote,Quote
-                 *
-                 * The two columns contain
-                 * alternative quotes.
-                 */
-
-                const columns =
-                    Object.keys(row);
-
-                const quoteValues =
-                    columns
-                        .map(
-                            column =>
-                                String(
-                                    row[column] || ""
-                                ).trim()
-                        )
-                        .filter(
-                            value =>
-                                value !== ""
-                        );
-
-                return quoteValues;
-            })
-            .flat()
-            .map(quote => {
-
-                return {
-                    quote: quote,
-                    author: ""
-                };
-            })
-            .filter(item =>
-                item.quote !== ""
-            );
-
-        /*
-         * Remove duplicate quotes.
-         */
-
-        const uniqueQuotes =
-            new Map();
-
-        quotes.forEach(item => {
-
-            const key =
-                item.quote
-                    .trim()
-                    .toLowerCase();
-
-            if (!uniqueQuotes.has(key)) {
-
-                uniqueQuotes.set(
-                    key,
-                    item
-                );
-            }
-        });
-
         quotes =
-            Array.from(
-                uniqueQuotes.values()
+            parseQuotesCSV(csvText);
+
+        if (!quotes.length) {
+
+            throw new Error(
+                "No valid quotes were found."
             );
+        }
 
         console.log(
             "Quotes loaded:",
             quotes.length
         );
 
+        /*
+         * Immediately display a quote if the question
+         * has already loaded.
+         */
         loadMotivationalQuote();
 
     } catch (error) {
@@ -268,20 +215,27 @@ async function loadQuotes() {
         );
 
         /*
-         * Keep the application working
-         * even if the quote CSV fails.
+         * The quote system should never break the quiz.
+         * Use a small fallback if xi-Quotes.csv cannot load.
          */
-
         quotes = [
             {
                 quote:
-                    "Keep going. Your future self will thank you.",
-                author: ""
+                    "The important thing is to never stop questioning.",
+                author:
+                    "Albert Einstein"
             },
             {
                 quote:
-                    "Great things are built one step at a time.",
-                author: ""
+                    "The future depends on what you do today.",
+                author:
+                    "Mahatma Gandhi"
+            },
+            {
+                quote:
+                    "What you learn becomes what you can do.",
+                author:
+                    "AIBrainBox"
             }
         ];
 
@@ -291,10 +245,264 @@ async function loadQuotes() {
 
 
 /* ============================================================
-   CSV PARSER
+   GENERIC CSV PARSER
    ============================================================ */
 
 function parseCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+    let cell = "";
+    let insideQuotes = false;
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        /*
+         * Escaped double quote inside a quoted CSV cell.
+         */
+        if (
+            char === '"' &&
+            insideQuotes &&
+            nextChar === '"'
+        ) {
+
+            cell += '"';
+            i++;
+
+        }
+
+        /*
+         * Start/end quoted cell.
+         */
+        else if (
+            char === '"'
+        ) {
+
+            insideQuotes =
+                !insideQuotes;
+        }
+
+        /*
+         * Column separator.
+         */
+        else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+            cell = "";
+        }
+
+        /*
+         * New row.
+         */
+        else if (
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                nextChar === "\n"
+            ) {
+
+                i++;
+            }
+
+            row.push(cell);
+
+            if (
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+            ) {
+
+                rows.push(row);
+            }
+
+            row = [];
+            cell = "";
+
+        } else {
+
+            cell += char;
+        }
+    }
+
+    /*
+     * Add final row.
+     */
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(cell);
+
+        if (
+            row.some(
+                value =>
+                    value.trim() !== ""
+            )
+        ) {
+
+            rows.push(row);
+        }
+    }
+
+    if (!rows.length) {
+        return [];
+    }
+
+    const headers =
+        rows[0].map(
+            normalizeHeader
+        );
+
+    return rows
+        .slice(1)
+        .map(row => {
+
+            const item = {};
+
+            headers.forEach(
+                (
+                    header,
+                    index
+                ) => {
+
+                    item[header] =
+                        (
+                            row[index] || ""
+                        ).trim();
+                }
+            );
+
+            return item;
+        })
+        .filter(item =>
+            Object.values(item).some(
+                value =>
+                    value !== ""
+            )
+        );
+}
+
+
+/* ============================================================
+   QUOTES CSV PARSER
+   ============================================================
+
+   Supports:
+
+   quote,quote
+
+   or:
+
+   Quote A,Quote B
+
+   The first two columns are treated as two separate quotes.
+
+   If your CSV has headers such as:
+
+   quote,quote
+
+   each row contains two quotes.
+
+   The parser also supports quoted text containing commas
+   and multiple lines.
+   ============================================================ */
+
+function parseQuotesCSV(text) {
+
+    const rows = parseCSVRows(text);
+
+    if (!rows.length) {
+        return [];
+    }
+
+    /*
+     * Check whether the first row looks like a header.
+     */
+    const firstRow =
+        rows[0].map(
+            value =>
+                value
+                    .trim()
+                    .toLowerCase()
+        );
+
+    const firstRowLooksLikeHeader =
+        firstRow.some(
+            value =>
+                value === "quote" ||
+                value === "quotes" ||
+                value === "author" ||
+                value === "quote a" ||
+                value === "quote b"
+        );
+
+    const dataRows =
+        firstRowLooksLikeHeader
+            ? rows.slice(1)
+            : rows;
+
+    const result = [];
+
+    dataRows.forEach(row => {
+
+        /*
+         * Your new file is designed with two quote columns:
+         *
+         * Column A = quote
+         * Column B = quote
+         *
+         * Every non-empty cell becomes a quote.
+         */
+        row.forEach(cell => {
+
+            const cleaned =
+                cleanQuoteText(cell);
+
+            if (!cleaned) {
+                return;
+            }
+
+            /*
+             * If the cell contains a quote and author
+             * separated by a common dash, try to separate them.
+             */
+            const parsed =
+                extractQuoteAndAuthor(
+                    cleaned
+                );
+
+            result.push(parsed);
+        });
+    });
+
+    return result;
+}
+
+
+/* ============================================================
+   CSV ROW PARSER
+   ============================================================ */
+
+function parseCSVRows(text) {
 
     const rows = [];
 
@@ -390,42 +598,94 @@ function parseCSV(text) {
         }
     }
 
-    if (!rows.length) {
-        return [];
+    return rows;
+}
+
+
+/* ============================================================
+   CLEAN QUOTE TEXT
+   ============================================================ */
+
+function cleanQuoteText(text) {
+
+    return String(text || "")
+        .replace(/^\uFEFF/, "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .trim()
+        .replace(/^["“]+/, "")
+        .replace(/["”]+$/, "")
+        .trim();
+}
+
+
+/* ============================================================
+   EXTRACT QUOTE + AUTHOR
+   ============================================================ */
+
+function extractQuoteAndAuthor(text) {
+
+    /*
+     * Supports:
+     *
+     * Quote — Author
+     * Quote - Author
+     * Quote – Author
+     * Quote —Author
+     *
+     * If no author is found, the whole cell is treated
+     * as the quote.
+     */
+
+    const match =
+        text.match(
+            /^([\s\S]*?)\s*[—–-]\s*([A-Za-zÀ-ÿ][^—–-]{1,100})$/
+        );
+
+    if (match) {
+
+        const quote =
+            match[1].trim();
+
+        const author =
+            match[2].trim();
+
+        /*
+         * Avoid treating a normal sentence containing a
+         * hyphen as an author.
+         */
+        if (
+            quote.length > 15 &&
+            author.length > 1 &&
+            author.length < 100
+        ) {
+
+            return {
+                quote:
+                    quote.replace(
+                        /^["“]+|["”]+$/g,
+                        ""
+                    ).trim(),
+
+                author:
+                    author.replace(
+                        /^["“]+|["”]+$/g,
+                        ""
+                    ).trim()
+            };
+        }
     }
 
-    const headers =
-        rows[0].map(
-            normalizeHeader
-        );
+    return {
+        quote:
+            text.replace(
+                /^["“]+|["”]+$/g,
+                ""
+            ).trim(),
 
-    return rows
-        .slice(1)
-        .map(row => {
-
-            const data = {};
-
-            headers.forEach(
-                (
-                    header,
-                    index
-                ) => {
-
-                    data[header] =
-                        (
-                            row[index] || ""
-                        ).trim();
-                }
-            );
-
-            return data;
-        })
-        .filter(data =>
-            Object.values(data).some(
-                value =>
-                    value !== ""
-            )
-        );
+        author:
+            ""
+    };
 }
 
 
@@ -508,6 +768,11 @@ function loadQuestion() {
                     .trim()
                     .toLowerCase()
         );
+
+    /*
+     * If there is no usable ID,
+     * fall back to the first question.
+     */
 
     if (
         currentQuestionIndex === -1
@@ -607,9 +872,13 @@ function createOptions() {
             document.createElement("input");
 
         radio.type = "radio";
+
         radio.name = "answer";
+
         radio.value = letter;
-        radio.id = "option-" + letter;
+
+        radio.id =
+            "option-" + letter;
 
         const label =
             document.createElement("label");
@@ -688,6 +957,11 @@ function checkAnswer(
 
     const correctAnswer =
         getCorrectAnswer();
+
+    /*
+     * Remove old score if the user
+     * changes an already answered question.
+     */
 
     if (
         questionResults.has(
@@ -1256,24 +1530,25 @@ function loadMotivationalQuote() {
     if (!quotes.length) {
 
         quoteText.innerText =
-            "“Keep going. Your future self will thank you.”";
+            "“Think deeper. Learn smarter.”";
 
         quoteAuthor.innerText =
-            "";
+            "— AIBrainBox";
 
         return;
     }
 
+    /*
+     * Pick a random quote.
+     *
+     * Avoid immediately showing the same quote
+     * when moving between questions.
+     */
     let index =
         Math.floor(
             Math.random() *
             quotes.length
         );
-
-    /*
-     * Avoid showing the same quote
-     * twice in a row.
-     */
 
     if (
         quotes.length > 1 &&
@@ -1294,43 +1569,13 @@ function loadMotivationalQuote() {
         quotes[index];
 
     /*
-     * Good visual emojis are added
-     * without modifying the CSV.
+     * Quote is always placed separately from author.
+     * CSS will keep the author below the quote.
      */
-
-    const quoteEmojis = [
-        "💡",
-        "🧠",
-        "✨",
-        "🚀",
-        "🌱",
-        "🔥",
-        "🎯",
-        "💪",
-        "🌟",
-        "📚",
-        "⚡",
-        "🏆"
-    ];
-
-    const emoji =
-        quoteEmojis[
-            Math.floor(
-                Math.random() *
-                quoteEmojis.length
-            )
-        ];
-
     quoteText.innerText =
-        emoji +
-        " “" +
+        "“" +
         quote.quote +
         "”";
-
-    /*
-     * Author is displayed underneath
-     * the quote.
-     */
 
     quoteAuthor.innerText =
         quote.author
@@ -1385,9 +1630,9 @@ function showCorrectCelebration() {
         "💡",
         "⭐",
         "🔥",
-        "🏆",
-        "🎯",
-        "💪"
+        "🤯",
+        "⚡",
+        "🏆"
     ]);
 }
 
