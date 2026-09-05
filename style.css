@@ -39,9 +39,7 @@ body {
 
 .container {
     width: 100%;
-
     margin: 0 auto;
-
     padding: 0 0 30px;
 }
 
@@ -60,16 +58,16 @@ body {
     margin-bottom: 22px;
 
     /*
-     * Slightly darker header so the brand,
+     * Slightly darker background so the brand,
      * tagline and quote stand out clearly.
      */
 
     background:
         linear-gradient(
             135deg,
-            #c7e5df 0%,
-            #d2d0f0 52%,
-            #cbdff3 100%
+            #c8e6df 0%,
+            #d7d3f4 52%,
+            #d2e3f5 100%
         );
 
     border-bottom:
@@ -112,7 +110,6 @@ body {
 
 .brand-icon {
     font-size: 34px;
-
     line-height: 1;
 }
 
@@ -123,7 +120,7 @@ body {
 
     letter-spacing: -1.2px;
 
-    color: #1e2d43;
+    color: #1e293b;
 }
 
 
@@ -135,12 +132,12 @@ body {
     max-width: 1180px;
 
     margin:
-        8px auto
+        7px auto
         0;
 
     padding-left: 47px;
 
-    color: #40516a;
+    color: #475569;
 
     font-size: 13px;
 
@@ -163,13 +160,9 @@ body {
 
     align-items: flex-end;
 
-    justify-content: center;
+    gap: 4px;
 
-    gap: 3px;
-
-    width: min(520px, 48%);
-
-    max-width: 520px;
+    width: min(500px, 48%);
 
     color: #334155;
 
@@ -189,32 +182,16 @@ body {
 
 #quote-text {
     display: block;
-
-    width: 100%;
 }
 
 .quote-author {
     display: block;
 
-    width: 100%;
-
     color: #64748b;
-
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
 
     font-size: 11px;
 
-    font-style: normal;
-
-    font-weight: 600;
-
-    text-align: right;
+    font-style: italic;
 
     white-space: normal;
 }
@@ -235,7 +212,6 @@ body {
         );
 
     margin-left: auto;
-
     margin-right: auto;
 }
 
@@ -325,7 +301,7 @@ body {
     background:
         linear-gradient(
             135deg,
-            #4f7cff,
+            #4f46e5,
             #6366f1
         );
 
@@ -341,17 +317,14 @@ body {
 }
 
 
-/*
- * Both buttons intentionally use exactly
- * the same color and hover treatment.
- */
+/* Same color for Previous and Next */
 
 #previous-question-btn,
 #next-question-btn {
     background:
         linear-gradient(
             135deg,
-            #4f7cff,
+            #4f46e5,
             #6366f1
         );
 
@@ -360,12 +333,15 @@ body {
         rgba(79, 70, 229, 0.20);
 }
 
+
+/* Hover */
+
 #previous-question-btn:hover:not(:disabled),
 #next-question-btn:hover:not(:disabled) {
     background:
         linear-gradient(
             135deg,
-            #4169e8,
+            #4338ca,
             #5149dc
         );
 
@@ -459,16 +435,16 @@ body {
 
     gap: 25px;
 
-    align-items: start;
+    align-items: stretch;
 }
 
 
 /* ============================================================
-   QUESTION PANEL
+   QUESTION PANEL - LEFT
    ============================================================ */
 
 .question-panel {
-    min-height: 300px;
+    min-height: 430px;
 
     padding: 24px;
 
@@ -519,11 +495,13 @@ body {
 
 
 /* ============================================================
-   OPTIONS PANEL
+   OPTIONS / RIGHT PANE
    ============================================================ */
 
 .options-panel {
-    padding: 24px;
+    min-height: 430px;
+
+    padding: 0 24px 20px;
 
     border-radius: 16px;
 
@@ -533,6 +511,67 @@ body {
     border:
         1px solid
         rgba(148, 163, 184, 0.12);
+
+    display: grid;
+
+    grid-template-rows:
+        10%
+        40%
+        30%
+        10%
+        auto;
+
+    overflow: hidden;
+}
+
+
+/* ============================================================
+   RIGHT PANE - 10% TOP SPACE
+   ============================================================ */
+
+.right-pane-top-space {
+    min-height: 0;
+}
+
+
+/* ============================================================
+   RIGHT PANE - 40% QUESTION / THINKING AREA
+   ============================================================ */
+
+.right-pane-question {
+    min-height: 0;
+
+    padding:
+        8px
+        0
+        10px;
+
+    overflow: auto;
+}
+
+.right-pane-question-hint {
+    color: #64748b;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    margin-top: 3px;
+}
+
+
+/* ============================================================
+   RIGHT PANE - 30% OPTIONS
+   ============================================================ */
+
+.right-pane-options {
+    min-height: 0;
+
+    overflow: auto;
+}
+
+.right-pane-options .panel-label {
+    margin-bottom: 9px;
 }
 
 
@@ -545,7 +584,7 @@ body {
 
     flex-direction: column;
 
-    gap: 9px;
+    gap: 7px;
 }
 
 .option {
@@ -593,15 +632,15 @@ body {
 .option label {
     width: 100%;
 
-    min-height: 56px;
+    min-height: 48px;
 
     display: flex;
 
     align-items: center;
 
-    gap: 11px;
+    gap: 10px;
 
-    padding: 10px 13px;
+    padding: 7px 10px;
 
     cursor: pointer;
 }
@@ -609,14 +648,12 @@ body {
 .option-letter {
     flex: 0 0 auto;
 
-    width: 30px;
-
-    height: 30px;
+    width: 28px;
+    height: 28px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 50%;
@@ -625,7 +662,7 @@ body {
 
     color: #2563eb;
 
-    font-size: 12px;
+    font-size: 11px;
 
     font-weight: 800;
 }
@@ -635,9 +672,9 @@ body {
 
     color: #475569;
 
-    font-size: 13px;
+    font-size: 12.5px;
 
-    line-height: 1.5;
+    line-height: 1.45;
 
     font-weight: 450;
 }
@@ -686,6 +723,121 @@ body {
     color: #991b1b;
 
     font-weight: 650;
+}
+
+
+/* ============================================================
+   RIGHT PANE - 10% MIDDLE SPACE
+   ============================================================ */
+
+.right-pane-middle-space {
+    min-height: 0;
+}
+
+
+/* ============================================================
+   RIGHT PANE - ABOUT ME / COFFEE
+   ============================================================ */
+
+.right-pane-actions {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    min-height: 0;
+
+    padding-top: 7px;
+}
+
+.pane-action-btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 34px;
+
+    padding:
+        7px
+        11px;
+
+    border-radius: 9px;
+
+    border: 1px solid transparent;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+
+/* About Me */
+
+.about-me-btn {
+    background: #eef2ff;
+
+    border-color: #c7d2fe;
+
+    color: #4338ca;
+}
+
+.about-me-btn:hover {
+    background: #e0e7ff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(79, 70, 229, 0.12);
+}
+
+
+/* Buy Me a Coffee */
+
+.coffee-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #f59e0b,
+            #f97316
+        );
+
+    color: #ffffff;
+
+    box-shadow:
+        0 4px 10px
+        rgba(249, 115, 22, 0.18);
+}
+
+.coffee-btn:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #d97706,
+            #ea580c
+        );
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 14px
+        rgba(249, 115, 22, 0.25);
 }
 
 
@@ -777,92 +929,110 @@ body {
 
 
 /* ============================================================
-   ABOUT ME / BUY ME A COFFEE
+   ABOUT ME MODAL
    ============================================================ */
 
-.info-buttons {
+.about-me-modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 3000;
+
     display: flex;
 
-    gap: 10px;
+    align-items: center;
 
-    margin-top: 20px;
+    justify-content: center;
 
-    padding-top: 15px;
+    padding: 20px;
 
-    border-top:
-        1px solid
-        #e2e8f0;
+    background:
+        rgba(15, 23, 42, 0.55);
+
+    backdrop-filter: blur(5px);
 }
 
-.info-button {
-    flex: 1;
+.about-me-content {
+    position: relative;
 
-    min-height: 42px;
+    width: min(500px, 100%);
 
-    padding:
-        10px
+    padding: 30px;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 25px 70px
+        rgba(15, 23, 42, 0.25);
+
+    text-align: center;
+}
+
+.about-me-icon {
+    font-size: 42px;
+
+    margin-bottom: 8px;
+}
+
+.about-me-content h2 {
+    margin:
+        0
+        0
+        15px;
+
+    color: #263449;
+
+    font-size: 24px;
+}
+
+.about-me-content p {
+    margin:
+        0
+        0
         12px;
 
-    border-radius: 10px;
+    color: #64748b;
 
-    font-size: 12px;
+    font-size: 13px;
 
-    font-weight: 700;
+    line-height: 1.7;
+}
+
+.about-me-content strong {
+    color: #4338ca;
+}
+
+.close-about-me {
+    position: absolute;
+
+    top: 10px;
+    right: 13px;
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    color: #64748b;
+
+    font-size: 25px;
+
+    line-height: 1;
 
     cursor: pointer;
-
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        background 0.15s ease;
 }
 
-.about-button {
-    border:
-        1px solid
-        #c7d2fe;
+.close-about-me:hover {
+    background: #e2e8f0;
 
-    background:
-        #f5f3ff;
-
-    color:
-        #4f46e5;
-}
-
-.about-button:hover {
-    background:
-        #ede9fe;
-
-    transform:
-        translateY(-1px);
-
-    box-shadow:
-        0 5px 12px
-        rgba(79, 70, 229, 0.12);
-}
-
-.coffee-button {
-    border:
-        1px solid
-        #fed7aa;
-
-    background:
-        #fff7ed;
-
-    color:
-        #c2410c;
-}
-
-.coffee-button:hover {
-    background:
-        #ffedd5;
-
-    transform:
-        translateY(-1px);
-
-    box-shadow:
-        0 5px 12px
-        rgba(194, 65, 12, 0.12);
+    color: #334155;
 }
 
 
@@ -971,7 +1141,8 @@ body {
 
 button:focus-visible,
 input:focus-visible,
-label:focus-visible {
+label:focus-visible,
+a:focus-visible {
     outline:
         3px solid
         rgba(59, 130, 246, 0.25);
@@ -998,6 +1169,10 @@ label:focus-visible {
 
     .question-panel {
         min-height: auto;
+    }
+
+    .options-panel {
+        min-height: 430px;
     }
 }
 
@@ -1026,7 +1201,7 @@ label:focus-visible {
 
         flex-direction: column;
 
-        gap: 9px;
+        gap: 10px;
     }
 
     .brand-icon {
@@ -1038,15 +1213,11 @@ label:focus-visible {
     }
 
     /*
-     * Quote stays below the brand and
-     * author stays directly below quote.
+     * Quote is now below the brand.
+     * Author always appears below the quote.
      */
 
     .motivational-quote {
-        display: flex;
-
-        flex-direction: column;
-
         align-items: flex-start;
 
         width: 100%;
@@ -1057,11 +1228,7 @@ label:focus-visible {
 
         text-align: left;
 
-        line-height: 1.45;
-    }
-
-    #quote-text {
-        width: 100%;
+        line-height: 1.5;
     }
 
     .quote-author {
@@ -1069,18 +1236,11 @@ label:focus-visible {
 
         text-align: left;
 
-        white-space: normal;
-
         font-size: 11px;
     }
 
-    /*
-     * Tagline is below the complete brand/
-     * quote section.
-     */
-
     .tagline {
-        margin-top: 9px;
+        margin-top: 8px;
 
         padding-left: 0;
 
@@ -1115,9 +1275,32 @@ label:focus-visible {
         padding: 12px;
     }
 
-    .question-panel,
-    .options-panel {
+    .question-panel {
         padding: 18px;
+    }
+
+    .options-panel {
+        min-height: 500px;
+
+        padding:
+            0
+            18px
+            18px;
+
+        grid-template-rows:
+            8%
+            35%
+            40%
+            7%
+            auto;
+    }
+
+    .right-pane-question {
+        padding-top: 7px;
+    }
+
+    .right-pane-question-hint {
+        font-size: 11.5px;
     }
 
     .question {
@@ -1136,7 +1319,6 @@ label:focus-visible {
 
     .option-letter {
         width: 29px;
-
         height: 29px;
     }
 
@@ -1144,22 +1326,22 @@ label:focus-visible {
         font-size: 12.5px;
     }
 
-    .info-buttons {
-        gap: 8px;
+    .right-pane-actions {
+        justify-content: center;
 
-        margin-top: 17px;
-
-        padding-top: 13px;
+        gap: 7px;
     }
 
-    .info-button {
-        min-height: 40px;
+    .pane-action-btn {
+        font-size: 10.5px;
 
         padding:
-            9px
-            7px;
+            7px
+            9px;
+    }
 
-        font-size: 11px;
+    .about-me-content {
+        padding: 25px 20px;
     }
 }
 
@@ -1201,11 +1383,11 @@ label:focus-visible {
         justify-self: end;
     }
 
-    .info-buttons {
+    .right-pane-actions {
         flex-direction: column;
     }
 
-    .info-button {
+    .pane-action-btn {
         width: 100%;
     }
 }
