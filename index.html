@@ -11,7 +11,7 @@
 
     <meta
         name="description"
-        content="AIBrainBox — Scenario-based AI questions that make you think, decode, and understand concepts."
+        content="AIBrainBox — Scenario-based AI questions that make you think, decode, and discover the concept."
     >
 
     <title>AIBrainBox</title>
@@ -34,7 +34,6 @@
 
             <div class="header-top">
 
-                <!-- Brand -->
                 <div class="brand">
 
                     <span class="brand-icon">
@@ -47,8 +46,6 @@
 
                 </div>
 
-
-                <!-- Motivational Quote -->
                 <aside
                     id="motivational-quote"
                     class="motivational-quote"
@@ -70,10 +67,8 @@
 
             </div>
 
-
-            <!-- Tagline -->
             <p class="tagline">
-                🤯 A Box Full of “Wait… What?” — Decode the Scenario, Discover the “Ohhh, THAT’S Why!” 💡
+                🤯 A Box Full of “Wait… What?” — Decode the Scenario, Discover the “Ohhh, THAT’S Why!”
             </p>
 
         </header>
@@ -184,25 +179,83 @@
 
 
                     <!-- =========================================
-                         OPTIONS - RIGHT
+                         RIGHT PANE
+                         QUESTION / OPTIONS / ACTIONS
                          ========================================= -->
 
                     <section class="options-panel">
 
-                        <div class="panel-label">
-                            SELECT YOUR ANSWER
+                        <!-- 10% TOP SPACE -->
+                        <div class="right-pane-top-space"></div>
+
+
+                        <!-- 40% QUESTION / THINKING AREA -->
+
+                        <div class="right-pane-question">
+
+                            <div class="panel-label">
+                                🧩 DECODE THE SCENARIO
+                            </div>
+
+                            <div
+                                id="right-pane-question-hint"
+                                class="right-pane-question-hint"
+                            >
+                                Read the scenario carefully. Look for the clues before choosing an answer.
+                            </div>
+
                         </div>
 
 
-                        <div
-                            id="options"
-                            class="options"
-                            role="radiogroup"
-                            aria-label="Answer options"
-                        ></div>
+                        <!-- 30% OPTIONS -->
+
+                        <div class="right-pane-options">
+
+                            <div class="panel-label">
+                                SELECT YOUR ANSWER
+                            </div>
+
+                            <div
+                                id="options"
+                                class="options"
+                                role="radiogroup"
+                                aria-label="Answer options"
+                            ></div>
+
+                        </div>
 
 
-                        <!-- Answer result -->
+                        <!-- 10% SPACE -->
+
+                        <div class="right-pane-middle-space"></div>
+
+
+                        <!-- 10% ACTIONS -->
+
+                        <div class="right-pane-actions">
+
+                            <button
+                                id="about-me-btn"
+                                class="pane-action-btn about-me-btn"
+                                type="button"
+                            >
+                                👋 About Me
+                            </button>
+
+                            <a
+                                id="buy-coffee-btn"
+                                class="pane-action-btn coffee-btn"
+                                href="#"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                ☕ Buy Me a Coffee
+                            </a>
+
+                        </div>
+
+
+                        <!-- ANSWER RESULT -->
 
                         <div
                             id="result"
@@ -211,7 +264,7 @@
                         ></div>
 
 
-                        <!-- Explanation -->
+                        <!-- EXPLANATION -->
 
                         <div
                             id="explanation"
@@ -229,32 +282,6 @@
 
                         </div>
 
-
-                        <!-- About Me / Buy Me a Coffee -->
-
-                        <div
-                            id="info-buttons"
-                            class="info-buttons"
-                        >
-
-                            <button
-                                id="about-me-btn"
-                                type="button"
-                                class="info-button about-button"
-                            >
-                                👋 About Me
-                            </button>
-
-                            <button
-                                id="buy-coffee-btn"
-                                type="button"
-                                class="info-button coffee-button"
-                            >
-                                ☕ Buy Me a Coffee
-                            </button>
-
-                        </div>
-
                     </section>
 
                 </div>
@@ -265,13 +292,64 @@
 
 
         <!-- =====================================================
+             ABOUT ME MODAL
+             ===================================================== -->
+
+        <div
+            id="about-me-modal"
+            class="about-me-modal hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="about-me-title"
+        >
+
+            <div class="about-me-content">
+
+                <button
+                    id="close-about-me"
+                    class="close-about-me"
+                    type="button"
+                    aria-label="Close About Me"
+                >
+                    ×
+                </button>
+
+                <div class="about-me-icon">
+                    🧠
+                </div>
+
+                <h2 id="about-me-title">
+                    About AIBrainBox
+                </h2>
+
+                <p>
+                    AIBrainBox is built around one simple idea:
+                    <strong>don't just memorize AI concepts — learn to think with them.</strong>
+                </p>
+
+                <p>
+                    Every question gives you a scenario, clues,
+                    choices, and an explanation so you can discover
+                    the concept behind the answer.
+                </p>
+
+                <p>
+                    Think. Decode. Get the “Ohhh, THAT’S Why!” moment. 💡
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
              FOOTER
              ===================================================== -->
 
         <footer class="footer">
 
             <p>
-                Keep learning. Keep questioning. Keep improving. 🚀
+                Keep learning. Keep questioning. Keep discovering. 🚀
             </p>
 
         </footer>
