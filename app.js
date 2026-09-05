@@ -3,7 +3,7 @@ let currentQuestionIndex = -1;
 let currentQuestion = null;
 
 const CSV_URL = "./xi-questions.csv";
-const QUOTES_CSV_URL = "./xi-Quotes.csv";
+const QUOTES_URL = "./xi-Quotes.csv";
 
 let score = 0;
 let answeredQuestions = new Set();
@@ -155,7 +155,7 @@ async function loadQuotes() {
 
         const response =
             await fetch(
-                QUOTES_CSV_URL + "?v=" + Date.now(),
+                QUOTES_URL + "?v=" + Date.now(),
                 {
                     cache: "no-store"
                 }
@@ -189,45 +189,44 @@ async function loadQuotes() {
             quotes.length
         );
 
-        /*
-         * Refresh the quote immediately
-         * once the quote database is ready.
-         */
-
-        if (currentQuestion) {
+        if (quotes.length) {
             loadMotivationalQuote();
         }
 
     } catch (error) {
 
-        console.warn(
-            "Quote database could not be loaded:",
+        console.error(
+            "Quote database error:",
             error
         );
 
         /*
-         * Keep a small fallback so the
-         * header never appears empty.
+         * Keep a small fallback so the quote
+         * area never appears completely empty.
          */
 
         quotes = [
             {
                 quote:
-                    "The important thing is to never stop questioning.",
-                author:
-                    "Albert Einstein"
-            },
-            {
-                quote:
                     "The future depends on what you do today.",
                 author:
                     "Mahatma Gandhi"
+            },
+            {
+                quote:
+                    "Great things are done by a series of small things brought together.",
+                author:
+                    "Vincent van Gogh"
+            },
+            {
+                quote:
+                    "The important thing is not to stop questioning.",
+                author:
+                    "Albert Einstein"
             }
         ];
 
-        if (currentQuestion) {
-            loadMotivationalQuote();
-        }
+        loadMotivationalQuote();
     }
 }
 
@@ -289,7 +288,6 @@ function parseCSV(text) {
                 char === "\r" &&
                 nextChar === "\n"
             ) {
-
                 i++;
             }
 
@@ -301,7 +299,6 @@ function parseCSV(text) {
                         value.trim() !== ""
                 )
             ) {
-
                 rows.push(row);
             }
 
@@ -327,7 +324,6 @@ function parseCSV(text) {
                     value.trim() !== ""
             )
         ) {
-
             rows.push(row);
         }
     }
@@ -373,17 +369,6 @@ function parseCSV(text) {
 
 /* ============================================================
    PARSE QUOTES CSV
-   ============================================================
-
-   Expected xi-Quotes.csv:
-
-   Column A = quote
-   Column B = author
-
-   The parser also supports headers such as:
-   quote,author
-
-   Quotes containing commas or line breaks are supported.
    ============================================================ */
 
 function parseQuotesCSV(text) {
@@ -439,7 +424,6 @@ function parseQuotesCSV(text) {
                 char === "\r" &&
                 nextChar === "\n"
             ) {
-
                 i++;
             }
 
@@ -451,7 +435,6 @@ function parseQuotesCSV(text) {
                         value.trim() !== ""
                 )
             ) {
-
                 rows.push(row);
             }
 
@@ -477,7 +460,6 @@ function parseQuotesCSV(text) {
                     value.trim() !== ""
             )
         ) {
-
             rows.push(row);
         }
     }
@@ -486,64 +468,134 @@ function parseQuotesCSV(text) {
         return [];
     }
 
+    const headers =
+        rows[0].map(
+            normalizeHeader
+        );
+
+    const quoteColumn =
+        headers.findIndex(
+            header =>
+                header === "quote"
+        );
+
+    const authorColumn =
+        headers.findIndex(
+            header =>
+                header === "author"
+        );
+
     /*
-     * Detect whether the first row is a header.
+     * xi-Quotes.csv can contain two quote columns.
+     * Example:
+     *
+     * Quote A,Quote B
+     *
+     * Every non-empty cell is treated as a quote.
      */
 
-    const firstRow =
-        rows[0].map(
-            value =>
-                value
-                    .replace(/^\uFEFF/, "")
-                    .trim()
-                    .toLowerCase()
-        );
+    const quoteColumns =
+        headers
+            .map(
+                (header, index) =>
+                    header.includes("quote")
+                        ? index
+                        : -1
+            )
+            .filter(
+                index =>
+                    index !== -1
+            );
 
-    const firstCell =
-        firstRow[0] || "";
+    const parsedQuotes = [];
 
-    const secondCell =
-        firstRow[1] || "";
+    rows
+        .slice(1)
+        .forEach(row => {
 
-    const looksLikeHeader =
-        (
-            firstCell === "quote" ||
-            firstCell === "quotes" ||
-            firstCell === "text" ||
-            firstCell === "quote text"
-        ) &&
-        (
-            secondCell === "author" ||
-            secondCell === "name" ||
-            secondCell === "quote author"
-        );
+            /*
+             * Standard format:
+             * Quote,Author
+             */
 
-    const dataRows =
-        looksLikeHeader
-            ? rows.slice(1)
-            : rows;
+            if (
+                quoteColumn !== -1 &&
+                authorColumn !== -1
+            ) {
 
-    return dataRows
-        .map(row => {
+                const quote =
+                    (
+                        row[quoteColumn] ||
+                        ""
+                    ).trim();
 
-            const quote =
-                (
-                    row[0] || ""
-                ).trim();
+                const author =
+                    (
+                        row[authorColumn] ||
+                        ""
+                    ).trim();
 
-            const author =
-                (
-                    row[1] || ""
-                ).trim();
+                if (quote) {
 
-            return {
-                quote,
-                author
-            };
-        })
-        .filter(item =>
-            item.quote !== ""
-        );
+                    parsedQuotes.push({
+                        quote,
+                        author
+                    });
+                }
+
+                return;
+            }
+
+            /*
+             * Two-column quote file:
+             * Quote A,Quote B
+             */
+
+            if (quoteColumns.length) {
+
+                quoteColumns.forEach(
+                    columnIndex => {
+
+                        const quote =
+                            (
+                                row[columnIndex] ||
+                                ""
+                            ).trim();
+
+                        if (quote) {
+
+                            parsedQuotes.push({
+                                quote,
+                                author: ""
+                            });
+                        }
+                    }
+                );
+
+                return;
+            }
+
+            /*
+             * Generic fallback:
+             * Every non-empty cell becomes a quote.
+             */
+
+            row.forEach(cell => {
+
+                const quote =
+                    cell.trim();
+
+                if (quote) {
+
+                    parsedQuotes.push({
+                        quote,
+                        author: ""
+                    });
+                }
+            });
+        });
+
+    return parsedQuotes;
 }
 
 
@@ -725,11 +777,8 @@ function createOptions() {
             document.createElement("input");
 
         radio.type = "radio";
-
         radio.name = "answer";
-
         radio.value = letter;
-
         radio.id =
             "option-" + letter;
 
@@ -1146,7 +1195,10 @@ function restoreAnswerState() {
     const correctAnswer =
         getCorrectAnswer();
 
-    if (savedAnswer === correctAnswer) {
+    if (
+        savedAnswer ===
+        correctAnswer
+    ) {
 
         option.classList.add(
             "correct-answer"
@@ -1374,22 +1426,11 @@ function loadMotivationalQuote() {
 
     if (
         !quoteText ||
-        !quoteAuthor
+        !quoteAuthor ||
+        !quotes.length
     ) {
         return;
     }
-
-    if (!quotes.length) {
-        return;
-    }
-
-    /*
-     * Pick a random quote.
-     *
-     * Avoid immediately repeating the
-     * previous quote when more than one
-     * quote exists.
-     */
 
     let index =
         Math.floor(
@@ -1415,49 +1456,29 @@ function loadMotivationalQuote() {
     const quote =
         quotes[index];
 
-    /*
-     * Emoji are added to make the quote
-     * visually engaging without modifying
-     * the actual quote stored in CSV.
-     */
-
-    const quoteEmojis = [
-        "💭",
-        "🧠",
-        "✨",
-        "🔥",
-        "💡",
-        "🚀",
-        "🎯",
-        "⚡",
-        "🌟",
-        "🪄"
-    ];
-
-    const emoji =
-        quoteEmojis[
-            Math.floor(
-                Math.random() *
-                quoteEmojis.length
-            )
-        ];
-
     quoteText.innerText =
-        emoji +
-        " “" +
+        "“" +
         quote.quote +
         "”";
 
-    if (quote.author) {
+    if (
+        quote.author &&
+        quote.author.trim()
+    ) {
 
         quoteAuthor.innerText =
             "— " +
-            quote.author;
+            quote.author.trim();
+
+        quoteAuthor.style.display =
+            "block";
 
     } else {
 
-        quoteAuthor.innerText =
-            "";
+        quoteAuthor.innerText = "";
+
+        quoteAuthor.style.display =
+            "none";
     }
 }
 
@@ -1508,7 +1529,7 @@ function showCorrectCelebration() {
         "💡",
         "⭐",
         "🔥",
-        "🏆",
+        "🤯",
         "⚡"
     ]);
 }
@@ -1523,10 +1544,9 @@ function showWrongReaction() {
     createEmojiBurst([
         "😅",
         "🤔",
-        "🧐",
-        "💭",
-        "😮‍💨",
-        "🔍"
+        "🫠",
+        "😵",
+        "💭"
     ]);
 }
 
@@ -1639,7 +1659,6 @@ function createEmojiBurst(
             if (
                 container.parentNode
             ) {
-
                 container.remove();
             }
 
