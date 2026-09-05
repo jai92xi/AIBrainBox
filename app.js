@@ -1,5 +1,6 @@
 /* ============================================================
    AIBrainBox
+   Complete Quiz Application
    ============================================================ */
 
 
@@ -15,11 +16,23 @@ let currentQuestionIndex = -1;
 
 
 /* ============================================================
-   DATA SOURCES
+   CSV LOCATION
    ============================================================ */
+
+/*
+ * IMPORTANT:
+ *
+ * xi-questions.csv is in the same folder as index.html.
+ *
+ * Therefore use a relative path.
+ */
 
 const CSV_URL = "./xi-questions.csv";
 
+
+/* ============================================================
+   MOTIVATIONAL QUOTE API
+   ============================================================ */
 
 const QUOTE_API_URL =
     "https://zenquotes.io/api/random";
@@ -34,7 +47,6 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "Success is built one difficult step at a time.",
-
         author:
             "AIBrainBox"
     },
@@ -42,7 +54,6 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "The more you learn, the more you realize how much is possible.",
-
         author:
             "AIBrainBox"
     },
@@ -50,7 +61,6 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "Every question you answer makes you a little smarter.",
-
         author:
             "AIBrainBox"
     },
@@ -58,7 +68,6 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "Do not be afraid of difficult questions. They are opportunities to grow.",
-
         author:
             "AIBrainBox"
     },
@@ -66,7 +75,6 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "Small progress every day leads to remarkable results.",
-
         author:
             "AIBrainBox"
     },
@@ -74,7 +82,6 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "Keep going. Your future self will thank you.",
-
         author:
             "AIBrainBox"
     },
@@ -82,7 +89,6 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "Learning is not about being perfect. It is about getting better.",
-
         author:
             "AIBrainBox"
     },
@@ -90,7 +96,34 @@ const FALLBACK_QUOTES = [
     {
         quote:
             "Challenge yourself today so tomorrow becomes easier.",
+        author:
+            "AIBrainBox"
+    },
 
+    {
+        quote:
+            "Every mistake is another step toward understanding.",
+        author:
+            "AIBrainBox"
+    },
+
+    {
+        quote:
+            "Your effort today becomes your knowledge tomorrow.",
+        author:
+            "AIBrainBox"
+    },
+
+    {
+        quote:
+            "Keep asking questions. Curiosity is the beginning of learning.",
+        author:
+            "AIBrainBox"
+    },
+
+    {
+        quote:
+            "You do not have to know everything. You just have to keep learning.",
         author:
             "AIBrainBox"
     }
@@ -98,79 +131,433 @@ const FALLBACK_QUOTES = [
 ];
 
 
-/* ============================================================
-   LAST QUOTE
-   ============================================================ */
+/*
+ * Used to avoid showing the same fallback quote twice
+ * consecutively.
+ */
 
 let lastQuoteIndex = -1;
 
 
 /* ============================================================
-   LOAD QUESTIONS
+   DOM READY
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        initializeApp();
+
+    }
+);
+
+
+/* ============================================================
+   INITIALIZE APPLICATION
+   ============================================================ */
+
+function initializeApp() {
+
+    /*
+     * Make sure required elements exist.
+     */
+
+    const requiredElements = [
+
+        "loading",
+        "error",
+        "question-container",
+        "question",
+        "options",
+        "result",
+        "explanation",
+        "explanation-text",
+        "previous-question-btn",
+        "next-question-btn",
+        "question-position",
+        "quote-text",
+        "quote-author"
+
+    ];
+
+
+    const missingElements =
+        requiredElements.filter(
+            id =>
+                !document.getElementById(id)
+        );
+
+
+    if (
+        missingElements.length > 0
+    ) {
+
+        console.error(
+            "Missing HTML elements:",
+            missingElements
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * Navigation button events.
+     */
+
+    document
+        .getElementById(
+            "previous-question-btn"
+        )
+        .addEventListener(
+            "click",
+            goToPreviousQuestion
+        );
+
+
+    document
+        .getElementById(
+            "next-question-btn"
+        )
+        .addEventListener(
+            "click",
+            goToNextQuestion
+        );
+
+
+    /*
+     * Browser back/forward.
+     */
+
+    window.addEventListener(
+        "popstate",
+        () => {
+
+            if (
+                questions.length > 0
+            ) {
+
+                loadQuestion();
+
+            }
+
+        }
+    );
+
+
+    /*
+     * Load CSV.
+     */
+
+    loadQuestions();
+
+}
+
+
+/* ============================================================
+   LOAD QUESTIONS FROM CSV
    ============================================================ */
 
 async function loadQuestions() {
 
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+
+    const errorBox =
+        document.getElementById(
+            "error"
+        );
+
+
     try {
+
+        /*
+         * Make sure loading is visible.
+         */
+
+        loading.classList.remove(
+            "hidden"
+        );
+
+
+        errorBox.classList.add(
+            "hidden"
+        );
+
+
+        console.log(
+            "===================================="
+        );
+
+        console.log(
+            "AIBrainBox: Loading CSV"
+        );
+
+        console.log(
+            "CSV URL:",
+            CSV_URL
+        );
+
+
+        /*
+         * Fetch local CSV.
+         */
 
         const response =
             await fetch(
                 CSV_URL +
                 "?v=" +
-                Date.now()
+                Date.now(),
+                {
+                    cache:
+                        "no-store"
+                }
             );
 
 
-        if (!response.ok) {
+        console.log(
+            "CSV HTTP status:",
+            response.status
+        );
+
+
+        /*
+         * Check HTTP response.
+         */
+
+        if (
+            !response.ok
+        ) {
 
             throw new Error(
-                "Unable to load question database. HTTP status: " +
-                response.status
+                "HTTP " +
+                response.status +
+                " " +
+                response.statusText
             );
 
         }
 
+
+        /*
+         * Read CSV text.
+         */
 
         const csvText =
             await response.text();
 
 
-        if (!csvText.trim()) {
+        console.log(
+            "CSV characters:",
+            csvText.length
+        );
+
+
+        /*
+         * Make sure file isn't empty.
+         */
+
+        if (
+            !csvText.trim()
+        ) {
 
             throw new Error(
-                "The CSV file is empty."
+                "xi-questions.csv is empty."
             );
 
         }
 
+
+        /*
+         * Parse CSV.
+         */
 
         questions =
-            parseCSV(csvText);
+            parseCSV(
+                csvText
+            );
 
 
-        if (!questions.length) {
+        console.log(
+            "Questions parsed:",
+            questions.length
+        );
+
+
+        /*
+         * Make sure questions exist.
+         */
+
+        if (
+            questions.length === 0
+        ) {
 
             throw new Error(
-                "No questions were found in the CSV file."
+                "The CSV was loaded, but no questions were found."
             );
 
         }
 
+
+        /*
+         * Validate important CSV columns.
+         */
+
+        validateQuestions();
+
+
+        console.log(
+            "CSV loaded successfully."
+        );
+
+        console.log(
+            "===================================="
+        );
+
+
+        /*
+         * Hide loading.
+         */
+
+        loading.classList.add(
+            "hidden"
+        );
+
+
+        /*
+         * Load question based on URL.
+         */
 
         loadQuestion();
 
     }
 
+
     catch (error) {
 
         console.error(
-            "CSV loading error:",
+            "===================================="
+        );
+
+        console.error(
+            "AIBrainBox CSV ERROR"
+        );
+
+        console.error(
             error
         );
 
+        console.error(
+            "===================================="
+        );
 
-        showError(
-            "Unable to load the question database. Please check that xi-questions.csv exists in the repository."
+
+        loading.classList.add(
+            "hidden"
+        );
+
+
+        errorBox.classList.remove(
+            "hidden"
+        );
+
+
+        errorBox.innerText =
+            "Unable to load the question database.\n\n" +
+            "Error: " +
+            error.message +
+            "\n\n" +
+            "Make sure xi-questions.csv is in the same folder as index.html.";
+    }
+
+}
+
+
+/* ============================================================
+   VALIDATE QUESTIONS
+   ============================================================ */
+
+function validateQuestions() {
+
+    if (
+        questions.length === 0
+    ) {
+
+        throw new Error(
+            "No questions available."
+        );
+
+    }
+
+
+    const firstQuestion =
+        questions[0];
+
+
+    /*
+     * Required question field.
+     */
+
+    if (
+        !firstQuestion.question
+    ) {
+
+        console.warn(
+            "CSV warning: 'Question' column was not found."
+        );
+
+    }
+
+
+    /*
+     * Correct answer field.
+     *
+     * Your CSV uses:
+     *
+     * Correct Answer
+     *
+     * which becomes:
+     *
+     * correct answer
+     */
+
+    if (
+        !firstQuestion[
+            "correct answer"
+        ]
+    ) {
+
+        console.warn(
+            "CSV warning: 'Correct Answer' column was not found."
+        );
+
+    }
+
+
+    /*
+     * Check IDs.
+     */
+
+    const missingIds =
+        questions.filter(
+            question =>
+                !question.id
+        );
+
+
+    if (
+        missingIds.length > 0
+    ) {
+
+        console.warn(
+            missingIds.length +
+            " question(s) do not have an ID."
         );
 
     }
@@ -202,12 +589,15 @@ function parseCSV(text) {
         const char =
             text[i];
 
+
         const nextChar =
             text[i + 1];
 
 
         /*
-         * Double quote inside quoted field
+         * Escaped quote:
+         *
+         * ""
          */
 
         if (
@@ -224,7 +614,7 @@ function parseCSV(text) {
 
 
         /*
-         * Start/end quoted field
+         * Opening or closing quote.
          */
 
         else if (
@@ -238,7 +628,7 @@ function parseCSV(text) {
 
 
         /*
-         * Column separator
+         * Column separator.
          */
 
         else if (
@@ -246,7 +636,9 @@ function parseCSV(text) {
             !insideQuotes
         ) {
 
-            row.push(cell);
+            row.push(
+                cell
+            );
 
             cell = "";
 
@@ -254,7 +646,7 @@ function parseCSV(text) {
 
 
         /*
-         * New line
+         * New line.
          */
 
         else if (
@@ -264,6 +656,10 @@ function parseCSV(text) {
             ) &&
             !insideQuotes
         ) {
+
+            /*
+             * Handle Windows CRLF.
+             */
 
             if (
                 char === "\r" &&
@@ -275,8 +671,14 @@ function parseCSV(text) {
             }
 
 
-            row.push(cell);
+            row.push(
+                cell
+            );
 
+
+            /*
+             * Ignore completely empty rows.
+             */
 
             if (
                 row.some(
@@ -286,7 +688,9 @@ function parseCSV(text) {
                 )
             ) {
 
-                rows.push(row);
+                rows.push(
+                    row
+                );
 
             }
 
@@ -299,7 +703,7 @@ function parseCSV(text) {
 
 
         /*
-         * Normal character
+         * Normal character.
          */
 
         else {
@@ -312,7 +716,7 @@ function parseCSV(text) {
 
 
     /*
-     * Last row
+     * Add final cell/row.
      */
 
     if (
@@ -320,7 +724,9 @@ function parseCSV(text) {
         row.length > 0
     ) {
 
-        row.push(cell);
+        row.push(
+            cell
+        );
 
 
         if (
@@ -331,12 +737,18 @@ function parseCSV(text) {
             )
         ) {
 
-            rows.push(row);
+            rows.push(
+                row
+            );
 
         }
 
     }
 
+
+    /*
+     * No rows.
+     */
 
     if (
         rows.length === 0
@@ -348,48 +760,84 @@ function parseCSV(text) {
 
 
     /*
-     * Normalize headers
+     * First row = headers.
      */
 
     const headers =
         rows[0].map(
             header =>
-                header
-                    .trim()
-                    .toLowerCase()
+                normalizeHeader(
+                    header
+                )
         );
 
 
+    console.log(
+        "CSV headers:",
+        headers
+    );
+
+
     /*
-     * Convert rows into objects
+     * Convert each CSV row into an object.
      */
 
     return rows
         .slice(1)
-        .map(row => {
+        .map(
+            row => {
 
-            const question = {};
-
-
-            headers.forEach(
-                (
-                    header,
-                    index
-                ) => {
-
-                    question[header] =
-                        (
-                            row[index] ||
-                            ""
-                        ).trim();
-
-                }
-            );
+                const question = {};
 
 
-            return question;
+                headers.forEach(
+                    (
+                        header,
+                        index
+                    ) => {
 
-        });
+                        question[header] =
+                            (
+                                row[index] ||
+                                ""
+                            ).trim();
+
+                    }
+                );
+
+
+                return question;
+
+            }
+        )
+        .filter(
+            question =>
+                Object.values(
+                    question
+                ).some(
+                    value =>
+                        value !== ""
+                )
+        );
+
+}
+
+
+/* ============================================================
+   NORMALIZE CSV HEADER
+   ============================================================ */
+
+function normalizeHeader(
+    header
+) {
+
+    return header
+        .replace(
+            /^\uFEFF/,
+            ""
+        )
+        .trim()
+        .toLowerCase();
 
 }
 
@@ -400,26 +848,82 @@ function parseCSV(text) {
 
 function loadQuestion() {
 
+    if (
+        questions.length === 0
+    ) {
+
+        return;
+
+    }
+
+
     const params =
         new URLSearchParams(
             window.location.search
         );
 
 
-    const id =
-        params.get("id");
-
-
-    if (!id) {
-
-        showError(
-            "No question ID was provided. Please use a question link such as ?id=Xi-00001"
+    let id =
+        params.get(
+            "id"
         );
 
-        return;
+
+    /*
+     * If there is no ID in the URL,
+     * start with the first question.
+     */
+
+    if (
+        !id
+    ) {
+
+        if (
+            questions[0] &&
+            questions[0].id
+        ) {
+
+            id =
+                questions[0].id;
+
+
+            const url =
+                new URL(
+                    window.location.href
+                );
+
+
+            url.searchParams.set(
+                "id",
+                id
+            );
+
+
+            window.history.replaceState(
+                {},
+                "",
+                url
+            );
+
+        }
+
+        else {
+
+            showError(
+                "No question ID was provided and the first question does not have an ID."
+            );
+
+
+            return;
+
+        }
 
     }
 
+
+    /*
+     * Find question.
+     */
 
     currentQuestionIndex =
         questions.findIndex(
@@ -439,6 +943,10 @@ function loadQuestion() {
         );
 
 
+    /*
+     * Question not found.
+     */
+
     if (
         currentQuestionIndex === -1
     ) {
@@ -448,16 +956,25 @@ function loadQuestion() {
             id
         );
 
+
         return;
 
     }
 
+
+    /*
+     * Set current question.
+     */
 
     currentQuestion =
         questions[
             currentQuestionIndex
         ];
 
+
+    /*
+     * Display.
+     */
 
     displayQuestion();
 
@@ -470,13 +987,22 @@ function loadQuestion() {
 
 function displayQuestion() {
 
+    if (
+        !currentQuestion
+    ) {
+
+        return;
+
+    }
+
+
     const loading =
         document.getElementById(
             "loading"
         );
 
 
-    const error =
+    const errorBox =
         document.getElementById(
             "error"
         );
@@ -488,12 +1014,16 @@ function displayQuestion() {
         );
 
 
+    /*
+     * Show correct section.
+     */
+
     loading.classList.add(
         "hidden"
     );
 
 
-    error.classList.add(
+    errorBox.classList.add(
         "hidden"
     );
 
@@ -504,21 +1034,68 @@ function displayQuestion() {
 
 
     /*
-     * Display question
+     * Display question text.
      */
 
-    document
-        .getElementById(
+    const questionElement =
+        document.getElementById(
             "question"
-        )
-        .innerText =
+        );
+
+
+    questionElement.innerText =
         currentQuestion.question ||
-        "";
+        "Question unavailable.";
 
 
     /*
-     * Display options
+     * Create answer options.
      */
+
+    createOptions();
+
+
+    /*
+     * Reset previous answer.
+     */
+
+    resetAnswerState();
+
+
+    /*
+     * Update navigation.
+     */
+
+    updateNavigation();
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Load a new motivational quote
+     * every time a question changes.
+     */
+
+    loadMotivationalQuote();
+
+
+    /*
+     * Scroll page to top.
+     */
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* ============================================================
+   CREATE OPTIONS
+   ============================================================ */
+
+function createOptions() {
 
     const optionsContainer =
         document.getElementById(
@@ -541,6 +1118,31 @@ function displayQuestion() {
     optionLetters.forEach(
         letter => {
 
+            const optionText =
+                currentQuestion[
+                    letter.toLowerCase()
+                ];
+
+
+            /*
+             * Don't create an option if
+             * there is no text.
+             */
+
+            if (
+                !optionText ||
+                !optionText.trim()
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * Outer option.
+             */
+
             const option =
                 document.createElement(
                     "div"
@@ -552,7 +1154,7 @@ function displayQuestion() {
 
 
             /*
-             * Radio input
+             * Radio input.
              */
 
             const radio =
@@ -579,7 +1181,7 @@ function displayQuestion() {
 
 
             /*
-             * Letter
+             * Letter badge.
              */
 
             const letterSpan =
@@ -597,7 +1199,7 @@ function displayQuestion() {
 
 
             /*
-             * Option text
+             * Option text.
              */
 
             const textSpan =
@@ -611,14 +1213,11 @@ function displayQuestion() {
 
 
             textSpan.innerText =
-                currentQuestion[
-                    letter.toLowerCase()
-                ] ||
-                "";
+                optionText;
 
 
             /*
-             * Label
+             * Label.
              */
 
             const label =
@@ -642,6 +1241,10 @@ function displayQuestion() {
             );
 
 
+            /*
+             * Build option.
+             */
+
             option.appendChild(
                 radio
             );
@@ -658,7 +1261,7 @@ function displayQuestion() {
 
 
             /*
-             * Answer event
+             * Answer event.
              */
 
             radio.addEventListener(
@@ -676,33 +1279,11 @@ function displayQuestion() {
         }
     );
 
-
-    /*
-     * Reset explanation
-     */
-
-    resetAnswerState();
-
-
-    /*
-     * Update top navigation
-     */
-
-    updateNavigation();
-
-
-    /*
-     * IMPORTANT:
-     * Every question gets a new quote.
-     */
-
-    loadMotivationalQuote();
-
 }
 
 
 /* ============================================================
-   QUESTION NAVIGATION
+   UPDATE NAVIGATION
    ============================================================ */
 
 function updateNavigation() {
@@ -737,7 +1318,7 @@ function updateNavigation() {
 
 
     /*
-     * Disable Previous on first question
+     * Previous disabled at first question.
      */
 
     previousButton.disabled =
@@ -745,7 +1326,7 @@ function updateNavigation() {
 
 
     /*
-     * Disable Next on last question
+     * Next disabled at last question.
      */
 
     nextButton.disabled =
@@ -754,7 +1335,7 @@ function updateNavigation() {
 
 
     /*
-     * Show question number
+     * Question counter.
      */
 
     position.innerText =
@@ -853,6 +1434,15 @@ function navigateToQuestion(
     questionId
 ) {
 
+    if (
+        !questionId
+    ) {
+
+        return;
+
+    }
+
+
     const url =
         new URL(
             window.location.href
@@ -866,7 +1456,7 @@ function navigateToQuestion(
 
 
     /*
-     * Change URL without page reload
+     * Change URL without full reload.
      */
 
     window.history.pushState(
@@ -877,42 +1467,12 @@ function navigateToQuestion(
 
 
     /*
-     * Load new question
+     * Load new question.
      */
 
     loadQuestion();
 
-
-    /*
-     * Scroll to top
-     */
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
 }
-
-
-/* ============================================================
-   BROWSER BACK / FORWARD
-   ============================================================ */
-
-window.addEventListener(
-    "popstate",
-    () => {
-
-        if (
-            questions.length
-        ) {
-
-            loadQuestion();
-
-        }
-
-    }
-);
 
 
 /* ============================================================
@@ -924,11 +1484,36 @@ function checkAnswer(
     selectedOption
 ) {
 
+    if (
+        !currentQuestion
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * User answer.
+     */
+
     const userAnswer =
         selected.value
             .trim()
             .toUpperCase();
 
+
+    /*
+     * Correct answer.
+     *
+     * CSV column:
+     *
+     * Correct Answer
+     *
+     * becomes:
+     *
+     * correct answer
+     */
 
     const correctAnswer =
         (
@@ -942,7 +1527,7 @@ function checkAnswer(
 
 
     /*
-     * Remove previous states
+     * Remove previous visual states.
      */
 
     document
@@ -963,7 +1548,16 @@ function checkAnswer(
 
 
     /*
-     * CORRECT
+     * Mark selected.
+     */
+
+    selectedOption.classList.add(
+        "selected"
+    );
+
+
+    /*
+     * Correct answer.
      */
 
     if (
@@ -984,7 +1578,7 @@ function checkAnswer(
 
 
     /*
-     * WRONG
+     * Wrong answer.
      */
 
     else {
@@ -997,29 +1591,12 @@ function checkAnswer(
 
 
         /*
-         * Highlight correct option
+         * Highlight correct answer.
          */
 
-        const correctRadio =
-            document.querySelector(
-                'input[name="answer"][value="' +
-                correctAnswer +
-                '"]'
-            );
-
-
-        if (correctRadio) {
-
-            correctRadio
-                .closest(
-                    ".option"
-                )
-                .classList
-                .add(
-                    "correct-answer"
-                );
-
-        }
+        highlightCorrectAnswer(
+            correctAnswer
+        );
 
 
         showWrongReaction();
@@ -1028,10 +1605,60 @@ function checkAnswer(
 
 
     /*
-     * Show explanation immediately
+     * Show explanation immediately.
      */
 
     showExplanation();
+
+}
+
+
+/* ============================================================
+   HIGHLIGHT CORRECT ANSWER
+   ============================================================ */
+
+function highlightCorrectAnswer(
+    correctAnswer
+) {
+
+    if (
+        !correctAnswer
+    ) {
+
+        return;
+
+    }
+
+
+    const correctRadio =
+        document.querySelector(
+            'input[name="answer"][value="' +
+            correctAnswer +
+            '"]'
+        );
+
+
+    if (
+        correctRadio
+    ) {
+
+        const correctOption =
+            correctRadio.closest(
+                ".option"
+            );
+
+
+        if (
+            correctOption
+        ) {
+
+            correctOption.classList.add(
+                "correct-answer"
+            );
+
+        }
+
+    }
 
 }
 
@@ -1055,26 +1682,57 @@ function showExplanation() {
 
 
     /*
-     * Support both spellings:
+     * Your CSV currently uses the misspelled
+     * "Explaination" column.
      *
-     * explanation
-     * explaination
+     * After normalization:
+     *
+     * Explaination -> explaination
+     *
+     * Support both spellings.
      */
 
     const explanation =
-        currentQuestion.explanation ||
-        currentQuestion.explaination ||
-        "No explanation is available for this question.";
+        currentQuestion[
+            "explanation"
+        ] ||
+        currentQuestion[
+            "explaination"
+        ] ||
+        "";
 
 
-    explanationText.innerText =
-        explanation;
+    if (
+        explanation.trim()
+    ) {
 
+        explanationText.innerText =
+            explanation;
+
+    }
+
+    else {
+
+        explanationText.innerText =
+            "No explanation is available for this question.";
+
+    }
+
+
+    /*
+     * Show explanation.
+     */
 
     explanationBox.classList.remove(
         "hidden"
     );
 
+
+    /*
+     * Small scroll on mobile if needed.
+     *
+     * We don't force-scroll on desktop.
+     */
 
 }
 
@@ -1091,19 +1749,10 @@ function resetAnswerState() {
         );
 
 
-    result.innerText =
-        "";
-
-
     const explanation =
         document.getElementById(
             "explanation"
         );
-
-
-    explanation.classList.add(
-        "hidden"
-    );
 
 
     const explanationText =
@@ -1112,9 +1761,53 @@ function resetAnswerState() {
         );
 
 
-    explanationText.innerText =
-        "";
+    /*
+     * Clear result.
+     */
 
+    if (
+        result
+    ) {
+
+        result.innerText =
+            "";
+
+    }
+
+
+    /*
+     * Hide explanation until
+     * an answer is selected.
+     */
+
+    if (
+        explanation
+    ) {
+
+        explanation.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    /*
+     * Clear explanation text.
+     */
+
+    if (
+        explanationText
+    ) {
+
+        explanationText.innerText =
+            "";
+
+    }
+
+
+    /*
+     * Remove answer colors.
+     */
 
     document
         .querySelectorAll(
@@ -1164,8 +1857,7 @@ async function loadMotivationalQuote() {
 
 
     /*
-     * Reset animation so it runs
-     * on every question.
+     * Reset quote animation.
      */
 
     const quoteBox =
@@ -1174,11 +1866,18 @@ async function loadMotivationalQuote() {
         );
 
 
-    if (quoteBox) {
+    if (
+        quoteBox
+    ) {
 
         quoteBox.style.animation =
             "none";
 
+
+        /*
+         * Force browser reflow so the
+         * animation can run again.
+         */
 
         void quoteBox.offsetWidth;
 
@@ -1189,20 +1888,30 @@ async function loadMotivationalQuote() {
     }
 
 
+    /*
+     * Try online quote API.
+     */
+
     try {
 
         const response =
             await fetch(
                 QUOTE_API_URL +
                 "?t=" +
-                Date.now()
+                Date.now(),
+                {
+                    cache:
+                        "no-store"
+                }
             );
 
 
-        if (!response.ok) {
+        if (
+            !response.ok
+        ) {
 
             throw new Error(
-                "Quote API returned HTTP " +
+                "Quote API HTTP " +
                 response.status
             );
 
@@ -1220,11 +1929,15 @@ async function loadMotivationalQuote() {
         ) {
 
             throw new Error(
-                "Invalid quote response."
+                "Invalid quote API response."
             );
 
         }
 
+
+        /*
+         * Display online quote.
+         */
 
         quoteText.innerText =
             "“" +
@@ -1242,8 +1955,13 @@ async function loadMotivationalQuote() {
 
     catch (error) {
 
+        /*
+         * Don't break the quiz if
+         * quote API is unavailable.
+         */
+
         console.warn(
-            "Quote API unavailable. Using local quote.",
+            "Quote API unavailable. Using fallback quote.",
             error
         );
 
@@ -1261,6 +1979,28 @@ async function loadMotivationalQuote() {
 
 function showFallbackQuote() {
 
+    const quoteText =
+        document.getElementById(
+            "quote-text"
+        );
+
+
+    const quoteAuthor =
+        document.getElementById(
+            "quote-author"
+        );
+
+
+    if (
+        !quoteText ||
+        !quoteAuthor
+    ) {
+
+        return;
+
+    }
+
+
     let index =
         Math.floor(
             Math.random() *
@@ -1269,8 +2009,7 @@ function showFallbackQuote() {
 
 
     /*
-     * Prevent the same fallback quote
-     * from appearing twice in a row.
+     * Don't show same quote twice.
      */
 
     if (
@@ -1295,18 +2034,6 @@ function showFallbackQuote() {
         FALLBACK_QUOTES[
             index
         ];
-
-
-    const quoteText =
-        document.getElementById(
-            "quote-text"
-        );
-
-
-    const quoteAuthor =
-        document.getElementById(
-            "quote-author"
-        );
 
 
     quoteText.innerText =
@@ -1391,7 +2118,7 @@ function createEmojiBurst(
 ) {
 
     /*
-     * Remove old reactions
+     * Remove existing reactions.
      */
 
     document
@@ -1408,7 +2135,7 @@ function createEmojiBurst(
 
 
     /*
-     * Create container
+     * Container.
      */
 
     const container =
@@ -1421,7 +2148,9 @@ function createEmojiBurst(
         "reaction-container";
 
 
-    if (isSad) {
+    if (
+        isSad
+    ) {
 
         container.classList.add(
             "sad"
@@ -1436,7 +2165,7 @@ function createEmojiBurst(
 
 
     /*
-     * Create emojis
+     * Create each emoji.
      */
 
     emojis.forEach(
@@ -1456,16 +2185,28 @@ function createEmojiBurst(
                 emoji;
 
 
+            /*
+             * Random horizontal start.
+             */
+
             const left =
                 5 +
                 Math.random() *
                 90;
 
 
+            /*
+             * Random animation delay.
+             */
+
             const delay =
                 Math.random() *
                 0.3;
 
+
+            /*
+             * Random animation duration.
+             */
 
             const duration =
                 2.0 +
@@ -1473,11 +2214,19 @@ function createEmojiBurst(
                 1.4;
 
 
+            /*
+             * Random rotation.
+             */
+
             const rotation =
                 -40 +
                 Math.random() *
                 80;
 
+
+            /*
+             * Random horizontal movement.
+             */
 
             const horizontal =
                 -120 +
@@ -1485,11 +2234,19 @@ function createEmojiBurst(
                 240;
 
 
+            /*
+             * Random emoji size.
+             */
+
             const size =
                 1.7 +
                 Math.random() *
                 1.8;
 
+
+            /*
+             * CSS variables.
+             */
 
             element.style.setProperty(
                 "--start-left",
@@ -1536,7 +2293,7 @@ function createEmojiBurst(
 
 
     /*
-     * Clean up
+     * Remove after animation.
      */
 
     setTimeout(
@@ -1583,53 +2340,101 @@ function showError(
         );
 
 
-    loading.classList.add(
-        "hidden"
-    );
+    if (
+        loading
+    ) {
+
+        loading.classList.add(
+            "hidden"
+        );
+
+    }
 
 
-    questionContainer.classList.add(
-        "hidden"
-    );
+    if (
+        questionContainer
+    ) {
+
+        questionContainer.classList.add(
+            "hidden"
+        );
+
+    }
 
 
-    errorBox.classList.remove(
-        "hidden"
-    );
+    if (
+        errorBox
+    ) {
+
+        errorBox.classList.remove(
+            "hidden"
+        );
 
 
-    errorBox.innerText =
-        message;
+        errorBox.innerText =
+            message;
+
+    }
 
 }
 
 
 /* ============================================================
-   NAVIGATION EVENTS
+   KEYBOARD NAVIGATION
    ============================================================ */
 
-document
-    .getElementById(
-        "previous-question-btn"
-    )
-    .addEventListener(
-        "click",
-        goToPreviousQuestion
-    );
+/*
+ * Left arrow  = Previous
+ * Right arrow = Next
+ */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        /*
+         * Don't navigate while typing.
+         */
+
+        const activeElement =
+            document.activeElement;
 
 
-document
-    .getElementById(
-        "next-question-btn"
-    )
-    .addEventListener(
-        "click",
-        goToNextQuestion
-    );
+        if (
+            activeElement &&
+            (
+                activeElement.tagName ===
+                "INPUT" ||
+                activeElement.tagName ===
+                "TEXTAREA" ||
+                activeElement.tagName ===
+                "BUTTON"
+            )
+        ) {
+
+            return;
+
+        }
 
 
-/* ============================================================
-   START APPLICATION
-   ============================================================ */
+        if (
+            event.key ===
+            "ArrowLeft"
+        ) {
 
-loadQuestions();
+            goToPreviousQuestion();
+
+        }
+
+
+        else if (
+            event.key ===
+            "ArrowRight"
+        ) {
+
+            goToNextQuestion();
+
+        }
+
+    }
+);
