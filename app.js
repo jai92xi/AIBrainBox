@@ -1,23 +1,6 @@
 let questions = [];
 let currentQuestion = null;
-
-/*
- * Stores the user's answer for each question.
- *
- * Example:
- *
- * {
- *     "Xi-00001": {
- *         answer: "B",
- *         correct: true
- *     },
- *     "Xi-00002": {
- *         answer: "C",
- *         correct: false
- *     }
- * }
- */
-const answerState = {};
+let currentQuestionIndex = -1;
 
 
 // ============================================================
@@ -29,6 +12,14 @@ const CSV_URL =
 
 
 // ============================================================
+// MOTIVATIONAL QUOTE API
+// ============================================================
+
+const QUOTE_API_URL =
+    "https://zenquotes.io/api/random";
+
+
+// ============================================================
 // LOAD QUESTIONS
 // ============================================================
 
@@ -36,11 +27,9 @@ async function loadQuestions() {
 
     try {
 
-        const response =
-            await fetch(
-                CSV_URL + "?v=" + Date.now()
-            );
-
+        const response = await fetch(
+            CSV_URL + "?v=" + Date.now()
+        );
 
         if (!response.ok) {
 
@@ -51,10 +40,8 @@ async function loadQuestions() {
 
         }
 
-
         const csvText =
             await response.text();
-
 
         if (!csvText.trim()) {
 
@@ -64,10 +51,8 @@ async function loadQuestions() {
 
         }
 
-
         questions =
             parseCSV(csvText);
-
 
         if (!questions.length) {
 
@@ -76,7 +61,6 @@ async function loadQuestions() {
             );
 
         }
-
 
         loadQuestion();
 
@@ -89,39 +73,20 @@ async function loadQuestions() {
             error
         );
 
-
-        const loading =
-            document.getElementById(
-                "loading"
-            );
-
-
-        if (loading) {
-
-            loading
-                .classList
-                .add("hidden");
-
-        }
-
+        document
+            .getElementById("loading")
+            .classList
+            .add("hidden");
 
         const errorBox =
-            document.getElementById(
-                "error"
-            );
+            document.getElementById("error");
 
+        errorBox.classList.remove(
+            "hidden"
+        );
 
-        if (errorBox) {
-
-            errorBox
-                .classList
-                .remove("hidden");
-
-
-            errorBox.innerText =
-                "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
-
-        }
+        errorBox.innerText =
+            "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
 
     }
 
@@ -137,7 +102,6 @@ function parseCSV(text) {
     const rows = [];
 
     let row = [];
-
     let cell = "";
 
     let insideQuotes = false;
@@ -151,7 +115,6 @@ function parseCSV(text) {
 
         const char =
             text[i];
-
 
         const nextChar =
             text[i + 1];
@@ -191,9 +154,7 @@ function parseCSV(text) {
             !insideQuotes
         ) {
 
-            row.push(
-                cell
-            );
+            row.push(cell);
 
             cell = "";
 
@@ -220,9 +181,7 @@ function parseCSV(text) {
             }
 
 
-            row.push(
-                cell
-            );
+            row.push(cell);
 
 
             if (
@@ -233,9 +192,7 @@ function parseCSV(text) {
                 )
             ) {
 
-                rows.push(
-                    row
-                );
+                rows.push(row);
 
             }
 
@@ -265,9 +222,7 @@ function parseCSV(text) {
         row.length > 0
     ) {
 
-        row.push(
-            cell
-        );
+        row.push(cell);
 
 
         if (
@@ -278,9 +233,7 @@ function parseCSV(text) {
             )
         ) {
 
-            rows.push(
-                row
-            );
+            rows.push(row);
 
         }
 
@@ -311,89 +264,30 @@ function parseCSV(text) {
 
     return rows
         .slice(1)
-        .map(
-            row => {
+        .map(row => {
 
-                const question = {};
-
-
-                headers.forEach(
-                    (
-                        header,
-                        index
-                    ) => {
-
-                        question[header] =
-                            (
-                                row[index] ||
-                                ""
-                            ).trim();
-
-                    }
-                );
+            const question = {};
 
 
-                return question;
+            headers.forEach(
+                (
+                    header,
+                    index
+                ) => {
 
-            }
-        );
+                    question[header] =
+                        (
+                            row[index] ||
+                            ""
+                        ).trim();
 
-}
-
-
-// ============================================================
-// FORMAT QUESTION TEXT
-// ============================================================
-//
-// Anything inside double quotes becomes bold.
-//
-// Example:
-//
-// "Health Claim"
-//
-// becomes:
-//
-// "Health Claim"
-//       ^^^^^^^^^^^ bold
-//
-// The quotation marks themselves remain normal.
-//
-// HTML is escaped first for safety.
-//
-
-function formatQuestionText(text) {
-
-    if (!text) {
-
-        return "";
-
-    }
-
-
-    const escapedText =
-        text
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
+                }
             );
 
 
-    return escapedText.replace(
-        /&quot;([^&]*?)&quot;/g,
-        '"<strong>$1</strong>"'
-    );
+            return question;
+
+        });
 
 }
 
@@ -411,9 +305,7 @@ function loadQuestion() {
 
 
     const id =
-        params.get(
-            "id"
-        );
+        params.get("id");
 
 
     if (!id) {
@@ -427,8 +319,8 @@ function loadQuestion() {
     }
 
 
-    currentQuestion =
-        questions.find(
+    currentQuestionIndex =
+        questions.findIndex(
             question => {
 
                 return (
@@ -445,16 +337,23 @@ function loadQuestion() {
         );
 
 
-    if (!currentQuestion) {
+    if (
+        currentQuestionIndex === -1
+    ) {
 
         showError(
-            "Question not found: " +
-            id
+            "Question not found: " + id
         );
 
         return;
 
     }
+
+
+    currentQuestion =
+        questions[
+            currentQuestionIndex
+        ];
 
 
     displayQuestion();
@@ -469,50 +368,30 @@ function loadQuestion() {
 function displayQuestion() {
 
     document
-        .getElementById(
-            "loading"
-        )
+        .getElementById("loading")
         .classList
         .add("hidden");
 
 
     document
-        .getElementById(
-            "error"
-        )
+        .getElementById("error")
         .classList
         .add("hidden");
 
 
     document
-        .getElementById(
-            "question-container"
-        )
+        .getElementById("question-container")
         .classList
         .remove("hidden");
 
 
-    // ========================================================
-    // QUESTION
-    // ========================================================
-    //
-    // Use innerHTML because quoted text needs <strong>.
-    // formatQuestionText() escapes all other HTML first.
-    //
+    // Display question only
 
     document
-        .getElementById(
-            "question"
-        )
-        .innerHTML =
-        formatQuestionText(
-            currentQuestion.question || ""
-        );
+        .getElementById("question")
+        .innerText =
+        currentQuestion.question || "";
 
-
-    // ========================================================
-    // OPTIONS
-    // ========================================================
 
     const optionsContainer =
         document.getElementById(
@@ -520,8 +399,7 @@ function displayQuestion() {
         );
 
 
-    optionsContainer.innerHTML =
-        "";
+    optionsContainer.innerHTML = "";
 
 
     const optionLetters = [
@@ -540,7 +418,6 @@ function displayQuestion() {
                     "div"
                 );
 
-
             option.className =
                 "option";
 
@@ -556,18 +433,14 @@ function displayQuestion() {
             radio.type =
                 "radio";
 
-
             radio.name =
                 "answer";
-
 
             radio.value =
                 letter;
 
-
             radio.id =
-                "option-" +
-                letter;
+                "option-" + letter;
 
 
             // Letter
@@ -601,8 +474,7 @@ function displayQuestion() {
             textSpan.innerText =
                 currentQuestion[
                     letter.toLowerCase()
-                ] ||
-                "";
+                ] || "";
 
 
             // Label
@@ -614,8 +486,7 @@ function displayQuestion() {
 
 
             label.htmlFor =
-                "option-" +
-                letter;
+                "option-" + letter;
 
 
             label.appendChild(
@@ -643,9 +514,7 @@ function displayQuestion() {
             );
 
 
-            // =================================================
-            // ANSWER EVENT
-            // =================================================
+            // Immediate answer check
 
             radio.addEventListener(
                 "change",
@@ -663,27 +532,303 @@ function displayQuestion() {
     );
 
 
-    // Reset visual state
-
     resetAnswerState();
 
 
-    // Restore previous answer if this
-    // question has already been answered
+    // Update navigation
 
-    restoreAnswerState();
-
-
-    // Navigation
-
-    updateNavigationButtons();
-
-
-    // Score
-
-    updateScore();
+    updateNavigation();
 
 }
+
+
+// ============================================================
+// QUESTION NAVIGATION
+// ============================================================
+
+function createNavigation() {
+
+    // Don't create twice
+
+    if (
+        document.getElementById(
+            "question-navigation"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const navigation =
+        document.createElement(
+            "div"
+        );
+
+
+    navigation.id =
+        "question-navigation";
+
+
+    navigation.innerHTML = `
+
+        <button
+            id="previous-question-btn"
+            type="button"
+            aria-label="Previous question"
+        >
+            ← Previous
+        </button>
+
+        <span
+            id="question-position"
+            aria-live="polite"
+        >
+            Question
+        </span>
+
+        <button
+            id="next-question-btn"
+            type="button"
+            aria-label="Next question"
+        >
+            Next →
+        </button>
+
+    `;
+
+
+    const questionContainer =
+        document.getElementById(
+            "question-container"
+        );
+
+
+    // Put navigation after explanation
+
+    questionContainer.appendChild(
+        navigation
+    );
+
+
+    document
+        .getElementById(
+            "previous-question-btn"
+        )
+        .addEventListener(
+            "click",
+            goToPreviousQuestion
+        );
+
+
+    document
+        .getElementById(
+            "next-question-btn"
+        )
+        .addEventListener(
+            "click",
+            goToNextQuestion
+        );
+
+}
+
+
+// ============================================================
+// UPDATE NAVIGATION
+// ============================================================
+
+function updateNavigation() {
+
+    createNavigation();
+
+
+    const previousButton =
+        document.getElementById(
+            "previous-question-btn"
+        );
+
+
+    const nextButton =
+        document.getElementById(
+            "next-question-btn"
+        );
+
+
+    const position =
+        document.getElementById(
+            "question-position"
+        );
+
+
+    if (
+        !previousButton ||
+        !nextButton ||
+        !position
+    ) {
+
+        return;
+
+    }
+
+
+    previousButton.disabled =
+        currentQuestionIndex <= 0;
+
+
+    nextButton.disabled =
+        currentQuestionIndex >=
+        questions.length - 1;
+
+
+    position.innerText =
+        "Question " +
+        (currentQuestionIndex + 1) +
+        " of " +
+        questions.length;
+
+}
+
+
+// ============================================================
+// GO TO PREVIOUS QUESTION
+// ============================================================
+
+function goToPreviousQuestion() {
+
+    if (
+        currentQuestionIndex <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    const previousQuestion =
+        questions[
+            currentQuestionIndex - 1
+        ];
+
+
+    if (
+        !previousQuestion ||
+        !previousQuestion.id
+    ) {
+
+        return;
+
+    }
+
+
+    navigateToQuestion(
+        previousQuestion.id
+    );
+
+}
+
+
+// ============================================================
+// GO TO NEXT QUESTION
+// ============================================================
+
+function goToNextQuestion() {
+
+    if (
+        currentQuestionIndex >=
+        questions.length - 1
+    ) {
+
+        return;
+
+    }
+
+
+    const nextQuestion =
+        questions[
+            currentQuestionIndex + 1
+        ];
+
+
+    if (
+        !nextQuestion ||
+        !nextQuestion.id
+    ) {
+
+        return;
+
+    }
+
+
+    navigateToQuestion(
+        nextQuestion.id
+    );
+
+}
+
+
+// ============================================================
+// NAVIGATE TO QUESTION
+// ============================================================
+
+function navigateToQuestion(
+    questionId
+) {
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.searchParams.set(
+        "id",
+        questionId
+    );
+
+
+    // Change URL without full page refresh
+
+    window.history.pushState(
+        {},
+        "",
+        url
+    );
+
+
+    // Load the new question
+
+    loadQuestion();
+
+
+    // Scroll back to question
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+// ============================================================
+// BROWSER BACK / FORWARD
+// ============================================================
+
+window.addEventListener(
+    "popstate",
+    () => {
+
+        if (
+            questions.length
+        ) {
+
+            loadQuestion();
+
+        }
+
+    }
+);
 
 
 // ============================================================
@@ -711,31 +856,7 @@ function checkAnswer(
         .toUpperCase();
 
 
-    const isCorrect =
-        userAnswer ===
-        correctAnswer;
-
-
-    // ========================================================
-    // SAVE ANSWER
-    // ========================================================
-
-    answerState[
-        currentQuestion.id
-    ] = {
-
-        answer:
-            userAnswer,
-
-        correct:
-            isCorrect
-
-    };
-
-
-    // ========================================================
-    // REMOVE OLD VISUAL STATES
-    // ========================================================
+    // Remove old states
 
     document
         .querySelectorAll(
@@ -754,11 +875,14 @@ function checkAnswer(
         );
 
 
-    // ========================================================
+    // =========================================================
     // CORRECT
-    // ========================================================
+    // =========================================================
 
-    if (isCorrect) {
+    if (
+        userAnswer ===
+        correctAnswer
+    ) {
 
         selectedOption
             .classList
@@ -772,9 +896,9 @@ function checkAnswer(
     }
 
 
-    // ========================================================
+    // =========================================================
     // WRONG
-    // ========================================================
+    // =========================================================
 
     else {
 
@@ -785,7 +909,7 @@ function checkAnswer(
             );
 
 
-        // Find correct answer option
+        // Find correct option
 
         const correctRadio =
             document.querySelector(
@@ -798,9 +922,7 @@ function checkAnswer(
         if (correctRadio) {
 
             correctRadio
-                .closest(
-                    ".option"
-                )
+                .closest(".option")
                 .classList
                 .add(
                     "correct-answer"
@@ -814,274 +936,45 @@ function checkAnswer(
     }
 
 
-    // ========================================================
-    // UPDATE SCORE
-    // ========================================================
-
-    updateScore();
-
-
-    // ========================================================
-    // EXPLANATION
-    // ========================================================
+    // =========================================================
+    // PREPARE EXPLANATION
+    // =========================================================
 
     const explanation =
         currentQuestion.explanation ||
         currentQuestion.explaination ||
         "";
 
-
-    const explanationText =
-        document.getElementById(
-            "explanation-text"
-        );
-
-
-    if (explanationText) {
-
-        explanationText.innerText =
-            explanation;
-
-    }
-
-
-    const explanationButton =
-        document.getElementById(
-            "show-explanation-btn"
-        );
-
-
-    if (explanationButton) {
-
-        explanationButton
-            .classList
-            .remove("hidden");
-
-    }
-
-
-    const explanationContainer =
-        document.getElementById(
-            "explanation"
-        );
-
-
-    if (explanationContainer) {
-
-        explanationContainer
-            .classList
-            .add("hidden");
-
-    }
-
-
-    // Clear result
-
-    const result =
-        document.getElementById(
-            "result"
-        );
-
-
-    if (result) {
-
-        result.innerText =
-            "";
-
-    }
-
-}
-
-
-// ============================================================
-// RESTORE ANSWER STATE
-// ============================================================
-
-function restoreAnswerState() {
-
-    if (!currentQuestion) {
-
-        return;
-
-    }
-
-
-    const state =
-        answerState[
-            currentQuestion.id
-        ];
-
-
-    // Not answered yet
-
-    if (!state) {
-
-        return;
-
-    }
-
-
-    // Find saved radio button
-
-    const radio =
-        document.querySelector(
-            'input[name="answer"][value="' +
-            state.answer +
-            '"]'
-        );
-
-
-    if (!radio) {
-
-        return;
-
-    }
-
-
-    // Restore radio selection
-
-    radio.checked =
-        true;
-
-
-    const selectedOption =
-        radio.closest(
-            ".option"
-        );
-
-
-    // Remove visual states first
 
     document
-        .querySelectorAll(
-            ".option"
-        )
-        .forEach(
-            option => {
-
-                option.classList.remove(
-                    "selected",
-                    "correct-answer",
-                    "wrong-answer"
-                );
-
-            }
-        );
-
-
-    // ========================================================
-    // CORRECT
-    // ========================================================
-
-    if (state.correct) {
-
-        selectedOption
-            .classList
-            .add(
-                "correct-answer"
-            );
-
-    }
-
-
-    // ========================================================
-    // WRONG
-    // ========================================================
-
-    else {
-
-        selectedOption
-            .classList
-            .add(
-                "wrong-answer"
-            );
-
-
-        const correctAnswer =
-            (
-                currentQuestion[
-                    "correct answer"
-                ] || ""
-            )
-            .trim()
-            .toUpperCase();
-
-
-        const correctRadio =
-            document.querySelector(
-                'input[name="answer"][value="' +
-                correctAnswer +
-                '"]'
-            );
-
-
-        if (correctRadio) {
-
-            correctRadio
-                .closest(
-                    ".option"
-                )
-                .classList
-                .add(
-                    "correct-answer"
-                );
-
-        }
-
-    }
-
-
-    // Restore explanation
-
-    const explanation =
-        currentQuestion.explanation ||
-        currentQuestion.explaination ||
-        "";
-
-
-    const explanationText =
-        document.getElementById(
+        .getElementById(
             "explanation-text"
-        );
+        )
+        .innerText =
+        explanation;
 
 
-    if (explanationText) {
+    // Show explanation button
 
-        explanationText.innerText =
-            explanation;
-
-    }
-
-
-    const explanationButton =
-        document.getElementById(
+    document
+        .getElementById(
             "show-explanation-btn"
-        );
+        )
+        .classList
+        .remove("hidden");
 
 
-    if (explanationButton) {
+    // Keep explanation hidden
 
-        explanationButton
-            .classList
-            .remove("hidden");
-
-    }
-
-
-    const explanationContainer =
-        document.getElementById(
+    document
+        .getElementById(
             "explanation"
-        );
+        )
+        .classList
+        .add("hidden");
 
 
-    if (explanationContainer) {
-
-        explanationContainer
-            .classList
-            .add("hidden");
-
-    }
-
+    // No large result text
 
     const result =
         document.getElementById(
@@ -1089,425 +982,13 @@ function restoreAnswerState() {
         );
 
 
-    if (result) {
-
-        result.innerText =
-            "";
-
-    }
+    result.innerText = "";
 
 }
 
 
 // ============================================================
-// SCORE
-// ============================================================
-
-function updateScore() {
-
-    const scoreElement =
-        document.getElementById(
-            "quiz-score"
-        );
-
-
-    if (!scoreElement) {
-
-        return;
-
-    }
-
-
-    const states =
-        Object.values(
-            answerState
-        );
-
-
-    const answeredCount =
-        states.length;
-
-
-    const correctCount =
-        states.filter(
-            state =>
-                state.correct === true
-        ).length;
-
-
-    scoreElement.innerText =
-        "Score: " +
-        correctCount +
-        " / " +
-        answeredCount;
-
-}
-
-
-// ============================================================
-// CURRENT QUESTION INDEX
-// ============================================================
-
-function getCurrentQuestionIndex() {
-
-    if (!currentQuestion) {
-
-        return -1;
-
-    }
-
-
-    return questions.findIndex(
-        question => {
-
-            return (
-                question.id &&
-                currentQuestion.id &&
-                question.id
-                    .trim()
-                    .toLowerCase() ===
-                currentQuestion.id
-                    .trim()
-                    .toLowerCase()
-            );
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// INITIALIZE NAVIGATION
-// ============================================================
-
-function initializeNavigation() {
-
-    const toolbar =
-        document.getElementById(
-            "quiz-navigation-toolbar"
-        );
-
-
-    if (!toolbar) {
-
-        return;
-
-    }
-
-
-    // Prevent duplicate initialization
-
-    if (
-        toolbar.dataset.initialized ===
-        "true"
-    ) {
-
-        return;
-
-    }
-
-
-    toolbar.dataset.initialized =
-        "true";
-
-
-    toolbar.innerHTML =
-        "";
-
-
-    // ========================================================
-    // PREVIOUS BUTTON
-    // ========================================================
-
-    const previousButton =
-        document.createElement(
-            "button"
-        );
-
-
-    previousButton.id =
-        "previous-question-btn";
-
-
-    previousButton.type =
-        "button";
-
-
-    previousButton.innerText =
-        "← Previous Question";
-
-
-    previousButton.addEventListener(
-        "click",
-        previousQuestion
-    );
-
-
-    // ========================================================
-    // SCORE
-    // ========================================================
-
-    const score =
-        document.createElement(
-            "div"
-        );
-
-
-    score.id =
-        "quiz-score";
-
-
-    score.innerText =
-        "Score: 0 / 0";
-
-
-    // ========================================================
-    // NEXT BUTTON
-    // ========================================================
-
-    const nextButton =
-        document.createElement(
-            "button"
-        );
-
-
-    nextButton.id =
-        "next-question-btn";
-
-
-    nextButton.type =
-        "button";
-
-
-    nextButton.innerText =
-        "Next Question →";
-
-
-    nextButton.addEventListener(
-        "click",
-        nextQuestion
-    );
-
-
-    // ========================================================
-    // ADD TO TOOLBAR
-    // ========================================================
-
-    toolbar.appendChild(
-        previousButton
-    );
-
-
-    toolbar.appendChild(
-        score
-    );
-
-
-    toolbar.appendChild(
-        nextButton
-    );
-
-
-    updateNavigationButtons();
-
-    updateScore();
-
-}
-
-
-// ============================================================
-// PREVIOUS QUESTION
-// ============================================================
-
-function previousQuestion() {
-
-    const currentIndex =
-        getCurrentQuestionIndex();
-
-
-    if (
-        currentIndex <= 0
-    ) {
-
-        return;
-
-    }
-
-
-    const previous =
-        questions[
-            currentIndex - 1
-        ];
-
-
-    navigateToQuestion(
-        previous
-    );
-
-}
-
-
-// ============================================================
-// NEXT QUESTION
-// ============================================================
-
-function nextQuestion() {
-
-    const currentIndex =
-        getCurrentQuestionIndex();
-
-
-    if (
-        currentIndex < 0
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        currentIndex >=
-        questions.length - 1
-    ) {
-
-        return;
-
-    }
-
-
-    const next =
-        questions[
-            currentIndex + 1
-        ];
-
-
-    navigateToQuestion(
-        next
-    );
-
-}
-
-
-// ============================================================
-// NAVIGATE TO QUESTION
-// ============================================================
-
-function navigateToQuestion(
-    question
-) {
-
-    if (!question) {
-
-        return;
-
-    }
-
-
-    currentQuestion =
-        question;
-
-
-    // Update URL without reloading
-
-    const url =
-        new URL(
-            window.location.href
-        );
-
-
-    url.searchParams.set(
-        "id",
-        question.id
-    );
-
-
-    window.history.pushState(
-        {
-            questionId:
-                question.id
-        },
-        "",
-        url
-    );
-
-
-    // Display question
-
-    displayQuestion();
-
-
-    // Scroll to question
-
-    const questionContainer =
-        document.getElementById(
-            "question-container"
-        );
-
-
-    if (questionContainer) {
-
-        questionContainer.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }
-
-}
-
-
-// ============================================================
-// UPDATE NAVIGATION BUTTONS
-// ============================================================
-
-function updateNavigationButtons() {
-
-    const currentIndex =
-        getCurrentQuestionIndex();
-
-
-    const previousButton =
-        document.getElementById(
-            "previous-question-btn"
-        );
-
-
-    const nextButton =
-        document.getElementById(
-            "next-question-btn"
-        );
-
-
-    if (
-        !previousButton ||
-        !nextButton
-    ) {
-
-        return;
-
-    }
-
-
-    // First question
-
-    previousButton.disabled =
-        currentIndex <= 0;
-
-
-    // Last question
-
-    nextButton.disabled =
-        currentIndex < 0 ||
-        currentIndex >=
-        questions.length - 1;
-
-}
-
-
-// ============================================================
-// RESET CURRENT QUESTION VISUAL STATE
+// RESET ANSWER STATE
 // ============================================================
 
 function resetAnswerState() {
@@ -1518,15 +999,9 @@ function resetAnswerState() {
         );
 
 
-    if (result) {
+    result.innerText = "";
 
-        result.innerText =
-            "";
-
-        result.className =
-            "";
-
-    }
+    result.className = "";
 
 
     const explanation =
@@ -1535,13 +1010,9 @@ function resetAnswerState() {
         );
 
 
-    if (explanation) {
-
-        explanation
-            .classList
-            .add("hidden");
-
-    }
+    explanation
+        .classList
+        .add("hidden");
 
 
     const explanationText =
@@ -1550,12 +1021,8 @@ function resetAnswerState() {
         );
 
 
-    if (explanationText) {
-
-        explanationText.innerText =
-            "";
-
-    }
+    explanationText.innerText =
+        "";
 
 
     const explanationButton =
@@ -1564,17 +1031,13 @@ function resetAnswerState() {
         );
 
 
-    if (explanationButton) {
-
-        explanationButton
-            .classList
-            .add("hidden");
+    explanationButton
+        .classList
+        .add("hidden");
 
 
-        explanationButton.innerText =
-            "💡 Show Explanation";
-
-    }
+    explanationButton.innerText =
+        "💡 Show Explanation";
 
 
     document
@@ -1615,19 +1078,9 @@ function toggleExplanation() {
 
 
     if (
-        !explanation ||
-        !button
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        explanation
-            .classList
-            .contains("hidden")
+        explanation.classList.contains(
+            "hidden"
+        )
     ) {
 
         explanation
@@ -1884,6 +1337,452 @@ function createEmojiBurst(
 
 
 // ============================================================
+// MOTIVATIONAL QUOTE
+// ============================================================
+
+function createQuoteBox() {
+
+    // Don't create twice
+
+    if (
+        document.getElementById(
+            "motivational-quote"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const quoteBox =
+        document.createElement(
+            "aside"
+        );
+
+
+    quoteBox.id =
+        "motivational-quote";
+
+
+    quoteBox.setAttribute(
+        "aria-label",
+        "Motivational quote"
+    );
+
+
+    quoteBox.innerHTML = `
+
+        <div class="quote-icon">
+            ✦
+        </div>
+
+        <div
+            id="quote-text"
+            class="quote-text"
+        >
+            Loading motivation...
+        </div>
+
+        <div
+            id="quote-author"
+            class="quote-author"
+        >
+        </div>
+
+        <div class="quote-source">
+            <a
+                href="https://zenquotes.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Inspirational quotes provided by ZenQuotes
+            </a>
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        quoteBox
+    );
+
+}
+
+
+// ============================================================
+// LOAD RANDOM MOTIVATIONAL QUOTE
+// ============================================================
+
+async function loadMotivationalQuote() {
+
+    createQuoteBox();
+
+
+    const quoteText =
+        document.getElementById(
+            "quote-text"
+        );
+
+
+    const quoteAuthor =
+        document.getElementById(
+            "quote-author"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                QUOTE_API_URL +
+                "?t=" +
+                Date.now()
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Quote API returned HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !Array.isArray(data) ||
+            !data.length ||
+            !data[0].q
+        ) {
+
+            throw new Error(
+                "Invalid quote response."
+            );
+
+        }
+
+
+        quoteText.innerText =
+            "“" +
+            data[0].q +
+            "”";
+
+
+        quoteAuthor.innerText =
+            data[0].a
+                ? "— " + data[0].a
+                : "";
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Quote loading error:",
+            error
+        );
+
+
+        // Keep the site useful if the API fails.
+
+        quoteText.innerText =
+            "“Success is built one difficult step at a time.”";
+
+
+        quoteAuthor.innerText =
+            "— AIBrainBox";
+
+
+    }
+
+}
+
+
+// ============================================================
+// QUOTE STYLES
+// ============================================================
+
+function addQuoteStyles() {
+
+    if (
+        document.getElementById(
+            "quote-navigation-styles"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+
+    style.id =
+        "quote-navigation-styles";
+
+
+    style.textContent = `
+
+        /* =====================================================
+           MOTIVATIONAL QUOTE
+           ===================================================== */
+
+        #motivational-quote {
+
+            position: fixed;
+
+            top: 18px;
+
+            right: 18px;
+
+            width: min(
+                330px,
+                calc(100vw - 36px)
+            );
+
+            padding: 16px 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(17, 24, 39, 0.97),
+                    rgba(31, 41, 55, 0.97)
+                );
+
+            color: #ffffff;
+
+            border: 1px solid
+                rgba(255, 255, 255, 0.12);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(0, 0, 0, 0.25);
+
+            backdrop-filter: blur(10px);
+
+            z-index: 1000;
+
+        }
+
+
+        .quote-icon {
+
+            color: #fbbf24;
+
+            font-size: 18px;
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .quote-text {
+
+            font-size: 14px;
+
+            line-height: 1.55;
+
+            font-weight: 600;
+
+        }
+
+
+        .quote-author {
+
+            margin-top: 9px;
+
+            color: #d1d5db;
+
+            font-size: 12px;
+
+            font-style: italic;
+
+        }
+
+
+        .quote-source {
+
+            margin-top: 8px;
+
+            font-size: 9px;
+
+            opacity: 0.55;
+
+        }
+
+
+        .quote-source a {
+
+            color: inherit;
+
+            text-decoration: none;
+
+        }
+
+
+        .quote-source a:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        /* =====================================================
+           QUESTION NAVIGATION
+           ===================================================== */
+
+        #question-navigation {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 14px;
+
+            width: 100%;
+
+            margin-top: 28px;
+
+            padding-top: 20px;
+
+            border-top: 1px solid
+                rgba(128, 128, 128, 0.18);
+
+        }
+
+
+        #question-navigation button {
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 11px 18px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            color: #ffffff;
+
+            background: #2563eb;
+
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease,
+                background 0.15s ease;
+
+        }
+
+
+        #question-navigation button:hover:not(:disabled) {
+
+            background: #1d4ed8;
+
+            transform: translateY(-1px);
+
+        }
+
+
+        #question-navigation button:active:not(:disabled) {
+
+            transform: translateY(0);
+
+        }
+
+
+        #question-navigation button:disabled {
+
+            cursor: not-allowed;
+
+            opacity: 0.35;
+
+        }
+
+
+        #question-position {
+
+            flex: 1;
+
+            text-align: center;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #6b7280;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 700px) {
+
+            #motivational-quote {
+
+                position: relative;
+
+                top: auto;
+
+                right: auto;
+
+                width: auto;
+
+                margin:
+                    12px 16px 0;
+
+            }
+
+
+            #question-navigation {
+
+                gap: 8px;
+
+            }
+
+
+            #question-navigation button {
+
+                padding:
+                    10px 12px;
+
+                font-size: 13px;
+
+            }
+
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+}
+
+
+// ============================================================
 // SHOW ERROR
 // ============================================================
 
@@ -1891,34 +1790,20 @@ function showError(
     message
 ) {
 
-    const loading =
-        document.getElementById(
+    document
+        .getElementById(
             "loading"
-        );
+        )
+        .classList
+        .add("hidden");
 
 
-    if (loading) {
-
-        loading
-            .classList
-            .add("hidden");
-
-    }
-
-
-    const questionContainer =
-        document.getElementById(
+    document
+        .getElementById(
             "question-container"
-        );
-
-
-    if (questionContainer) {
-
-        questionContainer
-            .classList
-            .add("hidden");
-
-    }
+        )
+        .classList
+        .add("hidden");
 
 
     const errorBox =
@@ -1927,52 +1812,23 @@ function showError(
         );
 
 
-    if (errorBox) {
-
-        errorBox
-            .classList
-            .remove("hidden");
+    errorBox
+        .classList
+        .remove("hidden");
 
 
-        errorBox.innerText =
-            message;
-
-    }
+    errorBox.innerText =
+        message;
 
 }
-
-
-// ============================================================
-// BROWSER BACK / FORWARD
-// ============================================================
-
-window.addEventListener(
-    "popstate",
-    () => {
-
-        if (
-            questions.length
-        ) {
-
-            loadQuestion();
-
-        }
-
-    }
-);
 
 
 // ============================================================
 // START APPLICATION
 // ============================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+addQuoteStyles();
 
-        initializeNavigation();
+loadMotivationalQuote();
 
-        loadQuestions();
-
-    }
-);
+loadQuestions();
