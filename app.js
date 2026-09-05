@@ -3,12 +3,23 @@ let currentQuestionIndex = -1;
 let currentQuestion = null;
 
 const CSV_URL = "./xi-questions.csv";
-const QUOTES_CSV_URL = "./xi-Quotes.csv";
+const QUOTES_URL = "./xi-Quotes.csv";
 
 let score = 0;
 let answeredQuestions = new Set();
 let questionResults = new Map();
 let savedAnswers = new Map();
+
+const FALLBACK_QUOTES = [
+    {
+        quote: "You do not rise to the level of your goals. You fall to the level of your systems.",
+        author: "James Clear"
+    },
+    {
+        quote: "The future depends on what you do today.",
+        author: "Mahatma Gandhi"
+    }
+];
 
 let quotes = [];
 let lastQuoteIndex = -1;
@@ -55,18 +66,12 @@ function initializeApp() {
     );
 
     loadQuestions();
-
-    /*
-     * Load quotes separately.
-     * The question app does not have to wait for quotes
-     * before displaying the first question.
-     */
     loadQuotes();
 }
 
 
 /* ============================================================
-   LOAD QUESTIONS CSV
+   LOAD QUESTIONS
    ============================================================ */
 
 async function loadQuestions() {
@@ -151,7 +156,7 @@ async function loadQuestions() {
 
 
 /* ============================================================
-   LOAD QUOTES CSV
+   LOAD QUOTES
    ============================================================ */
 
 async function loadQuotes() {
@@ -160,19 +165,16 @@ async function loadQuotes() {
 
         const response =
             await fetch(
-                QUOTES_CSV_URL + "?v=" + Date.now(),
+                QUOTES_URL + "?v=" + Date.now(),
                 {
                     cache: "no-store"
                 }
             );
 
         if (!response.ok) {
-
             throw new Error(
                 "HTTP " +
-                response.status +
-                " - " +
-                response.statusText
+                response.status
             );
         }
 
@@ -180,7 +182,6 @@ async function loadQuotes() {
             await response.text();
 
         if (!csvText.trim()) {
-
             throw new Error(
                 "xi-Quotes.csv is empty."
             );
@@ -189,63 +190,222 @@ async function loadQuotes() {
         quotes =
             parseQuotesCSV(csvText);
 
-        if (!quotes.length) {
-
-            throw new Error(
-                "No valid quotes were found."
-            );
-        }
-
         console.log(
             "Quotes loaded:",
             quotes.length
         );
 
-        /*
-         * Immediately display a quote if the question
-         * has already loaded.
-         */
-        loadMotivationalQuote();
+        if (
+            quotes.length &&
+            currentQuestion
+        ) {
+            loadMotivationalQuote();
+        }
 
     } catch (error) {
 
-        console.error(
-            "Quote database error:",
+        console.warn(
+            "Quote database could not be loaded. Using fallback quotes.",
             error
         );
 
-        /*
-         * The quote system should never break the quiz.
-         * Use a small fallback if xi-Quotes.csv cannot load.
-         */
-        quotes = [
-            {
-                quote:
-                    "The important thing is to never stop questioning.",
-                author:
-                    "Albert Einstein"
-            },
-            {
-                quote:
-                    "The future depends on what you do today.",
-                author:
-                    "Mahatma Gandhi"
-            },
-            {
-                quote:
-                    "What you learn becomes what you can do.",
-                author:
-                    "AIBrainBox"
-            }
-        ];
+        quotes =
+            FALLBACK_QUOTES;
 
-        loadMotivationalQuote();
+        if (currentQuestion) {
+            loadMotivationalQuote();
+        }
     }
 }
 
 
 /* ============================================================
-   GENERIC CSV PARSER
+   PARSE QUOTES CSV
+   ============================================================ */
+
+function parseQuotesCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+    let cell = "";
+    let insideQuotes = false;
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (
+            char === '"' &&
+            insideQuotes &&
+            nextChar === '"'
+        ) {
+
+            cell += '"';
+            i++;
+
+        } else if (
+            char === '"'
+        ) {
+
+            insideQuotes =
+                !insideQuotes;
+
+        } else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+            cell = "";
+
+        } else if (
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                nextChar === "\n"
+            ) {
+                i++;
+            }
+
+            row.push(cell);
+
+            if (
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+            ) {
+                rows.push(row);
+            }
+
+            row = [];
+            cell = "";
+
+        } else {
+
+            cell += char;
+        }
+    }
+
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(cell);
+
+        if (
+            row.some(
+                value =>
+                    value.trim() !== ""
+            )
+        ) {
+            rows.push(row);
+        }
+    }
+
+    if (!rows.length) {
+        return [];
+    }
+
+    const headers =
+        rows[0].map(
+            normalizeHeader
+        );
+
+    const quoteColumn =
+        headers.findIndex(
+            header =>
+                header === "quote"
+        );
+
+    const authorColumn =
+        headers.findIndex(
+            header =>
+                header === "author"
+        );
+
+    /*
+     * If the CSV has two columns but no
+     * recognizable headers, use column 1
+     * as quote and column 2 as author.
+     */
+
+    return rows
+        .slice(
+            quoteColumn === -1 &&
+            authorColumn === -1
+                ? 0
+                : 1
+        )
+        .map(row => {
+
+            let quote = "";
+            let author = "";
+
+            if (
+                quoteColumn !== -1
+            ) {
+                quote =
+                    (
+                        row[quoteColumn] ||
+                        ""
+                    ).trim();
+            }
+
+            if (
+                authorColumn !== -1
+            ) {
+                author =
+                    (
+                        row[authorColumn] ||
+                        ""
+                    ).trim();
+            }
+
+            if (
+                quoteColumn === -1 &&
+                authorColumn === -1
+            ) {
+                quote =
+                    (
+                        row[0] ||
+                        ""
+                    ).trim();
+
+                author =
+                    (
+                        row[1] ||
+                        ""
+                    ).trim();
+            }
+
+            return {
+                quote,
+                author
+            };
+        })
+        .filter(item =>
+            item.quote !== "" ||
+            item.author !== ""
+        );
+}
+
+
+/* ============================================================
+   CSV PARSER
    ============================================================ */
 
 function parseCSV(text) {
@@ -265,9 +425,6 @@ function parseCSV(text) {
         const char = text[i];
         const nextChar = text[i + 1];
 
-        /*
-         * Escaped double quote inside a quoted CSV cell.
-         */
         if (
             char === '"' &&
             insideQuotes &&
@@ -277,35 +434,22 @@ function parseCSV(text) {
             cell += '"';
             i++;
 
-        }
-
-        /*
-         * Start/end quoted cell.
-         */
-        else if (
+        } else if (
             char === '"'
         ) {
 
             insideQuotes =
                 !insideQuotes;
-        }
 
-        /*
-         * Column separator.
-         */
-        else if (
+        } else if (
             char === "," &&
             !insideQuotes
         ) {
 
             row.push(cell);
             cell = "";
-        }
 
-        /*
-         * New row.
-         */
-        else if (
+        } else if (
             (
                 char === "\n" ||
                 char === "\r"
@@ -317,7 +461,6 @@ function parseCSV(text) {
                 char === "\r" &&
                 nextChar === "\n"
             ) {
-
                 i++;
             }
 
@@ -329,7 +472,6 @@ function parseCSV(text) {
                         value.trim() !== ""
                 )
             ) {
-
                 rows.push(row);
             }
 
@@ -342,9 +484,6 @@ function parseCSV(text) {
         }
     }
 
-    /*
-     * Add final row.
-     */
     if (
         cell !== "" ||
         row.length > 0
@@ -358,7 +497,6 @@ function parseCSV(text) {
                     value.trim() !== ""
             )
         ) {
-
             rows.push(row);
         }
     }
@@ -376,7 +514,7 @@ function parseCSV(text) {
         .slice(1)
         .map(row => {
 
-            const item = {};
+            const question = {};
 
             headers.forEach(
                 (
@@ -384,308 +522,22 @@ function parseCSV(text) {
                     index
                 ) => {
 
-                    item[header] =
+                    question[header] =
                         (
-                            row[index] || ""
+                            row[index] ||
+                            ""
                         ).trim();
                 }
             );
 
-            return item;
+            return question;
         })
-        .filter(item =>
-            Object.values(item).some(
+        .filter(question =>
+            Object.values(question).some(
                 value =>
                     value !== ""
             )
         );
-}
-
-
-/* ============================================================
-   QUOTES CSV PARSER
-   ============================================================
-
-   Supports:
-
-   quote,quote
-
-   or:
-
-   Quote A,Quote B
-
-   The first two columns are treated as two separate quotes.
-
-   If your CSV has headers such as:
-
-   quote,quote
-
-   each row contains two quotes.
-
-   The parser also supports quoted text containing commas
-   and multiple lines.
-   ============================================================ */
-
-function parseQuotesCSV(text) {
-
-    const rows = parseCSVRows(text);
-
-    if (!rows.length) {
-        return [];
-    }
-
-    /*
-     * Check whether the first row looks like a header.
-     */
-    const firstRow =
-        rows[0].map(
-            value =>
-                value
-                    .trim()
-                    .toLowerCase()
-        );
-
-    const firstRowLooksLikeHeader =
-        firstRow.some(
-            value =>
-                value === "quote" ||
-                value === "quotes" ||
-                value === "author" ||
-                value === "quote a" ||
-                value === "quote b"
-        );
-
-    const dataRows =
-        firstRowLooksLikeHeader
-            ? rows.slice(1)
-            : rows;
-
-    const result = [];
-
-    dataRows.forEach(row => {
-
-        /*
-         * Your new file is designed with two quote columns:
-         *
-         * Column A = quote
-         * Column B = quote
-         *
-         * Every non-empty cell becomes a quote.
-         */
-        row.forEach(cell => {
-
-            const cleaned =
-                cleanQuoteText(cell);
-
-            if (!cleaned) {
-                return;
-            }
-
-            /*
-             * If the cell contains a quote and author
-             * separated by a common dash, try to separate them.
-             */
-            const parsed =
-                extractQuoteAndAuthor(
-                    cleaned
-                );
-
-            result.push(parsed);
-        });
-    });
-
-    return result;
-}
-
-
-/* ============================================================
-   CSV ROW PARSER
-   ============================================================ */
-
-function parseCSVRows(text) {
-
-    const rows = [];
-
-    let row = [];
-    let cell = "";
-    let insideQuotes = false;
-
-    for (
-        let i = 0;
-        i < text.length;
-        i++
-    ) {
-
-        const char = text[i];
-        const nextChar = text[i + 1];
-
-        if (
-            char === '"' &&
-            insideQuotes &&
-            nextChar === '"'
-        ) {
-
-            cell += '"';
-            i++;
-
-        } else if (
-            char === '"'
-        ) {
-
-            insideQuotes =
-                !insideQuotes;
-
-        } else if (
-            char === "," &&
-            !insideQuotes
-        ) {
-
-            row.push(cell);
-            cell = "";
-
-        } else if (
-            (
-                char === "\n" ||
-                char === "\r"
-            ) &&
-            !insideQuotes
-        ) {
-
-            if (
-                char === "\r" &&
-                nextChar === "\n"
-            ) {
-
-                i++;
-            }
-
-            row.push(cell);
-
-            if (
-                row.some(
-                    value =>
-                        value.trim() !== ""
-                )
-            ) {
-
-                rows.push(row);
-            }
-
-            row = [];
-            cell = "";
-
-        } else {
-
-            cell += char;
-        }
-    }
-
-    if (
-        cell !== "" ||
-        row.length > 0
-    ) {
-
-        row.push(cell);
-
-        if (
-            row.some(
-                value =>
-                    value.trim() !== ""
-            )
-        ) {
-
-            rows.push(row);
-        }
-    }
-
-    return rows;
-}
-
-
-/* ============================================================
-   CLEAN QUOTE TEXT
-   ============================================================ */
-
-function cleanQuoteText(text) {
-
-    return String(text || "")
-        .replace(/^\uFEFF/, "")
-        .replace(/\r\n/g, "\n")
-        .replace(/\r/g, "\n")
-        .trim()
-        .replace(/^["“]+/, "")
-        .replace(/["”]+$/, "")
-        .trim();
-}
-
-
-/* ============================================================
-   EXTRACT QUOTE + AUTHOR
-   ============================================================ */
-
-function extractQuoteAndAuthor(text) {
-
-    /*
-     * Supports:
-     *
-     * Quote — Author
-     * Quote - Author
-     * Quote – Author
-     * Quote —Author
-     *
-     * If no author is found, the whole cell is treated
-     * as the quote.
-     */
-
-    const match =
-        text.match(
-            /^([\s\S]*?)\s*[—–-]\s*([A-Za-zÀ-ÿ][^—–-]{1,100})$/
-        );
-
-    if (match) {
-
-        const quote =
-            match[1].trim();
-
-        const author =
-            match[2].trim();
-
-        /*
-         * Avoid treating a normal sentence containing a
-         * hyphen as an author.
-         */
-        if (
-            quote.length > 15 &&
-            author.length > 1 &&
-            author.length < 100
-        ) {
-
-            return {
-                quote:
-                    quote.replace(
-                        /^["“]+|["”]+$/g,
-                        ""
-                    ).trim(),
-
-                author:
-                    author.replace(
-                        /^["“]+|["”]+$/g,
-                        ""
-                    ).trim()
-            };
-        }
-    }
-
-    return {
-        quote:
-            text.replace(
-                /^["“]+|["”]+$/g,
-                ""
-            ).trim(),
-
-        author:
-            ""
-    };
 }
 
 
@@ -762,22 +614,16 @@ function loadQuestion() {
                 String(
                     question.id || ""
                 )
-                .trim()
-                .toLowerCase() ===
+                    .trim()
+                    .toLowerCase() ===
                 String(id)
                     .trim()
                     .toLowerCase()
         );
 
-    /*
-     * If there is no usable ID,
-     * fall back to the first question.
-     */
-
     if (
         currentQuestionIndex === -1
     ) {
-
         currentQuestionIndex = 0;
     }
 
@@ -872,11 +718,8 @@ function createOptions() {
             document.createElement("input");
 
         radio.type = "radio";
-
         radio.name = "answer";
-
         radio.value = letter;
-
         radio.id =
             "option-" + letter;
 
@@ -935,6 +778,171 @@ function createOptions() {
             }
         );
     });
+
+    createInfoButtons();
+}
+
+
+/* ============================================================
+   ABOUT ME / BUY ME A COFFEE
+   ============================================================ */
+
+function createInfoButtons() {
+
+    const optionsPanel =
+        document.querySelector(
+            ".options-panel"
+        );
+
+    if (!optionsPanel) {
+        return;
+    }
+
+    const existing =
+        document.getElementById(
+            "info-buttons"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const buttonContainer =
+        document.createElement("div");
+
+    buttonContainer.id =
+        "info-buttons";
+
+    buttonContainer.style.display =
+        "flex";
+
+    buttonContainer.style.gap =
+        "10px";
+
+    buttonContainer.style.marginTop =
+        "20px";
+
+    buttonContainer.style.paddingTop =
+        "15px";
+
+    buttonContainer.style.borderTop =
+        "1px solid #e2e8f0";
+
+    const aboutButton =
+        document.createElement("button");
+
+    aboutButton.type =
+        "button";
+
+    aboutButton.innerText =
+        "👋 About Me";
+
+    aboutButton.style.flex =
+        "1";
+
+    aboutButton.style.padding =
+        "10px 12px";
+
+    aboutButton.style.border =
+        "1px solid #c7d2fe";
+
+    aboutButton.style.borderRadius =
+        "10px";
+
+    aboutButton.style.background =
+        "#f5f3ff";
+
+    aboutButton.style.color =
+        "#4f46e5";
+
+    aboutButton.style.fontSize =
+        "12px";
+
+    aboutButton.style.fontWeight =
+        "700";
+
+    aboutButton.style.cursor =
+        "pointer";
+
+    aboutButton.addEventListener(
+        "click",
+        () => {
+
+            /*
+             * Replace this URL with your
+             * About Me page when ready.
+             */
+
+            window.open(
+                "about.html",
+                "_blank"
+            );
+        }
+    );
+
+    const coffeeButton =
+        document.createElement("button");
+
+    coffeeButton.type =
+        "button";
+
+    coffeeButton.innerText =
+        "☕ Buy Me a Coffee";
+
+    coffeeButton.style.flex =
+        "1";
+
+    coffeeButton.style.padding =
+        "10px 12px";
+
+    coffeeButton.style.border =
+        "1px solid #f5c2c7";
+
+    coffeeButton.style.borderRadius =
+        "10px";
+
+    coffeeButton.style.background =
+        "#fff7ed";
+
+    coffeeButton.style.color =
+        "#c2410c";
+
+    coffeeButton.style.fontSize =
+        "12px";
+
+    coffeeButton.style.fontWeight =
+        "700";
+
+    coffeeButton.style.cursor =
+        "pointer";
+
+    coffeeButton.addEventListener(
+        "click",
+        () => {
+
+            /*
+             * Replace this URL with your
+             * Buy Me a Coffee page.
+             */
+
+            window.open(
+                "https://www.buymeacoffee.com/",
+                "_blank"
+            );
+        }
+    );
+
+    buttonContainer.appendChild(
+        aboutButton
+    );
+
+    buttonContainer.appendChild(
+        coffeeButton
+    );
+
+    optionsPanel.appendChild(
+        buttonContainer
+    );
 }
 
 
@@ -957,11 +965,6 @@ function checkAnswer(
 
     const correctAnswer =
         getCorrectAnswer();
-
-    /*
-     * Remove old score if the user
-     * changes an already answered question.
-     */
 
     if (
         questionResults.has(
@@ -1294,7 +1297,10 @@ function restoreAnswerState() {
     const correctAnswer =
         getCorrectAnswer();
 
-    if (savedAnswer === correctAnswer) {
+    if (
+        savedAnswer ===
+        correctAnswer
+    ) {
 
         option.classList.add(
             "correct-answer"
@@ -1527,31 +1533,23 @@ function loadMotivationalQuote() {
         return;
     }
 
-    if (!quotes.length) {
+    const quoteList =
+        quotes.length
+            ? quotes
+            : FALLBACK_QUOTES;
 
-        quoteText.innerText =
-            "“Think deeper. Learn smarter.”";
-
-        quoteAuthor.innerText =
-            "— AIBrainBox";
-
+    if (!quoteList.length) {
         return;
     }
 
-    /*
-     * Pick a random quote.
-     *
-     * Avoid immediately showing the same quote
-     * when moving between questions.
-     */
     let index =
         Math.floor(
             Math.random() *
-            quotes.length
+            quoteList.length
         );
 
     if (
-        quotes.length > 1 &&
+        quoteList.length > 1 &&
         index === lastQuoteIndex
     ) {
 
@@ -1559,27 +1557,26 @@ function loadMotivationalQuote() {
             (
                 index + 1
             ) %
-            quotes.length;
+            quoteList.length;
     }
 
     lastQuoteIndex =
         index;
 
     const quote =
-        quotes[index];
+        quoteList[index];
 
-    /*
-     * Quote is always placed separately from author.
-     * CSS will keep the author below the quote.
-     */
     quoteText.innerText =
-        "“" +
-        quote.quote +
-        "”";
+        quote.quote
+            ? "“" +
+              quote.quote +
+              "”"
+            : "";
 
     quoteAuthor.innerText =
         quote.author
-            ? "— " + quote.author
+            ? "— " +
+              quote.author
             : "";
 }
 
@@ -1629,10 +1626,7 @@ function showCorrectCelebration() {
         "🧠",
         "💡",
         "⭐",
-        "🔥",
-        "🤯",
-        "⚡",
-        "🏆"
+        "🔥"
     ]);
 }
 
@@ -1761,7 +1755,6 @@ function createEmojiBurst(
             if (
                 container.parentNode
             ) {
-
                 container.remove();
             }
 
@@ -1821,6 +1814,7 @@ function showError(
             "loading"
         )
         .classList.add("hidden");
+
     document
         .getElementById(
             "question-container"
