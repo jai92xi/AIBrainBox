@@ -9,12 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="AIBrainBox - AI Questions & Practice"
-    >
-
-    <title>AIBrainBox | AI Questions & Practice</title>
+    <title>AI BrainBox</title>
 
     <link
         rel="stylesheet"
@@ -22,67 +17,30 @@
     >
 </head>
 
-
 <body>
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
-
     <header>
-
         <div class="header-content">
-
-            <div class="logo">
-                🧠
-            </div>
-
-            <div class="header-text">
-
-                <h1>
-                    AIBrainBox
-                </h1>
-
-                <p>
-                    AI Questions &amp; Practice
-                </p>
-
-            </div>
-
+            <h1>🧠 AI BrainBox</h1>
+            <p>Test your AI knowledge</p>
         </div>
-
     </header>
-
-
-    <!-- =====================================================
-         MAIN
-         ===================================================== -->
 
     <main>
 
-        <!-- Loading -->
-
         <div
             id="loading"
-            class="status-message"
+            class="loading"
         >
-            Loading question...
+            Loading questions...
         </div>
-
-
-        <!-- Error -->
 
         <div
             id="error"
-            class="hidden"
-            role="alert"
+            class="error hidden"
         >
+            Unable to load questions.
         </div>
-
-
-        <!-- =================================================
-             QUESTION CONTAINER
-             ================================================= -->
 
         <section
             id="question-container"
@@ -90,86 +48,51 @@
             aria-label="Quiz question"
         >
 
-            <!-- =================================================
-                 TWO COLUMN LAYOUT
-                 ================================================= -->
+            <div id="quiz-navigation-toolbar"></div>
 
             <div class="quiz-layout">
 
+                <div class="question-section">
 
-                <!-- ================= QUESTION ================= -->
-
-                <section class="question-panel">
-
-                    <div class="panel-label">
-                        🧠 QUESTION
-                    </div>
-
-                    <div id="question">
-                    </div>
-
-                </section>
-
-
-                <!-- ================= OPTIONS ================= -->
-
-                <section class="options-panel">
-
-                    <div class="panel-label">
-                        🤖 SELECT YOUR ANSWER
-                    </div>
+                    <div
+                        id="question"
+                        class="question"
+                    ></div>
 
                     <div
                         id="options"
-                        role="radiogroup"
-                        aria-label="Answer options"
+                        class="options"
+                    ></div>
+
+                    <div
+                        id="result"
+                        class="result"
+                    ></div>
+
+                    <button
+                        id="show-explanation-btn"
+                        type="button"
+                        class="hidden"
+                        onclick="toggleExplanation()"
                     >
+                        💡 Show Explanation
+                    </button>
+
+                    <div
+                        id="explanation"
+                        class="explanation hidden"
+                    >
+
+                        <h3>
+                            💡 Explanation
+                        </h3>
+
+                        <div
+                            id="explanation-text"
+                        ></div>
+
                     </div>
 
-                </section>
-
-            </div>
-
-
-            <!-- =================================================
-                 RESULT
-                 ================================================= -->
-
-            <div
-                id="result"
-                aria-live="polite"
-            >
-            </div>
-
-
-            <!-- =================================================
-                 EXPLANATION BUTTON
-                 ================================================= -->
-
-            <button
-                id="show-explanation-btn"
-                class="hidden"
-                type="button"
-                onclick="toggleExplanation()"
-            >
-                💡 Show Explanation
-            </button>
-
-
-            <!-- =================================================
-                 EXPLANATION
-                 ================================================= -->
-
-            <div
-                id="explanation"
-                class="hidden"
-            >
-
-                <h3>
-                    💡 Explanation
-                </h3>
-
-                <div id="explanation-text">
                 </div>
 
             </div>
@@ -178,23 +101,9 @@
 
     </main>
 
-
-    <!-- =====================================================
-         FOOTER
-         ===================================================== -->
-
     <footer>
-
-        <p>
-            🧠 AIBrainBox • AI Questions &amp; Practice
-        </p>
-
+        <p>AI BrainBox</p>
     </footer>
-
-
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
 
     <script src="app.js"></script>
 
