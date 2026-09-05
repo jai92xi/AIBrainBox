@@ -1,31 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>🧠AIBrainBox</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <meta
         name="description"
         content="AIBrainBox — practice AI questions, test your knowledge, and improve your skills."
     >
 
-    <link rel="stylesheet" href="style.css">
+    <title>🧠 AIBrainBox</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
+
 
 <body>
 
     <main class="container">
 
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
         <header class="header">
-            <h1>🧠AIBrainBox</h1>
-            <p>AI Questions • Practice • Learn • Improve</p>
+
+            <div class="brand-icon">
+                🧠
+            </div>
+
+            <h1>
+                AIBrainBox
+            </h1>
+
+            <p>
+                AI Questions • Practice • Learn • Improve * trail 1
+            </p>
+
         </header>
 
 
-        <!-- Motivational quote is injected here by app.js -->
+        <!-- =====================================================
+             MOTIVATIONAL QUOTE
+             ===================================================== -->
 
+        <aside
+            id="motivational-quote"
+            class="motivational-quote"
+            aria-label="Motivational quote"
+        >
+
+            <div class="quote-icon">
+                ✦
+            </div>
+
+            <div
+                id="quote-text"
+                class="quote-text"
+            >
+                Keep learning. Keep improving.
+            </div>
+
+            <div
+                id="quote-author"
+                class="quote-author"
+            >
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             LOADING
+             ===================================================== -->
 
         <section
             id="loading"
@@ -35,69 +90,162 @@
         </section>
 
 
+        <!-- =====================================================
+             ERROR
+             ===================================================== -->
+
         <section
             id="error"
             class="error hidden"
             role="alert"
-        ></section>
+        >
+        </section>
 
+
+        <!-- =====================================================
+             QUESTION CONTAINER
+             ===================================================== -->
 
         <section
             id="question-container"
             class="hidden"
         >
 
-            <div class="question-card">
+            <!-- =================================================
+                 TOP NAVIGATION
+                 ================================================= -->
 
-                <div
-                    id="question"
-                    class="question"
-                ></div>
-
-
-                <div
-                    id="options"
-                    class="options"
-                ></div>
-
-
-                <div
-                    id="result"
-                    aria-live="polite"
-                ></div>
-
+            <nav
+                id="question-navigation"
+                class="question-navigation"
+                aria-label="Question navigation"
+            >
 
                 <button
-                    id="show-explanation-btn"
-                    class="explanation-button hidden"
+                    id="previous-question-btn"
                     type="button"
-                    onclick="toggleExplanation()"
                 >
-                    💡 Show Explanation
+                    ← Previous
                 </button>
 
 
                 <div
-                    id="explanation"
-                    class="explanation hidden"
+                    id="question-position"
+                    class="question-position"
+                    aria-live="polite"
                 >
-
-                    <h2>Explanation</h2>
-
-                    <div
-                        id="explanation-text"
-                    ></div>
-
+                    Question
                 </div>
 
 
-                <!-- Previous / Next navigation is
-                     automatically inserted by app.js -->
+                <button
+                    id="next-question-btn"
+                    type="button"
+                >
+                    Next →
+                </button>
+
+            </nav>
+
+
+            <!-- =================================================
+                 MAIN QUIZ CARD
+                 ================================================= -->
+
+            <div class="question-card">
+
+
+                <!-- =================================================
+                     TWO COLUMN CONTENT
+                     ================================================= -->
+
+                <div class="quiz-layout">
+
+
+                    <!-- =============================================
+                         QUESTION — LEFT
+                         ============================================= -->
+
+                    <section class="question-panel">
+
+                        <div class="panel-label">
+                            🧠 QUESTION
+                        </div>
+
+                        <div
+                            id="question"
+                            class="question"
+                        >
+                        </div>
+
+                    </section>
+
+
+                    <!-- =============================================
+                         OPTIONS — RIGHT
+                         ============================================= -->
+
+                    <section class="options-panel">
+
+                        <div class="panel-label">
+                            🤖 SELECT YOUR ANSWER
+                        </div>
+
+
+                        <div
+                            id="options"
+                            class="options"
+                            role="radiogroup"
+                            aria-label="Answer options"
+                        >
+                        </div>
+
+
+                        <!-- =========================================
+                             RESULT
+                             ========================================= -->
+
+                        <div
+                            id="result"
+                            class="result"
+                            aria-live="polite"
+                        >
+                        </div>
+
+
+                        <!-- =========================================
+                             EXPLANATION
+                             ========================================= -->
+
+                        <div
+                            id="explanation"
+                            class="explanation hidden"
+                        >
+
+                            <div class="explanation-title">
+                                💡 Explanation
+                            </div>
+
+                            <div
+                                id="explanation-text"
+                                class="explanation-text"
+                            >
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
 
             </div>
 
         </section>
 
+
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
 
         <footer class="footer">
 
@@ -113,4 +261,5 @@
     <script src="app.js"></script>
 
 </body>
+
 </html>
