@@ -1,8 +1,3 @@
-/* ============================================================
-   AIBrainBox
-   COMPLETE STYLE SHEET
-   ============================================================ */
-
 * {
     box-sizing: border-box;
 }
@@ -37,15 +32,19 @@ body {
     background-attachment: fixed;
 }
 
+
 /* ============================================================
    MAIN CONTAINER
    ============================================================ */
 
 .container {
     width: 100%;
+
     margin: 0 auto;
+
     padding: 0 0 30px;
 }
+
 
 /* ============================================================
    HEADER
@@ -79,14 +78,18 @@ body {
 
 .header-top {
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     gap: 25px;
 
     max-width: 1180px;
+
     margin: 0 auto;
 }
+
 
 /* ============================================================
    BRAND
@@ -94,23 +97,30 @@ body {
 
 .brand {
     display: flex;
+
     align-items: center;
 
     gap: 11px;
+
     white-space: nowrap;
 }
 
 .brand-icon {
     font-size: 34px;
+
     line-height: 1;
 }
 
 .brand-name {
     font-size: 36px;
+
     font-weight: 800;
+
     letter-spacing: -1.2px;
+
     color: #26364d;
 }
+
 
 /* ============================================================
    TAGLINE
@@ -129,8 +139,10 @@ body {
     color: #64748b;
 
     font-size: 13px;
+
     letter-spacing: 0.1px;
 }
+
 
 /* ============================================================
    MOTIVATIONAL QUOTE
@@ -138,6 +150,7 @@ body {
 
 .motivational-quote {
     display: flex;
+
     align-items: center;
 
     gap: 5px;
@@ -152,17 +165,22 @@ body {
         serif;
 
     font-size: 13px;
+
     font-style: italic;
 
     text-align: right;
+
     line-height: 1.4;
 }
 
 .quote-author {
     color: #94a3b8;
+
     font-size: 11px;
+
     white-space: nowrap;
 }
+
 
 /* ============================================================
    QUIZ CONTENT WIDTH
@@ -179,8 +197,10 @@ body {
         );
 
     margin-left: auto;
+
     margin-right: auto;
 }
+
 
 /* ============================================================
    LOADING
@@ -195,6 +215,7 @@ body {
 
     font-size: 15px;
 }
+
 
 /* ============================================================
    ERROR
@@ -222,273 +243,6 @@ body {
     white-space: pre-wrap;
 }
 
-/* ============================================================
-   HIGHLIGHTER TOOLBAR
-   ============================================================ */
-
-.highlighter-toolbar {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 8px;
-
-    margin:
-        0 auto
-        18px;
-
-    padding:
-        10px 14px;
-
-    border:
-        1px solid
-        rgba(148, 163, 184, 0.18);
-
-    border-radius: 14px;
-
-    background:
-        rgba(255, 255, 255, 0.82);
-
-    backdrop-filter: blur(12px);
-
-    box-shadow:
-        0 8px 25px
-        rgba(15, 23, 42, 0.06);
-}
-
-/* ============================================================
-   MAIN RED-DOT HIGHLIGHTER BUTTON
-   ============================================================ */
-
-#highlighter-btn {
-    position: relative;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 8px;
-
-    min-height: 38px;
-
-    padding:
-        8px 15px;
-
-    border:
-        1px solid
-        #fecaca;
-
-    border-radius: 10px;
-
-    background:
-        #ffffff;
-
-    color: #991b1b;
-
-    font-size: 12px;
-    font-weight: 800;
-
-    cursor: pointer;
-
-    transition:
-        background 0.18s ease,
-        color 0.18s ease,
-        border-color 0.18s ease,
-        box-shadow 0.18s ease,
-        transform 0.18s ease;
-}
-
-#highlighter-btn:hover {
-    background: #fff7f7;
-
-    border-color: #fca5a5;
-
-    transform:
-        translateY(-1px);
-
-    box-shadow:
-        0 5px 14px
-        rgba(220, 38, 38, 0.12);
-}
-
-/* Red dot */
-
-#highlighter-btn::before {
-    content: "";
-
-    width: 12px;
-    height: 12px;
-
-    flex: 0 0 12px;
-
-    border-radius: 50%;
-
-    background:
-        #ef4444;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(239, 68, 68, 0.14);
-
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease;
-}
-
-/* Active button */
-
-#highlighter-btn.active {
-    background:
-        #fee2e2 !important;
-
-    color:
-        #991b1b !important;
-
-    border-color:
-        #ef4444 !important;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(239, 68, 68, 0.14),
-        0 7px 18px
-        rgba(220, 38, 38, 0.15);
-}
-
-#highlighter-btn.active::before {
-    background:
-        #dc2626;
-
-    transform:
-        scale(1.15);
-
-    box-shadow:
-        0 0 0 4px
-        rgba(239, 68, 68, 0.18);
-}
-
-/* ============================================================
-   HIGHLIGHTER TOOLBAR LABEL
-   ============================================================ */
-
-.highlighter-label {
-    color: #64748b;
-
-    font-size: 11px;
-
-    font-weight: 700;
-
-    white-space: nowrap;
-}
-
-/* ============================================================
-   HIGHLIGHT COLOR BUTTONS
-   ============================================================ */
-
-.highlight-color-btn {
-    width: 30px;
-    height: 30px;
-
-    padding: 0;
-
-    border:
-        2px solid
-        rgba(255, 255, 255, 0.9);
-
-    border-radius: 50%;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 0 0 1px
-        rgba(148, 163, 184, 0.25);
-
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-.highlight-color-btn:hover {
-    transform:
-        scale(1.12);
-
-    box-shadow:
-        0 0 0 2px
-        rgba(71, 85, 105, 0.22);
-}
-
-.highlight-color-btn.active {
-    outline:
-        2px solid
-        #334155;
-
-    outline-offset: 2px;
-
-    transform:
-        scale(1.08);
-}
-
-/* Individual colors */
-
-.highlight-color-btn[data-highlight-color="yellow"] {
-    background: #fff176;
-}
-
-.highlight-color-btn[data-highlight-color="green"] {
-    background: #b9f6ca;
-}
-
-.highlight-color-btn[data-highlight-color="blue"] {
-    background: #b3e5fc;
-}
-
-.highlight-color-btn[data-highlight-color="pink"] {
-    background: #f8bbd0;
-}
-
-/* ============================================================
-   CLEAR HIGHLIGHTS BUTTON
-   ============================================================ */
-
-#clear-highlights-btn {
-    min-height: 34px;
-
-    padding:
-        7px 11px;
-
-    border:
-        1px solid
-        #e2e8f0;
-
-    border-radius: 9px;
-
-    background:
-        #ffffff;
-
-    color: #64748b;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-        background 0.15s ease,
-        color 0.15s ease,
-        border-color 0.15s ease;
-}
-
-#clear-highlights-btn:hover {
-    background:
-        #fff1f2;
-
-    color:
-        #dc2626;
-
-    border-color:
-        #fecaca;
-}
 
 /* ============================================================
    TOP NAVIGATION
@@ -510,6 +264,7 @@ body {
     margin-bottom: 15px;
 }
 
+
 /* ============================================================
    PREVIOUS / NEXT BUTTONS
    ============================================================ */
@@ -524,6 +279,7 @@ body {
     color: #ffffff;
 
     font-size: 13px;
+
     font-weight: 700;
 
     cursor: pointer;
@@ -535,7 +291,8 @@ body {
         opacity 0.15s ease;
 }
 
-/* Previous */
+
+/* Previous button */
 
 #previous-question-btn {
     background:
@@ -550,7 +307,8 @@ body {
         rgba(71, 85, 105, 0.20);
 }
 
-/* Next */
+
+/* Next button */
 
 #next-question-btn {
     background:
@@ -565,6 +323,7 @@ body {
         rgba(79, 70, 229, 0.20);
 }
 
+
 /* Hover */
 
 #previous-question-btn:hover:not(:disabled) {
@@ -575,8 +334,7 @@ body {
             #334155
         );
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 
     box-shadow:
         0 8px 17px
@@ -591,13 +349,13 @@ body {
             #5149dc
         );
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 
     box-shadow:
         0 8px 17px
         rgba(79, 70, 229, 0.28);
 }
+
 
 /* Disabled */
 
@@ -608,6 +366,7 @@ body {
 
     box-shadow: none;
 }
+
 
 /* ============================================================
    QUESTION POSITION
@@ -622,6 +381,7 @@ body {
 
     white-space: nowrap;
 }
+
 
 /* ============================================================
    SCORE
@@ -641,6 +401,7 @@ body {
     color: #4f46e5;
 }
 
+
 /* ============================================================
    QUESTION CARD
    ============================================================ */
@@ -657,13 +418,13 @@ body {
     background:
         rgba(255, 255, 255, 0.78);
 
-    backdrop-filter:
-        blur(14px);
+    backdrop-filter: blur(14px);
 
     box-shadow:
         0 18px 45px
         rgba(15, 23, 42, 0.06);
 }
+
 
 /* ============================================================
    TWO COLUMN LAYOUT
@@ -680,6 +441,7 @@ body {
 
     align-items: start;
 }
+
 
 /* ============================================================
    QUESTION PANEL
@@ -712,6 +474,7 @@ body {
     letter-spacing: 0.08em;
 }
 
+
 /* ============================================================
    QUESTION
    ============================================================ */
@@ -725,6 +488,11 @@ body {
         Arial,
         sans-serif;
 
+    /*
+     * Reduced from the previous version.
+     * Comfortable and eye pleasing.
+     */
+
     font-size: 17px;
 
     line-height: 1.6;
@@ -732,14 +500,8 @@ body {
     font-weight: 550;
 
     letter-spacing: 0;
-
-    /*
-     * Important for highlighter.
-     * Allows normal text selection.
-     */
-    user-select: text;
-    -webkit-user-select: text;
 }
+
 
 /* ============================================================
    OPTIONS PANEL
@@ -757,6 +519,7 @@ body {
         1px solid
         rgba(148, 163, 184, 0.12);
 }
+
 
 /* ============================================================
    OPTIONS
@@ -797,8 +560,7 @@ body {
 
     background: #f8fbff;
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 
     box-shadow:
         0 5px 14px
@@ -824,24 +586,22 @@ body {
 
     gap: 11px;
 
-    padding:
-        10px 13px;
+    padding: 10px 13px;
 
     cursor: pointer;
-
-    user-select: text;
-    -webkit-user-select: text;
 }
 
 .option-letter {
     flex: 0 0 auto;
 
     width: 30px;
+
     height: 30px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     border-radius: 50%;
@@ -853,9 +613,6 @@ body {
     font-size: 12px;
 
     font-weight: 800;
-
-    user-select: none;
-    -webkit-user-select: none;
 }
 
 .option-text {
@@ -868,10 +625,8 @@ body {
     line-height: 1.5;
 
     font-weight: 450;
-
-    user-select: text;
-    -webkit-user-select: text;
 }
+
 
 /* ============================================================
    CORRECT ANSWER
@@ -895,6 +650,7 @@ body {
     font-weight: 650;
 }
 
+
 /* ============================================================
    WRONG ANSWER
    ============================================================ */
@@ -917,6 +673,7 @@ body {
     font-weight: 650;
 }
 
+
 /* ============================================================
    RESULT
    ============================================================ */
@@ -933,6 +690,7 @@ body {
     font-weight: 700;
 }
 
+
 /* ============================================================
    EXPLANATION
    ============================================================ */
@@ -940,8 +698,7 @@ body {
 .explanation {
     margin-top: 15px;
 
-    padding:
-        15px 17px;
+    padding: 15px 17px;
 
     border-radius: 11px;
 
@@ -984,9 +741,6 @@ body {
     line-height: 1.7;
 
     white-space: pre-wrap;
-
-    user-select: text;
-    -webkit-user-select: text;
 }
 
 @keyframes explanationIn {
@@ -1006,165 +760,6 @@ body {
     }
 }
 
-/* ============================================================
-   HIGHLIGHT MARK
-   ============================================================ */
-
-.aib-highlight {
-    background-color: #fff176;
-
-    color: inherit;
-
-    padding:
-        0 2px;
-
-    border-radius: 3px;
-
-    cursor: pointer;
-
-    -webkit-box-decoration-break:
-        clone;
-
-    box-decoration-break:
-        clone;
-
-    transition:
-        background-color 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-.aib-highlight:hover {
-    box-shadow:
-        0 0 0 2px
-        rgba(0, 0, 0, 0.08);
-}
-
-/*
- * Keep highlighted text readable even when it
- * appears inside correct/wrong answer colors.
- */
-
-.option.correct-answer .aib-highlight,
-.option.wrong-answer .aib-highlight {
-    color: inherit;
-}
-
-/* ============================================================
-   HIGHLIGHTER ACTIVE MODE
-   ============================================================ */
-
-body.highlighter-active
-#question,
-body.highlighter-active
-#options,
-body.highlighter-active
-#explanation-text {
-    cursor: text;
-}
-
-body.highlighter-active
-#question,
-body.highlighter-active
-.option-text,
-body.highlighter-active
-#explanation-text {
-    user-select: text;
-    -webkit-user-select: text;
-}
-
-/*
- * Make the active reading areas subtly indicate
- * that text can be selected.
- */
-
-body.highlighter-active
-.question-panel {
-    border-color:
-        rgba(239, 68, 68, 0.20);
-
-    box-shadow:
-        inset 0 0 0 1px
-        rgba(239, 68, 68, 0.04);
-}
-
-body.highlighter-active
-.options-panel {
-    border-color:
-        rgba(239, 68, 68, 0.14);
-}
-
-/* ============================================================
-   HIGHLIGHT COLOR ACTIVE STATE
-   ============================================================ */
-
-[data-highlight-color].active {
-    outline:
-        2px solid
-        #333 !important;
-
-    outline-offset:
-        2px;
-}
-
-/* ============================================================
-   HIGHLIGHTER TOOLTIP / INSTRUCTION
-   ============================================================ */
-
-.highlighter-help {
-    color: #94a3b8;
-
-    font-size: 10px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
-}
-
-/* ============================================================
-   HIGHLIGHTER DIVIDER
-   ============================================================ */
-
-.highlighter-divider {
-    width: 1px;
-
-    height: 24px;
-
-    background:
-        #e2e8f0;
-
-    margin:
-        0 2px;
-}
-
-/* ============================================================
-   HIGHLIGHTER FLOATING MODE
-   ============================================================ */
-
-.highlighter-floating {
-    position: sticky;
-
-    top: 10px;
-
-    z-index: 100;
-}
-
-/* ============================================================
-   HIGHLIGHTER SELECTION
-   ============================================================ */
-
-::selection {
-    background:
-        rgba(147, 197, 253, 0.55);
-
-    color: inherit;
-}
-
-body.highlighter-active ::selection {
-    background:
-        rgba(255, 241, 118, 0.85);
-
-    color: inherit;
-}
 
 /* ============================================================
    HIDDEN
@@ -1173,6 +768,7 @@ body.highlighter-active ::selection {
 .hidden {
     display: none !important;
 }
+
 
 /* ============================================================
    FOOTER
@@ -1191,6 +787,7 @@ body.highlighter-active ::selection {
 .footer p {
     margin: 0;
 }
+
 
 /* ============================================================
    EMOJI REACTION
@@ -1211,14 +808,11 @@ body.highlighter-active ::selection {
 .reaction-emoji {
     position: absolute;
 
-    left:
-        var(--start-left);
+    left: var(--start-left);
 
-    bottom:
-        -70px;
+    bottom: -70px;
 
-    font-size:
-        var(--emoji-size);
+    font-size: var(--emoji-size);
 
     animation:
         emojiFloat
@@ -1265,6 +859,7 @@ body.highlighter-active ::selection {
     }
 }
 
+
 /* ============================================================
    FOCUS
    ============================================================ */
@@ -1279,17 +874,6 @@ label:focus-visible {
     outline-offset: 2px;
 }
 
-/* ============================================================
-   HIGHLIGHTER BUTTON FOCUS
-   ============================================================ */
-
-#highlighter-btn:focus-visible {
-    outline:
-        3px solid
-        rgba(239, 68, 68, 0.25);
-
-    outline-offset: 3px;
-}
 
 /* ============================================================
    TABLET
@@ -1310,13 +894,8 @@ label:focus-visible {
     .question-panel {
         min-height: auto;
     }
-
-    .highlighter-toolbar {
-        flex-wrap: wrap;
-
-        justify-content: center;
-    }
 }
+
 
 /* ============================================================
    MOBILE
@@ -1328,8 +907,7 @@ label:focus-visible {
     #error,
     #question-container,
     .footer {
-        width:
-            calc(100% - 18px);
+        width: calc(100% - 18px);
     }
 
     .header {
@@ -1369,75 +947,6 @@ label:focus-visible {
 
         font-size: 12px;
     }
-
-    /* ========================================================
-       MOBILE HIGHLIGHTER
-       ======================================================== */
-
-    .highlighter-toolbar {
-        width: 100%;
-
-        gap: 7px;
-
-        padding:
-            9px;
-
-        margin-bottom:
-            12px;
-
-        border-radius:
-            12px;
-    }
-
-    #highlighter-btn {
-        min-height: 36px;
-
-        padding:
-            7px 11px;
-
-        font-size:
-            11px;
-    }
-
-    #highlighter-btn::before {
-        width: 11px;
-        height: 11px;
-
-        flex-basis:
-            11px;
-    }
-
-    .highlighter-label {
-        display: none;
-    }
-
-    .highlight-color-btn {
-        width: 27px;
-        height: 27px;
-    }
-
-    #clear-highlights-btn {
-        min-height:
-            31px;
-
-        padding:
-            6px 9px;
-
-        font-size:
-            10px;
-    }
-
-    .highlighter-help {
-        display: none;
-    }
-
-    .highlighter-divider {
-        height: 21px;
-    }
-
-    /* ========================================================
-       NAVIGATION
-       ======================================================== */
 
     .question-navigation {
         grid-template-columns:
@@ -1486,6 +995,7 @@ label:focus-visible {
 
     .option-letter {
         width: 29px;
+
         height: 29px;
     }
 
@@ -1494,50 +1004,12 @@ label:focus-visible {
     }
 }
 
+
 /* ============================================================
    VERY SMALL MOBILE
    ============================================================ */
 
 @media (max-width: 420px) {
-
-    .highlighter-toolbar {
-        justify-content:
-            space-between;
-
-        gap: 5px;
-    }
-
-    #highlighter-btn {
-        flex:
-            1 1 auto;
-    }
-
-    .highlight-color-btn {
-        width: 25px;
-        height: 25px;
-    }
-
-    #clear-highlights-btn {
-        font-size:
-            0;
-
-        width:
-            31px;
-
-        padding:
-            0;
-    }
-
-    #clear-highlights-btn::before {
-        content:
-            "×";
-
-        font-size:
-            18px;
-
-        line-height:
-            1;
-    }
 
     .question-navigation {
         grid-template-columns:
@@ -1560,66 +1032,13 @@ label:focus-visible {
         grid-column: 1;
         grid-row: 2;
 
-        justify-self:
-            start;
+        justify-self: start;
     }
 
     #next-question-btn {
         grid-column: 3;
         grid-row: 2;
 
-        justify-self:
-            end;
-    }
-}
-
-/* ============================================================
-   RED DOT PULSE
-   ============================================================ */
-
-@keyframes highlighterDotPulse {
-
-    0% {
-        box-shadow:
-            0 0 0 0
-            rgba(239, 68, 68, 0.35);
-    }
-
-    70% {
-        box-shadow:
-            0 0 0 5px
-            rgba(239, 68, 68, 0);
-    }
-
-    100% {
-        box-shadow:
-            0 0 0 0
-            rgba(239, 68, 68, 0);
-    }
-}
-
-#highlighter-btn.active::before {
-    animation:
-        highlighterDotPulse
-        1.5s
-        infinite;
-}
-
-/* ============================================================
-   ACCESSIBILITY
-   ============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        scroll-behavior: auto !important;
-        animation-duration:
-            0.01ms !important;
-        animation-iteration-count:
-            1 !important;
-        transition-duration:
-            0.01ms !important;
+        justify-self: end;
     }
 }
