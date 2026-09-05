@@ -32,12 +32,17 @@ body {
     background-attachment: fixed;
 }
 
+
+/* ============================================================
+   MAIN CONTAINER
+   ============================================================ */
+
 .container {
-    width: min(1180px, calc(100% - 40px));
+    width: 100%;
 
     margin: 0 auto;
 
-    padding: 28px 0 30px;
+    padding: 0 0 30px;
 }
 
 
@@ -46,7 +51,29 @@ body {
    ============================================================ */
 
 .header {
+    width: 100%;
+
+    padding:
+        20px
+        max(20px, calc((100% - 1180px) / 2));
+
     margin-bottom: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #dff4f0 0%,
+            #e8e5ff 55%,
+            #e2efff 100%
+        );
+
+    border-bottom:
+        1px solid
+        rgba(99, 102, 241, 0.10);
+
+    box-shadow:
+        0 4px 18px
+        rgba(71, 85, 105, 0.05);
 }
 
 .header-top {
@@ -57,34 +84,57 @@ body {
     justify-content: space-between;
 
     gap: 25px;
+
+    max-width: 1180px;
+
+    margin: 0 auto;
 }
+
+
+/* ============================================================
+   BRAND
+   ============================================================ */
 
 .brand {
     display: flex;
 
     align-items: center;
 
-    gap: 10px;
+    gap: 11px;
 
     white-space: nowrap;
 }
 
 .brand-icon {
-    font-size: 25px;
+    font-size: 34px;
+
+    line-height: 1;
 }
 
 .brand-name {
-    font-size: 27px;
+    font-size: 36px;
 
-    font-weight: 750;
+    font-weight: 800;
 
-    letter-spacing: -0.5px;
+    letter-spacing: -1.2px;
 
-    color: #334155;
+    color: #26364d;
 }
 
+
+/* ============================================================
+   TAGLINE
+   ============================================================ */
+
 .tagline {
-    margin: 4px 0 0 36px;
+    max-width: 1180px;
+
+    margin:
+        5px
+        auto
+        0;
+
+    padding-left: 47px;
 
     color: #64748b;
 
@@ -95,7 +145,7 @@ body {
 
 
 /* ============================================================
-   QUOTE
+   MOTIVATIONAL QUOTE
    ============================================================ */
 
 .motivational-quote {
@@ -133,6 +183,26 @@ body {
 
 
 /* ============================================================
+   QUIZ CONTENT WIDTH
+   ============================================================ */
+
+#loading,
+#error,
+#question-container,
+.footer {
+    width:
+        min(
+            1180px,
+            calc(100% - 40px)
+        );
+
+    margin-left: auto;
+
+    margin-right: auto;
+}
+
+
+/* ============================================================
    LOADING
    ============================================================ */
 
@@ -152,7 +222,7 @@ body {
    ============================================================ */
 
 .error {
-    max-width: 700px;
+    max-width: 700px !important;
 
     margin: 30px auto;
 
@@ -204,16 +274,9 @@ body {
 
     border-radius: 10px;
 
-    padding: 10px 17px;
+    padding: 10px 18px;
 
     color: #ffffff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #4f7cff,
-            #6366f1
-        );
 
     font-size: 13px;
 
@@ -221,27 +284,80 @@ body {
 
     cursor: pointer;
 
-    box-shadow:
-        0 5px 12px
-        rgba(79, 70, 229, 0.18);
-
     transition:
         transform 0.15s ease,
         box-shadow 0.15s ease,
+        background 0.15s ease,
         opacity 0.15s ease;
 }
 
-.question-navigation button:hover:not(:disabled) {
+
+/* Previous button */
+
+#previous-question-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #64748b,
+            #475569
+        );
+
+    box-shadow:
+        0 5px 12px
+        rgba(71, 85, 105, 0.20);
+}
+
+
+/* Next button */
+
+#next-question-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #4f7cff,
+            #6366f1
+        );
+
+    box-shadow:
+        0 5px 12px
+        rgba(79, 70, 229, 0.20);
+}
+
+
+/* Hover */
+
+#previous-question-btn:hover:not(:disabled) {
+    background:
+        linear-gradient(
+            135deg,
+            #475569,
+            #334155
+        );
+
     transform: translateY(-1px);
 
     box-shadow:
         0 8px 17px
-        rgba(79, 70, 229, 0.25);
+        rgba(71, 85, 105, 0.28);
 }
 
-.question-navigation button:active:not(:disabled) {
-    transform: translateY(0);
+#next-question-btn:hover:not(:disabled) {
+    background:
+        linear-gradient(
+            135deg,
+            #4169e8,
+            #5149dc
+        );
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 17px
+        rgba(79, 70, 229, 0.28);
 }
+
+
+/* Disabled */
 
 .question-navigation button:disabled {
     opacity: 0.35;
@@ -371,6 +487,11 @@ body {
         Inter,
         Arial,
         sans-serif;
+
+    /*
+     * Reduced from the previous version.
+     * Comfortable and eye pleasing.
+     */
 
     font-size: 17px;
 
@@ -760,14 +881,10 @@ label:focus-visible {
 
 @media (max-width: 900px) {
 
-    .container {
-        width:
-            min(
-                calc(100% - 28px),
-                900px
-            );
-
-        padding-top: 22px;
+    .header {
+        padding:
+            18px
+            20px;
     }
 
     .quiz-layout {
@@ -786,10 +903,17 @@ label:focus-visible {
 
 @media (max-width: 600px) {
 
-    .container {
+    #loading,
+    #error,
+    #question-container,
+    .footer {
         width: calc(100% - 18px);
+    }
 
-        padding-top: 16px;
+    .header {
+        padding:
+            16px
+            12px;
     }
 
     .header-top {
@@ -797,11 +921,15 @@ label:focus-visible {
 
         flex-direction: column;
 
-        gap: 7px;
+        gap: 8px;
+    }
+
+    .brand-icon {
+        font-size: 29px;
     }
 
     .brand-name {
-        font-size: 24px;
+        font-size: 30px;
     }
 
     .motivational-quote {
@@ -813,7 +941,9 @@ label:focus-visible {
     }
 
     .tagline {
-        margin-left: 35px;
+        margin-top: 5px;
+
+        padding-left: 41px;
 
         font-size: 12px;
     }
@@ -828,7 +958,9 @@ label:focus-visible {
     }
 
     .question-navigation button {
-        padding: 8px 10px;
+        padding:
+            8px
+            10px;
 
         font-size: 11px;
     }
@@ -856,7 +988,9 @@ label:focus-visible {
     .option label {
         min-height: 53px;
 
-        padding: 9px 10px;
+        padding:
+            9px
+            10px;
     }
 
     .option-letter {
