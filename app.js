@@ -3,23 +3,12 @@ let currentQuestionIndex = -1;
 let currentQuestion = null;
 
 const CSV_URL = "./xi-questions.csv";
-const QUOTES_URL = "./xi-Quotes.csv";
+const QUOTES_CSV_URL = "./xi-Quotes.csv";
 
 let score = 0;
 let answeredQuestions = new Set();
 let questionResults = new Map();
 let savedAnswers = new Map();
-
-const FALLBACK_QUOTES = [
-    {
-        quote: "You do not rise to the level of your goals. You fall to the level of your systems.",
-        author: "James Clear"
-    },
-    {
-        quote: "The future depends on what you do today.",
-        author: "Mahatma Gandhi"
-    }
-];
 
 let quotes = [];
 let lastQuoteIndex = -1;
@@ -66,6 +55,7 @@ function initializeApp() {
     );
 
     loadQuestions();
+
     loadQuotes();
 }
 
@@ -165,16 +155,19 @@ async function loadQuotes() {
 
         const response =
             await fetch(
-                QUOTES_URL + "?v=" + Date.now(),
+                QUOTES_CSV_URL + "?v=" + Date.now(),
                 {
                     cache: "no-store"
                 }
             );
 
         if (!response.ok) {
+
             throw new Error(
                 "HTTP " +
-                response.status
+                response.status +
+                " - " +
+                response.statusText
             );
         }
 
@@ -182,6 +175,7 @@ async function loadQuotes() {
             await response.text();
 
         if (!csvText.trim()) {
+
             throw new Error(
                 "xi-Quotes.csv is empty."
             );
@@ -195,22 +189,41 @@ async function loadQuotes() {
             quotes.length
         );
 
-        if (
-            quotes.length &&
-            currentQuestion
-        ) {
+        /*
+         * Refresh the quote immediately
+         * once the quote database is ready.
+         */
+
+        if (currentQuestion) {
             loadMotivationalQuote();
         }
 
     } catch (error) {
 
         console.warn(
-            "Quote database could not be loaded. Using fallback quotes.",
+            "Quote database could not be loaded:",
             error
         );
 
-        quotes =
-            FALLBACK_QUOTES;
+        /*
+         * Keep a small fallback so the
+         * header never appears empty.
+         */
+
+        quotes = [
+            {
+                quote:
+                    "The important thing is to never stop questioning.",
+                author:
+                    "Albert Einstein"
+            },
+            {
+                quote:
+                    "The future depends on what you do today.",
+                author:
+                    "Mahatma Gandhi"
+            }
+        ];
 
         if (currentQuestion) {
             loadMotivationalQuote();
@@ -220,192 +233,7 @@ async function loadQuotes() {
 
 
 /* ============================================================
-   PARSE QUOTES CSV
-   ============================================================ */
-
-function parseQuotesCSV(text) {
-
-    const rows = [];
-
-    let row = [];
-    let cell = "";
-    let insideQuotes = false;
-
-    for (
-        let i = 0;
-        i < text.length;
-        i++
-    ) {
-
-        const char = text[i];
-        const nextChar = text[i + 1];
-
-        if (
-            char === '"' &&
-            insideQuotes &&
-            nextChar === '"'
-        ) {
-
-            cell += '"';
-            i++;
-
-        } else if (
-            char === '"'
-        ) {
-
-            insideQuotes =
-                !insideQuotes;
-
-        } else if (
-            char === "," &&
-            !insideQuotes
-        ) {
-
-            row.push(cell);
-            cell = "";
-
-        } else if (
-            (
-                char === "\n" ||
-                char === "\r"
-            ) &&
-            !insideQuotes
-        ) {
-
-            if (
-                char === "\r" &&
-                nextChar === "\n"
-            ) {
-                i++;
-            }
-
-            row.push(cell);
-
-            if (
-                row.some(
-                    value =>
-                        value.trim() !== ""
-                )
-            ) {
-                rows.push(row);
-            }
-
-            row = [];
-            cell = "";
-
-        } else {
-
-            cell += char;
-        }
-    }
-
-    if (
-        cell !== "" ||
-        row.length > 0
-    ) {
-
-        row.push(cell);
-
-        if (
-            row.some(
-                value =>
-                    value.trim() !== ""
-            )
-        ) {
-            rows.push(row);
-        }
-    }
-
-    if (!rows.length) {
-        return [];
-    }
-
-    const headers =
-        rows[0].map(
-            normalizeHeader
-        );
-
-    const quoteColumn =
-        headers.findIndex(
-            header =>
-                header === "quote"
-        );
-
-    const authorColumn =
-        headers.findIndex(
-            header =>
-                header === "author"
-        );
-
-    /*
-     * If the CSV has two columns but no
-     * recognizable headers, use column 1
-     * as quote and column 2 as author.
-     */
-
-    return rows
-        .slice(
-            quoteColumn === -1 &&
-            authorColumn === -1
-                ? 0
-                : 1
-        )
-        .map(row => {
-
-            let quote = "";
-            let author = "";
-
-            if (
-                quoteColumn !== -1
-            ) {
-                quote =
-                    (
-                        row[quoteColumn] ||
-                        ""
-                    ).trim();
-            }
-
-            if (
-                authorColumn !== -1
-            ) {
-                author =
-                    (
-                        row[authorColumn] ||
-                        ""
-                    ).trim();
-            }
-
-            if (
-                quoteColumn === -1 &&
-                authorColumn === -1
-            ) {
-                quote =
-                    (
-                        row[0] ||
-                        ""
-                    ).trim();
-
-                author =
-                    (
-                        row[1] ||
-                        ""
-                    ).trim();
-            }
-
-            return {
-                quote,
-                author
-            };
-        })
-        .filter(item =>
-            item.quote !== "" ||
-            item.author !== ""
-        );
-}
-
-
-/* ============================================================
-   CSV PARSER
+   PARSE QUESTION CSV
    ============================================================ */
 
 function parseCSV(text) {
@@ -461,6 +289,7 @@ function parseCSV(text) {
                 char === "\r" &&
                 nextChar === "\n"
             ) {
+
                 i++;
             }
 
@@ -472,6 +301,7 @@ function parseCSV(text) {
                         value.trim() !== ""
                 )
             ) {
+
                 rows.push(row);
             }
 
@@ -497,6 +327,7 @@ function parseCSV(text) {
                     value.trim() !== ""
             )
         ) {
+
             rows.push(row);
         }
     }
@@ -524,8 +355,7 @@ function parseCSV(text) {
 
                     question[header] =
                         (
-                            row[index] ||
-                            ""
+                            row[index] || ""
                         ).trim();
                 }
             );
@@ -537,6 +367,182 @@ function parseCSV(text) {
                 value =>
                     value !== ""
             )
+        );
+}
+
+
+/* ============================================================
+   PARSE QUOTES CSV
+   ============================================================
+
+   Expected xi-Quotes.csv:
+
+   Column A = quote
+   Column B = author
+
+   The parser also supports headers such as:
+   quote,author
+
+   Quotes containing commas or line breaks are supported.
+   ============================================================ */
+
+function parseQuotesCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+    let cell = "";
+    let insideQuotes = false;
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (
+            char === '"' &&
+            insideQuotes &&
+            nextChar === '"'
+        ) {
+
+            cell += '"';
+            i++;
+
+        } else if (
+            char === '"'
+        ) {
+
+            insideQuotes =
+                !insideQuotes;
+
+        } else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+            cell = "";
+
+        } else if (
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                nextChar === "\n"
+            ) {
+
+                i++;
+            }
+
+            row.push(cell);
+
+            if (
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+            ) {
+
+                rows.push(row);
+            }
+
+            row = [];
+            cell = "";
+
+        } else {
+
+            cell += char;
+        }
+    }
+
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(cell);
+
+        if (
+            row.some(
+                value =>
+                    value.trim() !== ""
+            )
+        ) {
+
+            rows.push(row);
+        }
+    }
+
+    if (!rows.length) {
+        return [];
+    }
+
+    /*
+     * Detect whether the first row is a header.
+     */
+
+    const firstRow =
+        rows[0].map(
+            value =>
+                value
+                    .replace(/^\uFEFF/, "")
+                    .trim()
+                    .toLowerCase()
+        );
+
+    const firstCell =
+        firstRow[0] || "";
+
+    const secondCell =
+        firstRow[1] || "";
+
+    const looksLikeHeader =
+        (
+            firstCell === "quote" ||
+            firstCell === "quotes" ||
+            firstCell === "text" ||
+            firstCell === "quote text"
+        ) &&
+        (
+            secondCell === "author" ||
+            secondCell === "name" ||
+            secondCell === "quote author"
+        );
+
+    const dataRows =
+        looksLikeHeader
+            ? rows.slice(1)
+            : rows;
+
+    return dataRows
+        .map(row => {
+
+            const quote =
+                (
+                    row[0] || ""
+                ).trim();
+
+            const author =
+                (
+                    row[1] || ""
+                ).trim();
+
+            return {
+                quote,
+                author
+            };
+        })
+        .filter(item =>
+            item.quote !== ""
         );
 }
 
@@ -624,6 +630,7 @@ function loadQuestion() {
     if (
         currentQuestionIndex === -1
     ) {
+
         currentQuestionIndex = 0;
     }
 
@@ -718,8 +725,11 @@ function createOptions() {
             document.createElement("input");
 
         radio.type = "radio";
+
         radio.name = "answer";
+
         radio.value = letter;
+
         radio.id =
             "option-" + letter;
 
@@ -778,171 +788,6 @@ function createOptions() {
             }
         );
     });
-
-    createInfoButtons();
-}
-
-
-/* ============================================================
-   ABOUT ME / BUY ME A COFFEE
-   ============================================================ */
-
-function createInfoButtons() {
-
-    const optionsPanel =
-        document.querySelector(
-            ".options-panel"
-        );
-
-    if (!optionsPanel) {
-        return;
-    }
-
-    const existing =
-        document.getElementById(
-            "info-buttons"
-        );
-
-    if (existing) {
-        existing.remove();
-    }
-
-    const buttonContainer =
-        document.createElement("div");
-
-    buttonContainer.id =
-        "info-buttons";
-
-    buttonContainer.style.display =
-        "flex";
-
-    buttonContainer.style.gap =
-        "10px";
-
-    buttonContainer.style.marginTop =
-        "20px";
-
-    buttonContainer.style.paddingTop =
-        "15px";
-
-    buttonContainer.style.borderTop =
-        "1px solid #e2e8f0";
-
-    const aboutButton =
-        document.createElement("button");
-
-    aboutButton.type =
-        "button";
-
-    aboutButton.innerText =
-        "👋 About Me";
-
-    aboutButton.style.flex =
-        "1";
-
-    aboutButton.style.padding =
-        "10px 12px";
-
-    aboutButton.style.border =
-        "1px solid #c7d2fe";
-
-    aboutButton.style.borderRadius =
-        "10px";
-
-    aboutButton.style.background =
-        "#f5f3ff";
-
-    aboutButton.style.color =
-        "#4f46e5";
-
-    aboutButton.style.fontSize =
-        "12px";
-
-    aboutButton.style.fontWeight =
-        "700";
-
-    aboutButton.style.cursor =
-        "pointer";
-
-    aboutButton.addEventListener(
-        "click",
-        () => {
-
-            /*
-             * Replace this URL with your
-             * About Me page when ready.
-             */
-
-            window.open(
-                "about.html",
-                "_blank"
-            );
-        }
-    );
-
-    const coffeeButton =
-        document.createElement("button");
-
-    coffeeButton.type =
-        "button";
-
-    coffeeButton.innerText =
-        "☕ Buy Me a Coffee";
-
-    coffeeButton.style.flex =
-        "1";
-
-    coffeeButton.style.padding =
-        "10px 12px";
-
-    coffeeButton.style.border =
-        "1px solid #f5c2c7";
-
-    coffeeButton.style.borderRadius =
-        "10px";
-
-    coffeeButton.style.background =
-        "#fff7ed";
-
-    coffeeButton.style.color =
-        "#c2410c";
-
-    coffeeButton.style.fontSize =
-        "12px";
-
-    coffeeButton.style.fontWeight =
-        "700";
-
-    coffeeButton.style.cursor =
-        "pointer";
-
-    coffeeButton.addEventListener(
-        "click",
-        () => {
-
-            /*
-             * Replace this URL with your
-             * Buy Me a Coffee page.
-             */
-
-            window.open(
-                "https://www.buymeacoffee.com/",
-                "_blank"
-            );
-        }
-    );
-
-    buttonContainer.appendChild(
-        aboutButton
-    );
-
-    buttonContainer.appendChild(
-        coffeeButton
-    );
-
-    optionsPanel.appendChild(
-        buttonContainer
-    );
 }
 
 
@@ -1158,7 +1003,7 @@ function createExplanationButton() {
 
 
 /* ============================================================
-   SHOW / HIDE EXPLANATION
+   SHOW EXPLANATION
    ============================================================ */
 
 function showExplanation() {
@@ -1200,6 +1045,10 @@ function showExplanation() {
     }
 }
 
+
+/* ============================================================
+   HIDE EXPLANATION
+   ============================================================ */
 
 function hideExplanation() {
 
@@ -1297,10 +1146,7 @@ function restoreAnswerState() {
     const correctAnswer =
         getCorrectAnswer();
 
-    if (
-        savedAnswer ===
-        correctAnswer
-    ) {
+    if (savedAnswer === correctAnswer) {
 
         option.classList.add(
             "correct-answer"
@@ -1533,23 +1379,26 @@ function loadMotivationalQuote() {
         return;
     }
 
-    const quoteList =
-        quotes.length
-            ? quotes
-            : FALLBACK_QUOTES;
-
-    if (!quoteList.length) {
+    if (!quotes.length) {
         return;
     }
+
+    /*
+     * Pick a random quote.
+     *
+     * Avoid immediately repeating the
+     * previous quote when more than one
+     * quote exists.
+     */
 
     let index =
         Math.floor(
             Math.random() *
-            quoteList.length
+            quotes.length
         );
 
     if (
-        quoteList.length > 1 &&
+        quotes.length > 1 &&
         index === lastQuoteIndex
     ) {
 
@@ -1557,27 +1406,59 @@ function loadMotivationalQuote() {
             (
                 index + 1
             ) %
-            quoteList.length;
+            quotes.length;
     }
 
     lastQuoteIndex =
         index;
 
     const quote =
-        quoteList[index];
+        quotes[index];
+
+    /*
+     * Emoji are added to make the quote
+     * visually engaging without modifying
+     * the actual quote stored in CSV.
+     */
+
+    const quoteEmojis = [
+        "💭",
+        "🧠",
+        "✨",
+        "🔥",
+        "💡",
+        "🚀",
+        "🎯",
+        "⚡",
+        "🌟",
+        "🪄"
+    ];
+
+    const emoji =
+        quoteEmojis[
+            Math.floor(
+                Math.random() *
+                quoteEmojis.length
+            )
+        ];
 
     quoteText.innerText =
-        quote.quote
-            ? "“" +
-              quote.quote +
-              "”"
-            : "";
+        emoji +
+        " “" +
+        quote.quote +
+        "”";
 
-    quoteAuthor.innerText =
-        quote.author
-            ? "— " +
-              quote.author
-            : "";
+    if (quote.author) {
+
+        quoteAuthor.innerText =
+            "— " +
+            quote.author;
+
+    } else {
+
+        quoteAuthor.innerText =
+            "";
+    }
 }
 
 
@@ -1626,7 +1507,9 @@ function showCorrectCelebration() {
         "🧠",
         "💡",
         "⭐",
-        "🔥"
+        "🔥",
+        "🏆",
+        "⚡"
     ]);
 }
 
@@ -1638,11 +1521,12 @@ function showCorrectCelebration() {
 function showWrongReaction() {
 
     createEmojiBurst([
-        "😢",
-        "😞",
-        "🥺",
-        "💔",
-        "😔"
+        "😅",
+        "🤔",
+        "🧐",
+        "💭",
+        "😮‍💨",
+        "🔍"
     ]);
 }
 
@@ -1755,6 +1639,7 @@ function createEmojiBurst(
             if (
                 container.parentNode
             ) {
+
                 container.remove();
             }
 
