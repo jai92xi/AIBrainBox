@@ -57,26 +57,21 @@ body {
 
     margin-bottom: 22px;
 
-    /*
-     * Slightly darker header so the brand,
-     * tagline and quote stand out clearly.
-     */
-
     background:
         linear-gradient(
             135deg,
-            #c9e8e2 0%,
-            #d5d1f2 52%,
-            #cddff2 100%
+            #b8d9d4 0%,
+            #c4c0e8 50%,
+            #b9d1e8 100%
         );
 
     border-bottom:
         1px solid
-        rgba(71, 85, 105, 0.14);
+        rgba(71, 85, 105, 0.20);
 
     box-shadow:
-        0 5px 20px
-        rgba(71, 85, 105, 0.10);
+        0 6px 22px
+        rgba(71, 85, 105, 0.14);
 }
 
 .header-top {
@@ -121,7 +116,7 @@ body {
 
     letter-spacing: -1.2px;
 
-    color: #26364d;
+    color: #1e293b;
 }
 
 
@@ -133,21 +128,19 @@ body {
     max-width: 1180px;
 
     margin:
-        6px
+        5px
         auto
         0;
 
     padding-left: 47px;
 
-    color: #475569;
+    color: #334155;
 
     font-size: 13px;
 
     font-weight: 600;
 
     letter-spacing: 0.1px;
-
-    line-height: 1.5;
 }
 
 
@@ -164,11 +157,11 @@ body {
 
     justify-content: center;
 
-    gap: 5px;
+    gap: 4px;
 
-    width: min(560px, 50%);
+    width: 100%;
 
-    max-width: 560px;
+    max-width: 520px;
 
     color: #334155;
 
@@ -188,14 +181,10 @@ body {
 
 #quote-text {
     display: block;
-
-    width: 100%;
 }
 
 .quote-author {
     display: block;
-
-    width: 100%;
 
     color: #475569;
 
@@ -204,8 +193,6 @@ body {
     font-style: normal;
 
     white-space: normal;
-
-    text-align: right;
 }
 
 
@@ -305,6 +292,17 @@ body {
 
     color: #ffffff;
 
+    background:
+        linear-gradient(
+            135deg,
+            #4f7cff,
+            #6366f1
+        );
+
+    box-shadow:
+        0 5px 12px
+        rgba(79, 70, 229, 0.20);
+
     font-size: 13px;
 
     font-weight: 700;
@@ -316,28 +314,7 @@ body {
         box-shadow 0.15s ease,
         background 0.15s ease,
         opacity 0.15s ease;
-
-    /*
-     * Both Previous and Next intentionally use
-     * exactly the same color family.
-     */
-
-    background:
-        linear-gradient(
-            135deg,
-            #4f7cff,
-            #6366f1
-        );
-
-    box-shadow:
-        0 5px 12px
-        rgba(79, 70, 229, 0.20);
 }
-
-
-/* ============================================================
-   PREVIOUS / NEXT HOVER
-   ============================================================ */
 
 .question-navigation button:hover:not(:disabled) {
     background:
@@ -353,11 +330,6 @@ body {
         0 8px 17px
         rgba(79, 70, 229, 0.28);
 }
-
-
-/* ============================================================
-   DISABLED
-   ============================================================ */
 
 .question-navigation button:disabled {
     opacity: 0.35;
@@ -439,7 +411,7 @@ body {
 
     gap: 25px;
 
-    align-items: stretch;
+    align-items: start;
 }
 
 
@@ -513,12 +485,6 @@ body {
     border:
         1px solid
         rgba(148, 163, 184, 0.12);
-
-    display: flex;
-
-    flex-direction: column;
-
-    min-height: 100%;
 }
 
 
@@ -745,7 +711,6 @@ body {
 }
 
 @keyframes explanationIn {
-
     from {
         opacity: 0;
 
@@ -759,108 +724,6 @@ body {
         transform:
             translateY(0);
     }
-}
-
-
-/* ============================================================
-   ABOUT ME / BUY ME A COFFEE
-   ============================================================ */
-
-.support-links {
-    margin-top: auto;
-
-    padding-top: 18px;
-
-    border-top:
-        1px solid
-        rgba(148, 163, 184, 0.15);
-
-    display: flex;
-
-    justify-content: flex-end;
-
-    align-items: center;
-
-    gap: 8px;
-}
-
-.support-link {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-height: 34px;
-
-    padding: 7px 11px;
-
-    border-radius: 9px;
-
-    text-decoration: none;
-
-    font-size: 11px;
-
-    font-weight: 700;
-
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        background 0.15s ease;
-}
-
-.about-me-link {
-    color: #475569;
-
-    background: #f1f5f9;
-
-    border:
-        1px solid
-        #e2e8f0;
-}
-
-.about-me-link:hover {
-    background: #e2e8f0;
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 4px 10px
-        rgba(71, 85, 105, 0.10);
-}
-
-.coffee-link {
-    color: #ffffff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f59e0b,
-            #ea580c
-        );
-
-    border:
-        1px solid
-        rgba(234, 88, 12, 0.15);
-
-    box-shadow:
-        0 4px 10px
-        rgba(234, 88, 12, 0.15);
-}
-
-.coffee-link:hover {
-    background:
-        linear-gradient(
-            135deg,
-            #d97706,
-            #c2410c
-        );
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 7px 14px
-        rgba(234, 88, 12, 0.22);
 }
 
 
@@ -926,7 +789,6 @@ body {
 }
 
 @keyframes emojiFloat {
-
     0% {
         transform:
             translate3d(
@@ -997,14 +859,6 @@ label:focus-visible {
     .question-panel {
         min-height: auto;
     }
-
-    .options-panel {
-        min-height: auto;
-    }
-
-    .support-links {
-        margin-top: 20px;
-    }
 }
 
 
@@ -1032,7 +886,7 @@ label:focus-visible {
 
         flex-direction: column;
 
-        gap: 10px;
+        gap: 8px;
     }
 
     .brand-icon {
@@ -1043,33 +897,18 @@ label:focus-visible {
         font-size: 30px;
     }
 
-    /*
-     * Quote appears below AIBrainBox and
-     * author always stays underneath quote.
-     */
-
     .motivational-quote {
-        width: 100%;
+        align-items: flex-start;
 
         max-width: 100%;
-
-        align-items: flex-start;
 
         font-size: 12px;
 
         text-align: left;
     }
 
-    #quote-text {
-        width: 100%;
-
-        text-align: left;
-    }
-
     .quote-author {
-        width: 100%;
-
-        text-align: left;
+        font-size: 11px;
     }
 
     .tagline {
@@ -1078,8 +917,6 @@ label:focus-visible {
         padding-left: 41px;
 
         font-size: 12px;
-
-        line-height: 1.45;
     }
 
     .question-navigation {
@@ -1136,24 +973,6 @@ label:focus-visible {
     .option-text {
         font-size: 12.5px;
     }
-
-    .support-links {
-        margin-top: 18px;
-
-        padding-top: 14px;
-
-        justify-content: center;
-
-        flex-wrap: wrap;
-    }
-
-    .support-link {
-        font-size: 10.5px;
-
-        padding:
-            7px
-            10px;
-    }
 }
 
 
@@ -1192,9 +1011,5 @@ label:focus-visible {
         grid-row: 2;
 
         justify-self: end;
-    }
-
-    .support-links {
-        gap: 6px;
     }
 }
