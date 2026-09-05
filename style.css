@@ -60,18 +60,18 @@ body {
     background:
         linear-gradient(
             135deg,
-            #b8d9d4 0%,
-            #c4c0e8 50%,
-            #b9d1e8 100%
+            #b8dcd7 0%,
+            #c5c2e8 52%,
+            #bdd3e8 100%
         );
 
     border-bottom:
         1px solid
-        rgba(71, 85, 105, 0.20);
+        rgba(71, 85, 105, 0.18);
 
     box-shadow:
-        0 6px 22px
-        rgba(71, 85, 105, 0.14);
+        0 5px 20px
+        rgba(51, 65, 85, 0.12);
 }
 
 .header-top {
@@ -105,7 +105,6 @@ body {
 
 .brand-icon {
     font-size: 34px;
-
     line-height: 1;
 }
 
@@ -128,8 +127,7 @@ body {
     max-width: 1180px;
 
     margin:
-        5px
-        auto
+        8px auto
         0;
 
     padding-left: 47px;
@@ -140,7 +138,9 @@ body {
 
     font-weight: 600;
 
-    letter-spacing: 0.1px;
+    letter-spacing: 0.05px;
+
+    line-height: 1.5;
 }
 
 
@@ -159,9 +159,7 @@ body {
 
     gap: 4px;
 
-    width: 100%;
-
-    max-width: 520px;
+    width: min(520px, 48%);
 
     color: #334155;
 
@@ -295,7 +293,7 @@ body {
     background:
         linear-gradient(
             135deg,
-            #4f7cff,
+            #4f46e5,
             #6366f1
         );
 
@@ -316,12 +314,33 @@ body {
         opacity 0.15s ease;
 }
 
-.question-navigation button:hover:not(:disabled) {
+
+/* Same color for Previous and Next */
+
+#previous-question-btn,
+#next-question-btn {
     background:
         linear-gradient(
             135deg,
-            #4169e8,
-            #5149dc
+            #4f46e5,
+            #6366f1
+        );
+
+    box-shadow:
+        0 5px 12px
+        rgba(79, 70, 229, 0.20);
+}
+
+
+/* Hover */
+
+#previous-question-btn:hover:not(:disabled),
+#next-question-btn:hover:not(:disabled) {
+    background:
+        linear-gradient(
+            135deg,
+            #4338ca,
+            #4f46e5
         );
 
     transform: translateY(-1px);
@@ -330,6 +349,9 @@ body {
         0 8px 17px
         rgba(79, 70, 229, 0.28);
 }
+
+
+/* Disabled */
 
 .question-navigation button:disabled {
     opacity: 0.35;
@@ -711,6 +733,7 @@ body {
 }
 
 @keyframes explanationIn {
+
     from {
         opacity: 0;
 
@@ -789,6 +812,7 @@ body {
 }
 
 @keyframes emojiFloat {
+
     0% {
         transform:
             translate3d(
@@ -886,7 +910,7 @@ label:focus-visible {
 
         flex-direction: column;
 
-        gap: 8px;
+        gap: 9px;
     }
 
     .brand-icon {
@@ -898,9 +922,11 @@ label:focus-visible {
     }
 
     .motivational-quote {
-        align-items: flex-start;
+        width: 100%;
 
         max-width: 100%;
+
+        align-items: flex-start;
 
         font-size: 12px;
 
@@ -908,15 +934,17 @@ label:focus-visible {
     }
 
     .quote-author {
-        font-size: 11px;
+        text-align: left;
     }
 
     .tagline {
-        margin-top: 5px;
+        margin-top: 8px;
 
         padding-left: 41px;
 
-        font-size: 12px;
+        font-size: 11.5px;
+
+        line-height: 1.45;
     }
 
     .question-navigation {
