@@ -1821,7 +1821,6 @@ function showError(
             "loading"
         )
         .classList.add("hidden");
-
     document
         .getElementById(
             "question-container"
