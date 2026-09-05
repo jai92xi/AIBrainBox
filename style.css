@@ -9,7 +9,6 @@ html {
 body {
     margin: 0;
     min-height: 100vh;
-
     font-family:
         Inter,
         -apple-system,
@@ -18,25 +17,24 @@ body {
         Roboto,
         Arial,
         sans-serif;
-
     color: #172033;
 
     background:
         radial-gradient(
             circle at 10% 10%,
-            rgba(147, 197, 253, 0.35),
+            rgba(147, 197, 253, 0.28),
             transparent 35%
         ),
         radial-gradient(
             circle at 90% 90%,
-            rgba(196, 181, 253, 0.35),
+            rgba(196, 181, 253, 0.25),
             transparent 35%
         ),
         linear-gradient(
             135deg,
-            #eef6ff 0%,
-            #f8f7ff 50%,
-            #eefcf9 100%
+            #f1f7ff 0%,
+            #faf9ff 50%,
+            #f1fbf8 100%
         );
 
     background-attachment: fixed;
@@ -45,7 +43,7 @@ body {
 .container {
     width: min(1180px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 40px 0 35px;
+    padding: 32px 0 30px;
 }
 
 
@@ -55,20 +53,19 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 12px;
 }
 
 .brand-icon {
-    width: 62px;
-    height: 62px;
-
-    margin: 0 auto 10px;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 8px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 20px;
+    border-radius: 17px;
 
     background:
         linear-gradient(
@@ -78,25 +75,20 @@ body {
         );
 
     color: white;
-    font-size: 30px;
+    font-size: 26px;
 
     box-shadow:
-        0 12px 30px
-        rgba(79, 140, 255, 0.25);
+        0 10px 25px
+        rgba(79, 140, 255, 0.20);
 }
 
 .header h1 {
     margin: 0;
 
-    font-size:
-        clamp(
-            34px,
-            5vw,
-            48px
-        );
-
-    font-weight: 850;
-    letter-spacing: -1.5px;
+    font-size: 40px;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -1px;
 
     background:
         linear-gradient(
@@ -107,15 +99,14 @@ body {
 
     -webkit-background-clip: text;
     background-clip: text;
-
     color: transparent;
 }
 
 .header p {
-    margin: 8px 0 0;
+    margin: 6px 0 0;
 
     color: #64748b;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 
@@ -124,64 +115,53 @@ body {
    ============================================================ */
 
 .motivational-quote {
-    width: min(760px, 100%);
+    width: auto;
+    max-width: 420px;
 
-    margin: 0 auto 25px;
+    margin: 0 0 18px auto;
+    padding: 4px 0;
 
-    padding: 18px 22px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 
-    border:
-        1px solid
-        rgba(99, 102, 241, 0.15);
+    text-align: right;
 
-    border-radius: 18px;
-
-    background:
-        rgba(255, 255, 255, 0.72);
-
-    backdrop-filter: blur(15px);
-
-    box-shadow:
-        0 12px 35px
-        rgba(79, 70, 229, 0.08);
-
-    text-align: center;
-
-    animation:
-        quoteIn
-        0.35s
-        ease;
+    animation: quoteIn 0.35s ease;
 }
 
 .quote-icon {
-    margin-bottom: 6px;
-
-    color: #f59e0b;
-    font-size: 20px;
+    display: none;
 }
 
 .quote-text {
-    color: #334155;
+    color: #64748b;
 
-    font-size: 15px;
-    line-height: 1.6;
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
 
-    font-weight: 650;
+    font-size: 14px;
+    line-height: 1.5;
+
+    font-weight: 400;
+    font-style: italic;
 }
 
 .quote-author {
-    margin-top: 7px;
+    margin-top: 3px;
 
-    color: #64748b;
+    color: #94a3b8;
 
-    font-size: 12px;
-    font-style: italic;
+    font-size: 11px;
+    font-style: normal;
 }
 
 @keyframes quoteIn {
     from {
         opacity: 0;
-        transform: translateY(-8px);
+        transform: translateY(-5px);
     }
 
     to {
@@ -197,12 +177,10 @@ body {
 
 .loading {
     text-align: center;
-
     padding: 60px 20px;
 
     color: #64748b;
-
-    font-size: 16px;
+    font-size: 15px;
 }
 
 
@@ -214,21 +192,16 @@ body {
     max-width: 700px;
 
     margin: 30px auto;
-
     padding: 18px 20px;
 
     border-radius: 14px;
 
     background: #fff1f2;
-
-    border:
-        1px solid
-        #fecdd3;
+    border: 1px solid #fecdd3;
 
     color: #9f1239;
 
     text-align: center;
-
     line-height: 1.5;
 
     white-space: pre-wrap;
@@ -236,7 +209,7 @@ body {
 
 
 /* ============================================================
-   TOP NAVIGATION
+   TOP BAR
    ============================================================ */
 
 .question-navigation {
@@ -245,78 +218,54 @@ body {
     grid-template-columns:
         1fr
         auto
-        1fr;
+        1fr
+        auto;
 
     align-items: center;
 
-    gap: 20px;
+    gap: 14px;
 
-    margin-bottom: 18px;
+    margin-bottom: 15px;
 
-    padding: 13px 15px;
-
-    border:
-        1px solid
-        rgba(148, 163, 184, 0.18);
-
-    border-radius: 16px;
-
-    background:
-        rgba(255, 255, 255, 0.82);
-
-    backdrop-filter: blur(12px);
-
-    box-shadow:
-        0 8px 25px
-        rgba(15, 23, 42, 0.06);
+    padding: 0;
 }
 
+
+/* ============================================================
+   NAVIGATION BUTTONS
+   ============================================================ */
+
 .question-navigation button {
-    border: 0;
+    border: 1px solid #dbe4f0;
 
-    border-radius: 11px;
+    border-radius: 10px;
 
-    padding: 11px 18px;
+    padding: 9px 15px;
 
-    color: white;
+    color: #475569;
 
-    background:
-        linear-gradient(
-            135deg,
-            #4f8cff,
-            #6366f1
-        );
+    background: rgba(255, 255, 255, 0.75);
 
-    font-size: 14px;
-
-    font-weight: 750;
+    font-size: 13px;
+    font-weight: 700;
 
     cursor: pointer;
 
     transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        opacity 0.15s ease;
-}
-
-.question-navigation button:first-child {
-    justify-self: start;
-}
-
-.question-navigation button:last-child {
-    justify-self: end;
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
 }
 
 .question-navigation button:hover:not(:disabled) {
+    background: #ffffff;
+
+    border-color: #93c5fd;
+
+    color: #2563eb;
+
     transform: translateY(-1px);
-
-    box-shadow:
-        0 8px 18px
-        rgba(79, 70, 229, 0.2);
-}
-
-.question-navigation button:active:not(:disabled) {
-    transform: translateY(0);
 }
 
 .question-navigation button:disabled {
@@ -324,14 +273,36 @@ body {
     cursor: not-allowed;
 }
 
+
+/* ============================================================
+   QUESTION POSITION
+   ============================================================ */
+
 .question-position {
-    color: #64748b;
+    color: #475569;
 
     font-size: 13px;
-
-    font-weight: 750;
+    font-weight: 700;
 
     white-space: nowrap;
+}
+
+
+/* ============================================================
+   SCORE
+   ============================================================ */
+
+.score-display {
+    color: #475569;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.score-display strong {
+    color: #2563eb;
 }
 
 
@@ -340,22 +311,22 @@ body {
    ============================================================ */
 
 .question-card {
-    padding: 25px;
+    padding: 22px;
 
     border:
         1px solid
-        rgba(148, 163, 184, 0.18);
+        rgba(148, 163, 184, 0.16);
 
-    border-radius: 22px;
+    border-radius: 20px;
 
     background:
-        rgba(255, 255, 255, 0.86);
+        rgba(255, 255, 255, 0.82);
 
     backdrop-filter: blur(15px);
 
     box-shadow:
-        0 25px 60px
-        rgba(15, 23, 42, 0.09);
+        0 20px 50px
+        rgba(15, 23, 42, 0.07);
 }
 
 
@@ -370,7 +341,7 @@ body {
         minmax(0, 0.95fr)
         minmax(0, 1.05fr);
 
-    gap: 30px;
+    gap: 28px;
 
     align-items: start;
 }
@@ -381,55 +352,67 @@ body {
    ============================================================ */
 
 .question-panel {
-    min-height: 360px;
+    min-height: 330px;
 
-    padding: 28px;
+    padding: 26px;
 
-    border-radius: 18px;
+    border-radius: 17px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(239, 246, 255, 0.9),
-            rgba(248, 247, 255, 0.9)
+            rgba(239, 246, 255, 0.78),
+            rgba(248, 247, 255, 0.78)
         );
 
     border:
         1px solid
-        rgba(96, 165, 250, 0.16);
+        rgba(96, 165, 250, 0.13);
 
     display: flex;
-
     flex-direction: column;
-
     justify-content: flex-start;
 }
 
 .panel-label {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 
-    color: #4f46e5;
+    color: #6366f1;
 
-    font-size: 12px;
+    font-size: 11px;
 
-    font-weight: 850;
+    font-weight: 800;
 
-    letter-spacing: 0.08em;
+    letter-spacing: 0.07em;
 }
 
+
+/* ============================================================
+   QUESTION TEXT
+   ============================================================ */
+
 .question {
-    color: #172033;
+    color: #263449;
+
+    font-family:
+        "Segoe UI",
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
 
     font-size:
         clamp(
-            20px,
-            2.5vw,
-            28px
+            18px,
+            2vw,
+            22px
         );
 
-    line-height: 1.5;
+    line-height: 1.6;
 
-    font-weight: 750;
+    font-weight: 600;
+
+    letter-spacing: -0.1px;
 }
 
 
@@ -438,16 +421,16 @@ body {
    ============================================================ */
 
 .options-panel {
-    padding: 28px;
+    padding: 26px;
 
-    border-radius: 18px;
+    border-radius: 17px;
 
     background:
-        rgba(255, 255, 255, 0.8);
+        rgba(255, 255, 255, 0.70);
 
     border:
         1px solid
-        rgba(148, 163, 184, 0.16);
+        rgba(148, 163, 184, 0.13);
 }
 
 
@@ -457,24 +440,21 @@ body {
 
 .options {
     display: flex;
-
     flex-direction: column;
-
-    gap: 12px;
+    gap: 10px;
 }
 
 .option {
     position: relative;
 
     display: flex;
-
     align-items: center;
 
     border:
-        2px solid
-        #e5e7eb;
+        1.5px solid
+        #e2e8f0;
 
-    border-radius: 14px;
+    border-radius: 12px;
 
     background: #ffffff;
 
@@ -493,8 +473,8 @@ body {
     transform: translateY(-1px);
 
     box-shadow:
-        0 7px 18px
-        rgba(37, 99, 235, 0.08);
+        0 6px 16px
+        rgba(37, 99, 235, 0.07);
 }
 
 .option input {
@@ -508,15 +488,14 @@ body {
 .option label {
     width: 100%;
 
-    min-height: 64px;
+    min-height: 59px;
 
     display: flex;
-
     align-items: center;
 
-    gap: 13px;
+    gap: 12px;
 
-    padding: 13px 16px;
+    padding: 11px 14px;
 
     cursor: pointer;
 }
@@ -524,11 +503,10 @@ body {
 .option-letter {
     flex: 0 0 auto;
 
-    width: 35px;
-    height: 35px;
+    width: 32px;
+    height: 32px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
@@ -538,19 +516,20 @@ body {
 
     color: #2563eb;
 
-    font-size: 14px;
-
-    font-weight: 850;
+    font-size: 13px;
+    font-weight: 800;
 }
 
 .option-text {
     flex: 1;
 
-    color: #334155;
+    color: #475569;
 
-    font-size: 15px;
+    font-size: 14px;
 
     line-height: 1.5;
+
+    font-weight: 450;
 }
 
 
@@ -559,21 +538,19 @@ body {
    ============================================================ */
 
 .option.correct-answer {
-    border-color: #22c55e;
+    border-color: #4ade80;
 
     background: #f0fdf4;
 }
 
 .option.correct-answer .option-letter {
     background: #22c55e;
-
     color: white;
 }
 
 .option.correct-answer .option-text {
     color: #166534;
-
-    font-weight: 700;
+    font-weight: 650;
 }
 
 
@@ -582,21 +559,19 @@ body {
    ============================================================ */
 
 .option.wrong-answer {
-    border-color: #ef4444;
+    border-color: #f87171;
 
     background: #fef2f2;
 }
 
 .option.wrong-answer .option-letter {
     background: #ef4444;
-
     color: white;
 }
 
 .option.wrong-answer .option-text {
     color: #991b1b;
-
-    font-weight: 700;
+    font-weight: 650;
 }
 
 
@@ -607,13 +582,13 @@ body {
 .result {
     min-height: 8px;
 
-    margin-top: 14px;
+    margin-top: 12px;
 
     text-align: center;
 
-    font-size: 14px;
+    font-size: 13px;
 
-    font-weight: 750;
+    font-weight: 700;
 }
 
 
@@ -622,25 +597,25 @@ body {
    ============================================================ */
 
 .explanation {
-    margin-top: 18px;
+    margin-top: 16px;
 
-    padding: 18px 20px;
+    padding: 16px 18px;
 
-    border-radius: 14px;
+    border-radius: 12px;
 
     background:
         linear-gradient(
             135deg,
-            #f5f3ff,
-            #eef6ff
+            #f7f5ff,
+            #f2f8ff
         );
 
     border:
         1px solid
-        rgba(99, 102, 241, 0.18);
+        rgba(99, 102, 241, 0.15);
 
     border-left:
-        4px solid
+        3px solid
         #6366f1;
 
     animation:
@@ -650,19 +625,18 @@ body {
 }
 
 .explanation-title {
-    margin-bottom: 8px;
+    margin-bottom: 7px;
 
     color: #4338ca;
 
-    font-size: 16px;
-
+    font-size: 14px;
     font-weight: 800;
 }
 
 .explanation-text {
-    color: #475569;
+    color: #64748b;
 
-    font-size: 14px;
+    font-size: 13px;
 
     line-height: 1.7;
 
@@ -672,17 +646,22 @@ body {
 @keyframes explanationIn {
     from {
         opacity: 0;
-
-        transform:
-            translateY(-5px);
+        transform: translateY(-4px);
     }
 
     to {
         opacity: 1;
-
-        transform:
-            translateY(0);
+        transform: translateY(0);
     }
+}
+
+
+/* ============================================================
+   HIDDEN
+   ============================================================ */
+
+.hidden {
+    display: none !important;
 }
 
 
@@ -691,13 +670,13 @@ body {
    ============================================================ */
 
 .footer {
-    margin-top: 30px;
+    margin-top: 25px;
 
     text-align: center;
 
     color: #94a3b8;
 
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .footer p {
@@ -741,11 +720,7 @@ body {
 @keyframes emojiFloat {
     0% {
         transform:
-            translate3d(
-                0,
-                0,
-                0
-            )
+            translate3d(0, 0, 0)
             rotate(0deg);
 
         opacity: 0;
@@ -766,9 +741,7 @@ body {
                 -110vh,
                 0
             )
-            rotate(
-                var(--rotation)
-            );
+            rotate(var(--rotation));
 
         opacity: 0;
     }
@@ -776,27 +749,17 @@ body {
 
 
 /* ============================================================
-   HIDDEN
-   ============================================================ */
-
-.hidden {
-    display: none !important;
-}
-
-
-/* ============================================================
-   ACCESSIBILITY
+   FOCUS
    ============================================================ */
 
 button:focus-visible,
 input:focus-visible,
-label:focus-visible,
-a:focus-visible {
+label:focus-visible {
     outline:
         3px solid
-        rgba(59, 130, 246, 0.4);
+        rgba(59, 130, 246, 0.25);
 
-    outline-offset: 3px;
+    outline-offset: 2px;
 }
 
 
@@ -813,7 +776,7 @@ a:focus-visible {
                 900px
             );
 
-        padding-top: 25px;
+        padding-top: 24px;
     }
 
     .quiz-layout {
@@ -833,98 +796,89 @@ a:focus-visible {
 @media (max-width: 600px) {
 
     .container {
-        width: calc(100% - 20px);
+        width: calc(100% - 18px);
 
         padding-top: 18px;
-    }
-
-    .header {
-        margin-bottom: 18px;
     }
 
     .header h1 {
         font-size: 34px;
     }
 
-    .header p {
-        font-size: 13px;
-    }
-
     .brand-icon {
-        width: 54px;
-        height: 54px;
+        width: 50px;
+        height: 50px;
 
-        font-size: 26px;
+        font-size: 24px;
     }
 
     .motivational-quote {
-        padding: 15px 16px;
+        max-width: 100%;
 
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .quote-text {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .question-navigation {
         grid-template-columns:
+            auto
             1fr
             auto
-            1fr;
+            auto;
 
-        gap: 8px;
+        gap: 7px;
 
-        padding: 10px;
+        align-items: center;
     }
 
     .question-navigation button {
+        padding: 8px 9px;
+
+        font-size: 11px;
+    }
+
+    .question-position,
+    .score-display {
+        font-size: 10px;
+    }
+
+    .question-card {
+        padding: 12px;
+
+        border-radius: 16px;
+    }
+
+    .question-panel,
+    .options-panel {
+        padding: 19px;
+
+        border-radius: 14px;
+    }
+
+    .question {
+        font-size: 18px;
+
+        line-height: 1.55;
+    }
+
+    .option label {
+        min-height: 55px;
+
         padding: 10px 11px;
+    }
+
+    .option-letter {
+        width: 30px;
+        height: 30px;
 
         font-size: 12px;
     }
 
-    .question-position {
-        font-size: 11px;
-    }
-
-    .question-card {
-        padding: 14px;
-
-        border-radius: 17px;
-    }
-
-    .question-panel {
-        padding: 20px;
-
-        border-radius: 15px;
-    }
-
-    .options-panel {
-        padding: 20px;
-
-        border-radius: 15px;
-    }
-
-    .question {
-        font-size: 20px;
-    }
-
-    .option label {
-        min-height: 58px;
-
-        padding: 11px 12px;
-    }
-
-    .option-letter {
-        width: 31px;
-        height: 31px;
-
-        font-size: 13px;
-    }
-
     .option-text {
-        font-size: 14px;
+        font-size: 13px;
     }
 }
 
@@ -933,19 +887,38 @@ a:focus-visible {
    VERY SMALL MOBILE
    ============================================================ */
 
-@media (max-width: 400px) {
+@media (max-width: 420px) {
 
     .question-navigation {
-        gap: 5px;
+        grid-template-columns:
+            1fr
+            auto
+            auto;
     }
 
-    .question-navigation button {
-        padding: 9px 8px;
-
-        font-size: 11px;
-    }
-
+    .question-navigation
     .question-position {
-        font-size: 10px;
+        grid-column: 1 / 2;
+        grid-row: 1;
+        justify-self: start;
+    }
+
+    .question-navigation
+    #previous-question-btn {
+        grid-column: 1 / 2;
+        grid-row: 2;
+        justify-self: start;
+    }
+
+    .question-navigation
+    #next-question-btn {
+        grid-column: 3 / 4;
+        grid-row: 2;
+        justify-self: end;
+    }
+
+    .score-display {
+        grid-column: 2 / 3;
+        grid-row: 1;
     }
 }
