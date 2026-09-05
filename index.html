@@ -35,21 +35,18 @@
             <h1>AIBrainBox</h1>
 
             <p>
-                AI Questions • Practice • Learn • Improve * trail 2
+                AI Questions • Practice • Learn • Improve * trail 3
             </p>
 
         </header>
 
 
+        <!-- Motivational quote -->
         <aside
             id="motivational-quote"
             class="motivational-quote"
             aria-label="Motivational quote"
         >
-
-            <div class="quote-icon">
-                ✦
-            </div>
 
             <div
                 id="quote-text"
@@ -66,6 +63,7 @@
         </aside>
 
 
+        <!-- Loading -->
         <section
             id="loading"
             class="loading"
@@ -74,6 +72,7 @@
         </section>
 
 
+        <!-- Error -->
         <section
             id="error"
             class="error hidden"
@@ -81,11 +80,13 @@
         ></section>
 
 
+        <!-- Quiz -->
         <section
             id="question-container"
             class="hidden"
         >
 
+            <!-- Top navigation / progress -->
             <nav
                 id="question-navigation"
                 class="question-navigation"
@@ -103,9 +104,17 @@
                 <div
                     id="question-position"
                     class="question-position"
-                    aria-live="polite"
                 >
-                    Question
+                    Question 1 of 5
+                </div>
+
+
+                <div
+                    id="score-display"
+                    class="score-display"
+                >
+                    Your current streak -
+                    <strong>0/0</strong>
                 </div>
 
 
@@ -119,10 +128,12 @@
             </nav>
 
 
+            <!-- Question and options -->
             <div class="question-card">
 
                 <div class="quiz-layout">
 
+                    <!-- LEFT: QUESTION -->
                     <section class="question-panel">
 
                         <div class="panel-label">
@@ -137,6 +148,7 @@
                     </section>
 
 
+                    <!-- RIGHT: OPTIONS -->
                     <section class="options-panel">
 
                         <div class="panel-label">
@@ -152,12 +164,20 @@
                         ></div>
 
 
+                        <!-- Answer result -->
                         <div
                             id="result"
                             class="result"
                             aria-live="polite"
                         ></div>
 
+
+                        <!--
+                            app.js will insert
+                            "Show Explanation"
+                            here after an answer
+                            is selected.
+                        -->
 
                         <div
                             id="explanation"
@@ -184,6 +204,7 @@
         </section>
 
 
+        <!-- Footer -->
         <footer class="footer">
 
             <p>
