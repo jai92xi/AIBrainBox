@@ -18,8 +18,7 @@ let currentQuestionIndex = -1;
    DATA SOURCES
    ============================================================ */
 
-const CSV_URL =
-    "https://raw.githubusercontent.com/jai92xi/AIBrainBox/main/xi-questions.csv";
+const CSV_URL = "./xi-questions.csv";
 
 
 const QUOTE_API_URL =
