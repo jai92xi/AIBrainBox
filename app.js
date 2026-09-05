@@ -1,18 +1,22 @@
 let questions = [];
 let currentQuestion = null;
 
-// Stores answers for every question during the current session.
-// Example:
-// {
-//     "Xi-00001": {
-//         answer: "B",
-//         correct: true
-//     },
-//     "Xi-00002": {
-//         answer: "C",
-//         correct: false
-//     }
-// }
+/*
+ * Stores the user's answer for each question.
+ *
+ * Example:
+ *
+ * {
+ *     "Xi-00001": {
+ *         answer: "B",
+ *         correct: true
+ *     },
+ *     "Xi-00002": {
+ *         answer: "C",
+ *         correct: false
+ *     }
+ * }
+ */
 const answerState = {};
 
 
@@ -32,9 +36,11 @@ async function loadQuestions() {
 
     try {
 
-        const response = await fetch(
-            CSV_URL + "?v=" + Date.now()
-        );
+        const response =
+            await fetch(
+                CSV_URL + "?v=" + Date.now()
+            );
+
 
         if (!response.ok) {
 
@@ -45,8 +51,10 @@ async function loadQuestions() {
 
         }
 
+
         const csvText =
             await response.text();
+
 
         if (!csvText.trim()) {
 
@@ -56,8 +64,10 @@ async function loadQuestions() {
 
         }
 
+
         questions =
             parseCSV(csvText);
+
 
         if (!questions.length) {
 
@@ -66,6 +76,7 @@ async function loadQuestions() {
             );
 
         }
+
 
         loadQuestion();
 
@@ -78,20 +89,39 @@ async function loadQuestions() {
             error
         );
 
-        document
-            .getElementById("loading")
-            .classList
-            .add("hidden");
+
+        const loading =
+            document.getElementById(
+                "loading"
+            );
+
+
+        if (loading) {
+
+            loading
+                .classList
+                .add("hidden");
+
+        }
+
 
         const errorBox =
-            document.getElementById("error");
+            document.getElementById(
+                "error"
+            );
 
-        errorBox.classList.remove(
-            "hidden"
-        );
 
-        errorBox.innerText =
-            "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
+        if (errorBox) {
+
+            errorBox
+                .classList
+                .remove("hidden");
+
+
+            errorBox.innerText =
+                "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
+
+        }
 
     }
 
@@ -107,6 +137,7 @@ function parseCSV(text) {
     const rows = [];
 
     let row = [];
+
     let cell = "";
 
     let insideQuotes = false;
@@ -120,6 +151,7 @@ function parseCSV(text) {
 
         const char =
             text[i];
+
 
         const nextChar =
             text[i + 1];
@@ -159,7 +191,9 @@ function parseCSV(text) {
             !insideQuotes
         ) {
 
-            row.push(cell);
+            row.push(
+                cell
+            );
 
             cell = "";
 
@@ -185,7 +219,10 @@ function parseCSV(text) {
 
             }
 
-            row.push(cell);
+
+            row.push(
+                cell
+            );
 
 
             if (
@@ -196,7 +233,9 @@ function parseCSV(text) {
                 )
             ) {
 
-                rows.push(row);
+                rows.push(
+                    row
+                );
 
             }
 
@@ -226,7 +265,9 @@ function parseCSV(text) {
         row.length > 0
     ) {
 
-        row.push(cell);
+        row.push(
+            cell
+        );
 
 
         if (
@@ -237,7 +278,9 @@ function parseCSV(text) {
             )
         ) {
 
-            rows.push(row);
+            rows.push(
+                row
+            );
 
         }
 
@@ -268,30 +311,89 @@ function parseCSV(text) {
 
     return rows
         .slice(1)
-        .map(row => {
+        .map(
+            row => {
 
-            const question = {};
+                const question = {};
 
 
-            headers.forEach(
-                (
-                    header,
-                    index
-                ) => {
+                headers.forEach(
+                    (
+                        header,
+                        index
+                    ) => {
 
-                    question[header] =
-                        (
-                            row[index] ||
-                            ""
-                        ).trim();
+                        question[header] =
+                            (
+                                row[index] ||
+                                ""
+                            ).trim();
 
-                }
+                    }
+                );
+
+
+                return question;
+
+            }
+        );
+
+}
+
+
+// ============================================================
+// FORMAT QUESTION TEXT
+// ============================================================
+//
+// Anything inside double quotes becomes bold.
+//
+// Example:
+//
+// "Health Claim"
+//
+// becomes:
+//
+// "Health Claim"
+//       ^^^^^^^^^^^ bold
+//
+// The quotation marks themselves remain normal.
+//
+// HTML is escaped first for safety.
+//
+
+function formatQuestionText(text) {
+
+    if (!text) {
+
+        return "";
+
+    }
+
+
+    const escapedText =
+        text
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
             );
 
 
-            return question;
-
-        });
+    return escapedText.replace(
+        /&quot;([^&]*?)&quot;/g,
+        '"<strong>$1</strong>"'
+    );
 
 }
 
@@ -309,7 +411,9 @@ function loadQuestion() {
 
 
     const id =
-        params.get("id");
+        params.get(
+            "id"
+        );
 
 
     if (!id) {
@@ -344,7 +448,8 @@ function loadQuestion() {
     if (!currentQuestion) {
 
         showError(
-            "Question not found: " + id
+            "Question not found: " +
+            id
         );
 
         return;
@@ -364,30 +469,50 @@ function loadQuestion() {
 function displayQuestion() {
 
     document
-        .getElementById("loading")
+        .getElementById(
+            "loading"
+        )
         .classList
         .add("hidden");
 
 
     document
-        .getElementById("error")
+        .getElementById(
+            "error"
+        )
         .classList
         .add("hidden");
 
 
     document
-        .getElementById("question-container")
+        .getElementById(
+            "question-container"
+        )
         .classList
         .remove("hidden");
 
 
-    // Display question only
+    // ========================================================
+    // QUESTION
+    // ========================================================
+    //
+    // Use innerHTML because quoted text needs <strong>.
+    // formatQuestionText() escapes all other HTML first.
+    //
 
     document
-        .getElementById("question")
-        .innerText =
-        currentQuestion.question || "";
+        .getElementById(
+            "question"
+        )
+        .innerHTML =
+        formatQuestionText(
+            currentQuestion.question || ""
+        );
 
+
+    // ========================================================
+    // OPTIONS
+    // ========================================================
 
     const optionsContainer =
         document.getElementById(
@@ -395,7 +520,8 @@ function displayQuestion() {
         );
 
 
-    optionsContainer.innerHTML = "";
+    optionsContainer.innerHTML =
+        "";
 
 
     const optionLetters = [
@@ -414,6 +540,7 @@ function displayQuestion() {
                     "div"
                 );
 
+
             option.className =
                 "option";
 
@@ -429,14 +556,18 @@ function displayQuestion() {
             radio.type =
                 "radio";
 
+
             radio.name =
                 "answer";
+
 
             radio.value =
                 letter;
 
+
             radio.id =
-                "option-" + letter;
+                "option-" +
+                letter;
 
 
             // Letter
@@ -449,6 +580,7 @@ function displayQuestion() {
 
             letterSpan.className =
                 "option-letter";
+
 
             letterSpan.innerText =
                 letter + ".";
@@ -465,10 +597,12 @@ function displayQuestion() {
             textSpan.className =
                 "option-text";
 
+
             textSpan.innerText =
                 currentQuestion[
                     letter.toLowerCase()
-                ] || "";
+                ] ||
+                "";
 
 
             // Label
@@ -480,7 +614,8 @@ function displayQuestion() {
 
 
             label.htmlFor =
-                "option-" + letter;
+                "option-" +
+                letter;
 
 
             label.appendChild(
@@ -508,9 +643,9 @@ function displayQuestion() {
             );
 
 
-            // ==================================================
-            // IMMEDIATE ANSWER CHECK
-            // ==================================================
+            // =================================================
+            // ANSWER EVENT
+            // =================================================
 
             radio.addEventListener(
                 "change",
@@ -528,11 +663,23 @@ function displayQuestion() {
     );
 
 
+    // Reset visual state
+
     resetAnswerState();
+
+
+    // Restore previous answer if this
+    // question has already been answered
 
     restoreAnswerState();
 
+
+    // Navigation
+
     updateNavigationButtons();
+
+
+    // Score
 
     updateScore();
 
@@ -586,7 +733,9 @@ function checkAnswer(
     };
 
 
-    // Remove old states
+    // ========================================================
+    // REMOVE OLD VISUAL STATES
+    // ========================================================
 
     document
         .querySelectorAll(
@@ -636,7 +785,7 @@ function checkAnswer(
             );
 
 
-        // Find correct option
+        // Find correct answer option
 
         const correctRadio =
             document.querySelector(
@@ -649,7 +798,9 @@ function checkAnswer(
         if (correctRadio) {
 
             correctRadio
-                .closest(".option")
+                .closest(
+                    ".option"
+                )
                 .classList
                 .add(
                     "correct-answer"
@@ -671,7 +822,7 @@ function checkAnswer(
 
 
     // ========================================================
-    // PREPARE EXPLANATION
+    // EXPLANATION
     // ========================================================
 
     const explanation =
@@ -680,35 +831,51 @@ function checkAnswer(
         "";
 
 
-    document
-        .getElementById(
+    const explanationText =
+        document.getElementById(
             "explanation-text"
-        )
-        .innerText =
-        explanation;
+        );
 
 
-    // Show explanation button
+    if (explanationText) {
 
-    document
-        .getElementById(
+        explanationText.innerText =
+            explanation;
+
+    }
+
+
+    const explanationButton =
+        document.getElementById(
             "show-explanation-btn"
-        )
-        .classList
-        .remove("hidden");
+        );
 
 
-    // Keep explanation hidden
+    if (explanationButton) {
 
-    document
-        .getElementById(
+        explanationButton
+            .classList
+            .remove("hidden");
+
+    }
+
+
+    const explanationContainer =
+        document.getElementById(
             "explanation"
-        )
-        .classList
-        .add("hidden");
+        );
 
 
-    // No large result text
+    if (explanationContainer) {
+
+        explanationContainer
+            .classList
+            .add("hidden");
+
+    }
+
+
+    // Clear result
 
     const result =
         document.getElementById(
@@ -716,7 +883,12 @@ function checkAnswer(
         );
 
 
-    result.innerText = "";
+    if (result) {
+
+        result.innerText =
+            "";
+
+    }
 
 }
 
@@ -728,7 +900,9 @@ function checkAnswer(
 function restoreAnswerState() {
 
     if (!currentQuestion) {
+
         return;
+
     }
 
 
@@ -738,7 +912,7 @@ function restoreAnswerState() {
         ];
 
 
-    // Question has not been answered
+    // Not answered yet
 
     if (!state) {
 
@@ -764,7 +938,7 @@ function restoreAnswerState() {
     }
 
 
-    // Restore selection
+    // Restore radio selection
 
     radio.checked =
         true;
@@ -776,7 +950,7 @@ function restoreAnswerState() {
         );
 
 
-    // Remove old visual states
+    // Remove visual states first
 
     document
         .querySelectorAll(
@@ -796,7 +970,7 @@ function restoreAnswerState() {
 
 
     // ========================================================
-    // CORRECT ANSWER
+    // CORRECT
     // ========================================================
 
     if (state.correct) {
@@ -811,7 +985,7 @@ function restoreAnswerState() {
 
 
     // ========================================================
-    // WRONG ANSWER
+    // WRONG
     // ========================================================
 
     else {
@@ -822,8 +996,6 @@ function restoreAnswerState() {
                 "wrong-answer"
             );
 
-
-        // Show correct answer
 
         const correctAnswer =
             (
@@ -867,38 +1039,62 @@ function restoreAnswerState() {
         "";
 
 
-    document
-        .getElementById(
+    const explanationText =
+        document.getElementById(
             "explanation-text"
-        )
-        .innerText =
-        explanation;
+        );
 
 
-    document
-        .getElementById(
+    if (explanationText) {
+
+        explanationText.innerText =
+            explanation;
+
+    }
+
+
+    const explanationButton =
+        document.getElementById(
             "show-explanation-btn"
-        )
-        .classList
-        .remove("hidden");
+        );
 
 
-    // Keep explanation hidden
+    if (explanationButton) {
 
-    document
-        .getElementById(
+        explanationButton
+            .classList
+            .remove("hidden");
+
+    }
+
+
+    const explanationContainer =
+        document.getElementById(
             "explanation"
-        )
-        .classList
-        .add("hidden");
+        );
 
 
-    document
-        .getElementById(
+    if (explanationContainer) {
+
+        explanationContainer
+            .classList
+            .add("hidden");
+
+    }
+
+
+    const result =
+        document.getElementById(
             "result"
-        )
-        .innerText =
-        "";
+        );
+
+
+    if (result) {
+
+        result.innerText =
+            "";
+
+    }
 
 }
 
@@ -916,7 +1112,9 @@ function updateScore() {
 
 
     if (!scoreElement) {
+
         return;
+
     }
 
 
@@ -947,7 +1145,7 @@ function updateScore() {
 
 
 // ============================================================
-// GET CURRENT QUESTION INDEX
+// CURRENT QUESTION INDEX
 // ============================================================
 
 function getCurrentQuestionIndex() {
@@ -980,7 +1178,7 @@ function getCurrentQuestionIndex() {
 
 
 // ============================================================
-// NAVIGATION TOOLBAR
+// INITIALIZE NAVIGATION
 // ============================================================
 
 function initializeNavigation() {
@@ -1014,7 +1212,8 @@ function initializeNavigation() {
         "true";
 
 
-    toolbar.innerHTML = "";
+    toolbar.innerHTML =
+        "";
 
 
     // ========================================================
@@ -1090,6 +1289,10 @@ function initializeNavigation() {
         nextQuestion
     );
 
+
+    // ========================================================
+    // ADD TO TOOLBAR
+    // ========================================================
 
     toolbar.appendChild(
         previousButton
@@ -1206,7 +1409,7 @@ function navigateToQuestion(
         question;
 
 
-    // Update URL without reloading page
+    // Update URL without reloading
 
     const url =
         new URL(
@@ -1229,6 +1432,8 @@ function navigateToQuestion(
         url
     );
 
+
+    // Display question
 
     displayQuestion();
 
@@ -1285,13 +1490,13 @@ function updateNavigationButtons() {
     }
 
 
-    // Disable previous on first question
+    // First question
 
     previousButton.disabled =
         currentIndex <= 0;
 
 
-    // Disable next on last question
+    // Last question
 
     nextButton.disabled =
         currentIndex < 0 ||
@@ -1302,7 +1507,7 @@ function updateNavigationButtons() {
 
 
 // ============================================================
-// RESET ANSWER STATE - VISUAL STATE ONLY
+// RESET CURRENT QUESTION VISUAL STATE
 // ============================================================
 
 function resetAnswerState() {
@@ -1315,9 +1520,11 @@ function resetAnswerState() {
 
     if (result) {
 
-        result.innerText = "";
+        result.innerText =
+            "";
 
-        result.className = "";
+        result.className =
+            "";
 
     }
 
@@ -1418,9 +1625,9 @@ function toggleExplanation() {
 
 
     if (
-        explanation.classList.contains(
-            "hidden"
-        )
+        explanation
+            .classList
+            .contains("hidden")
     ) {
 
         explanation
@@ -1684,20 +1891,34 @@ function showError(
     message
 ) {
 
-    document
-        .getElementById(
+    const loading =
+        document.getElementById(
             "loading"
-        )
-        .classList
-        .add("hidden");
+        );
 
 
-    document
-        .getElementById(
+    if (loading) {
+
+        loading
+            .classList
+            .add("hidden");
+
+    }
+
+
+    const questionContainer =
+        document.getElementById(
             "question-container"
-        )
-        .classList
-        .add("hidden");
+        );
+
+
+    if (questionContainer) {
+
+        questionContainer
+            .classList
+            .add("hidden");
+
+    }
 
 
     const errorBox =
@@ -1706,13 +1927,17 @@ function showError(
         );
 
 
-    errorBox
-        .classList
-        .remove("hidden");
+    if (errorBox) {
+
+        errorBox
+            .classList
+            .remove("hidden");
 
 
-    errorBox.innerText =
-        message;
+        errorBox.innerText =
+            message;
+
+    }
 
 }
 
