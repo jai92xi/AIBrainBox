@@ -1,7 +1,3 @@
-/* ============================================================
-   RESET
-   ============================================================ */
-
 * {
     box-sizing: border-box;
 }
@@ -12,79 +8,65 @@ html {
 
 body {
     margin: 0;
-    padding: 0;
-
+    min-height: 100vh;
     font-family:
+        Inter,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
         Roboto,
-        Helvetica,
         Arial,
         sans-serif;
 
-    background: #f8fafc;
-    color: #1e293b;
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff 0%,
+            #f8fafc 45%,
+            #ecfeff 100%
+        );
 
-    min-height: 100vh;
+    color: #111827;
 }
 
+.container {
+    width: min(900px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 42px 0 30px;
+}
 
 /* ============================================================
    HEADER
    ============================================================ */
 
-header {
-    background: linear-gradient(
-        135deg,
-        #4f46e5,
-        #7c3aed
-    );
-
-    color: white;
-
-    padding: 28px 20px;
-
+.header {
     text-align: center;
-
-    box-shadow:
-        0 4px 15px rgba(79, 70, 229, 0.2);
+    margin-bottom: 30px;
 }
 
-.header-content {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-header h1 {
-    margin: 0 0 6px;
-
-    font-size: 32px;
-    font-weight: 800;
-}
-
-header p {
+.header h1 {
     margin: 0;
+    font-size: clamp(32px, 6vw, 48px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
 
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #7c3aed
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.header p {
+    margin: 8px 0 0;
+    color: #64748b;
     font-size: 15px;
-
-    opacity: 0.9;
 }
-
-
-/* ============================================================
-   MAIN
-   ============================================================ */
-
-main {
-    width: 100%;
-    max-width: 1000px;
-
-    margin: 0 auto;
-
-    padding: 30px 20px 50px;
-}
-
 
 /* ============================================================
    LOADING
@@ -92,211 +74,34 @@ main {
 
 .loading {
     text-align: center;
-
     padding: 60px 20px;
-
     color: #64748b;
-
-    font-size: 17px;
+    font-size: 16px;
 }
 
-
 /* ============================================================
-   ERROR
+   QUESTION CARD
    ============================================================ */
 
-.error {
-    max-width: 700px;
-
-    margin: 30px auto;
-
-    padding: 18px 20px;
-
-    background: #fef2f2;
-
-    border: 1px solid #fecaca;
-
-    border-radius: 12px;
-
-    color: #b91c1c;
-
-    text-align: center;
-
-    line-height: 1.5;
-}
-
-
-/* ============================================================
-   HIDDEN
-   ============================================================ */
-
-.hidden {
-    display: none !important;
-}
-
-
-/* ============================================================
-   QUESTION CONTAINER
-   ============================================================ */
-
-#question-container {
-    width: 100%;
-}
-
-
-/* ============================================================
-   QUIZ NAVIGATION TOOLBAR
-   ============================================================ */
-
-#quiz-navigation-toolbar {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: 16px;
-
-    width: 100%;
-
-    margin-bottom: 24px;
-
-    padding: 14px 16px;
-
-    background: #ffffff;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 14px;
+.question-card {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 20px;
+    padding: 30px;
 
     box-shadow:
-        0 4px 15px rgba(15, 23, 42, 0.06);
+        0 20px 50px rgba(15, 23, 42, 0.08);
+
+    backdrop-filter: blur(10px);
 }
-
-
-/* ============================================================
-   NAVIGATION BUTTONS
-   ============================================================ */
-
-#quiz-navigation-toolbar button {
-    appearance: none;
-
-    border: none;
-
-    border-radius: 9px;
-
-    padding: 11px 17px;
-
-    background: #4f46e5;
-
-    color: #ffffff;
-
-    font-family: inherit;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    line-height: 1.2;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
-}
-
-#quiz-navigation-toolbar button:hover:not(:disabled) {
-    background: #4338ca;
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 4px 10px rgba(79, 70, 229, 0.25);
-}
-
-#quiz-navigation-toolbar button:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-#quiz-navigation-toolbar button:disabled {
-    background: #cbd5e1 !important;
-
-    color: #64748b !important;
-
-    cursor: not-allowed !important;
-
-    box-shadow: none !important;
-
-    transform: none !important;
-}
-
-
-/* ============================================================
-   SCORE
-   ============================================================ */
-
-#quiz-score {
-    min-width: 110px;
-
-    text-align: center;
-
-    color: #4338ca;
-
-    font-size: 18px;
-
-    font-weight: 800;
-
-    white-space: nowrap;
-}
-
-
-/* ============================================================
-   QUIZ LAYOUT
-   ============================================================ */
-
-.quiz-layout {
-    width: 100%;
-}
-
-
-/* ============================================================
-   QUESTION SECTION
-   ============================================================ */
-
-.question-section {
-    width: 100%;
-
-    background: #ffffff;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 16px;
-
-    padding: 28px;
-
-    box-shadow:
-        0 6px 20px rgba(15, 23, 42, 0.06);
-}
-
-
-/* ============================================================
-   QUESTION
-   ============================================================ */
 
 .question {
-    margin-bottom: 28px;
-
-    color: #0f172a;
-
-    font-size: 23px;
-
-    font-weight: 700;
-
-    line-height: 1.5;
+    font-size: clamp(20px, 3vw, 27px);
+    line-height: 1.45;
+    font-weight: 750;
+    color: #111827;
+    margin-bottom: 25px;
 }
-
 
 /* ============================================================
    OPTIONS
@@ -304,9 +109,7 @@ main {
 
 .options {
     display: flex;
-
     flex-direction: column;
-
     gap: 12px;
 }
 
@@ -314,233 +117,434 @@ main {
     position: relative;
 
     display: flex;
-
     align-items: center;
 
-    width: 100%;
-
-    padding: 15px 17px;
-
-    background: #f8fafc;
-
     border: 2px solid #e2e8f0;
+    border-radius: 14px;
 
-    border-radius: 12px;
+    background: #ffffff;
 
     transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.15s ease;
+        border-color 0.18s ease,
+        background 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
 .option:hover {
-    background: #f1f5f9;
-
-    border-color: #c7d2fe;
-
+    border-color: #93c5fd;
+    background: #f8fbff;
     transform: translateY(-1px);
+    box-shadow:
+        0 5px 15px rgba(37, 99, 235, 0.07);
 }
 
-.option input[type="radio"] {
-    width: 18px;
-
-    height: 18px;
-
-    margin: 0 12px 0 0;
-
-    flex-shrink: 0;
-
-    accent-color: #4f46e5;
-
-    cursor: pointer;
+.option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .option label {
-    display: flex;
+    width: 100%;
+    min-height: 64px;
 
+    display: flex;
     align-items: center;
 
-    width: 100%;
+    gap: 13px;
+
+    padding: 14px 17px;
 
     cursor: pointer;
-
-    line-height: 1.5;
 }
 
 .option-letter {
-    display: inline-flex;
+    flex: 0 0 auto;
 
+    width: 34px;
+    height: 34px;
+
+    display: flex;
     align-items: center;
-
     justify-content: center;
-
-    flex-shrink: 0;
-
-    width: 30px;
-
-    height: 30px;
-
-    margin-right: 10px;
 
     border-radius: 50%;
 
-    background: #e0e7ff;
-
-    color: #4338ca;
-
-    font-weight: 700;
+    background: #eff6ff;
+    color: #2563eb;
 
     font-size: 14px;
+    font-weight: 800;
 }
 
 .option-text {
-    color: #334155;
+    flex: 1;
 
-    font-size: 16px;
+    color: #334155;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
-
 /* ============================================================
-   CORRECT ANSWER
+   CORRECT / WRONG
    ============================================================ */
 
 .option.correct-answer {
-    background: #ecfdf5;
-
     border-color: #22c55e;
+    background: #f0fdf4;
 }
 
 .option.correct-answer .option-letter {
     background: #22c55e;
-
     color: #ffffff;
 }
 
 .option.correct-answer .option-text {
     color: #166534;
-
-    font-weight: 600;
+    font-weight: 650;
 }
 
-
-/* ============================================================
-   WRONG ANSWER
-   ============================================================ */
-
 .option.wrong-answer {
-    background: #fef2f2;
-
     border-color: #ef4444;
+    background: #fef2f2;
 }
 
 .option.wrong-answer .option-letter {
     background: #ef4444;
-
     color: #ffffff;
 }
 
 .option.wrong-answer .option-text {
     color: #991b1b;
-
-    font-weight: 600;
+    font-weight: 650;
 }
-
 
 /* ============================================================
    RESULT
    ============================================================ */
 
-.result {
-    min-height: 24px;
-
-    margin-top: 20px;
-
-    font-size: 16px;
-
-    font-weight: 700;
-
+#result {
+    min-height: 10px;
+    margin-top: 16px;
     text-align: center;
+    font-weight: 700;
 }
-
 
 /* ============================================================
    EXPLANATION BUTTON
    ============================================================ */
 
-#show-explanation-btn {
+.explanation-button {
     display: block;
 
-    margin: 22px auto 0;
+    width: 100%;
 
-    padding: 11px 18px;
+    margin-top: 22px;
 
-    border: none;
+    padding: 13px 18px;
 
-    border-radius: 9px;
+    border: 0;
+    border-radius: 12px;
 
-    background: #f59e0b;
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #6366f1
+        );
 
     color: #ffffff;
 
-    font-family: inherit;
-
     font-size: 14px;
-
-    font-weight: 700;
+    font-weight: 750;
 
     cursor: pointer;
 
     transition:
-        background 0.2s ease,
-        transform 0.15s ease;
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        opacity 0.15s ease;
 }
 
-#show-explanation-btn:hover {
-    background: #d97706;
-
+.explanation-button:hover {
     transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 20px rgba(99, 102, 241, 0.25);
 }
 
-#show-explanation-btn:active {
+.explanation-button:active {
     transform: translateY(0);
 }
-
 
 /* ============================================================
    EXPLANATION
    ============================================================ */
 
 .explanation {
-    margin-top: 20px;
+    margin-top: 18px;
 
     padding: 20px;
 
-    background: #fffbeb;
+    border-radius: 14px;
 
-    border: 1px solid #fde68a;
+    background: #f8fafc;
+
+    border-left: 4px solid #6366f1;
+
+    color: #334155;
+
+    line-height: 1.7;
+
+    animation:
+        explanationIn 0.2s ease;
+}
+
+.explanation h2 {
+    margin: 0 0 9px;
+
+    font-size: 17px;
+
+    color: #4338ca;
+}
+
+.explanation div {
+    white-space: pre-wrap;
+}
+
+@keyframes explanationIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+/* ============================================================
+   PREVIOUS / NEXT NAVIGATION
+   ============================================================ */
+
+#question-navigation {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    width: 100%;
+
+    margin-top: 28px;
+    padding-top: 22px;
+
+    border-top:
+        1px solid #e5e7eb;
+}
+
+#question-navigation button {
+    min-width: 125px;
+
+    padding: 12px 18px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        opacity 0.15s ease;
+}
+
+#question-navigation button:hover:not(:disabled) {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 18px rgba(37, 99, 235, 0.2);
+}
+
+#question-navigation button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+#question-navigation button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+#question-position {
+    flex: 1;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 13px;
+    font-weight: 750;
+}
+
+/* ============================================================
+   MOTIVATIONAL QUOTE
+   ============================================================ */
+
+#motivational-quote {
+    position: fixed;
+
+    top: 18px;
+    right: 18px;
+
+    z-index: 1000;
+
+    width: min(
+        330px,
+        calc(100vw - 36px)
+    );
+
+    padding: 16px 18px;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(15, 23, 42, 0.97),
+            rgba(30, 41, 59, 0.97)
+        );
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+
+    color: #ffffff;
+
+    box-shadow:
+        0 14px 35px
+        rgba(15, 23, 42, 0.25);
+
+    backdrop-filter: blur(12px);
+
+    animation:
+        quoteIn 0.35s ease;
+}
+
+.quote-icon {
+    margin-bottom: 7px;
+
+    color: #fbbf24;
+
+    font-size: 19px;
+}
+
+.quote-text {
+    font-size: 14px;
+
+    line-height: 1.55;
+
+    font-weight: 650;
+}
+
+.quote-author {
+    margin-top: 9px;
+
+    color: #cbd5e1;
+
+    font-size: 12px;
+
+    font-style: italic;
+}
+
+.quote-source {
+    margin-top: 8px;
+
+    font-size: 9px;
+
+    opacity: 0.5;
+}
+
+.quote-source a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.quote-source a:hover {
+    text-decoration: underline;
+}
+
+@keyframes quoteIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.error {
+    margin: 30px auto;
+
+    max-width: 700px;
+
+    padding: 18px 20px;
 
     border-radius: 12px;
 
-    color: #78350f;
+    background: #fef2f2;
 
-    line-height: 1.65;
+    border: 1px solid #fecaca;
+
+    color: #991b1b;
+
+    text-align: center;
+
+    line-height: 1.5;
 }
-
-.explanation h3 {
-    margin: 0 0 10px;
-
-    color: #92400e;
-
-    font-size: 17px;
-}
-
-#explanation-text {
-    font-size: 15px;
-}
-
 
 /* ============================================================
-   REACTION ANIMATION
+   FOOTER
+   ============================================================ */
+
+.footer {
+    margin-top: 30px;
+
+    text-align: center;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+.footer p {
+    margin: 0;
+}
+
+/* ============================================================
+   EMOJI REACTION
    ============================================================ */
 
 .reaction-container {
@@ -548,15 +552,11 @@ main {
 
     inset: 0;
 
-    width: 100%;
-
-    height: 100%;
-
     pointer-events: none;
 
     overflow: hidden;
 
-    z-index: 9999;
+    z-index: 2000;
 }
 
 .reaction-emoji {
@@ -564,35 +564,30 @@ main {
 
     left: var(--start-left);
 
-    bottom: -80px;
+    bottom: -70px;
 
     font-size: var(--emoji-size);
 
-    line-height: 1;
-
     animation:
-        emoji-float
+        emojiFloat
         var(--duration)
-        ease-out
         var(--delay)
+        ease-out
         forwards;
-
-    user-select: none;
 }
 
-@keyframes emoji-float {
+@keyframes emojiFloat {
 
     0% {
-        opacity: 0;
-
         transform:
             translate3d(
                 0,
                 0,
                 0
             )
-            rotate(0deg)
-            scale(0.7);
+            rotate(0deg);
+
+        opacity: 0;
     }
 
     10% {
@@ -604,232 +599,149 @@ main {
     }
 
     100% {
-        opacity: 0;
-
         transform:
             translate3d(
                 var(--horizontal),
                 -110vh,
                 0
             )
-            rotate(var(--rotation))
-            scale(1.1);
+            rotate(var(--rotation));
+
+        opacity: 0;
     }
+
 }
 
-
 /* ============================================================
-   FOOTER
+   HIDDEN
    ============================================================ */
 
-footer {
-    padding: 25px 20px;
-
-    text-align: center;
-
-    color: #94a3b8;
-
-    font-size: 13px;
+.hidden {
+    display: none !important;
 }
-
-footer p {
-    margin: 0;
-}
-
 
 /* ============================================================
-   FOCUS STATES
+   FOCUS ACCESSIBILITY
    ============================================================ */
 
 button:focus-visible,
 input:focus-visible,
-label:focus-visible {
-    outline: 3px solid rgba(99, 102, 241, 0.35);
+label:focus-visible,
+a:focus-visible {
+    outline: 3px solid
+        rgba(59, 130, 246, 0.45);
 
-    outline-offset: 2px;
+    outline-offset: 3px;
 }
-
-
-/* ============================================================
-   TABLET
-   ============================================================ */
-
-@media (max-width: 768px) {
-
-    main {
-        padding: 24px 16px 40px;
-    }
-
-    .question-section {
-        padding: 22px;
-    }
-
-    .question {
-        font-size: 21px;
-    }
-
-}
-
 
 /* ============================================================
    MOBILE
    ============================================================ */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
-    header {
-        padding: 22px 16px;
+    .container {
+        width: min(
+            100% - 20px,
+            900px
+        );
+
+        padding-top: 20px;
     }
 
-    header h1 {
-        font-size: 26px;
+    .header {
+        margin-bottom: 20px;
     }
 
-    header p {
-        font-size: 14px;
+    .header h1 {
+        font-size: 34px;
     }
 
-    main {
-        padding: 18px 12px 35px;
+    .header p {
+        font-size: 13px;
     }
 
+    .question-card {
+        padding: 20px 15px;
 
-    /* --------------------------------------------------------
-       Navigation
-       -------------------------------------------------------- */
+        border-radius: 16px;
+    }
 
-    #quiz-navigation-toolbar {
-        display: grid;
+    .question {
+        font-size: 20px;
+    }
 
-        grid-template-columns: 1fr 1fr;
-
-        gap: 10px;
+    .option label {
+        min-height: 58px;
 
         padding: 12px;
     }
 
-    #quiz-score {
-        grid-column: 1 / -1;
-
-        grid-row: 1;
-
-        min-width: 0;
-
-        padding: 4px 0 6px;
-
-        font-size: 17px;
-    }
-
-    #previous-question-btn {
-        grid-column: 1;
-
-        grid-row: 2;
-
-        width: 100%;
-    }
-
-    #next-question-btn {
-        grid-column: 2;
-
-        grid-row: 2;
-
-        width: 100%;
-    }
-
-
-    /* --------------------------------------------------------
-       Question
-       -------------------------------------------------------- */
-
-    .question-section {
-        padding: 18px 15px;
-
-        border-radius: 13px;
-    }
-
-    .question {
-        margin-bottom: 21px;
-
-        font-size: 19px;
-
-        line-height: 1.45;
-    }
-
-
-    /* --------------------------------------------------------
-       Options
-       -------------------------------------------------------- */
-
-    .option {
-        padding: 13px;
-
-        border-radius: 10px;
-    }
-
-    .option input[type="radio"] {
-        width: 17px;
-
-        height: 17px;
-
-        margin-right: 9px;
-    }
-
     .option-letter {
-        width: 27px;
-
-        height: 27px;
-
-        margin-right: 8px;
+        width: 31px;
+        height: 31px;
 
         font-size: 13px;
     }
 
     .option-text {
-        font-size: 15px;
-
-        line-height: 1.4;
+        font-size: 14px;
     }
 
-
-    /* --------------------------------------------------------
-       Explanation
-       -------------------------------------------------------- */
-
-    .explanation {
-        padding: 16px;
-
-        margin-top: 16px;
+    #question-navigation {
+        gap: 7px;
     }
 
-    #show-explanation-btn {
-        width: 100%;
+    #question-navigation button {
+        min-width: 0;
+
+        padding:
+            10px 12px;
+
+        font-size: 13px;
+    }
+
+    #question-position {
+        font-size: 12px;
+    }
+
+    #motivational-quote {
+        position: relative;
+
+        top: auto;
+        right: auto;
+
+        width: auto;
+
+        margin:
+            0 0 18px;
+
+        padding: 14px 15px;
+    }
+
+    .quote-text {
+        font-size: 13px;
     }
 
 }
 
-
 /* ============================================================
-   VERY SMALL SCREENS
+   SMALL MOBILE
    ============================================================ */
 
-@media (max-width: 380px) {
+@media (max-width: 400px) {
 
-    #quiz-navigation-toolbar button {
-        padding: 10px 8px;
-
-        font-size: 12px;
+    .question-card {
+        padding: 17px 12px;
     }
 
-    #quiz-score {
-        font-size: 16px;
+    #question-navigation button {
+        padding:
+            9px 9px;
     }
 
-    .question {
-        font-size: 18px;
-    }
-
-    .option-text {
-        font-size: 14px;
+    #question-position {
+        font-size: 11px;
     }
 
 }
