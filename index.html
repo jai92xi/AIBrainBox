@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -11,16 +12,18 @@
 
     <meta
         name="description"
-        content="AIBrainBox — AI Questions, Practice, Learn and Improve."
+        content="AIBrainBox — practice AI questions, test your knowledge, and improve your skills."
     >
 
-    <title>AIBrainBox</title>
+    <title>🧠AIBrainBox</title>
 
     <link
         rel="stylesheet"
         href="style.css"
     >
+
 </head>
+
 
 <body>
 
@@ -32,51 +35,60 @@
 
         <header class="header">
 
-            <div class="header-top">
+            <h1>
+                🧠AIBrainBox
+            </h1>
 
-                <!-- Brand -->
-                <div class="brand">
-
-                    <span class="brand-icon">
-                        🧠
-                    </span>
-
-                    <span class="brand-name">
-                        AIBrainBox
-                    </span>
-
-                </div>
-
-
-                <!-- Motivational Quote -->
-                <aside
-                    id="motivational-quote"
-                    class="motivational-quote"
-                    aria-label="Motivational quote"
-                >
-
-                    <span id="quote-text">
-                        “Keep going. Your future self will thank you.”
-                    </span>
-
-                    <span
-                        id="quote-author"
-                        class="quote-author"
-                    >
-                        — AIBrainBox
-                    </span>
-
-                </aside>
-
-            </div>
-
-
-            <!-- Tagline -->
-            <p class="tagline">
-                AI Questions 4 • Practice • Learn • Improve
+            <p>
+                AI Questions • Practice • Learn • Improve
             </p>
 
         </header>
+
+
+        <!-- =====================================================
+             MOTIVATIONAL QUOTE
+             ===================================================== -->
+
+        <aside
+            id="motivational-quote"
+            class="motivational-quote"
+            aria-label="Motivational quote"
+        >
+
+            <span id="quote-text">
+                “Keep going. Your future self will thank you.”
+            </span>
+
+            <span
+                id="quote-author"
+                class="quote-author"
+            >
+                — AIBrainBox
+            </span>
+
+        </aside>
+
+
+        <!-- =====================================================
+             HIGHLIGHTER
+             ===================================================== -->
+
+        <button
+            id="highlighter-btn"
+            class="highlighter-dot"
+            type="button"
+            aria-label="Turn highlighter on"
+            aria-pressed="false"
+            title="Highlight text"
+        >
+
+            <span
+                class="highlighter-dot-inner"
+                aria-hidden="true"
+            ></span>
+
+        </button>
 
 
         <!-- =====================================================
@@ -111,127 +123,84 @@
             class="hidden"
         >
 
-            <!-- =================================================
-                 TOP NAVIGATION
-                 ================================================= -->
-
-            <nav
-                id="question-navigation"
-                class="question-navigation"
-                aria-label="Question navigation"
-            >
-
-                <button
-                    id="previous-question-btn"
-                    type="button"
-                >
-                    ← Previous
-                </button>
-
-
-                <div
-                    id="question-position"
-                    class="question-position"
-                >
-                    Question 1 of 5
-                </div>
-
-
-                <div
-                    id="score-display"
-                    class="score-display"
-                >
-                    Your current streak -
-                    <strong>0/0</strong>
-                </div>
-
-
-                <button
-                    id="next-question-btn"
-                    type="button"
-                >
-                    Next →
-                </button>
-
-            </nav>
-
-
-            <!-- =================================================
-                 QUESTION CARD
-                 ================================================= -->
-
             <div class="question-card">
 
-                <div class="quiz-layout">
+                <!-- =================================================
+                     QUESTION
+                     ================================================= -->
 
+                <div
+                    class="question-section"
+                >
 
-                    <!-- =========================================
-                         QUESTION - LEFT
-                         ========================================= -->
+                    <div class="panel-label">
+                        QUESTION
+                    </div>
 
-                    <section class="question-panel">
-
-                        <div class="panel-label">
-                            QUESTION
-                        </div>
-
-                        <div
-                            id="question"
-                            class="question"
-                        ></div>
-
-                    </section>
-
-
-                    <!-- =========================================
-                         OPTIONS - RIGHT
-                         ========================================= -->
-
-                    <section class="options-panel">
-
-                        <div class="panel-label">
-                            SELECT YOUR ANSWER
-                        </div>
-
-
-                        <div
-                            id="options"
-                            class="options"
-                            role="radiogroup"
-                            aria-label="Answer options"
-                        ></div>
-
-
-                        <!-- Answer result -->
-
-                        <div
-                            id="result"
-                            class="result"
-                            aria-live="polite"
-                        ></div>
-
-
-                        <!-- Explanation -->
-
-                        <div
-                            id="explanation"
-                            class="explanation hidden"
-                        >
-
-                            <div class="explanation-title">
-                                💡 Explanation
-                            </div>
-
-                            <div
-                                id="explanation-text"
-                                class="explanation-text"
-                            ></div>
-
-                        </div>
-
-                    </section>
+                    <div
+                        id="question"
+                        class="question"
+                    ></div>
 
                 </div>
+
+
+                <!-- =================================================
+                     ANSWER OPTIONS
+                     ================================================= -->
+
+                <div
+                    class="options-section"
+                >
+
+                    <div class="panel-label">
+                        SELECT YOUR ANSWER
+                    </div>
+
+                    <div
+                        id="options"
+                        class="options"
+                        role="radiogroup"
+                        aria-label="Answer options"
+                    ></div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ANSWER RESULT
+                     ================================================= -->
+
+                <div
+                    id="result"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- =================================================
+                     EXPLANATION
+                     ================================================= -->
+
+                <div
+                    id="explanation"
+                    class="explanation hidden"
+                >
+
+                    <h2>
+                        Explanation
+                    </h2>
+
+                    <div
+                        id="explanation-text"
+                    ></div>
+
+                </div>
+
+
+                <!-- =================================================
+                     NAVIGATION
+                     Automatically managed by app.js
+                     ================================================= -->
 
             </div>
 
