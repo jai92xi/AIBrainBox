@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -12,312 +11,249 @@
 
     <meta
         name="description"
-        content="AIBrainBox - AI Questions & Practice"
+        content="AIBrainBox — AI Questions, Practice, Learn and Improve."
     >
 
-    <title>AIBrainBox | AI Questions & Practice</title>
+    <title>AIBrainBox</title>
 
     <link
         rel="stylesheet"
         href="style.css"
     >
-
 </head>
-
 
 <body>
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
+    <main class="container">
 
-    <header>
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
 
-        <div class="header-content">
+        <header class="header">
 
-            <div class="logo">
-                🧠
+            <div class="header-top">
+
+                <!-- Brand -->
+                <div class="brand">
+
+                    <span class="brand-icon">
+                        🧠
+                    </span>
+
+                    <span class="brand-name">
+                        AIBrainBox
+                    </span>
+
+                </div>
+
+
+                <!-- Motivational Quote -->
+                <aside
+                    id="motivational-quote"
+                    class="motivational-quote"
+                    aria-label="Motivational quote"
+                >
+
+                    <span id="quote-text">
+                        “Keep going. Your future self will thank you.”
+                    </span>
+
+                    <span
+                        id="quote-author"
+                        class="quote-author"
+                    >
+                        — AIBrainBox
+                    </span>
+
+                </aside>
+
             </div>
 
-            <div class="header-text">
 
-                <h1>
-                    AIBrainBox
-                </h1>
+            <!-- Tagline -->
+            <p class="tagline">
+                AI Questions 4 • Practice • Learn • Improve
+            </p>
 
-                <p>
-                    AI Questions &amp; Practice
-                </p>
-
-            </div>
-
-        </div>
-
-    </header>
+        </header>
 
 
-    <!-- =====================================================
-         MAIN
-         ===================================================== -->
-
-    <main>
-
-
-        <!-- =================================================
+        <!-- =====================================================
              LOADING
-             ================================================= -->
+             ===================================================== -->
 
-        <div
+        <section
             id="loading"
-            class="status-message"
+            class="loading"
         >
             Loading question...
-        </div>
+        </section>
 
 
-        <!-- =================================================
+        <!-- =====================================================
              ERROR
-             ================================================= -->
+             ===================================================== -->
 
-        <div
+        <section
             id="error"
-            class="hidden"
+            class="error hidden"
             role="alert"
-        ></div>
+        ></section>
 
 
-        <!-- =================================================
-             QUESTION CONTAINER
-             ================================================= -->
+        <!-- =====================================================
+             QUIZ
+             ===================================================== -->
 
         <section
             id="question-container"
             class="hidden"
-            aria-label="Quiz question"
         >
 
-
             <!-- =================================================
-                 QUESTION TOOLBAR
+                 TOP NAVIGATION
                  ================================================= -->
 
-            <div
-                class="question-toolbar"
-                aria-label="Reading tools"
+            <nav
+                id="question-navigation"
+                class="question-navigation"
+                aria-label="Question navigation"
             >
 
-                <!-- Highlighter button -->
-
                 <button
-                    id="highlighter-btn"
-                    class="highlighter-btn"
+                    id="previous-question-btn"
                     type="button"
-                    aria-label="Turn highlighter on or off"
-                    aria-pressed="false"
-                    title="Highlight text"
                 >
-
-                    <span
-                        class="highlighter-dot"
-                        aria-hidden="true"
-                    ></span>
-
-                    <span>
-                        Highlight
-                    </span>
-
+                    ← Previous
                 </button>
 
 
-                <!-- Highlight colors -->
+                <div
+                    id="question-position"
+                    class="question-position"
+                >
+                    Question 1 of 5
+                </div>
+
 
                 <div
-                    id="highlight-color-toolbar"
-                    class="highlight-color-toolbar"
-                    aria-label="Highlight colors"
+                    id="score-display"
+                    class="score-display"
                 >
-
-                    <button
-                        type="button"
-                        class="highlight-color-btn active"
-                        data-highlight-color="yellow"
-                        aria-label="Yellow highlight"
-                        title="Yellow"
-                    >
-                        <span
-                            class="color-dot color-yellow"
-                            aria-hidden="true"
-                        ></span>
-                    </button>
+                    Your current streak -
+                    <strong>0/0</strong>
+                </div>
 
 
-                    <button
-                        type="button"
-                        class="highlight-color-btn"
-                        data-highlight-color="green"
-                        aria-label="Green highlight"
-                        title="Green"
-                    >
-                        <span
-                            class="color-dot color-green"
-                            aria-hidden="true"
-                        ></span>
-                    </button>
+                <button
+                    id="next-question-btn"
+                    type="button"
+                >
+                    Next →
+                </button>
+
+            </nav>
 
 
-                    <button
-                        type="button"
-                        class="highlight-color-btn"
-                        data-highlight-color="blue"
-                        aria-label="Blue highlight"
-                        title="Blue"
-                    >
-                        <span
-                            class="color-dot color-blue"
-                            aria-hidden="true"
-                        ></span>
-                    </button>
+            <!-- =================================================
+                 QUESTION CARD
+                 ================================================= -->
+
+            <div class="question-card">
+
+                <div class="quiz-layout">
 
 
-                    <button
-                        type="button"
-                        class="highlight-color-btn"
-                        data-highlight-color="pink"
-                        aria-label="Pink highlight"
-                        title="Pink"
-                    >
-                        <span
-                            class="color-dot color-pink"
-                            aria-hidden="true"
-                        ></span>
-                    </button>
+                    <!-- =========================================
+                         QUESTION - LEFT
+                         ========================================= -->
+
+                    <section class="question-panel">
+
+                        <div class="panel-label">
+                            QUESTION
+                        </div>
+
+                        <div
+                            id="question"
+                            class="question"
+                        ></div>
+
+                    </section>
 
 
-                    <button
-                        id="clear-highlights-btn"
-                        type="button"
-                        class="clear-highlights-btn"
-                        aria-label="Clear highlights"
-                        title="Clear all highlights from this question"
-                    >
-                        Clear
-                    </button>
+                    <!-- =========================================
+                         OPTIONS - RIGHT
+                         ========================================= -->
+
+                    <section class="options-panel">
+
+                        <div class="panel-label">
+                            SELECT YOUR ANSWER
+                        </div>
+
+
+                        <div
+                            id="options"
+                            class="options"
+                            role="radiogroup"
+                            aria-label="Answer options"
+                        ></div>
+
+
+                        <!-- Answer result -->
+
+                        <div
+                            id="result"
+                            class="result"
+                            aria-live="polite"
+                        ></div>
+
+
+                        <!-- Explanation -->
+
+                        <div
+                            id="explanation"
+                            class="explanation hidden"
+                        >
+
+                            <div class="explanation-title">
+                                💡 Explanation
+                            </div>
+
+                            <div
+                                id="explanation-text"
+                                class="explanation-text"
+                            ></div>
+
+                        </div>
+
+                    </section>
 
                 </div>
 
             </div>
 
-
-            <!-- =================================================
-                 TWO COLUMN LAYOUT
-                 ================================================= -->
-
-            <div class="quiz-layout">
-
-
-                <!-- ================= QUESTION ================= -->
-
-                <section class="question-panel">
-
-                    <div class="panel-label">
-                        🧠 QUESTION
-                    </div>
-
-                    <div
-                        id="question"
-                    ></div>
-
-                </section>
-
-
-                <!-- ================= OPTIONS ================= -->
-
-                <section class="options-panel">
-
-                    <div class="panel-label">
-                        🤖 SELECT YOUR ANSWER
-                    </div>
-
-                    <div
-                        id="options"
-                        role="radiogroup"
-                        aria-label="Answer options"
-                    ></div>
-
-                </section>
-
-            </div>
-
-
-            <!-- =================================================
-                 RESULT
-                 ================================================= -->
-
-            <div
-                id="result"
-                aria-live="polite"
-            ></div>
-
-
-            <!-- =================================================
-                 EXPLANATION BUTTON
-                 ================================================= -->
-
-            <button
-                id="show-explanation-btn"
-                class="hidden"
-                type="button"
-                onclick="toggleExplanation()"
-            >
-                💡 Show Explanation
-            </button>
-
-
-            <!-- =================================================
-                 EXPLANATION
-                 ================================================= -->
-
-            <div
-                id="explanation"
-                class="hidden"
-            >
-
-                <h3>
-                    💡 Explanation
-                </h3>
-
-                <div
-                    id="explanation-text"
-                ></div>
-
-            </div>
-
-
         </section>
 
+
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
+
+        <footer class="footer">
+
+            <p>
+                Keep learning. Keep improving. 🚀
+            </p>
+
+        </footer>
 
     </main>
 
 
-    <!-- =====================================================
-         FOOTER
-         ===================================================== -->
-
-    <footer>
-
-        <p>
-            🧠 AIBrainBox • AI Questions &amp; Practice
-        </p>
-
-    </footer>
-
-
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
-
     <script src="app.js"></script>
-
 
 </body>
 
