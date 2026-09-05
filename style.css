@@ -59,17 +59,22 @@ body {
 
     margin-bottom: 22px;
 
+    /*
+     * Slightly darker header so the brand,
+     * tagline and quote stand out clearly.
+     */
+
     background:
         linear-gradient(
             135deg,
             #c7e5df 0%,
-            #d5d1f2 55%,
-            #cddff5 100%
+            #d2d0f0 52%,
+            #cbdff3 100%
         );
 
     border-bottom:
         1px solid
-        rgba(79, 70, 229, 0.16);
+        rgba(71, 85, 105, 0.16);
 
     box-shadow:
         0 5px 20px
@@ -118,7 +123,7 @@ body {
 
     letter-spacing: -1.2px;
 
-    color: #26364d;
+    color: #1e2d43;
 }
 
 
@@ -130,19 +135,20 @@ body {
     max-width: 1180px;
 
     margin:
-        5px
-        auto
+        8px auto
         0;
 
     padding-left: 47px;
 
-    color: #475569;
+    color: #40516a;
 
     font-size: 13px;
 
     font-weight: 600;
 
-    letter-spacing: 0.1px;
+    letter-spacing: 0.05px;
+
+    line-height: 1.5;
 }
 
 
@@ -159,9 +165,11 @@ body {
 
     justify-content: center;
 
-    gap: 4px;
+    gap: 3px;
 
-    width: min(560px, 50%);
+    width: min(520px, 48%);
+
+    max-width: 520px;
 
     color: #334155;
 
@@ -190,11 +198,21 @@ body {
 
     width: 100%;
 
-    color: #475569;
+    color: #64748b;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
 
     font-size: 11px;
 
     font-style: normal;
+
+    font-weight: 600;
 
     text-align: right;
 
@@ -323,11 +341,27 @@ body {
 }
 
 
-/* ============================================================
-   HOVER
-   ============================================================ */
+/*
+ * Both buttons intentionally use exactly
+ * the same color and hover treatment.
+ */
 
-.question-navigation button:hover:not(:disabled) {
+#previous-question-btn,
+#next-question-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #4f7cff,
+            #6366f1
+        );
+
+    box-shadow:
+        0 5px 12px
+        rgba(79, 70, 229, 0.20);
+}
+
+#previous-question-btn:hover:not(:disabled),
+#next-question-btn:hover:not(:disabled) {
     background:
         linear-gradient(
             135deg,
@@ -343,9 +377,7 @@ body {
 }
 
 
-/* ============================================================
-   DISABLED
-   ============================================================ */
+/* Disabled */
 
 .question-navigation button:disabled {
     opacity: 0.35;
@@ -745,6 +777,96 @@ body {
 
 
 /* ============================================================
+   ABOUT ME / BUY ME A COFFEE
+   ============================================================ */
+
+.info-buttons {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+    padding-top: 15px;
+
+    border-top:
+        1px solid
+        #e2e8f0;
+}
+
+.info-button {
+    flex: 1;
+
+    min-height: 42px;
+
+    padding:
+        10px
+        12px;
+
+    border-radius: 10px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+.about-button {
+    border:
+        1px solid
+        #c7d2fe;
+
+    background:
+        #f5f3ff;
+
+    color:
+        #4f46e5;
+}
+
+.about-button:hover {
+    background:
+        #ede9fe;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(79, 70, 229, 0.12);
+}
+
+.coffee-button {
+    border:
+        1px solid
+        #fed7aa;
+
+    background:
+        #fff7ed;
+
+    color:
+        #c2410c;
+}
+
+.coffee-button:hover {
+    background:
+        #ffedd5;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 5px 12px
+        rgba(194, 65, 12, 0.12);
+}
+
+
+/* ============================================================
    HIDDEN
    ============================================================ */
 
@@ -897,14 +1019,6 @@ label:focus-visible {
         padding:
             16px
             12px;
-
-        background:
-            linear-gradient(
-                135deg,
-                #c7e5df 0%,
-                #d5d1f2 55%,
-                #cddff5 100%
-            );
     }
 
     .header-top {
@@ -912,7 +1026,7 @@ label:focus-visible {
 
         flex-direction: column;
 
-        gap: 10px;
+        gap: 9px;
     }
 
     .brand-icon {
@@ -923,14 +1037,21 @@ label:focus-visible {
         font-size: 30px;
     }
 
-    .motivational-quote {
-        width: 100%;
+    /*
+     * Quote stays below the brand and
+     * author stays directly below quote.
+     */
 
-        max-width: 100%;
+    .motivational-quote {
+        display: flex;
+
+        flex-direction: column;
 
         align-items: flex-start;
 
-        gap: 4px;
+        width: 100%;
+
+        max-width: 100%;
 
         font-size: 12px;
 
@@ -946,19 +1067,26 @@ label:focus-visible {
     .quote-author {
         width: 100%;
 
-        font-size: 11px;
-
         text-align: left;
 
         white-space: normal;
+
+        font-size: 11px;
     }
 
+    /*
+     * Tagline is below the complete brand/
+     * quote section.
+     */
+
     .tagline {
-        margin-top: 5px;
+        margin-top: 9px;
 
-        padding-left: 41px;
+        padding-left: 0;
 
-        font-size: 12px;
+        font-size: 11.5px;
+
+        line-height: 1.5;
     }
 
     .question-navigation {
@@ -1015,6 +1143,24 @@ label:focus-visible {
     .option-text {
         font-size: 12.5px;
     }
+
+    .info-buttons {
+        gap: 8px;
+
+        margin-top: 17px;
+
+        padding-top: 13px;
+    }
+
+    .info-button {
+        min-height: 40px;
+
+        padding:
+            9px
+            7px;
+
+        font-size: 11px;
+    }
 }
 
 
@@ -1053,5 +1199,13 @@ label:focus-visible {
         grid-row: 2;
 
         justify-self: end;
+    }
+
+    .info-buttons {
+        flex-direction: column;
+    }
+
+    .info-button {
+        width: 100%;
     }
 }
