@@ -1,35 +1,45 @@
 /* =========================================================
    AI BRAIN BOX
+   MAIN JAVASCRIPT
+   ========================================================= */
+
+
+/* =========================================================
+   GLOBAL VARIABLES
    ========================================================= */
 
 let questions = [];
+
 let currentQuestionIndex = -1;
+
 let currentQuestion = null;
 
 
 /* =========================================================
-   FILES
+   FILE PATHS
    ========================================================= */
 
-const CSV_URL = "./xi-questions.csv";
-const QUOTES_URL = "./xi-Quotes.csv";
+const CSV_URL =
+    "./xi-questions.csv";
+
+const QUOTES_URL =
+    "./xi-Quotes.csv";
 
 
 /* =========================================================
-   SCORE / ANSWER STATE
+   QUIZ STATE
    ========================================================= */
 
 let score = 0;
 
-let answeredQuestions = new Set();
+let answeredQuestions =
+    new Set();
 
-let questionResults = new Map();
+let questionResults =
+    new Map();
 
-let savedAnswers = new Map();
-
-let currentStreak = 0;
-
-let answerHistory = [];
+let savedAnswers =
+    new Map();
 
 
 /* =========================================================
@@ -42,18 +52,25 @@ let lastQuoteIndex = -1;
 
 
 /* =========================================================
-   BACKGROUND VIDEO
+   BACKGROUND FOLDER
    ========================================================= */
 
 const BACKGROUNDS_API =
     "https://api.github.com/repos/jai92xi/AIBrainBox/contents/Backgrounds_Folder";
+
+
+/*
+ * The random background is stored here so that
+ * refreshing the page does not immediately select
+ * another background during the same browser session.
+ */
 
 const BACKGROUND_SESSION_KEY =
     "aibrainbox-session-background";
 
 
 /* =========================================================
-   INITIALIZE
+   INITIALIZE APPLICATION
    ========================================================= */
 
 document.addEventListener(
@@ -65,32 +82,24 @@ document.addEventListener(
 function initializeApp() {
 
     /*
-     * Old navigation buttons are no longer used.
-     * Related-question navigation is generated dynamically.
+     * Move streak box into the AI Brain Box header.
      */
 
-    const previousButton =
-        document.getElementById(
-            "previous-button"
-        );
-
-    const nextButton =
-        document.getElementById(
-            "next-button"
-        );
-
-
-    if (previousButton) {
-        previousButton.style.display = "none";
-    }
-
-    if (nextButton) {
-        nextButton.style.display = "none";
-    }
+    moveScoreIntoHeader();
 
 
     /*
-     * Browser navigation.
+     * Keyboard navigation.
+     */
+
+    document.addEventListener(
+        "keydown",
+        handleKeyboardNavigation
+    );
+
+
+    /*
+     * Browser back / forward navigation.
      */
 
     window.addEventListener(
@@ -100,16 +109,47 @@ function initializeApp() {
 
 
     /*
-     * Keyboard navigation is intentionally
-     * kept disabled for related-question navigation.
+     * Load application data.
      */
-
 
     loadQuestions();
 
     loadQuotes();
 
     loadSessionBackground();
+}
+
+
+/* =========================================================
+   MOVE STREAK INTO HEADER
+   ========================================================= */
+
+function moveScoreIntoHeader() {
+
+    const scoreDisplay =
+        document.getElementById(
+            "score-display"
+        );
+
+
+    const header =
+        document.querySelector(
+            ".brain-box-header"
+        );
+
+
+    if (
+        scoreDisplay &&
+        header &&
+        !header.contains(
+            scoreDisplay
+        )
+    ) {
+
+        header.appendChild(
+            scoreDisplay
+        );
+    }
 }
 
 
@@ -124,6 +164,7 @@ async function loadQuestions() {
             "loading"
         );
 
+
     const error =
         document.getElementById(
             "error"
@@ -133,6 +174,7 @@ async function loadQuestions() {
     try {
 
         if (loading) {
+
             loading.classList.remove(
                 "hidden"
             );
@@ -140,6 +182,7 @@ async function loadQuestions() {
 
 
         if (error) {
+
             error.classList.add(
                 "hidden"
             );
@@ -156,6 +199,7 @@ async function loadQuestions() {
 
 
         if (!response.ok) {
+
             throw new Error(
                 "Unable to load questions."
             );
@@ -167,7 +211,9 @@ async function loadQuestions() {
 
 
         questions =
-            parseCSV(csvText);
+            parseCSV(
+                csvText
+            );
 
 
         console.log(
@@ -176,26 +222,29 @@ async function loadQuestions() {
         );
 
 
-        if (questions.length > 0) {
+        if (
+            questions.length > 0
+        ) {
 
             console.log(
                 "First question:",
                 questions[0]
             );
-
         }
 
 
-        if (!questions.length) {
+        if (
+            !questions.length
+        ) {
 
             throw new Error(
                 "No questions found in CSV."
             );
-
         }
 
 
         if (loading) {
+
             loading.classList.add(
                 "hidden"
             );
@@ -214,6 +263,7 @@ async function loadQuestions() {
 
 
         if (loading) {
+
             loading.classList.add(
                 "hidden"
             );
@@ -228,9 +278,7 @@ async function loadQuestions() {
             error.classList.remove(
                 "hidden"
             );
-
         }
-
     }
 }
 
@@ -257,7 +305,6 @@ async function loadQuotes() {
             throw new Error(
                 "Unable to load quotes."
             );
-
         }
 
 
@@ -271,10 +318,11 @@ async function loadQuotes() {
             );
 
 
-        if (quotes.length) {
+        if (
+            quotes.length
+        ) {
 
             loadMotivationalQuote();
-
         }
 
 
@@ -319,47 +367,88 @@ async function loadQuotes() {
 
 
         loadMotivationalQuote();
-
     }
 }
 
 
 /* =========================================================
-   RANDOM SESSION BACKGROUND
+   LOAD RANDOM BACKGROUND
    ========================================================= */
+
+/*
+ * IMPORTANT:
+ *
+ * This function NO LONGER checks only for .mp4 files.
+ *
+ * It gets every FILE inside Backgrounds_Folder
+ * and randomly selects one.
+ *
+ * The selected file is saved in sessionStorage.
+ *
+ * Therefore:
+ *
+ *   New browser session  -> random background
+ *   Page refresh          -> same background
+ *   New browser session  -> new random background
+ *
+ * Supported visual formats include:
+ *
+ *   JPG
+ *   JPEG
+ *   PNG
+ *   WEBP
+ *   GIF
+ *   MP4
+ *   WEBM
+ *   OGG
+ *   MOV
+ *
+ */
 
 async function loadSessionBackground() {
 
-    const video =
+    const existingBackground =
         document.getElementById(
             "session-background"
         );
 
 
-    if (!video) {
-        return;
+    /*
+     * If the original HTML contains a
+     * background element, remove it.
+     *
+     * A new element will be created
+     * according to the selected file type.
+     */
+
+    if (
+        existingBackground
+    ) {
+
+        existingBackground.remove();
     }
 
 
     try {
 
         /*
-         * First check whether a video was already
-         * selected during this browser session.
+         * Check sessionStorage first.
          */
 
-        let selectedVideo =
+        let selectedBackground =
             sessionStorage.getItem(
                 BACKGROUND_SESSION_KEY
             );
 
 
         /*
-         * If no video has been selected,
-         * get the MP4 files from GitHub.
+         * If no background has been selected
+         * in this browser session, fetch the folder.
          */
 
-        if (!selectedVideo) {
+        if (
+            !selectedBackground
+        ) {
 
             const response =
                 await fetch(
@@ -375,7 +464,6 @@ async function loadSessionBackground() {
                 throw new Error(
                     "Unable to access background folder."
                 );
-
             }
 
 
@@ -383,58 +471,320 @@ async function loadSessionBackground() {
                 await response.json();
 
 
-            const videoFiles =
+            /*
+             * DO NOT restrict by extension.
+             *
+             * Every actual file is considered.
+             *
+             * Directories are ignored.
+             */
+
+            const availableFiles =
                 files.filter(
                     file =>
                         file.type === "file" &&
-                        /\.mp4$/i.test(
-                            file.name
-                        )
+                        file.download_url
                 );
 
 
-            if (!videoFiles.length) {
+            if (
+                !availableFiles.length
+            ) {
 
                 console.warn(
-                    "No MP4 background videos found."
+                    "No files found in Backgrounds_Folder."
                 );
 
                 return;
-
             }
 
+
+            /*
+             * Pick a random file.
+             */
 
             const randomIndex =
                 Math.floor(
                     Math.random() *
-                    videoFiles.length
+                    availableFiles.length
                 );
 
 
-            selectedVideo =
-                videoFiles[
+            const selectedFile =
+                availableFiles[
                     randomIndex
-                ].download_url;
+                ];
+
+
+            selectedBackground =
+                JSON.stringify({
+
+                    name:
+                        selectedFile.name,
+
+                    url:
+                        selectedFile.download_url
+
+                });
 
 
             /*
-             * Save it for this browser session.
+             * Save selected background
+             * for this browser session.
              */
 
             sessionStorage.setItem(
                 BACKGROUND_SESSION_KEY,
-                selectedVideo
+                selectedBackground
             );
-
         }
 
 
+        /*
+         * Read selected background.
+         */
+
+        const backgroundData =
+            JSON.parse(
+                selectedBackground
+            );
+
+
+        if (
+            !backgroundData ||
+            !backgroundData.url
+        ) {
+
+            throw new Error(
+                "Invalid background data."
+            );
+        }
+
+
+        /*
+         * Create the appropriate background
+         * element based on file extension.
+         */
+
+        createBackgroundElement(
+            backgroundData.url,
+            backgroundData.name
+        );
+
+
+    } catch (err) {
+
+        console.warn(
+            "Background could not be loaded:",
+            err
+        );
+    }
+}
+
+
+/* =========================================================
+   CREATE BACKGROUND ELEMENT
+   ========================================================= */
+
+function createBackgroundElement(
+    url,
+    fileName
+) {
+
+    /*
+     * Find the overlay.
+     */
+
+    const overlay =
+        document.getElementById(
+            "background-overlay"
+        );
+
+
+    /*
+     * Remove any existing background.
+     */
+
+    const existingVideo =
+        document.getElementById(
+            "session-background"
+        );
+
+
+    if (
+        existingVideo
+    ) {
+
+        existingVideo.remove();
+    }
+
+
+    const existingImage =
+        document.getElementById(
+            "session-background-image"
+        );
+
+
+    if (
+        existingImage
+    ) {
+
+        existingImage.remove();
+    }
+
+
+    /*
+     * Get extension.
+     */
+
+    const extension =
+        getFileExtension(
+            fileName
+        );
+
+
+    /*
+     * Video formats.
+     */
+
+    const videoExtensions = [
+
+        "mp4",
+        "webm",
+        "ogg",
+        "ogv",
+        "mov",
+        "m4v"
+
+    ];
+
+
+    /*
+     * Image formats.
+     */
+
+    const imageExtensions = [
+
+        "jpg",
+        "jpeg",
+        "png",
+        "webp",
+        "gif",
+        "avif",
+        "bmp",
+        "svg"
+
+    ];
+
+
+    /*
+     * =====================================================
+     * VIDEO BACKGROUND
+     * =====================================================
+     */
+
+    if (
+        videoExtensions.includes(
+            extension
+        )
+    ) {
+
+        const video =
+            document.createElement(
+                "video"
+            );
+
+
+        video.id =
+            "session-background";
+
+
+        video.autoplay =
+            true;
+
+
+        video.muted =
+            true;
+
+
+        video.loop =
+            true;
+
+
+        video.playsInline =
+            true;
+
+
+        video.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
         video.src =
-            selectedVideo;
+            url;
 
 
-        video.load();
+        /*
+         * Background styling.
+         *
+         * CSS can also override these values.
+         */
 
+        video.style.position =
+            "fixed";
+
+
+        video.style.top =
+            "0";
+
+
+        video.style.left =
+            "0";
+
+
+        video.style.width =
+            "100%";
+
+
+        video.style.height =
+            "100%";
+
+
+        video.style.objectFit =
+            "cover";
+
+
+        video.style.zIndex =
+            "-3";
+
+
+        video.style.pointerEvents =
+            "none";
+
+
+        /*
+         * Insert before overlay.
+         */
+
+        if (overlay) {
+
+            document.body.insertBefore(
+                video,
+                overlay
+            );
+
+        } else {
+
+            document.body.prepend(
+                video
+            );
+        }
+
+
+        /*
+         * Try autoplay.
+         */
 
         const playPromise =
             video.play();
@@ -450,21 +800,249 @@ async function loadSessionBackground() {
                     console.warn(
                         "Background video autoplay was blocked."
                     );
-
                 }
             );
-
         }
 
 
-    } catch (err) {
+        return;
+    }
 
-        console.warn(
-            "Background video could not be loaded:",
-            err
+
+    /*
+     * =====================================================
+     * IMAGE BACKGROUND
+     * =====================================================
+     */
+
+    if (
+        imageExtensions.includes(
+            extension
+        )
+    ) {
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.id =
+            "session-background-image";
+
+
+        image.src =
+            url;
+
+
+        image.alt =
+            "";
+
+
+        image.setAttribute(
+            "aria-hidden",
+            "true"
         );
 
+
+        image.style.position =
+            "fixed";
+
+
+        image.style.top =
+            "0";
+
+
+        image.style.left =
+            "0";
+
+
+        image.style.width =
+            "100%";
+
+
+        image.style.height =
+            "100%";
+
+
+        image.style.objectFit =
+            "cover";
+
+
+        image.style.zIndex =
+            "-3";
+
+
+        image.style.pointerEvents =
+            "none";
+
+
+        /*
+         * Insert before overlay.
+         */
+
+        if (overlay) {
+
+            document.body.insertBefore(
+                image,
+                overlay
+            );
+
+        } else {
+
+            document.body.prepend(
+                image
+            );
+        }
+
+
+        return;
     }
+
+
+    /*
+     * =====================================================
+     * UNKNOWN FILE TYPE
+     * =====================================================
+     *
+     * The requirement is to randomly pick
+     * whatever is inside the folder.
+     *
+     * If the selected file is not a browser
+     * displayable image/video, try it as an
+     * image first.
+     *
+     * If it fails, the CSS background remains
+     * visible instead of breaking the quiz.
+     */
+
+    console.warn(
+        `Unsupported visual background format: ${fileName}`
+    );
+
+
+    const fallbackImage =
+        document.createElement(
+            "img"
+        );
+
+
+    fallbackImage.id =
+        "session-background-image";
+
+
+    fallbackImage.src =
+        url;
+
+
+    fallbackImage.alt =
+        "";
+
+
+    fallbackImage.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    fallbackImage.style.position =
+        "fixed";
+
+
+    fallbackImage.style.top =
+        "0";
+
+
+    fallbackImage.style.left =
+        "0";
+
+
+    fallbackImage.style.width =
+        "100%";
+
+
+    fallbackImage.style.height =
+        "100%";
+
+
+    fallbackImage.style.objectFit =
+        "cover";
+
+
+    fallbackImage.style.zIndex =
+        "-3";
+
+
+    fallbackImage.style.pointerEvents =
+        "none";
+
+
+    fallbackImage.onerror =
+        () => {
+
+            console.warn(
+                `The selected background cannot be displayed: ${fileName}`
+            );
+
+
+            fallbackImage.remove();
+        };
+
+
+    if (overlay) {
+
+        document.body.insertBefore(
+            fallbackImage,
+            overlay
+        );
+
+    } else {
+
+        document.body.prepend(
+            fallbackImage
+        );
+    }
+}
+
+
+/* =========================================================
+   GET FILE EXTENSION
+   ========================================================= */
+
+function getFileExtension(
+    fileName
+) {
+
+    if (
+        !fileName
+    ) {
+
+        return "";
+    }
+
+
+    const cleanName =
+        fileName
+            .split("?")[0]
+            .split("#")[0];
+
+
+    const parts =
+        cleanName.split(".");
+
+
+    if (
+        parts.length < 2
+    ) {
+
+        return "";
+    }
+
+
+    return parts[
+        parts.length - 1
+    ]
+        .toLowerCase();
 }
 
 
@@ -481,26 +1059,27 @@ function loadQuestionFromURL() {
 
 
     const questionId =
-        params.get("id");
+        params.get(
+            "id"
+        );
 
 
-    if (questionId) {
+    if (
+        questionId
+    ) {
 
         const index =
             questions.findIndex(
                 question =>
-                    normalizeQuestionId(
-                        getQuestionIdFromObject(
-                            question
-                        )
-                    ) ===
-                    normalizeQuestionId(
-                        questionId
-                    )
+                    getQuestionIdFromObject(
+                        question
+                    ) === questionId
             );
 
 
-        if (index !== -1) {
+        if (
+            index !== -1
+        ) {
 
             currentQuestionIndex =
                 index;
@@ -508,17 +1087,13 @@ function loadQuestionFromURL() {
             displayQuestion();
 
             return;
-
         }
-
     }
 
 
-    /*
-     * Default to first question.
-     */
+    currentQuestionIndex =
+        0;
 
-    currentQuestionIndex = 0;
 
     displayQuestion();
 }
@@ -532,12 +1107,10 @@ function displayQuestion() {
 
     if (
         currentQuestionIndex < 0 ||
-        currentQuestionIndex >=
-            questions.length
+        currentQuestionIndex >= questions.length
     ) {
 
         return;
-
     }
 
 
@@ -565,25 +1138,33 @@ function displayQuestion() {
         );
 
 
-    if (questionContainer) {
+    if (
+        questionContainer
+    ) {
 
         questionContainer.classList.remove(
             "hidden"
         );
-
     }
 
 
-    if (error) {
+    if (
+        error
+    ) {
 
         error.classList.add(
             "hidden"
         );
-
     }
 
 
-    if (questionElement) {
+    /*
+     * Question text.
+     */
+
+    if (
+        questionElement
+    ) {
 
         const questionText =
             getQuestionText(
@@ -594,31 +1175,57 @@ function displayQuestion() {
         questionElement.innerText =
             questionText ||
             "Question unavailable.";
-
     }
 
 
+    /*
+     * Navigation.
+     */
+
+    createRelatedNavigation();
+
+
+    /*
+     * Options.
+     */
+
     createOptions();
+
+
+    /*
+     * Restore previous answer.
+     */
 
     restoreAnswerState();
 
+
+    /*
+     * Score.
+     */
+
     updateScore();
 
-    createRelatedNavigation();
+
+    /*
+     * Quote.
+     */
 
     loadMotivationalQuote();
 }
 
 
 /* =========================================================
-   QUESTION TEXT
+   GET QUESTION TEXT
    ========================================================= */
 
 function getQuestionText(
     question
 ) {
 
-    if (!question) {
+    if (
+        !question
+    ) {
+
         return "";
     }
 
@@ -658,9 +1265,7 @@ function getQuestionText(
             return String(
                 question[key]
             ).trim();
-
         }
-
     }
 
 
@@ -685,14 +1290,17 @@ function getQuestionText(
     if (
         fallbackKey &&
         String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim() !== ""
     ) {
 
         return String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim();
-
     }
 
 
@@ -712,7 +1320,10 @@ function createOptions() {
         );
 
 
-    if (!optionsContainer) {
+    if (
+        !optionsContainer
+    ) {
+
         return;
     }
 
@@ -722,10 +1333,12 @@ function createOptions() {
 
 
     const optionLetters = [
+
         "A",
         "B",
         "C",
         "D"
+
     ];
 
 
@@ -739,7 +1352,10 @@ function createOptions() {
                 );
 
 
-            if (!optionValue) {
+            if (
+                !optionValue
+            ) {
+
                 return;
             }
 
@@ -843,7 +1459,10 @@ function getOptionValue(
     letter
 ) {
 
-    if (!question) {
+    if (
+        !question
+    ) {
+
         return "";
     }
 
@@ -880,9 +1499,7 @@ function getOptionValue(
             return String(
                 question[key]
             ).trim();
-
         }
-
     }
 
 
@@ -910,7 +1527,6 @@ function getOptionValue(
                     normalized ===
                     `option ${letter.toLowerCase()}`
                 );
-
             }
         );
 
@@ -929,7 +1545,6 @@ function getOptionValue(
                 fallbackKey
             ]
         ).trim();
-
     }
 
 
@@ -972,9 +1587,8 @@ function checkAnswer(
 
 
     /*
-     * If this question was previously answered
-     * correctly and is changed, remove that
-     * previous correct count.
+     * Remove previous correct score
+     * if the user changes the answer.
      */
 
     if (
@@ -982,20 +1596,24 @@ function checkAnswer(
     ) {
 
         score--;
-
     }
 
 
     /*
-     * Add new correct result.
+     * Add score for correct answer.
      */
 
-    if (isCorrect) {
+    if (
+        isCorrect
+    ) {
 
         score++;
-
     }
 
+
+    /*
+     * Save answer.
+     */
 
     questionResults.set(
         questionId,
@@ -1015,19 +1633,19 @@ function checkAnswer(
 
 
     /*
-     * Update 2/3 style score.
+     * Reset option styling.
      */
-
-    updateCurrentStreak(
-        questionId,
-        isCorrect
-    );
-
 
     clearOptionStates();
 
 
-    if (selectedOption) {
+    /*
+     * Highlight selected option.
+     */
+
+    if (
+        selectedOption
+    ) {
 
         selectedOption.classList.add(
 
@@ -1036,22 +1654,26 @@ function checkAnswer(
                 : "wrong-answer"
 
         );
-
     }
 
 
     /*
-     * If wrong, show the correct answer.
+     * If wrong, highlight correct answer.
      */
 
-    if (!isCorrect) {
+    if (
+        !isCorrect
+    ) {
 
         highlightCorrectAnswer(
             correctAnswer
         );
-
     }
 
+
+    /*
+     * Result message.
+     */
 
     const result =
         document.getElementById(
@@ -1059,9 +1681,13 @@ function checkAnswer(
         );
 
 
-    if (result) {
+    if (
+        result
+    ) {
 
-        if (isCorrect) {
+        if (
+            isCorrect
+        ) {
 
             result.innerHTML =
                 "Correct! 🎉";
@@ -1071,6 +1697,7 @@ function checkAnswer(
 
 
             showCorrectCelebration();
+
 
         } else {
 
@@ -1082,21 +1709,19 @@ function checkAnswer(
 
 
             showWrongReaction();
-
         }
-
     }
 
 
     /*
-     * Explanation automatically appears.
+     * Automatically show explanation.
      */
 
     showExplanation();
 
 
     /*
-     * Update score immediately.
+     * Update score.
      */
 
     updateScore();
@@ -1104,87 +1729,203 @@ function checkAnswer(
 
 
 /* =========================================================
-   CURRENT SCORE
+   CREATE PREVIOUS / NEXT NAVIGATION
    ========================================================= */
 
-function updateCurrentStreak(
-    questionId,
-    isCorrect
-) {
+function createRelatedNavigation() {
 
     /*
-     * Keep question in history.
+     * Remove old navigation.
      */
 
-    if (
-        !answerHistory.includes(
-            questionId
-        )
-    ) {
-
-        answerHistory.push(
-            questionId
+    const existingNavigation =
+        document.querySelector(
+            ".related-navigation"
         );
 
+
+    if (
+        existingNavigation
+    ) {
+
+        existingNavigation.remove();
     }
 
 
-    /*
-     * Count all correct answers.
-     *
-     * Example:
-     *
-     * Q1 Correct
-     * Q2 Correct
-     * Q3 Wrong
-     *
-     * Current streak = 2/3
-     */
-
-    let correctCount = 0;
-
-
-    questionResults.forEach(
-        result => {
-
-            if (result === true) {
-
-                correctCount++;
-
-            }
-
-        }
-    );
-
-
-    currentStreak =
-        correctCount;
-}
-
-
-/* =========================================================
-   UPDATE SCORE DISPLAY
-   ========================================================= */
-
-function updateScore() {
-
-    const scoreDisplay =
+    const questionContainer =
         document.getElementById(
-            "score-display"
+            "question-container"
         );
 
 
-    if (!scoreDisplay) {
+    if (
+        !questionContainer
+    ) {
+
         return;
     }
 
 
-    const totalAnswered =
-        answeredQuestions.size;
+    const navigation =
+        document.createElement(
+            "div"
+        );
 
 
-    scoreDisplay.innerHTML =
-        `🔥 Current streak: <strong>${currentStreak}/${totalAnswered}</strong>`;
+    navigation.className =
+        "related-navigation";
+
+
+    /*
+     * =====================================================
+     * PREVIOUS
+     * =====================================================
+     */
+
+    const previousColumn =
+        document.createElement(
+            "div"
+        );
+
+
+    previousColumn.className =
+        "related-column";
+
+
+    const previousButton =
+        document.createElement(
+            "button"
+        );
+
+
+    previousButton.type =
+        "button";
+
+
+    previousButton.className =
+        "related-question previous-related";
+
+
+    previousButton.innerHTML =
+        "←";
+
+
+    previousButton.setAttribute(
+        "aria-label",
+        "Previous question"
+    );
+
+
+    previousButton.title =
+        "Previous question";
+
+
+    previousButton.disabled =
+        currentQuestionIndex <= 0;
+
+
+    previousButton.addEventListener(
+        "click",
+        () =>
+            navigateQuestion(
+                -1
+            )
+    );
+
+
+    previousColumn.appendChild(
+        previousButton
+    );
+
+
+    /*
+     * =====================================================
+     * NEXT
+     * =====================================================
+     */
+
+    const nextColumn =
+        document.createElement(
+            "div"
+        );
+
+
+    nextColumn.className =
+        "related-column";
+
+
+    const nextButton =
+        document.createElement(
+            "button"
+        );
+
+
+    nextButton.type =
+        "button";
+
+
+    nextButton.className =
+        "related-question next-related";
+
+
+    nextButton.innerHTML =
+        "→";
+
+
+    nextButton.setAttribute(
+        "aria-label",
+        "Next question"
+    );
+
+
+    nextButton.title =
+        "Next question";
+
+
+    nextButton.disabled =
+        currentQuestionIndex >=
+        questions.length - 1;
+
+
+    nextButton.addEventListener(
+        "click",
+        () =>
+            navigateQuestion(
+                1
+            )
+    );
+
+
+    nextColumn.appendChild(
+        nextButton
+    );
+
+
+    /*
+     * =====================================================
+     * ADD BOTH
+     * =====================================================
+     */
+
+    navigation.appendChild(
+        previousColumn
+    );
+
+
+    navigation.appendChild(
+        nextColumn
+    );
+
+
+    /*
+     * Place navigation above
+     * the question content.
+     */
+
+    questionContainer.insertBefore(
+        navigation,
+        questionContainer.firstChild
+    );
 }
 
 
@@ -1219,27 +1960,29 @@ function restoreAnswerState() {
         );
 
 
-    if (result) {
+    if (
+        result
+    ) {
 
         result.innerHTML =
             "";
 
         result.className =
             "";
-
     }
 
 
     /*
-     * Question has not been answered.
+     * Not answered yet.
      */
 
-    if (!savedAnswer) {
+    if (
+        !savedAnswer
+    ) {
 
         hideExplanation();
 
         return;
-
     }
 
 
@@ -1267,7 +2010,9 @@ function restoreAnswerState() {
                     );
 
 
-                if (option) {
+                if (
+                    option
+                ) {
 
                     option.classList.add(
 
@@ -1276,11 +2021,8 @@ function restoreAnswerState() {
                             : "wrong-answer"
 
                     );
-
                 }
-
             }
-
         }
     );
 
@@ -1289,22 +2031,26 @@ function restoreAnswerState() {
      * Wrong answer.
      */
 
-    if (!savedResult) {
+    if (
+        !savedResult
+    ) {
 
         highlightCorrectAnswer(
             getCorrectAnswer()
         );
 
 
-        if (result) {
+        if (
+            result
+        ) {
 
             result.innerHTML =
                 "Not quite. Keep learning!";
 
             result.className =
                 "result-wrong";
-
         }
+
 
     } else {
 
@@ -1312,22 +2058,21 @@ function restoreAnswerState() {
          * Correct answer.
          */
 
-        if (result) {
+        if (
+            result
+        ) {
 
             result.innerHTML =
                 "Correct! 🎉";
 
             result.className =
                 "result-correct";
-
         }
-
     }
 
 
     /*
-     * Explanation remains visible
-     * when returning to an answered question.
+     * Explanation remains visible.
      */
 
     showExplanation();
@@ -1358,7 +2103,6 @@ function showExplanation() {
     ) {
 
         return;
-
     }
 
 
@@ -1380,14 +2124,17 @@ function showExplanation() {
 
 
 /* =========================================================
-   GET EXPLANATION
+   GET EXPLANATION TEXT
    ========================================================= */
 
 function getExplanationText(
     question
 ) {
 
-    if (!question) {
+    if (
+        !question
+    ) {
+
         return "";
     }
 
@@ -1404,6 +2151,8 @@ function getExplanationText(
 
         "explanation text",
         "Explanation Text",
+        "EXPLANATION TEXT",
+
         "explanation_text",
         "Explanation_Text"
 
@@ -1425,9 +2174,7 @@ function getExplanationText(
             return String(
                 question[key]
             ).trim();
-
         }
-
     }
 
 
@@ -1463,7 +2210,6 @@ function getExplanationText(
                 fallbackKey
             ]
         ).trim();
-
     }
 
 
@@ -1483,12 +2229,13 @@ function hideExplanation() {
         );
 
 
-    if (explanation) {
+    if (
+        explanation
+    ) {
 
         explanation.classList.add(
             "hidden"
         );
-
     }
 }
 
@@ -1511,11 +2258,12 @@ function clearOptionStates() {
             option.classList.remove(
 
                 "selected",
+
                 "correct-answer",
+
                 "wrong-answer"
 
             );
-
         }
     );
 }
@@ -1549,592 +2297,48 @@ function highlightCorrectAnswer(
                     );
 
 
-                if (option) {
+                if (
+                    option
+                ) {
 
                     option.classList.add(
                         "correct-answer"
                     );
-
                 }
-
             }
-
         }
     );
 }
 
 
 /* =========================================================
-   RELATED QUESTION NAVIGATION
+   NAVIGATE QUESTION
    ========================================================= */
 
-/*
- * This is the important new section.
- *
- * The application looks for columns such as:
- *
- * Previous related question
- * Previous Related Question
- * previous_related_question
- *
- * Next related question
- * Next Related Question
- * next_related_question
- *
- * It also supports plural versions.
- */
-
-
-function createRelatedNavigation() {
-
-    const quizWrapper =
-        document.querySelector(
-            ".quiz-wrapper"
-        );
-
-
-    if (!quizWrapper) {
-        return;
-    }
-
-
-    /*
-     * Remove previously generated navigation.
-     */
-
-    const oldNavigation =
-        document.getElementById(
-            "related-navigation"
-        );
-
-
-    if (oldNavigation) {
-
-        oldNavigation.remove();
-
-    }
-
-
-    /*
-     * Get related questions from CSV.
-     */
-
-    const previousIds =
-        getRelatedQuestionIds(
-            currentQuestion,
-            "previous"
-        );
-
-
-    const nextIds =
-        getRelatedQuestionIds(
-            currentQuestion,
-            "next"
-        );
-
-
-    /*
-     * Create main navigation container.
-     */
-
-    const navigation =
-        document.createElement(
-            "div"
-        );
-
-
-    navigation.id =
-        "related-navigation";
-
-
-    navigation.className =
-        "related-navigation";
-
-
-    /*
-     * Previous column.
-     */
-
-    const previousColumn =
-        createRelatedColumn(
-            "Previous related question",
-            previousIds,
-            "previous"
-        );
-
-
-    /*
-     * Next column.
-     */
-
-    const nextColumn =
-        createRelatedColumn(
-            "Next related question",
-            nextIds,
-            "next"
-        );
-
-
-    navigation.appendChild(
-        previousColumn
-    );
-
-
-    navigation.appendChild(
-        nextColumn
-    );
-
-
-    /*
-     * Put navigation above the quiz.
-     */
-
-    quizWrapper.parentNode.insertBefore(
-        navigation,
-        quizWrapper
-    );
-}
-
-
-/* =========================================================
-   CREATE RELATED COLUMN
-   ========================================================= */
-
-function createRelatedColumn(
-    title,
-    ids,
-    type
-) {
-
-    const column =
-        document.createElement(
-            "div"
-        );
-
-
-    column.className =
-        `related-column ${type}-related-column`;
-
-
-    const heading =
-        document.createElement(
-            "div"
-        );
-
-
-    heading.className =
-        "related-column-title";
-
-
-    heading.innerText =
-        title;
-
-
-    column.appendChild(
-        heading
-    );
-
-
-    const list =
-        document.createElement(
-            "div"
-        );
-
-
-    list.className =
-        "related-question-list";
-
-
-    /*
-     * If no related questions exist,
-     * show a small empty state.
-     */
-
-    if (!ids.length) {
-
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-
-        empty.className =
-            "related-empty";
-
-
-        empty.innerText =
-            "—";
-
-
-        list.appendChild(
-            empty
-        );
-
-    }
-
-
-    ids.forEach(
-        id => {
-
-            const normalizedId =
-                normalizeQuestionId(
-                    id
-                );
-
-
-            /*
-             * Find actual question in CSV.
-             */
-
-            const questionIndex =
-                questions.findIndex(
-                    question =>
-                        normalizeQuestionId(
-                            getQuestionIdFromObject(
-                                question
-                            )
-                        ) ===
-                        normalizedId
-                );
-
-
-            if (
-                questionIndex === -1
-            ) {
-
-                return;
-
-            }
-
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-
-            button.className =
-                "related-question";
-
-
-            /*
-             * Highlight current question.
-             */
-
-            if (
-                questionIndex ===
-                currentQuestionIndex
-            ) {
-
-                button.classList.add(
-                    "current-related-question"
-                );
-
-            }
-
-
-            button.innerText =
-                getQuestionIdFromObject(
-                    questions[
-                        questionIndex
-                    ]
-                );
-
-
-            button.addEventListener(
-                "click",
-                () =>
-                    navigateToQuestion(
-                        questionIndex
-                    )
-            );
-
-
-            list.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    column.appendChild(
-        list
-    );
-
-
-    return column;
-}
-
-
-/* =========================================================
-   GET RELATED QUESTION IDS
-   ========================================================= */
-
-function getRelatedQuestionIds(
-    question,
+function navigateQuestion(
     direction
 ) {
 
-    if (!question) {
-        return [];
-    }
-
-
-    let possibleKeys;
+    const newIndex =
+        currentQuestionIndex +
+        direction;
 
 
     if (
-        direction ===
-        "previous"
-    ) {
-
-        possibleKeys = [
-
-            "previous related question",
-            "Previous related question",
-            "PREVIOUS RELATED QUESTION",
-
-            "previous related questions",
-            "Previous Related Questions",
-            "PREVIOUS RELATED QUESTIONS",
-
-            "previous_related_question",
-            "Previous_Related_Question",
-            "PREVIOUS_RELATED_QUESTION",
-
-            "previous_related_questions",
-            "Previous_Related_Questions",
-            "PREVIOUS_RELATED_QUESTIONS",
-
-            "previous question",
-            "Previous Question",
-
-            "previous_questions",
-            "previous questions"
-
-        ];
-
-    } else {
-
-        possibleKeys = [
-
-            "next related question",
-            "Next related question",
-            "NEXT RELATED QUESTION",
-
-            "next related questions",
-            "Next Related Questions",
-            "NEXT RELATED QUESTIONS",
-
-            "next_related_question",
-            "Next_Related_Question",
-            "NEXT_RELATED_QUESTION",
-
-            "next_related_questions",
-            "Next_Related_Questions",
-            "NEXT_RELATED_QUESTIONS",
-
-            "next question",
-            "Next Question",
-
-            "next_questions",
-            "next questions"
-
-        ];
-
-    }
-
-
-    let value = "";
-
-
-    /*
-     * Find the matching CSV column.
-     */
-
-    for (
-        const key of possibleKeys
-    ) {
-
-        if (
-            question[key] !== undefined &&
-            question[key] !== null &&
-            String(
-                question[key]
-            ).trim() !== ""
-        ) {
-
-            value =
-                String(
-                    question[key]
-                ).trim();
-
-            break;
-
-        }
-
-    }
-
-
-    /*
-     * If exact headers were not found,
-     * use flexible matching.
-     */
-
-    if (!value) {
-
-        const fallbackKey =
-            Object.keys(
-                question
-            ).find(
-                key => {
-
-                    const normalized =
-                        key
-                            .replace(
-                                /^\uFEFF/,
-                                ""
-                            )
-                            .trim()
-                            .toLowerCase()
-                            .replace(
-                                /[_-]/g,
-                                " "
-                            );
-
-
-                    if (
-                        direction ===
-                        "previous"
-                    ) {
-
-                        return (
-                            normalized.includes(
-                                "previous"
-                            ) &&
-                            normalized.includes(
-                                "related"
-                            )
-                        );
-
-                    }
-
-
-                    return (
-                        normalized.includes(
-                            "next"
-                        ) &&
-                        normalized.includes(
-                            "related"
-                        )
-                    );
-
-                }
-            );
-
-
-        if (fallbackKey) {
-
-            value =
-                String(
-                    question[
-                        fallbackKey
-                    ]
-                ).trim();
-
-        }
-
-    }
-
-
-    if (!value) {
-        return [];
-    }
-
-
-    /*
-     * Support different ways of storing IDs.
-     *
-     * Example:
-     *
-     * Xi-00001
-     *
-     * Xi-00001, Xi-00002
-     *
-     * Xi-00001;Xi-00002
-     *
-     * Xi-00001 | Xi-00002
-     *
-     * Xi-00001
-     * Xi-00002
-     */
-
-    const ids =
-        value
-            .split(
-                /[,;|\n]+/
-            )
-            .map(
-                item =>
-                    item.trim()
-            )
-            .filter(
-                Boolean
-            );
-
-
-    /*
-     * Remove duplicates while keeping
-     * the original CSV order.
-     */
-
-    return [
-        ...new Set(
-            ids.map(
-                id =>
-                    normalizeQuestionId(
-                        id
-                    )
-            )
-        )
-    ];
-}
-
-
-/* =========================================================
-   NAVIGATE TO QUESTION
-   ========================================================= */
-
-function navigateToQuestion(
-    questionIndex
-) {
-
-    if (
-        questionIndex < 0 ||
-        questionIndex >=
-            questions.length
+        newIndex < 0 ||
+        newIndex >= questions.length
     ) {
 
         return;
-
     }
 
 
     currentQuestionIndex =
-        questionIndex;
+        newIndex;
 
 
     const questionId =
-        getQuestionIdFromObject(
-            questions[
-                questionIndex
-            ]
-        );
+        getQuestionId();
 
 
     /*
@@ -2147,10 +2351,15 @@ function navigateToQuestion(
         );
 
 
-    url.searchParams.set(
-        "id",
+    if (
         questionId
-    );
+    ) {
+
+        url.searchParams.set(
+            "id",
+            questionId
+        );
+    }
 
 
     history.pushState(
@@ -2161,21 +2370,11 @@ function navigateToQuestion(
 
 
     displayQuestion();
-
-
-    /*
-     * Scroll to top of quiz.
-     */
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
 }
 
 
 /* =========================================================
-   POPSTATE
+   BROWSER BACK / FORWARD
    ========================================================= */
 
 function handlePopState() {
@@ -2185,12 +2384,115 @@ function handlePopState() {
 
 
 /* =========================================================
-   MOTIVATIONAL QUOTE
+   UPDATE NAVIGATION
+   ========================================================= */
+
+function updateNavigation() {
+
+    const previousButton =
+        document.getElementById(
+            "previous-button"
+        );
+
+
+    const nextButton =
+        document.getElementById(
+            "next-button"
+        );
+
+
+    const position =
+        document.getElementById(
+            "question-position"
+        );
+
+
+    if (
+        previousButton
+    ) {
+
+        previousButton.disabled =
+            currentQuestionIndex <= 0;
+    }
+
+
+    if (
+        nextButton
+    ) {
+
+        nextButton.disabled =
+            currentQuestionIndex >=
+            questions.length - 1;
+    }
+
+
+    if (
+        position
+    ) {
+
+        position.innerText =
+            "";
+    }
+}
+
+
+/* =========================================================
+   UPDATE CURRENT STREAK / SCORE
+   ========================================================= */
+
+/*
+ * Example:
+ *
+ * Q1 -> Correct
+ * Q2 -> Correct
+ * Q3 -> Wrong
+ *
+ * Display:
+ *
+ * 🔥 Current streak: 2/3
+ *
+ * This represents:
+ *
+ * Correct answers / Answered questions
+ *
+ * It does NOT reset to zero after a wrong answer.
+ */
+
+function updateScore() {
+
+    const scoreDisplay =
+        document.getElementById(
+            "score-display"
+        );
+
+
+    if (
+        !scoreDisplay
+    ) {
+
+        return;
+    }
+
+
+    const totalAnswered =
+        answeredQuestions.size;
+
+
+    scoreDisplay.innerHTML =
+        `🔥 Current streak: <strong>${score}/${totalAnswered}</strong>`;
+}
+
+
+/* =========================================================
+   LOAD MOTIVATIONAL QUOTE
    ========================================================= */
 
 function loadMotivationalQuote() {
 
-    if (!quotes.length) {
+    if (
+        !quotes.length
+    ) {
+
         return;
     }
 
@@ -2202,7 +2504,8 @@ function loadMotivationalQuote() {
         quotes.length === 1
     ) {
 
-        randomIndex = 0;
+        randomIndex =
+            0;
 
     } else {
 
@@ -2218,7 +2521,6 @@ function loadMotivationalQuote() {
             randomIndex ===
             lastQuoteIndex
         );
-
     }
 
 
@@ -2244,21 +2546,72 @@ function loadMotivationalQuote() {
         );
 
 
-    if (quoteText) {
+    if (
+        quoteText
+    ) {
 
         quoteText.innerText =
             `“${selectedQuote.quote}”`;
-
     }
 
 
-    if (quoteAuthor) {
+    if (
+        quoteAuthor
+    ) {
 
         quoteAuthor.innerText =
             selectedQuote.author
                 ? `— ${selectedQuote.author}`
                 : "— AIBrainBox";
+    }
+}
 
+
+/* =========================================================
+   KEYBOARD NAVIGATION
+   ========================================================= */
+
+function handleKeyboardNavigation(
+    event
+) {
+
+    const tag =
+        event.target.tagName.toLowerCase();
+
+
+    /*
+     * Don't navigate while typing
+     * or interacting with buttons.
+     */
+
+    if (
+
+        tag === "input" ||
+        tag === "textarea" ||
+        tag === "button"
+
+    ) {
+
+        return;
+    }
+
+
+    if (
+        event.key === "ArrowLeft"
+    ) {
+
+        navigateQuestion(
+            -1
+        );
+
+
+    } else if (
+        event.key === "ArrowRight"
+    ) {
+
+        navigateQuestion(
+            1
+        );
     }
 }
 
@@ -2308,9 +2661,7 @@ function showCorrectCelebration() {
             },
 
             i * 100
-
         );
-
     }
 }
 
@@ -2359,9 +2710,7 @@ function showWrongReaction() {
             },
 
             i * 120
-
         );
-
     }
 }
 
@@ -2391,33 +2740,34 @@ function createEmojiBurst(
 
     const startLeft =
         10 +
-        Math.random() * 80;
+        Math.random() *
+        80;
 
 
     const startTop =
         55 +
-        Math.random() * 25;
+        Math.random() *
+        25;
 
 
     const drift =
         (
             Math.random() -
             0.5
-        ) *
-        160;
+        ) * 160;
 
 
     const rotation =
         (
             Math.random() -
             0.5
-        ) *
-        50;
+        ) * 50;
 
 
     const duration =
         1200 +
-        Math.random() * 900;
+        Math.random() *
+        900;
 
 
     element.style.position =
@@ -2481,10 +2831,8 @@ function createEmojiBurst(
 
                     element.style.opacity =
                         "0";
-
                 }
             );
-
         }
     );
 
@@ -2517,7 +2865,10 @@ function getQuestionIdFromObject(
     question
 ) {
 
-    if (!question) {
+    if (
+        !question
+    ) {
+
         return "";
     }
 
@@ -2554,75 +2905,31 @@ function getQuestionIdFromObject(
             return String(
                 question[key]
             ).trim();
-
         }
-
     }
 
 
     /*
-     * Flexible fallback.
+     * Fallback if CSV has no ID.
      */
 
-    const fallbackKey =
-        Object.keys(
+    const index =
+        questions.indexOf(
             question
-        ).find(
-            key => {
-
-                const normalized =
-                    key
-                        .replace(
-                            /^\uFEFF/,
-                            ""
-                        )
-                        .trim()
-                        .toLowerCase()
-                        .replace(
-                            /[_-]/g,
-                            " "
-                        );
-
-
-                return (
-                    normalized === "id" ||
-                    normalized.includes(
-                        "question id"
-                    )
-                );
-
-            }
         );
 
 
-    if (fallbackKey) {
+    if (
+        index !== -1
+    ) {
 
         return String(
-            question[
-                fallbackKey
-            ]
-        ).trim();
-
+            index + 1
+        );
     }
 
 
     return "";
-}
-
-
-/* =========================================================
-   NORMALIZE QUESTION ID
-   ========================================================= */
-
-function normalizeQuestionId(
-    id
-) {
-
-    return String(
-        id || ""
-    )
-        .trim()
-        .toUpperCase();
 }
 
 
@@ -2632,7 +2939,10 @@ function normalizeQuestionId(
 
 function getCorrectAnswer() {
 
-    if (!currentQuestion) {
+    if (
+        !currentQuestion
+    ) {
+
         return "";
     }
 
@@ -2673,15 +2983,9 @@ function getCorrectAnswer() {
             )
                 .trim()
                 .toUpperCase();
-
         }
-
     }
 
-
-    /*
-     * Flexible fallback.
-     */
 
     const fallbackKey =
         Object.keys(
@@ -2704,18 +3008,21 @@ function getCorrectAnswer() {
 
 
                 return (
+
                     normalized.includes(
                         "correct"
                     ) &&
+
                     (
                         normalized.includes(
                             "answer"
                         ) ||
-                        normalized ===
-                            "correct"
-                    )
-                );
 
+                        normalized ===
+                        "correct"
+                    )
+
+                );
             }
         );
 
@@ -2736,7 +3043,6 @@ function getCorrectAnswer() {
         )
             .trim()
             .toUpperCase();
-
     }
 
 
@@ -2776,10 +3082,6 @@ function parseCSV(
             csvText[i + 1];
 
 
-        /*
-         * Escaped quote.
-         */
-
         if (
             char === '"' &&
             insideQuotes &&
@@ -2791,10 +3093,6 @@ function parseCSV(
             i++;
 
 
-        /*
-         * Start/end quoted cell.
-         */
-
         } else if (
             char === '"'
         ) {
@@ -2803,30 +3101,27 @@ function parseCSV(
                 !insideQuotes;
 
 
-        /*
-         * Comma outside quotes.
-         */
-
         } else if (
             char === "," &&
             !insideQuotes
         ) {
 
-            row.push(cell);
+            row.push(
+                cell
+            );
 
             cell = "";
 
 
-        /*
-         * New row.
-         */
-
         } else if (
+
             (
                 char === "\n" ||
                 char === "\r"
             ) &&
+
             !insideQuotes
+
         ) {
 
             if (
@@ -2835,11 +3130,12 @@ function parseCSV(
             ) {
 
                 i++;
-
             }
 
 
-            row.push(cell);
+            row.push(
+                cell
+            );
 
             cell = "";
 
@@ -2853,8 +3149,9 @@ function parseCSV(
                 )
             ) {
 
-                rows.push(row);
-
+                rows.push(
+                    row
+                );
             }
 
 
@@ -2864,9 +3161,7 @@ function parseCSV(
         } else {
 
             cell += char;
-
         }
-
     }
 
 
@@ -2879,7 +3174,9 @@ function parseCSV(
         row.length
     ) {
 
-        row.push(cell);
+        row.push(
+            cell
+        );
 
 
         if (
@@ -2891,14 +3188,17 @@ function parseCSV(
             )
         ) {
 
-            rows.push(row);
-
+            rows.push(
+                row
+            );
         }
-
     }
 
 
-    if (!rows.length) {
+    if (
+        !rows.length
+    ) {
+
         return [];
     }
 
@@ -2910,7 +3210,10 @@ function parseCSV(
     const headers =
         rows[0].map(
             header =>
-                String(header)
+
+                String(
+                    header
+                )
                     .replace(
                         /^\uFEFF/,
                         ""
@@ -2920,7 +3223,8 @@ function parseCSV(
 
 
     /*
-     * Convert CSV rows into objects.
+     * Convert CSV rows
+     * into objects.
      */
 
     return rows
@@ -2938,19 +3242,16 @@ function parseCSV(
                     ) => {
 
                         object[header] =
-                            values[index] !==
-                            undefined
+                            values[index] !== undefined
                                 ? String(
                                     values[index]
                                 ).trim()
                                 : "";
-
                     }
                 );
 
 
                 return object;
-
             }
         );
 }
@@ -2976,22 +3277,36 @@ function parseQuotesCSV(
             row => {
 
                 const quote =
+
                     row.quote ||
+
                     row.Quote ||
+
                     row.QUOTE ||
+
                     row["Quote Text"] ||
+
                     row["quote text"] ||
+
                     row["QUOTE TEXT"] ||
+
                     "";
 
 
                 const author =
+
                     row.author ||
+
                     row.Author ||
+
                     row.AUTHOR ||
+
                     row["Quote Author"] ||
+
                     row["quote author"] ||
+
                     row["QUOTE AUTHOR"] ||
+
                     "";
 
 
@@ -3006,11 +3321,10 @@ function parseQuotesCSV(
                         String(
                             author
                         ).trim()
-
                 };
-
             }
         )
+
 
         .filter(
             item =>
