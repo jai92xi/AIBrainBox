@@ -1,31 +1,30 @@
 /* =========================================================
-   GLOBAL
+   AI BRAIN BOX
+   GLOBAL STYLES
    ========================================================= */
 
 * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
 html,
 body {
-    width: 100%;
+    margin: 0;
+    padding: 0;
     min-height: 100%;
 }
 
 body {
-    min-height: 100vh;
-
     font-family:
         Inter,
         "Segoe UI",
+        Roboto,
         Arial,
         sans-serif;
 
-    color: #1f2937;
+    color: #172033;
 
-    background: #f5f7fb;
+    background: #dcecf8;
 
     overflow-x: hidden;
 }
@@ -47,15 +46,21 @@ body {
 
     z-index: -3;
 
-    pointer-events: none;
+    background: #dcecf8;
 }
+
+
+/* =========================================================
+   DARKER BACKGROUND OVERLAY
+   ========================================================= */
 
 #background-overlay {
     position: fixed;
 
     inset: 0;
 
-    background: rgba(255, 255, 255, 0.80);
+    background:
+        rgba(20, 35, 55, 0.48);
 
     z-index: -2;
 
@@ -64,20 +69,15 @@ body {
 
 
 /* =========================================================
-   MAIN CONTAINER
+   PAGE CONTAINER
    ========================================================= */
 
-.app-container {
-    width: 100%;
+.page-container {
+    width: min(1380px, calc(100% - 100px));
 
-    max-width: 1250px;
+    margin: 28px auto 50px;
 
-    min-height: 100vh;
-
-    margin: 0 auto;
-
-    padding:
-        18px 28px 30px;
+    position: relative;
 }
 
 
@@ -86,55 +86,76 @@ body {
    ========================================================= */
 
 .brain-box-header {
+    min-height: 116px;
+
     display: flex;
 
     align-items: center;
 
     justify-content: space-between;
 
-    gap: 30px;
+    gap: 35px;
 
-    width: 100%;
+    padding: 25px 32px;
 
-    padding:
-        20px 28px;
+    background:
+        rgba(255, 255, 255, 0.94);
 
-    margin-bottom: 28px;
+    border: 1px solid
+        rgba(255, 255, 255, 0.9);
 
-    background: rgba(255, 255, 255, 0.95);
-
-    border:
-        1px solid #e5e7eb;
-
-    border-radius: 20px;
+    border-radius: 22px;
 
     box-shadow:
-        0 8px 25px rgba(15, 23, 42, 0.08);
+        0 12px 35px
+        rgba(15, 35, 60, 0.16);
+
+    position: relative;
+
+    z-index: 5;
 }
 
 
-/* Brand */
+/* =========================================================
+   BRAND
+   ========================================================= */
 
-.brand {
-    flex: 1;
+.brand-section {
+    min-width: 280px;
 }
 
-.brand h1 {
-    font-size: 26px;
+.brand-section h1 {
+    margin: 0;
 
-    line-height: 1.2;
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-size: 32px;
+
+    line-height: 1.15;
 
     font-weight: 750;
 
-    color: #111827;
-
-    margin-bottom: 6px;
+    color: #151d2e;
 }
 
-.brand p {
-    font-size: 14px;
+.brain-icon {
+    font-size: 32px;
 
-    color: #6b7280;
+    line-height: 1;
+}
+
+.brand-section p {
+    margin: 8px 0 0;
+
+    font-size: 16px;
+
+    color: #697386;
+
+    font-weight: 450;
 }
 
 
@@ -142,49 +163,345 @@ body {
    QUOTE
    ========================================================= */
 
-.quote-box {
-    width: 45%;
+.quote-section {
+    max-width: 540px;
 
     text-align: right;
 
-    padding-right: 5px;
+    margin-left: auto;
 }
 
-#quote-text {
-    font-size: 14px;
+.quote-text {
+    font-size: 16px;
 
     line-height: 1.5;
 
     font-style: italic;
 
-    color: #4b5563;
+    color: #5d6677;
 }
 
-#quote-author {
+.quote-author {
     margin-top: 5px;
 
-    font-size: 12px;
+    font-size: 14px;
 
-    color: #6b7280;
+    font-weight: 600;
+
+    color: #697386;
+}
+
+
+/* =========================================================
+   CURRENT STREAK
+   ========================================================= */
+
+.score-display {
+    position: fixed;
+
+    top: 28px;
+
+    right: 24px;
+
+    min-width: 155px;
+
+    padding: 12px 16px;
+
+    background:
+        rgba(255, 255, 255, 0.96);
+
+    border: 1px solid
+        rgba(255, 255, 255, 0.9);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(15, 35, 60, 0.16);
+
+    color: #253047;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    text-align: center;
+
+    z-index: 20;
+
+    white-space: nowrap;
+}
+
+.score-display strong {
+    color: #2563eb;
+
+    font-size: 17px;
+
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading {
+    width: fit-content;
+
+    margin: 25px auto;
+
+    padding: 14px 22px;
+
+    background:
+        rgba(255, 255, 255, 0.95);
+
+    border-radius: 12px;
+
+    color: #4b5563;
+
+    font-size: 15px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(15, 35, 60, 0.12);
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error {
+    margin: 25px auto;
+
+    padding: 16px 20px;
+
+    max-width: 700px;
+
+    background: #fff1f2;
+
+    border: 1px solid #fecdd3;
+
+    border-radius: 12px;
+
+    color: #be123c;
+
+    text-align: center;
 
     font-weight: 600;
 }
 
 
 /* =========================================================
-   QUESTION + OPTIONS
+   HIDDEN
    ========================================================= */
 
-.quiz-layout {
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   QUESTION CONTAINER
+   ========================================================= */
+
+.question-container {
+    margin-top: 28px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   RELATED QUESTION NAVIGATION
+   ========================================================= */
+
+.related-navigation {
+    width: 100%;
+
     display: grid;
 
     grid-template-columns:
-        1fr
-        1fr;
+        minmax(0, 1fr)
+        minmax(0, 1fr);
 
-    gap: 26px;
+    gap: 18px;
 
-    width: 100%;
+    margin-bottom: 14px;
+
+    padding: 0;
+}
+
+
+/* =========================================================
+   RELATED COLUMN
+   ========================================================= */
+
+.related-column {
+    min-width: 0;
+
+    padding: 13px 16px;
+
+    background:
+        rgba(255, 255, 255, 0.93);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.9);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 7px 20px
+        rgba(15, 35, 60, 0.13);
+}
+
+
+/* =========================================================
+   RELATED COLUMN TITLE
+   ========================================================= */
+
+.related-column-title {
+    margin-bottom: 9px;
+
+    color: #2563eb;
+
+    font-size: 12px;
+
+    font-weight: 750;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.7px;
+}
+
+
+/* =========================================================
+   RELATED QUESTION LIST
+   ========================================================= */
+
+.related-question-list {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+
+/* =========================================================
+   RELATED QUESTION BUTTON
+   ========================================================= */
+
+.related-question {
+    appearance: none;
+
+    border: 1px solid #cbd5e1;
+
+    background: #f8fafc;
+
+    color: #334155;
+
+    border-radius: 8px;
+
+    padding: 7px 12px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.related-question:hover {
+    background: #eff6ff;
+
+    border-color: #3b82f6;
+
+    color: #1d4ed8;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px
+        rgba(37, 99, 235, 0.14);
+}
+
+
+/* =========================================================
+   CURRENT RELATED QUESTION
+   ========================================================= */
+
+.related-question.current-related-question {
+    background: #2563eb;
+
+    border-color: #2563eb;
+
+    color: #ffffff;
+
+    box-shadow:
+        0 4px 12px
+        rgba(37, 99, 235, 0.25);
+}
+
+
+/* =========================================================
+   EMPTY RELATED NAVIGATION
+   ========================================================= */
+
+.related-empty {
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    padding: 5px 0;
+}
+
+
+/* =========================================================
+   QUIZ WRAPPER
+   ========================================================= */
+
+.quiz-wrapper {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 28px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   QUESTION PANEL
+   ========================================================= */
+
+.question-panel,
+.options-panel {
+    background:
+        rgba(255, 255, 255, 0.95);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.9);
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 12px 35px
+        rgba(15, 35, 60, 0.15);
 }
 
 
@@ -193,65 +510,9 @@ body {
    ========================================================= */
 
 .question-panel {
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: flex-start;
+    padding: 30px 34px;
 
     min-height: 500px;
-
-    padding:
-        28px 30px;
-
-    background:
-        rgba(255, 255, 255, 0.96);
-
-    border:
-        1px solid #e5e7eb;
-
-    border-radius: 20px;
-
-    box-shadow:
-        0 8px 25px rgba(15, 23, 42, 0.07);
-}
-
-
-/* Question label */
-
-.question-label {
-    margin-bottom: 15px;
-
-    font-size: 12px;
-
-    font-weight: 750;
-
-    letter-spacing: 0.08em;
-
-    text-transform: uppercase;
-
-    color: #9ca3af;
-}
-
-
-/* =========================================================
-   QUESTION FONT
-   ========================================================= */
-
-/*
-   Same approximate size as option text.
-*/
-
-#question {
-    font-size: 14px;
-
-    line-height: 1.55;
-
-    font-weight: 600;
-
-    color: #1f2937;
-
-    overflow-wrap: anywhere;
 }
 
 
@@ -260,40 +521,55 @@ body {
    ========================================================= */
 
 .options-panel {
+    padding: 30px 32px;
+
     min-height: 500px;
-
-    padding:
-        28px 30px;
-
-    background:
-        rgba(255, 255, 255, 0.96);
-
-    border:
-        1px solid #e5e7eb;
-
-    border-radius: 20px;
-
-    box-shadow:
-        0 8px 25px rgba(15, 23, 42, 0.07);
 }
 
 
 /* =========================================================
-   OPTIONS LABEL
+   PANEL LABEL
    ========================================================= */
 
-.options-label {
-    margin-bottom: 16px;
+.panel-label {
+    margin-bottom: 20px;
 
-    font-size: 12px;
+    color: #94a0b2;
+
+    font-size: 13px;
 
     font-weight: 750;
 
-    letter-spacing: 0.08em;
+    letter-spacing: 0.6px;
 
     text-transform: uppercase;
+}
 
-    color: #9ca3af;
+
+/* =========================================================
+   QUESTION TEXT
+   ========================================================= */
+
+/*
+ * Deliberately smaller than the previous version.
+ *
+ * This should visually match the option text.
+ */
+
+.question-text {
+    font-size: 16px;
+
+    line-height: 1.6;
+
+    font-weight: 500;
+
+    color: #1e293b;
+
+    white-space: pre-line;
+
+    word-break: normal;
+
+    overflow-wrap: break-word;
 }
 
 
@@ -306,54 +582,63 @@ body {
 
     flex-direction: column;
 
-    gap: 10px;
+    gap: 11px;
 }
 
 
-/* Individual option */
+/* =========================================================
+   OPTION
+   ========================================================= */
 
 .option {
     display: flex;
 
-    align-items: flex-start;
+    align-items: center;
 
     gap: 12px;
 
     width: 100%;
 
-    padding:
-        12px 14px;
+    min-height: 62px;
 
-    background: #f9fafb;
+    padding: 12px 15px;
 
     border:
-        1px solid #dfe3e8;
+        1px solid
+        #dbe1e8;
 
-    border-radius: 12px;
+    border-radius: 14px;
+
+    background:
+        rgba(248, 250, 252, 0.92);
 
     cursor: pointer;
 
     transition:
-        background 0.18s ease,
         border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease,
         transform 0.18s ease;
 }
 
-
-/* Hover */
-
 .option:hover {
-    background: #f3f4f6;
+    border-color: #93c5fd;
 
-    border-color: #cbd5e1;
+    background: #f8fbff;
 
     transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(37, 99, 235, 0.08);
 }
 
 
-/* Hide radio */
+/* =========================================================
+   HIDE RADIO
+   ========================================================= */
 
-.option input {
+.option input[type="radio"] {
     position: absolute;
 
     opacity: 0;
@@ -362,11 +647,16 @@ body {
 }
 
 
-/* Option letter */
+/* =========================================================
+   OPTION LETTER
+   ========================================================= */
 
 .option-letter {
-    flex:
-        0 0 31px;
+    flex: 0 0 40px;
+
+    width: 40px;
+
+    height: 40px;
 
     display: flex;
 
@@ -374,43 +664,37 @@ body {
 
     justify-content: center;
 
-    width: 31px;
-    height: 31px;
-
     border-radius: 50%;
 
     background: #e5e7eb;
 
-    color: #374151;
+    color: #475569;
 
-    font-size: 13px;
+    font-size: 14px;
 
     font-weight: 750;
 }
 
 
 /* =========================================================
-   OPTION TEXT - DARKER
+   OPTION TEXT
    ========================================================= */
+
+/*
+ * Dark text instead of the pale/light text
+ * from the previous version.
+ */
 
 .option-text {
     flex: 1;
 
-    padding-top: 5px;
+    color: #1f2937;
 
-    font-size: 14px;
+    font-size: 15px;
 
     line-height: 1.45;
 
-    /*
-       Changed from light gray to dark.
-    */
-
-    color: #1f2937;
-
     font-weight: 500;
-
-    overflow-wrap: anywhere;
 }
 
 
@@ -419,24 +703,28 @@ body {
    ========================================================= */
 
 .option.correct-answer {
-    background: #ecfdf5;
+    border-color: #10b981;
 
-    border-color: #34d399;
+    background:
+        #ecfdf5;
 
     box-shadow:
-        0 3px 12px rgba(16, 185, 129, 0.12);
+        0 4px 15px
+        rgba(16, 185, 129, 0.12);
 }
 
-.option.correct-answer .option-letter {
+.option.correct-answer
+.option-letter {
     background: #10b981;
 
     color: white;
 }
 
-.option.correct-answer .option-text {
+.option.correct-answer
+.option-text {
     color: #065f46;
 
-    font-weight: 650;
+    font-weight: 700;
 }
 
 
@@ -445,21 +733,25 @@ body {
    ========================================================= */
 
 .option.wrong-answer {
-    background: #fef2f2;
+    border-color: #ef4444;
 
-    border-color: #f87171;
+    background:
+        #fef2f2;
 
     box-shadow:
-        0 3px 12px rgba(239, 68, 68, 0.10);
+        0 4px 15px
+        rgba(239, 68, 68, 0.10);
 }
 
-.option.wrong-answer .option-letter {
+.option.wrong-answer
+.option-letter {
     background: #ef4444;
 
     color: white;
 }
 
-.option.wrong-answer .option-text {
+.option.wrong-answer
+.option-text {
     color: #991b1b;
 
     font-weight: 650;
@@ -470,19 +762,21 @@ body {
    RESULT
    ========================================================= */
 
-#result {
-    min-height: 24px;
+.result {
+    min-height: 28px;
 
-    margin-top: 12px;
+    margin-top: 15px;
 
-    font-size: 14px;
+    font-size: 15px;
 
     font-weight: 700;
 }
 
+
 .result-correct {
     color: #059669;
 }
+
 
 .result-wrong {
     color: #dc2626;
@@ -494,239 +788,73 @@ body {
    ========================================================= */
 
 .explanation {
-    margin-top: 14px;
+    margin-top: 12px;
 
-    padding:
-        15px 17px;
+    padding: 18px 20px;
 
-    background: #ffffff;
+    background:
+        rgba(248, 250, 252, 0.96);
 
     border:
-        1px solid #e5e7eb;
+        1px solid
+        #dbe4f0;
 
     border-left:
-        4px solid #6366f1;
+        4px solid
+        #6366f1;
 
     border-radius: 12px;
 
     animation:
-        explanationOpen 0.25s ease;
+        explanationAppear
+        0.25s ease-out;
 }
 
-@keyframes explanationOpen {
+
+.explanation-title {
+    margin-bottom: 10px;
+
+    color: #4338ca;
+
+    font-size: 15px;
+
+    font-weight: 750;
+}
+
+
+.explanation-text {
+    color: #475569;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+
+    white-space: pre-line;
+
+    overflow-wrap: break-word;
+}
+
+
+/* =========================================================
+   EXPLANATION ANIMATION
+   ========================================================= */
+
+@keyframes explanationAppear {
 
     from {
         opacity: 0;
 
-        transform: translateY(-5px);
+        transform:
+            translateY(-5px);
     }
 
     to {
         opacity: 1;
 
-        transform: translateY(0);
+        transform:
+            translateY(0);
     }
-}
 
-
-.explanation-title {
-    margin-bottom: 7px;
-
-    font-size: 13px;
-
-    font-weight: 750;
-
-    color: #4338ca;
-}
-
-
-#explanation-text {
-    font-size: 13px;
-
-    line-height: 1.5;
-
-    color: #374151;
-
-    white-space: pre-line;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* =========================================================
-   CURRENT STREAK - TOP RIGHT
-   ========================================================= */
-
-.streak-box {
-    position: fixed;
-
-    top: 22px;
-
-    right: 28px;
-
-    z-index: 1000;
-
-    min-width: 115px;
-
-    padding:
-        10px 14px;
-
-    background:
-        rgba(255, 255, 255, 0.96);
-
-    border:
-        1px solid #dbe1e8;
-
-    border-radius: 10px;
-
-    color: #374151;
-
-    font-size: 13px;
-
-    line-height: 1.4;
-
-    box-shadow:
-        0 5px 15px rgba(15, 23, 42, 0.08);
-}
-
-.streak-box strong {
-    color: #111827;
-
-    font-size: 15px;
-}
-
-
-/* =========================================================
-   PREVIOUS / NEXT SIDE BUTTONS
-   ========================================================= */
-
-.side-nav {
-    position: fixed;
-
-    top: 50%;
-
-    z-index: 1000;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 48px;
-
-    height: 190px;
-
-    padding: 8px 5px;
-
-    background:
-        rgba(255, 255, 255, 0.94);
-
-    border:
-        1px solid #d1d5db;
-
-    border-radius: 8px;
-
-    color: #374151;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    writing-mode: vertical-rl;
-
-    transform:
-        translateY(-50%);
-
-    box-shadow:
-        0 5px 15px rgba(15, 23, 42, 0.08);
-
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        opacity 0.18s ease;
-}
-
-
-.previous-nav {
-    left: 20px;
-}
-
-
-.next-nav {
-    right: 20px;
-}
-
-
-.side-nav:hover:not(:disabled) {
-    background: #f9fafb;
-
-    border-color: #9ca3af;
-}
-
-
-.side-nav:disabled {
-    opacity: 0.35;
-
-    cursor: not-allowed;
-}
-
-
-/* =========================================================
-   QUESTION POSITION
-   ========================================================= */
-
-.question-position {
-    display: none;
-}
-
-
-/* =========================================================
-   LOADING
-   ========================================================= */
-
-.loading {
-    text-align: center;
-
-    padding: 40px;
-
-    color: #6b7280;
-
-    font-size: 15px;
-}
-
-
-/* =========================================================
-   ERROR
-   ========================================================= */
-
-.error {
-    margin: 20px auto;
-
-    padding: 15px 18px;
-
-    max-width: 700px;
-
-    text-align: center;
-
-    color: #991b1b;
-
-    background: #fef2f2;
-
-    border: 1px solid #fecaca;
-
-    border-radius: 10px;
-}
-
-
-/* =========================================================
-   HIDDEN
-   ========================================================= */
-
-.hidden {
-    display: none !important;
 }
 
 
@@ -743,42 +871,90 @@ body {
 
     z-index: 99999;
 
-    font-family:
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Noto Color Emoji",
-        sans-serif;
+    line-height: 1;
 
-    text-shadow:
-        0 2px 5px rgba(0, 0, 0, 0.12);
+    will-change:
+        transform,
+        opacity;
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   OLD NAVIGATION
    ========================================================= */
 
-@media (max-width: 1100px) {
+/*
+ * Kept here for safety in case old HTML elements
+ * still exist in browser cache.
+ */
 
-    .side-nav {
-        width: 42px;
+#previous-button,
+#next-button {
+    display: none !important;
+}
 
-        height: 160px;
+#question-position {
+    display: none !important;
+}
 
-        font-size: 12px;
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (
+    min-width: 1200px
+) {
+
+    .question-panel,
+    .options-panel {
+        min-height: 520px;
     }
 
-    .previous-nav {
-        left: 8px;
+}
+
+
+/* =========================================================
+   MEDIUM DESKTOP / LAPTOP
+   ========================================================= */
+
+@media (
+    max-width: 1199px
+) {
+
+    .page-container {
+        width:
+            min(
+                1100px,
+                calc(100% - 70px)
+            );
     }
 
-    .next-nav {
-        right: 8px;
+
+    .score-display {
+        position: absolute;
+
+        top: -2px;
+
+        right: 0;
     }
 
-    .streak-box {
-        right: 12px;
+
+    .brain-box-header {
+        padding-right: 190px;
     }
+
+
+    .quiz-wrapper {
+        gap: 20px;
+    }
+
+
+    .question-panel,
+    .options-panel {
+        padding: 25px;
+    }
+
 }
 
 
@@ -786,76 +962,79 @@ body {
    TABLET
    ========================================================= */
 
-@media (max-width: 850px) {
+@media (
+    max-width: 900px
+) {
 
-    .app-container {
-        padding:
-            15px;
+    .page-container {
+        width:
+            calc(100% - 36px);
+
+        margin-top: 18px;
     }
+
 
     .brain-box-header {
         flex-direction: column;
 
         align-items: flex-start;
+
+        padding:
+            24px;
+
+        gap: 18px;
     }
 
-    .quote-box {
+
+    .brand-section {
         width: 100%;
+    }
+
+
+    .quote-section {
+        width: 100%;
+
+        max-width: none;
 
         text-align: left;
 
-        padding: 0;
+        margin-left: 0;
     }
 
-    .quiz-layout {
-        grid-template-columns: 1fr;
+
+    .score-display {
+        position: absolute;
+
+        top: 20px;
+
+        right: 20px;
+
+        min-width: auto;
     }
+
+
+    .brand-section {
+        padding-right: 170px;
+    }
+
+
+    .related-navigation {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    .quiz-wrapper {
+        grid-template-columns:
+            1fr;
+    }
+
 
     .question-panel,
     .options-panel {
         min-height: auto;
     }
 
-    .side-nav {
-        position: static;
-
-        width: auto;
-
-        height: auto;
-
-        padding:
-            9px 14px;
-
-        writing-mode: horizontal-tb;
-
-        transform: none;
-    }
-
-    .previous-nav {
-        position: fixed;
-
-        left: 10px;
-
-        bottom: 15px;
-
-        top: auto;
-    }
-
-    .next-nav {
-        position: fixed;
-
-        right: 10px;
-
-        bottom: 15px;
-
-        top: auto;
-    }
-
-    .streak-box {
-        top: 12px;
-
-        right: 12px;
-    }
 }
 
 
@@ -863,42 +1042,183 @@ body {
    MOBILE
    ========================================================= */
 
-@media (max-width: 600px) {
+@media (
+    max-width: 600px
+) {
+
+    .page-container {
+        width:
+            calc(100% - 20px);
+
+        margin:
+            10px auto 25px;
+    }
+
 
     .brain-box-header {
         padding:
-            17px;
+            20px;
+
+        border-radius: 17px;
     }
 
-    .brand h1 {
-        font-size: 22px;
+
+    .brand-section {
+        padding-right: 0;
     }
 
-    #question {
+
+    .brand-section h1 {
+        font-size: 26px;
+    }
+
+
+    .brain-icon {
+        font-size: 27px;
+    }
+
+
+    .brand-section p {
         font-size: 14px;
     }
 
-    .option-text {
+
+    .quote-section {
+        display: none;
+    }
+
+
+    .score-display {
+        position: static;
+
+        width: fit-content;
+
+        margin:
+            12px 0 0 auto;
+
         font-size: 13px;
     }
+
+
+    .score-display strong {
+        font-size: 15px;
+    }
+
+
+    .question-container {
+        margin-top: 15px;
+    }
+
+
+    .related-navigation {
+        grid-template-columns:
+            1fr;
+
+        gap: 10px;
+    }
+
+
+    .related-column {
+        padding:
+            11px 13px;
+    }
+
+
+    .related-column-title {
+        font-size: 11px;
+    }
+
+
+    .related-question {
+        padding:
+            6px 9px;
+
+        font-size: 12px;
+    }
+
 
     .question-panel,
     .options-panel {
         padding:
             20px;
+
+        border-radius: 17px;
     }
 
-    .streak-box {
-        top: 10px;
 
-        right: 10px;
-
-        min-width: auto;
+    .panel-label {
+        margin-bottom: 14px;
 
         font-size: 11px;
     }
 
-    .streak-box strong {
+
+    .question-text {
+        font-size: 15px;
+
+        line-height: 1.55;
+    }
+
+
+    .option {
+        min-height: 56px;
+
+        padding:
+            9px 11px;
+
+        border-radius: 12px;
+    }
+
+
+    .option-letter {
+        flex-basis: 35px;
+
+        width: 35px;
+
+        height: 35px;
+
         font-size: 13px;
     }
+
+
+    .option-text {
+        font-size: 14px;
+    }
+
+
+    .explanation {
+        padding:
+            15px;
+    }
+
+
+    .explanation-text {
+        font-size: 13px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (
+    max-width: 380px
+) {
+
+    .brand-section h1 {
+        font-size: 23px;
+    }
+
+
+    .question-text {
+        font-size: 14px;
+    }
+
+
+    .option-text {
+        font-size: 13px;
+    }
+
 }
