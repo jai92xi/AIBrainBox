@@ -1,120 +1,542 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="AIBrainBox — AI scenario-based questions that help you think, decode, and understand AI concepts."
-    >
+    <title>AI Brain Box</title>
 
-    <title>AIBrainBox</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef2ff 0%,
+                    #f8fafc 45%,
+                    #ecfeff 100%
+                );
+
+            color: #1e293b;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px 18px 40px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            margin: 0;
+            color: #312e81;
+            font-size: 30px;
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .title-area p {
+            margin: 6px 0 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        #score-display {
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            font-size: 13px;
+            white-space: nowrap;
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            box-shadow:
+                0 12px 35px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .question-header {
+            padding: 20px 22px 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        #question-position {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #6366f1;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        #question {
+            margin: 0;
+            color: #0f172a;
+            font-size: 21px;
+            line-height: 1.55;
+            font-weight: 700;
+        }
+
+        #options {
+            padding: 18px 22px 8px;
+        }
+
+        .option {
+            position: relative;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #ffffff;
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .option:hover {
+            border-color: #a5b4fc;
+            background: #f8faff;
+            transform: translateY(-1px);
+        }
+
+        .option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .option label {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            width: 100%;
+            padding: 15px 16px;
+            cursor: pointer;
+        }
+
+        .option-letter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 32px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .option-text {
+            flex: 1;
+            padding-top: 5px;
+            color: #334155;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .option.correct-answer {
+            border-color: #22c55e;
+            background: #f0fdf4;
+            box-shadow:
+                0 0 0 2px rgba(34, 197, 94, 0.08);
+        }
+
+        .option.correct-answer .option-letter {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .option.wrong-answer {
+            border-color: #ef4444;
+            background: #fef2f2;
+            box-shadow:
+                0 0 0 2px rgba(239, 68, 68, 0.08);
+        }
+
+        .option.wrong-answer .option-letter {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        #result {
+            min-height: 24px;
+            padding: 0 22px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        #explanation {
+            margin: 8px 22px 18px;
+            padding: 15px 16px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        #explanation h3 {
+            margin: 0 0 7px;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        #explanation-text {
+            margin: 0;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px 22px 22px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .navigation button {
+            min-width: 130px;
+            padding: 11px 17px;
+            border: 0;
+            border-radius: 10px;
+            color: #ffffff;
+            background: #4f46e5;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .navigation button:hover:not(:disabled) {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .navigation button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #previous-question-btn {
+            background: #64748b;
+        }
+
+        #previous-question-btn:hover:not(:disabled) {
+            background: #475569;
+        }
+
+        #loading {
+            margin: 40px auto;
+            text-align: center;
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        #error {
+            margin: 30px 0;
+            padding: 18px;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            background: #fef2f2;
+            color: #991b1b;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .quote-card {
+            margin-top: 18px;
+            padding: 18px 20px;
+            border-radius: 15px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef2ff,
+                    #f5f3ff
+                );
+            border: 1px solid #ddd6fe;
+            text-align: center;
+        }
+
+        #quote-text {
+            margin: 0;
+            color: #4338ca;
+            font-size: 15px;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        #quote-author {
+            margin: 8px 0 0;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .reaction-container {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .reaction-emoji {
+            position: absolute;
+            left: var(--start-left);
+            bottom: -60px;
+            font-size: var(--emoji-size);
+            animation:
+                reaction-float
+                var(--duration)
+                ease-out
+                var(--delay)
+                forwards;
+        }
+
+        @keyframes reaction-float {
+
+            0% {
+                opacity: 0;
+                transform:
+                    translate3d(
+                        0,
+                        0,
+                        0
+                    )
+                    rotate(0deg)
+                    scale(0.6);
+            }
+
+            12% {
+                opacity: 1;
+            }
+
+            70% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform:
+                    translate3d(
+                        var(--horizontal),
+                        -85vh,
+                        0
+                    )
+                    rotate(var(--rotation))
+                    scale(1.2);
+            }
+        }
+
+        @media (
+            max-width: 600px
+        ) {
+
+            .app {
+                padding:
+                    15px
+                    12px
+                    30px;
+            }
+
+            .header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .title-area h1 {
+                font-size: 25px;
+            }
+
+            #score-display {
+                align-self: stretch;
+                text-align: center;
+            }
+
+            .question-header {
+                padding:
+                    17px
+                    17px
+                    12px;
+            }
+
+            #question {
+                font-size: 18px;
+            }
+
+            #options {
+                padding:
+                    15px
+                    17px
+                    5px;
+            }
+
+            .navigation {
+                padding:
+                    15px
+                    17px
+                    18px;
+            }
+
+            .navigation button {
+                min-width: 0;
+                flex: 1;
+            }
+
+            #result {
+                padding:
+                    0 17px;
+            }
+
+            #explanation {
+                margin:
+                    8px
+                    17px
+                    16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <main class="container">
-
-        <!-- =====================================================
-             HEADER
-             ===================================================== -->
+    <main class="app">
 
         <header class="header">
 
-            <div class="header-top">
-
-                <div class="brand">
-
-                    <span class="brand-icon">
-                        🧠
-                    </span>
-
-                    <span class="brand-name">
-                        AIBrainBox
-                    </span>
-
-                </div>
-
-
-                <aside
-                    id="motivational-quote"
-                    class="motivational-quote"
-                    aria-label="Motivational quote"
-                >
-
-                    <span id="quote-text">
-                        “Keep going. Your future self will thank you.”
-                    </span>
-
-                    <span
-                        id="quote-author"
-                        class="quote-author"
-                    >
-                        — AIBrainBox
-                    </span>
-
-                </aside>
-
+            <div class="title-area">
+                <h1>🧠 AI Brain Box</h1>
+                <p>
+                    Challenge yourself. Learn something new.
+                </p>
             </div>
 
-
-            <p class="tagline">
-                🤯 A Box Full of “Wait… What?” — Decode the Scenario, Discover the “Ohhh, THAT’S Why!”
-            </p>
+            <div id="score-display">
+                Your current streak -
+                <strong>0/0</strong>
+            </div>
 
         </header>
 
 
-        <!-- =====================================================
-             LOADING
-             ===================================================== -->
-
-        <section
+        <div
             id="loading"
-            class="loading"
         >
-            Loading question...
-        </section>
+            Loading questions...
+        </div>
 
 
-        <!-- =====================================================
-             ERROR
-             ===================================================== -->
-
-        <section
+        <div
             id="error"
-            class="error hidden"
-            role="alert"
-        ></section>
+            class="hidden"
+        ></div>
 
-
-        <!-- =====================================================
-             QUIZ
-             ===================================================== -->
 
         <section
             id="question-container"
-            class="hidden"
+            class="card hidden"
         >
 
-            <!-- =================================================
-                 TOP NAVIGATION
-                 ================================================= -->
+            <div class="question-header">
+
+                <div
+                    id="question-position"
+                >
+                    Question 1 of 1
+                </div>
+
+                <h2
+                    id="question"
+                ></h2>
+
+            </div>
+
+
+            <div
+                id="options"
+            ></div>
+
+
+            <div
+                id="result"
+            ></div>
+
+
+            <div
+                id="explanation"
+                class="hidden"
+            >
+
+                <h3>
+                    Explanation
+                </h3>
+
+                <p
+                    id="explanation-text"
+                ></p>
+
+            </div>
+
 
             <nav
-                id="question-navigation"
-                class="question-navigation"
+                class="navigation"
                 aria-label="Question navigation"
             >
 
@@ -125,24 +547,6 @@
                     ← Previous
                 </button>
 
-
-                <div
-                    id="question-position"
-                    class="question-position"
-                >
-                    Question 1 of 5
-                </div>
-
-
-                <div
-                    id="score-display"
-                    class="score-display"
-                >
-                    Your current streak -
-                    <strong>0/0</strong>
-                </div>
-
-
                 <button
                     id="next-question-btn"
                     type="button"
@@ -152,106 +556,31 @@
 
             </nav>
 
-
-            <!-- =================================================
-                 QUESTION CARD
-                 ================================================= -->
-
-            <div class="question-card">
-
-                <div class="quiz-layout">
-
-
-                    <!-- =========================================
-                         QUESTION - LEFT
-                         ========================================= -->
-
-                    <section class="question-panel">
-
-                        <div class="panel-label">
-                            QUESTION
-                        </div>
-
-                        <div
-                            id="question"
-                            class="question"
-                        ></div>
-
-                    </section>
-
-
-                    <!-- =========================================
-                         OPTIONS - RIGHT
-                         ========================================= -->
-
-                    <section class="options-panel">
-
-                        <div class="panel-label">
-                            SELECT YOUR ANSWER
-                        </div>
-
-
-                        <div
-                            id="options"
-                            class="options"
-                            role="radiogroup"
-                            aria-label="Answer options"
-                        ></div>
-
-
-                        <!-- Answer result -->
-
-                        <div
-                            id="result"
-                            class="result"
-                            aria-live="polite"
-                        ></div>
-
-
-                        <!-- Explanation -->
-
-                        <div
-                            id="explanation"
-                            class="explanation hidden"
-                        >
-
-                            <div class="explanation-title">
-                                💡 Explanation
-                            </div>
-
-                            <div
-                                id="explanation-text"
-                                class="explanation-text"
-                            ></div>
-
-                        </div>
-
-                    </section>
-
-                </div>
-
-            </div>
-
         </section>
 
 
-        <!-- =====================================================
-             FOOTER
-             ===================================================== -->
+        <section
+            class="quote-card"
+        >
 
-        <footer class="footer">
-
-            <p>
-                Keep thinking. Keep learning. Keep improving. 🚀
+            <p
+                id="quote-text"
+            >
+                “Keep learning, keep growing.”
             </p>
 
-        </footer>
+            <p
+                id="quote-author"
+            ></p>
+
+        </section>
 
     </main>
 
 
-    <script src="app.js"></script>
+    <script
+        src="./app.js"
+    ></script>
 
 </body>
-
 </html>
