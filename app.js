@@ -1,20 +1,49 @@
+/* =========================================================
+   AI BRAIN BOX
+   ========================================================= */
+
 let questions = [];
 let currentQuestionIndex = -1;
 let currentQuestion = null;
 
+
+/* =========================================================
+   FILE PATHS
+   ========================================================= */
+
 const CSV_URL = "./xi-questions.csv";
 const QUOTES_URL = "./xi-Quotes.csv";
 
+
+/* =========================================================
+   QUIZ STATE
+   ========================================================= */
+
 let score = 0;
+
 let answeredQuestions = new Set();
+
 let questionResults = new Map();
+
 let savedAnswers = new Map();
 
 let currentStreak = 0;
+
 let answerHistory = [];
 
+
+/* =========================================================
+   QUOTES
+   ========================================================= */
+
 let quotes = [];
+
 let lastQuoteIndex = -1;
+
+
+/* =========================================================
+   BACKGROUND VIDEO
+   ========================================================= */
 
 const BACKGROUNDS_API =
     "https://api.github.com/repos/jai92xi/AIBrainBox/contents/Backgrounds_Folder";
@@ -24,7 +53,7 @@ const BACKGROUND_SESSION_KEY =
 
 
 /* =========================================================
-   INITIALIZE APP
+   START APPLICATION
    ========================================================= */
 
 document.addEventListener(
@@ -32,40 +61,64 @@ document.addEventListener(
     initializeApp
 );
 
+
 function initializeApp() {
 
     const previousButton =
-        document.getElementById("previous-button");
+        document.getElementById(
+            "previous-button"
+        );
 
     const nextButton =
-        document.getElementById("next-button");
+        document.getElementById(
+            "next-button"
+        );
+
+
+    /* Previous */
 
     if (previousButton) {
+
         previousButton.addEventListener(
             "click",
             () => navigateQuestion(-1)
         );
     }
 
+
+    /* Next */
+
     if (nextButton) {
+
         nextButton.addEventListener(
             "click",
             () => navigateQuestion(1)
         );
     }
 
+
+    /* Browser back / forward */
+
     window.addEventListener(
         "popstate",
         handlePopState
     );
+
+
+    /* Keyboard navigation */
 
     document.addEventListener(
         "keydown",
         handleKeyboardNavigation
     );
 
+
+    /* Load data */
+
     loadQuestions();
+
     loadQuotes();
+
     loadSessionBackground();
 }
 
@@ -77,20 +130,32 @@ function initializeApp() {
 async function loadQuestions() {
 
     const loading =
-        document.getElementById("loading");
+        document.getElementById(
+            "loading"
+        );
 
     const error =
-        document.getElementById("error");
+        document.getElementById(
+            "error"
+        );
+
 
     try {
 
         if (loading) {
-            loading.classList.remove("hidden");
+
+            loading.classList.remove(
+                "hidden"
+            );
         }
 
         if (error) {
-            error.classList.add("hidden");
+
+            error.classList.add(
+                "hidden"
+            );
         }
+
 
         const response =
             await fetch(
@@ -100,41 +165,56 @@ async function loadQuestions() {
                 }
             );
 
+
         if (!response.ok) {
+
             throw new Error(
                 "Unable to load questions."
             );
         }
 
+
         const csvText =
             await response.text();
 
+
         questions =
             parseCSV(csvText);
+
 
         console.log(
             "Questions loaded:",
             questions.length
         );
 
+
         if (questions.length > 0) {
+
             console.log(
                 "First question:",
                 questions[0]
             );
         }
 
+
         if (!questions.length) {
+
             throw new Error(
                 "No questions found in CSV."
             );
         }
 
+
         if (loading) {
-            loading.classList.add("hidden");
+
+            loading.classList.add(
+                "hidden"
+            );
         }
 
+
         loadQuestionFromURL();
+
 
     } catch (err) {
 
@@ -143,16 +223,23 @@ async function loadQuestions() {
             err
         );
 
+
         if (loading) {
-            loading.classList.add("hidden");
+
+            loading.classList.add(
+                "hidden"
+            );
         }
+
 
         if (error) {
 
             error.textContent =
                 "Unable to load questions. Please refresh the page.";
 
-            error.classList.remove("hidden");
+            error.classList.remove(
+                "hidden"
+            );
         }
     }
 }
@@ -174,27 +261,35 @@ async function loadQuotes() {
                 }
             );
 
+
         if (!response.ok) {
+
             throw new Error(
                 "Unable to load quotes."
             );
         }
 
+
         const csvText =
             await response.text();
+
 
         quotes =
             parseQuotesCSV(csvText);
 
+
         if (quotes.length) {
+
             loadMotivationalQuote();
         }
+
 
     } catch (err) {
 
         console.warn(
             "Quote CSV could not be loaded. Using fallback quotes."
         );
+
 
         quotes = [
 
@@ -227,13 +322,14 @@ async function loadQuotes() {
             }
         ];
 
+
         loadMotivationalQuote();
     }
 }
 
 
 /* =========================================================
-   SESSION BACKGROUND VIDEO
+   LOAD RANDOM SESSION BACKGROUND
    ========================================================= */
 
 async function loadSessionBackground() {
@@ -243,16 +339,30 @@ async function loadSessionBackground() {
             "session-background"
         );
 
+
     if (!video) {
+
         return;
     }
 
+
     try {
+
+        /*
+         * Check whether a background was
+         * already selected during this session.
+         */
 
         let selectedVideo =
             sessionStorage.getItem(
                 BACKGROUND_SESSION_KEY
             );
+
+
+        /*
+         * If there is no session video,
+         * retrieve the MP4 files from GitHub.
+         */
 
         if (!selectedVideo) {
 
@@ -264,6 +374,7 @@ async function loadSessionBackground() {
                     }
                 );
 
+
             if (!response.ok) {
 
                 throw new Error(
@@ -271,15 +382,20 @@ async function loadSessionBackground() {
                 );
             }
 
+
             const files =
                 await response.json();
+
 
             const videoFiles =
                 files.filter(
                     file =>
                         file.type === "file" &&
-                        /\.mp4$/i.test(file.name)
+                        /\.mp4$/i.test(
+                            file.name
+                        )
                 );
+
 
             if (!videoFiles.length) {
 
@@ -290,14 +406,28 @@ async function loadSessionBackground() {
                 return;
             }
 
+
+            /*
+             * Pick one random video.
+             */
+
             const randomIndex =
                 Math.floor(
                     Math.random() *
                     videoFiles.length
                 );
 
+
             selectedVideo =
-                videoFiles[randomIndex].download_url;
+                videoFiles[
+                    randomIndex
+                ].download_url;
+
+
+            /*
+             * Save it so the same video
+             * remains during this session.
+             */
 
             sessionStorage.setItem(
                 BACKGROUND_SESSION_KEY,
@@ -305,24 +435,36 @@ async function loadSessionBackground() {
             );
         }
 
+
+        /*
+         * Set video source.
+         */
+
         video.src =
             selectedVideo;
 
+
         video.load();
+
 
         const playPromise =
             video.play();
 
-        if (playPromise !== undefined) {
 
-            playPromise.catch(() => {
+        if (
+            playPromise !== undefined
+        ) {
 
-                console.warn(
-                    "Background video autoplay was blocked."
-                );
+            playPromise.catch(
+                () => {
 
-            });
+                    console.warn(
+                        "Background video autoplay was blocked."
+                    );
+                }
+            );
         }
+
 
     } catch (err) {
 
@@ -345,8 +487,15 @@ function loadQuestionFromURL() {
             window.location.search
         );
 
+
     const questionId =
         params.get("id");
+
+
+    /*
+     * Open requested question if
+     * an ID exists in the URL.
+     */
 
     if (questionId) {
 
@@ -358,6 +507,7 @@ function loadQuestionFromURL() {
                     ) === questionId
             );
 
+
         if (index !== -1) {
 
             currentQuestionIndex =
@@ -368,6 +518,11 @@ function loadQuestionFromURL() {
             return;
         }
     }
+
+
+    /*
+     * Otherwise start from first question.
+     */
 
     currentQuestionIndex = 0;
 
@@ -385,103 +540,204 @@ function displayQuestion() {
         currentQuestionIndex < 0 ||
         currentQuestionIndex >= questions.length
     ) {
+
         return;
     }
 
+
     currentQuestion =
-        questions[currentQuestionIndex];
+        questions[
+            currentQuestionIndex
+        ];
+
 
     const questionContainer =
         document.getElementById(
             "question-container"
         );
 
+
     const error =
-        document.getElementById("error");
+        document.getElementById(
+            "error"
+        );
+
 
     const questionElement =
-        document.getElementById("question");
+        document.getElementById(
+            "question"
+        );
+
 
     if (questionContainer) {
+
         questionContainer.classList.remove(
             "hidden"
         );
     }
 
+
     if (error) {
-        error.classList.add("hidden");
+
+        error.classList.add(
+            "hidden"
+        );
     }
+
+
+    /*
+     * Display question text.
+     */
 
     if (questionElement) {
 
-        const questionText =
+        let questionText =
             getQuestionText(
                 currentQuestion
             );
+
+
+        /*
+         * Remove markdown bold markers
+         * from CSV text.
+         *
+         * Example:
+         * **production team**
+         *
+         * becomes:
+         * production team
+         */
+
+        questionText =
+            cleanQuestionText(
+                questionText
+            );
+
 
         questionElement.innerText =
             questionText ||
             "Question unavailable.";
     }
 
+
+    /*
+     * Create answer options.
+     */
+
     createOptions();
+
+
+    /*
+     * Restore previously selected answer.
+     */
 
     restoreAnswerState();
 
+
+    /*
+     * Update Previous / Next buttons.
+     */
+
     updateNavigation();
 
+
+    /*
+     * Update current streak.
+     */
+
     updateScore();
+
+
+    /*
+     * Show motivational quote.
+     */
 
     loadMotivationalQuote();
 }
 
 
 /* =========================================================
+   CLEAN QUESTION TEXT
+   ========================================================= */
+
+function cleanQuestionText(text) {
+
+    if (!text) {
+
+        return "";
+    }
+
+
+    return String(text)
+
+        /*
+         * Remove **bold**
+         */
+
+        .replace(
+            /\*\*/g,
+            ""
+        )
+
+        /*
+         * Remove unnecessary
+         * Windows line endings.
+         */
+
+        .replace(
+            /\r\n/g,
+            "\n"
+        )
+
+        .trim();
+}
+
+
+/* =========================================================
    GET QUESTION TEXT
-   Robust against different CSV headers
    ========================================================= */
 
 function getQuestionText(question) {
 
     if (!question) {
+
         return "";
     }
+
 
     const possibleKeys = [
 
         "question",
-
         "Question",
-
         "QUESTION",
 
         "question text",
-
         "Question Text",
-
         "QUESTION TEXT",
 
         "question_text",
-
         "Question_Text",
-
         "QUESTION_TEXT",
 
         "question description",
-
         "Question Description"
     ];
+
 
     for (
         const key of possibleKeys
     ) {
 
         if (
+
             question[key] !== undefined &&
+
             question[key] !== null &&
+
             String(
                 question[key]
             ).trim() !== ""
+
         ) {
 
             return String(
@@ -490,15 +746,19 @@ function getQuestionText(question) {
         }
     }
 
+
     /*
-     * Final fallback:
-     * Find any column containing
+     * Fallback:
+     * Search any column containing
      * the word "question".
      */
 
     const fallbackKey =
-        Object.keys(question).find(
+        Object.keys(
+            question
+        ).find(
             key =>
+
                 key
                     .replace(
                         /^\uFEFF/,
@@ -506,20 +766,31 @@ function getQuestionText(question) {
                     )
                     .trim()
                     .toLowerCase()
-                    .includes("question")
+                    .includes(
+                        "question"
+                    )
         );
 
+
     if (
+
         fallbackKey &&
+
         String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim() !== ""
+
     ) {
 
         return String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim();
     }
+
 
     return "";
 }
@@ -536,14 +807,30 @@ function createOptions() {
             "options"
         );
 
+
     if (!optionsContainer) {
+
         return;
     }
 
-    optionsContainer.innerHTML = "";
 
-    const optionLetters =
-        ["A", "B", "C", "D"];
+    /*
+     * Clear previous options.
+     */
+
+    optionsContainer.innerHTML =
+        "";
+
+
+    const optionLetters = [
+
+        "A",
+        "B",
+        "C",
+        "D"
+
+    ];
+
 
     optionLetters.forEach(
         letter => {
@@ -554,53 +841,94 @@ function createOptions() {
                     letter
                 );
 
+
+            /*
+             * Ignore empty options.
+             */
+
             if (!optionValue) {
+
                 return;
             }
+
+
+            /*
+             * Create label.
+             */
 
             const label =
                 document.createElement(
                     "label"
                 );
 
+
             label.className =
                 "option";
+
+
+            /*
+             * Radio button.
+             */
 
             const radio =
                 document.createElement(
                     "input"
                 );
 
+
             radio.type =
                 "radio";
+
 
             radio.name =
                 "quiz-option";
 
+
             radio.value =
                 letter;
+
+
+            /*
+             * Option letter.
+             */
 
             const optionLetter =
                 document.createElement(
                     "span"
                 );
 
+
             optionLetter.className =
                 "option-letter";
 
+
             optionLetter.innerText =
                 letter;
+
+
+            /*
+             * Option text.
+             */
 
             const optionText =
                 document.createElement(
                     "span"
                 );
 
+
             optionText.className =
                 "option-text";
 
+
             optionText.innerText =
-                optionValue;
+                cleanQuestionText(
+                    optionValue
+                );
+
+
+            /*
+             * Build option.
+             */
 
             label.appendChild(
                 radio
@@ -614,6 +942,11 @@ function createOptions() {
                 optionText
             );
 
+
+            /*
+             * Check answer when selected.
+             */
+
             radio.addEventListener(
                 "change",
                 () =>
@@ -622,6 +955,7 @@ function createOptions() {
                         label
                     )
             );
+
 
             optionsContainer.appendChild(
                 label
@@ -641,8 +975,10 @@ function getOptionValue(
 ) {
 
     if (!question) {
+
         return "";
     }
+
 
     const possibleKeys = [
 
@@ -663,16 +999,21 @@ function getOptionValue(
         letter
     ];
 
+
     for (
         const key of possibleKeys
     ) {
 
         if (
+
             question[key] !== undefined &&
+
             question[key] !== null &&
+
             String(
                 question[key]
             ).trim() !== ""
+
         ) {
 
             return String(
@@ -681,14 +1022,15 @@ function getOptionValue(
         }
     }
 
+
     /*
-     * Fallback:
-     * Search for a column whose name
-     * represents the requested option.
+     * More flexible fallback.
      */
 
     const fallbackKey =
-        Object.keys(question).find(
+        Object.keys(
+            question
+        ).find(
             key => {
 
                 const normalized =
@@ -704,6 +1046,7 @@ function getOptionValue(
                             " "
                         );
 
+
                 return (
                     normalized ===
                     `option ${letter.toLowerCase()}`
@@ -711,17 +1054,26 @@ function getOptionValue(
             }
         );
 
+
     if (
+
         fallbackKey &&
+
         String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim() !== ""
+
     ) {
 
         return String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim();
     }
+
 
     return "";
 }
@@ -739,66 +1091,100 @@ function checkAnswer(
     const questionId =
         getQuestionId();
 
+
     const userAnswer =
         selected.value
             .trim()
             .toUpperCase();
 
+
     const correctAnswer =
         getCorrectAnswer();
+
 
     const previousResult =
         questionResults.get(
             questionId
         );
 
+
     const isCorrect =
-        userAnswer === correctAnswer;
+        userAnswer ===
+        correctAnswer;
+
 
     /*
-     * Keep score accurate if the
-     * user changes an already answered
-     * question.
+     * Correct score handling.
      */
 
-    if (previousResult === true) {
+    if (
+        previousResult === true
+    ) {
+
         score--;
     }
 
+
     if (isCorrect) {
+
         score++;
     }
+
 
     questionResults.set(
         questionId,
         isCorrect
     );
 
+
     savedAnswers.set(
         questionId,
         userAnswer
     );
 
+
     answeredQuestions.add(
         questionId
     );
 
+
+    /*
+     * Update streak.
+     */
+
     updateCurrentStreak(
         questionId,
-        isCorrect,
-        previousResult
+        isCorrect
     );
 
+
+    /*
+     * Remove previous answer styling.
+     */
+
     clearOptionStates();
+
+
+    /*
+     * Highlight selected option.
+     */
 
     if (selectedOption) {
 
         selectedOption.classList.add(
+
             isCorrect
                 ? "correct-answer"
                 : "wrong-answer"
+
         );
     }
+
+
+    /*
+     * If answer is wrong,
+     * show the correct answer too.
+     */
 
     if (!isCorrect) {
 
@@ -807,10 +1193,16 @@ function checkAnswer(
         );
     }
 
+
+    /*
+     * Result message.
+     */
+
     const result =
         document.getElementById(
             "result"
         );
+
 
     if (result) {
 
@@ -822,6 +1214,11 @@ function checkAnswer(
             result.className =
                 "result-correct";
 
+
+            /*
+             * Happy emoji animation.
+             */
+
             showCorrectCelebration();
 
         } else {
@@ -832,30 +1229,48 @@ function checkAnswer(
             result.className =
                 "result-wrong";
 
+
+            /*
+             * Sad emoji animation.
+             */
+
             showWrongReaction();
         }
     }
 
+
     /*
-     * Explanation automatically appears
-     * immediately after selecting an answer.
+     * IMPORTANT:
+     *
+     * Explanation opens immediately
+     * after selecting an option.
      */
 
     showExplanation();
+
+
+    /*
+     * Update streak display.
+     */
 
     updateScore();
 }
 
 
 /* =========================================================
-   CURRENT STREAK
+   UPDATE CURRENT STREAK
    ========================================================= */
 
 function updateCurrentStreak(
     questionId,
-    isCorrect,
-    previousResult
+    isCorrect
 ) {
+
+    /*
+     * If this is the first answer
+     * for this question, add it to
+     * the answer history.
+     */
 
     if (
         !answerHistory.includes(
@@ -866,49 +1281,44 @@ function updateCurrentStreak(
         answerHistory.push(
             questionId
         );
-
-        if (isCorrect) {
-
-            currentStreak++;
-
-        } else {
-
-            currentStreak = 0;
-        }
-
-        return;
     }
 
-    const historyIndex =
-        answerHistory.indexOf(
-            questionId
-        );
 
-    if (historyIndex === -1) {
-        return;
-    }
-
-    questionResults.set(
-        questionId,
-        isCorrect
-    );
+    /*
+     * Recalculate streak from the
+     * latest answered question.
+     *
+     * This means:
+     *
+     * Correct → streak increases
+     * Wrong   → streak resets
+     */
 
     let streak = 0;
+
 
     for (
         let i =
             answerHistory.length - 1;
+
         i >= 0;
+
         i--
     ) {
 
         const id =
             answerHistory[i];
 
-        const result =
-            questionResults.get(id);
 
-        if (result === true) {
+        const result =
+            questionResults.get(
+                id
+            );
+
+
+        if (
+            result === true
+        ) {
 
             streak++;
 
@@ -917,6 +1327,7 @@ function updateCurrentStreak(
             break;
         }
     }
+
 
     currentStreak =
         streak;
@@ -932,29 +1343,41 @@ function restoreAnswerState() {
     const questionId =
         getQuestionId();
 
+
     const savedAnswer =
         savedAnswers.get(
             questionId
         );
+
 
     const savedResult =
         questionResults.get(
             questionId
         );
 
+
     clearOptionStates();
+
 
     const result =
         document.getElementById(
             "result"
         );
 
+
     if (result) {
 
-        result.innerHTML = "";
+        result.innerHTML =
+            "";
 
-        result.className = "";
+        result.className =
+            "";
     }
+
+
+    /*
+     * Question has not been answered.
+     */
 
     if (!savedAnswer) {
 
@@ -963,43 +1386,63 @@ function restoreAnswerState() {
         return;
     }
 
+
+    /*
+     * Restore selected radio.
+     */
+
     const radios =
         document.querySelectorAll(
             'input[name="quiz-option"]'
         );
 
+
     radios.forEach(
         radio => {
 
             if (
+
                 radio.value.toUpperCase() ===
                 savedAnswer.toUpperCase()
+
             ) {
 
-                radio.checked = true;
+                radio.checked =
+                    true;
+
 
                 const option =
                     radio.closest(
                         ".option"
                     );
 
+
                 if (option) {
 
                     option.classList.add(
+
                         savedResult
                             ? "correct-answer"
                             : "wrong-answer"
+
                     );
                 }
             }
         }
     );
 
+
+    /*
+     * Wrong answer:
+     * highlight correct answer.
+     */
+
     if (!savedResult) {
 
         highlightCorrectAnswer(
             getCorrectAnswer()
         );
+
 
         if (result) {
 
@@ -1012,6 +1455,10 @@ function restoreAnswerState() {
 
     } else {
 
+        /*
+         * Correct answer.
+         */
+
         if (result) {
 
             result.innerHTML =
@@ -1022,12 +1469,18 @@ function restoreAnswerState() {
         }
     }
 
+
+    /*
+     * Explanation remains visible
+     * when revisiting an answered question.
+     */
+
     showExplanation();
 }
 
 
 /* =========================================================
-   EXPLANATION
+   SHOW EXPLANATION
    ========================================================= */
 
 function showExplanation() {
@@ -1037,26 +1490,38 @@ function showExplanation() {
             "explanation"
         );
 
+
     const explanationText =
         document.getElementById(
             "explanation-text"
         );
 
+
     if (
         !explanation ||
         !explanationText
     ) {
+
         return;
     }
+
 
     const text =
         getExplanationText(
             currentQuestion
         );
 
+
     explanationText.innerText =
-        text ||
+        cleanQuestionText(
+            text
+        ) ||
         "Explanation not available.";
+
+
+    /*
+     * Remove hidden class.
+     */
 
     explanation.classList.remove(
         "hidden"
@@ -1065,7 +1530,7 @@ function showExplanation() {
 
 
 /* =========================================================
-   GET EXPLANATION
+   GET EXPLANATION TEXT
    ========================================================= */
 
 function getExplanationText(
@@ -1073,42 +1538,45 @@ function getExplanationText(
 ) {
 
     if (!question) {
+
         return "";
     }
+
 
     const possibleKeys = [
 
         "explanation",
-
         "Explanation",
-
         "EXPLANATION",
 
         "explaination",
-
         "Explaination",
-
         "EXPLAINATION",
 
         "explanation text",
-
         "Explanation Text",
+        "EXPLANATION TEXT",
 
         "explanation_text",
-
-        "Explanation_Text"
+        "Explanation_Text",
+        "EXPLANATION_TEXT"
     ];
+
 
     for (
         const key of possibleKeys
     ) {
 
         if (
+
             question[key] !== undefined &&
+
             question[key] !== null &&
+
             String(
                 question[key]
             ).trim() !== ""
+
         ) {
 
             return String(
@@ -1117,9 +1585,17 @@ function getExplanationText(
         }
     }
 
+
+    /*
+     * Fallback search.
+     */
+
     const fallbackKey =
-        Object.keys(question).find(
+        Object.keys(
+            question
+        ).find(
             key =>
+
                 key
                     .replace(
                         /^\uFEFF/,
@@ -1132,21 +1608,34 @@ function getExplanationText(
                     )
         );
 
+
     if (
+
         fallbackKey &&
+
         String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim() !== ""
+
     ) {
 
         return String(
-            question[fallbackKey]
+            question[
+                fallbackKey
+            ]
         ).trim();
     }
+
 
     return "";
 }
 
+
+/* =========================================================
+   HIDE EXPLANATION
+   ========================================================= */
 
 function hideExplanation() {
 
@@ -1154,6 +1643,7 @@ function hideExplanation() {
         document.getElementById(
             "explanation"
         );
+
 
     if (explanation) {
 
@@ -1165,7 +1655,7 @@ function hideExplanation() {
 
 
 /* =========================================================
-   OPTION STATES
+   CLEAR OPTION STATES
    ========================================================= */
 
 function clearOptionStates() {
@@ -1175,18 +1665,27 @@ function clearOptionStates() {
             ".option"
         );
 
+
     options.forEach(
         option => {
 
             option.classList.remove(
+
                 "selected",
+
                 "correct-answer",
+
                 "wrong-answer"
+
             );
         }
     );
 }
 
+
+/* =========================================================
+   HIGHLIGHT CORRECT ANSWER
+   ========================================================= */
 
 function highlightCorrectAnswer(
     correctAnswer
@@ -1197,18 +1696,22 @@ function highlightCorrectAnswer(
             'input[name="quiz-option"]'
         );
 
+
     radios.forEach(
         radio => {
 
             if (
+
                 radio.value.toUpperCase() ===
                 correctAnswer.toUpperCase()
+
             ) {
 
                 const option =
                     radio.closest(
                         ".option"
                     );
+
 
                 if (option) {
 
@@ -1223,7 +1726,7 @@ function highlightCorrectAnswer(
 
 
 /* =========================================================
-   NAVIGATION
+   NAVIGATE QUESTIONS
    ========================================================= */
 
 function navigateQuestion(
@@ -1234,38 +1737,69 @@ function navigateQuestion(
         currentQuestionIndex +
         direction;
 
+
+    /*
+     * Prevent going outside
+     * available questions.
+     */
+
     if (
+
         newIndex < 0 ||
+
         newIndex >= questions.length
+
     ) {
+
         return;
     }
+
 
     currentQuestionIndex =
         newIndex;
 
+
     const questionId =
         getQuestionId();
 
-    const url =
-        new URL(
-            window.location.href
+
+    /*
+     * Update URL.
+     */
+
+    if (questionId) {
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.searchParams.set(
+            "id",
+            questionId
         );
 
-    url.searchParams.set(
-        "id",
-        questionId
-    );
 
-    history.pushState(
-        {},
-        "",
-        url
-    );
+        history.pushState(
+            {},
+            "",
+            url
+        );
+    }
+
+
+    /*
+     * Display new question.
+     */
 
     displayQuestion();
 }
 
+
+/* =========================================================
+   BROWSER BACK / FORWARD
+   ========================================================= */
 
 function handlePopState() {
 
@@ -1274,7 +1808,7 @@ function handlePopState() {
 
 
 /* =========================================================
-   NAVIGATION UI
+   UPDATE NAVIGATION BUTTONS
    ========================================================= */
 
 function updateNavigation() {
@@ -1284,21 +1818,27 @@ function updateNavigation() {
             "previous-button"
         );
 
+
     const nextButton =
         document.getElementById(
             "next-button"
         );
 
-    const position =
-        document.getElementById(
-            "question-position"
-        );
+
+    /*
+     * Previous disabled on first question.
+     */
 
     if (previousButton) {
 
         previousButton.disabled =
             currentQuestionIndex <= 0;
     }
+
+
+    /*
+     * Next disabled on final question.
+     */
 
     if (nextButton) {
 
@@ -1307,20 +1847,28 @@ function updateNavigation() {
             questions.length - 1;
     }
 
+
     /*
-     * Question number intentionally
-     * remains hidden.
+     * Question position is intentionally
+     * not displayed.
      */
+
+    const position =
+        document.getElementById(
+            "question-position"
+        );
+
 
     if (position) {
 
-        position.innerText = "";
+        position.innerText =
+            "";
     }
 }
 
 
 /* =========================================================
-   SCORE / STREAK
+   UPDATE CURRENT STREAK DISPLAY
    ========================================================= */
 
 function updateScore() {
@@ -1330,11 +1878,15 @@ function updateScore() {
             "score-display"
         );
 
+
     if (!scoreDisplay) {
+
         return;
     }
 
+
     scoreDisplay.innerHTML =
+
         `🔥 Current streak: <strong>${currentStreak}</strong>`;
 }
 
@@ -1346,10 +1898,18 @@ function updateScore() {
 function loadMotivationalQuote() {
 
     if (!quotes.length) {
+
         return;
     }
 
+
     let randomIndex;
+
+
+    /*
+     * Avoid showing the same quote
+     * consecutively.
+     */
 
     if (quotes.length === 1) {
 
@@ -1371,21 +1931,28 @@ function loadMotivationalQuote() {
         );
     }
 
+
     lastQuoteIndex =
         randomIndex;
 
+
     const selectedQuote =
-        quotes[randomIndex];
+        quotes[
+            randomIndex
+        ];
+
 
     const quoteText =
         document.getElementById(
             "quote-text"
         );
 
+
     const quoteAuthor =
         document.getElementById(
             "quote-author"
         );
+
 
     if (quoteText) {
 
@@ -1393,11 +1960,15 @@ function loadMotivationalQuote() {
             `“${selectedQuote.quote}”`;
     }
 
+
     if (quoteAuthor) {
 
         quoteAuthor.innerText =
+
             selectedQuote.author
+
                 ? `— ${selectedQuote.author}`
+
                 : "— AIBrainBox";
     }
 }
@@ -1411,15 +1982,38 @@ function handleKeyboardNavigation(
     event
 ) {
 
-    const tag =
-        event.target.tagName.toLowerCase();
+    const target =
+        event.target;
 
-    if (
-        tag === "input" ||
-        tag === "textarea"
-    ) {
+
+    if (!target) {
+
         return;
     }
+
+
+    const tag =
+        target.tagName.toLowerCase();
+
+
+    /*
+     * Don't navigate while interacting
+     * with form fields.
+     */
+
+    if (
+
+        tag === "input" ||
+
+        tag === "textarea" ||
+
+        tag === "button"
+
+    ) {
+
+        return;
+    }
+
 
     if (
         event.key === "ArrowLeft"
@@ -1452,7 +2046,9 @@ function showCorrectCelebration() {
         "🤩",
         "👏",
         "🔥"
+
     ];
+
 
     for (
         let i = 0;
@@ -1473,9 +2069,11 @@ function showCorrectCelebration() {
                     ],
 
                     "happy"
+
                 );
 
             },
+
             i * 100
         );
     }
@@ -1497,7 +2095,9 @@ function showWrongReaction() {
         "🥺",
         "😔",
         "🙁"
+
     ];
+
 
     for (
         let i = 0;
@@ -1518,9 +2118,11 @@ function showWrongReaction() {
                     ],
 
                     "sad"
+
                 );
 
             },
+
             i * 120
         );
     }
@@ -1541,73 +2143,114 @@ function createEmojiBurst(
             "div"
         );
 
+
     element.className =
         `emoji-burst ${type}`;
 
+
     element.innerText =
         emoji;
+
+
+    /*
+     * Random starting position.
+     */
 
     const startLeft =
         10 +
         Math.random() * 80;
 
+
     const startTop =
         55 +
         Math.random() * 25;
 
+
+    /*
+     * Random movement.
+     */
+
     const drift =
-        (Math.random() - 0.5) *
+        (
+            Math.random() -
+            0.5
+        ) *
         160;
 
+
     const rotation =
-        (Math.random() - 0.5) *
+        (
+            Math.random() -
+            0.5
+        ) *
         50;
+
 
     const duration =
         1200 +
         Math.random() * 900;
 
+
+    /*
+     * Styling.
+     */
+
     element.style.position =
         "fixed";
+
 
     element.style.left =
         `${startLeft}%`;
 
+
     element.style.top =
         `${startTop}%`;
+
 
     element.style.zIndex =
         "99999";
 
+
     element.style.pointerEvents =
         "none";
+
 
     element.style.userSelect =
         "none";
 
+
     element.style.fontSize =
         `${28 + Math.random() * 18}px`;
+
 
     element.style.lineHeight =
         "1";
 
+
     element.style.willChange =
         "transform, opacity";
+
 
     element.style.opacity =
         "1";
 
+
     element.style.transition =
+
         `transform ${duration}ms ease-out, opacity ${duration}ms ease-out`;
+
+
+    /*
+     * Add to page.
+     */
 
     document.body.appendChild(
         element
     );
 
+
     /*
-     * Two animation frames ensure
-     * the browser registers the
-     * starting position first.
+     * Start animation.
      */
 
     requestAnimationFrame(
@@ -1617,7 +2260,9 @@ function createEmojiBurst(
                 () => {
 
                     element.style.transform =
+
                         `translate(${drift}px, -${180 + Math.random() * 180}px) rotate(${rotation}deg) scale(1.15)`;
+
 
                     element.style.opacity =
                         "0";
@@ -1626,12 +2271,18 @@ function createEmojiBurst(
         }
     );
 
+
+    /*
+     * Remove after animation.
+     */
+
     setTimeout(
         () => {
 
             element.remove();
 
         },
+
         duration + 100
     );
 }
@@ -1654,40 +2305,42 @@ function getQuestionIdFromObject(
 ) {
 
     if (!question) {
+
         return "";
     }
+
 
     const possibleKeys = [
 
         "id",
-
         "ID",
-
         "Id",
 
         "question id",
-
         "Question ID",
-
         "QUESTION ID",
 
         "question_id",
-
         "Question_ID",
-
         "QUESTION_ID"
+
     ];
+
 
     for (
         const key of possibleKeys
     ) {
 
         if (
+
             question[key] !== undefined &&
+
             question[key] !== null &&
+
             String(
                 question[key]
             ).trim() !== ""
+
         ) {
 
             return String(
@@ -1695,6 +2348,55 @@ function getQuestionIdFromObject(
             ).trim();
         }
     }
+
+
+    /*
+     * Fallback:
+     * If your CSV has another ID-like
+     * column, try to find it.
+     */
+
+    const fallbackKey =
+        Object.keys(
+            question
+        ).find(
+            key => {
+
+                const normalized =
+                    key
+                        .replace(
+                            /^\uFEFF/,
+                            ""
+                        )
+                        .trim()
+                        .toLowerCase()
+                        .replace(
+                            /[_-]/g,
+                            " "
+                        );
+
+
+                return (
+                    normalized === "id" ||
+                    normalized.includes(
+                        "question id"
+                    )
+                );
+            }
+        );
+
+
+    if (
+        fallbackKey
+    ) {
+
+        return String(
+            question[
+                fallbackKey
+            ]
+        ).trim();
+    }
+
 
     return "";
 }
@@ -1707,42 +2409,44 @@ function getQuestionIdFromObject(
 function getCorrectAnswer() {
 
     if (!currentQuestion) {
+
         return "";
     }
+
 
     const possibleKeys = [
 
         "correct answer",
-
         "Correct Answer",
-
         "CORRECT ANSWER",
 
         "correct_answer",
-
         "Correct_Answer",
-
         "CORRECT_ANSWER",
 
         "answer",
-
         "Answer",
 
         "correct",
-
         "Correct"
+
     ];
+
 
     for (
         const key of possibleKeys
     ) {
 
         if (
+
             currentQuestion[key] !== undefined &&
+
             currentQuestion[key] !== null &&
+
             String(
                 currentQuestion[key]
             ).trim() !== ""
+
         ) {
 
             return String(
@@ -1753,9 +2457,9 @@ function getCorrectAnswer() {
         }
     }
 
+
     /*
-     * Fallback for differently named
-     * correct-answer columns.
+     * Flexible fallback.
      */
 
     const fallbackKey =
@@ -1777,28 +2481,39 @@ function getCorrectAnswer() {
                             " "
                         );
 
+
                 return (
+
                     normalized.includes(
                         "correct"
                     ) &&
+
                     (
+
                         normalized.includes(
                             "answer"
                         ) ||
+
                         normalized ===
                             "correct"
+
                     )
+
                 );
             }
         );
 
+
     if (
+
         fallbackKey &&
+
         String(
             currentQuestion[
                 fallbackKey
             ]
         ).trim() !== ""
+
     ) {
 
         return String(
@@ -1809,6 +2524,7 @@ function getCorrectAnswer() {
             .trim()
             .toUpperCase();
     }
+
 
     return "";
 }
@@ -1831,6 +2547,7 @@ function parseCSV(
     let insideQuotes =
         false;
 
+
     for (
         let i = 0;
         i < csvText.length;
@@ -1840,54 +2557,103 @@ function parseCSV(
         const char =
             csvText[i];
 
+
         const nextChar =
             csvText[i + 1];
 
+
+        /*
+         * Escaped quote.
+         */
+
         if (
+
             char === '"' &&
+
             insideQuotes &&
+
             nextChar === '"'
+
         ) {
 
             cell += '"';
 
             i++;
 
-        } else if (
+        }
+
+
+        /*
+         * Opening / closing quote.
+         */
+
+        else if (
             char === '"'
         ) {
 
             insideQuotes =
                 !insideQuotes;
+        }
 
-        } else if (
+
+        /*
+         * Column separator.
+         */
+
+        else if (
+
             char === "," &&
+
             !insideQuotes
+
         ) {
 
-            row.push(cell);
+            row.push(
+                cell
+            );
 
             cell = "";
+        }
 
-        } else if (
+
+        /*
+         * Row separator.
+         */
+
+        else if (
+
             (
                 char === "\n" ||
                 char === "\r"
             ) &&
+
             !insideQuotes
+
         ) {
 
             if (
+
                 char === "\r" &&
+
                 nextChar === "\n"
+
             ) {
 
                 i++;
             }
 
-            row.push(cell);
+
+            row.push(
+                cell
+            );
+
 
             cell = "";
+
+
+            /*
+             * Ignore completely empty rows.
+             */
 
             if (
                 row.some(
@@ -1898,27 +2664,39 @@ function parseCSV(
                 )
             ) {
 
-                rows.push(row);
+                rows.push(
+                    row
+                );
             }
 
-            row = [];
 
-        } else {
+            row = [];
+        }
+
+
+        else {
 
             cell += char;
         }
     }
 
+
     /*
-     * Add final row.
+     * Last row.
      */
 
     if (
+
         cell !== "" ||
+
         row.length
+
     ) {
 
-        row.push(cell);
+        row.push(
+            cell
+        );
+
 
         if (
             row.some(
@@ -1929,24 +2707,30 @@ function parseCSV(
             )
         ) {
 
-            rows.push(row);
+            rows.push(
+                row
+            );
         }
     }
 
+
     if (!rows.length) {
+
         return [];
     }
 
+
     /*
-     * Clean CSV headers:
-     * - Remove BOM
-     * - Trim whitespace
+     * Headers.
      */
 
     const headers =
         rows[0].map(
             header =>
-                String(header)
+
+                String(
+                    header
+                )
                     .replace(
                         /^\uFEFF/,
                         ""
@@ -1954,26 +2738,42 @@ function parseCSV(
                     .trim()
         );
 
+
+    /*
+     * Convert rows to objects.
+     */
+
     return rows
         .slice(1)
-        .map(values => {
+        .map(
+            values => {
 
-            const object = {};
+                const object = {};
 
-            headers.forEach(
-                (header, index) => {
 
-                    object[header] =
-                        values[index] !== undefined
-                            ? String(
-                                values[index]
-                            ).trim()
-                            : "";
-                }
-            );
+                headers.forEach(
+                    (
+                        header,
+                        index
+                    ) => {
 
-            return object;
-        });
+                        object[header] =
+
+                            values[index] !==
+                            undefined
+
+                                ? String(
+                                    values[index]
+                                ).trim()
+
+                                : "";
+                    }
+                );
+
+
+                return object;
+            }
+        );
 }
 
 
@@ -1986,43 +2786,64 @@ function parseQuotesCSV(
 ) {
 
     const data =
-        parseCSV(csvText);
+        parseCSV(
+            csvText
+        );
+
 
     return data
 
-        .map(row => {
+        .map(
+            row => {
 
-            const quote =
-                row.quote ||
-                row.Quote ||
-                row.QUOTE ||
-                row["Quote Text"] ||
-                row["quote text"] ||
-                row["QUOTE TEXT"] ||
-                "";
+                const quote =
 
-            const author =
-                row.author ||
-                row.Author ||
-                row.AUTHOR ||
-                row["Quote Author"] ||
-                row["quote author"] ||
-                row["QUOTE AUTHOR"] ||
-                "";
+                    row.quote ||
 
-            return {
+                    row.Quote ||
 
-                quote:
-                    String(
-                        quote
-                    ).trim(),
+                    row.QUOTE ||
 
-                author:
-                    String(
-                        author
-                    ).trim()
-            };
-        })
+                    row["Quote Text"] ||
+
+                    row["quote text"] ||
+
+                    row["QUOTE TEXT"] ||
+
+                    "";
+
+
+                const author =
+
+                    row.author ||
+
+                    row.Author ||
+
+                    row.AUTHOR ||
+
+                    row["Quote Author"] ||
+
+                    row["quote author"] ||
+
+                    row["QUOTE AUTHOR"] ||
+
+                    "";
+
+
+                return {
+
+                    quote:
+                        String(
+                            quote
+                        ).trim(),
+
+                    author:
+                        String(
+                            author
+                        ).trim()
+                };
+            }
+        )
 
         .filter(
             item =>
