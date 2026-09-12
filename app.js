@@ -55,7 +55,6 @@ function initializeApp() {
     );
 
     loadQuestions();
-
     loadQuotes();
 }
 
@@ -86,7 +85,6 @@ async function loadQuestions() {
             );
 
         if (!response.ok) {
-
             throw new Error(
                 "HTTP " +
                 response.status +
@@ -99,7 +97,6 @@ async function loadQuestions() {
             await response.text();
 
         if (!csvText.trim()) {
-
             throw new Error(
                 "xi-questions.csv is empty."
             );
@@ -109,7 +106,6 @@ async function loadQuestions() {
             parseCSV(csvText);
 
         if (!questions.length) {
-
             throw new Error(
                 "No questions were found in xi-questions.csv."
             );
@@ -162,7 +158,6 @@ async function loadQuotes() {
             );
 
         if (!response.ok) {
-
             throw new Error(
                 "HTTP " +
                 response.status +
@@ -175,7 +170,6 @@ async function loadQuotes() {
             await response.text();
 
         if (!csvText.trim()) {
-
             throw new Error(
                 "xi-Quotes.csv is empty."
             );
@@ -199,11 +193,6 @@ async function loadQuotes() {
             "Quote database error:",
             error
         );
-
-        /*
-         * Keep a small fallback so the quote
-         * area never appears completely empty.
-         */
 
         quotes = [
             {
@@ -485,15 +474,6 @@ function parseQuotesCSV(text) {
                 header === "author"
         );
 
-    /*
-     * xi-Quotes.csv can contain two quote columns.
-     * Example:
-     *
-     * Quote A,Quote B
-     *
-     * Every non-empty cell is treated as a quote.
-     */
-
     const quoteColumns =
         headers
             .map(
@@ -512,11 +492,6 @@ function parseQuotesCSV(text) {
     rows
         .slice(1)
         .forEach(row => {
-
-            /*
-             * Standard format:
-             * Quote,Author
-             */
 
             if (
                 quoteColumn !== -1 &&
@@ -546,11 +521,6 @@ function parseQuotesCSV(text) {
                 return;
             }
 
-            /*
-             * Two-column quote file:
-             * Quote A,Quote B
-             */
-
             if (quoteColumns.length) {
 
                 quoteColumns.forEach(
@@ -574,11 +544,6 @@ function parseQuotesCSV(text) {
 
                 return;
             }
-
-            /*
-             * Generic fallback:
-             * Every non-empty cell becomes a quote.
-             */
 
             row.forEach(cell => {
 
@@ -718,8 +683,8 @@ function displayQuestion() {
             "question"
         )
         .innerText =
-            currentQuestion.question ||
-            "Question unavailable.";
+        currentQuestion.question ||
+        "Question unavailable.";
 
     createOptions();
 
@@ -1160,7 +1125,6 @@ function restoreAnswerState() {
     );
 
     explanationText.innerText = "";
-
     result.innerText = "";
 
     const oldButton =
@@ -1263,6 +1227,35 @@ function highlightCorrectAnswer(
 
 
 /* ============================================================
+   FIND QUESTION BY ID
+   ============================================================ */
+
+function findQuestionById(
+    questionId
+) {
+
+    if (!questionId) {
+        return null;
+    }
+
+    const targetId =
+        String(questionId)
+            .trim()
+            .toLowerCase();
+
+    return questions.find(
+        question =>
+            String(
+                question.id || ""
+            )
+                .trim()
+                .toLowerCase() ===
+            targetId
+    ) || null;
+}
+
+
+/* ============================================================
    NAVIGATION
    ============================================================ */
 
@@ -1283,12 +1276,39 @@ function updateNavigation() {
             "question-position"
         );
 
+    if (!currentQuestion) {
+        return;
+    }
+
+    const previousQuestionId =
+        String(
+            currentQuestion[
+                "previous related question"
+            ] || ""
+        ).trim();
+
+    const nextQuestionId =
+        String(
+            currentQuestion[
+                "next related question"
+            ] || ""
+        ).trim();
+
+    const previousQuestion =
+        findQuestionById(
+            previousQuestionId
+        );
+
+    const nextQuestion =
+        findQuestionById(
+            nextQuestionId
+        );
+
     previousButton.disabled =
-        currentQuestionIndex <= 0;
+        !previousQuestion;
 
     nextButton.disabled =
-        currentQuestionIndex >=
-        questions.length - 1;
+        !nextQuestion;
 
     position.innerText =
         "Question " +
@@ -1327,21 +1347,39 @@ function updateScore() {
 
 
 /* ============================================================
-   PREVIOUS QUESTION
+   PREVIOUS RELATED QUESTION
    ============================================================ */
 
 function goToPreviousQuestion() {
 
-    if (
-        currentQuestionIndex <= 0
-    ) {
+    if (!currentQuestion) {
+        return;
+    }
+
+    const previousQuestionId =
+        String(
+            currentQuestion[
+                "previous related question"
+            ] || ""
+        ).trim();
+
+    if (!previousQuestionId) {
         return;
     }
 
     const question =
-        questions[
-            currentQuestionIndex - 1
-        ];
+        findQuestionById(
+            previousQuestionId
+        );
+
+    if (!question) {
+        console.warn(
+            "Previous related question not found:",
+            previousQuestionId
+        );
+
+        return;
+    }
 
     navigateToQuestion(
         question
@@ -1350,22 +1388,39 @@ function goToPreviousQuestion() {
 
 
 /* ============================================================
-   NEXT QUESTION
+   NEXT RELATED QUESTION
    ============================================================ */
 
 function goToNextQuestion() {
 
-    if (
-        currentQuestionIndex >=
-        questions.length - 1
-    ) {
+    if (!currentQuestion) {
+        return;
+    }
+
+    const nextQuestionId =
+        String(
+            currentQuestion[
+                "next related question"
+            ] || ""
+        ).trim();
+
+    if (!nextQuestionId) {
         return;
     }
 
     const question =
-        questions[
-            currentQuestionIndex + 1
-        ];
+        findQuestionById(
+            nextQuestionId
+        );
+
+    if (!question) {
+        console.warn(
+            "Next related question not found:",
+            nextQuestionId
+        );
+
+        return;
+    }
 
     navigateToQuestion(
         question
@@ -1395,7 +1450,7 @@ function navigateToQuestion(
 
     url.searchParams.set(
         "id",
-        question.id
+        String(question.id).trim()
     );
 
     window.history.pushState(
