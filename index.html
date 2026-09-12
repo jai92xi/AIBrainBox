@@ -20,8 +20,34 @@
         playsinline
     ></video>
 
-    <!-- Light overlay for readability -->
     <div id="background-overlay"></div>
+
+
+    <!-- Previous Question -->
+    <button
+        id="previous-button"
+        type="button"
+        class="side-nav previous-nav"
+    >
+        Previous question
+    </button>
+
+
+    <!-- Next Question -->
+    <button
+        id="next-button"
+        type="button"
+        class="side-nav next-nav"
+    >
+        Next question
+    </button>
+
+
+    <!-- Current Streak -->
+    <div id="score-display" class="streak-box">
+        🔥 Current streak:
+        <strong>0</strong>
+    </div>
 
 
     <main class="app-container">
@@ -34,7 +60,6 @@
                 <p>Challenge yourself. Learn something new.</p>
             </div>
 
-            <!-- Motivational Quote -->
             <aside class="quote-box">
                 <div id="quote-text"></div>
                 <div id="quote-author"></div>
@@ -53,12 +78,15 @@
         <div id="error" class="error hidden"></div>
 
 
-        <!-- Question Area -->
-        <section id="question-container" class="question-container hidden">
+        <!-- Question -->
+        <section
+            id="question-container"
+            class="question-container hidden"
+        >
 
             <div class="quiz-layout">
 
-                <!-- Question -->
+                <!-- LEFT: QUESTION -->
                 <section class="question-panel">
 
                     <div class="question-label">
@@ -70,7 +98,7 @@
                 </section>
 
 
-                <!-- Options -->
+                <!-- RIGHT: OPTIONS + EXPLANATION -->
                 <section class="options-panel">
 
                     <div class="options-label">
@@ -81,66 +109,36 @@
                         <!-- Options inserted by app.js -->
                     </div>
 
+
                     <!-- Result -->
                     <div id="result"></div>
+
+
+                    <!-- Explanation directly below options -->
+                    <section
+                        id="explanation"
+                        class="explanation hidden"
+                    >
+
+                        <div class="explanation-title">
+                            💡 Explanation
+                        </div>
+
+                        <div id="explanation-text"></div>
+
+                    </section>
 
                 </section>
 
             </div>
 
 
-            <!-- Explanation -->
-            <section id="explanation" class="explanation hidden">
-
-                <div class="explanation-title">
-                    💡 Explanation
-                </div>
-
-                <div id="explanation-text"></div>
-
-            </section>
-
-
-            <!-- Navigation -->
-            <nav class="quiz-navigation">
-
-                <button
-                    id="previous-button"
-                    type="button"
-                    class="nav-button"
-                >
-                    ← Previous
-                </button>
-
-
-                <!-- Kept for app.js compatibility,
-                     but intentionally empty -->
-                <div
-                    id="question-position"
-                    class="question-position"
-                    aria-hidden="true"
-                ></div>
-
-
-                <!-- Current streak -->
-                <div
-                    id="score-display"
-                    class="score-display"
-                >
-                    🔥 Current streak:
-                    <strong>0</strong>
-                </div>
-
-
-                <button
-                    id="next-button"
-                    type="button"
-                    class="nav-button"
-                >
-                    Next →
-                </button>
-
-            </nav>
+            <!-- Compatibility element for app.js -->
+            <div
+                id="question-position"
+                class="question-position"
+                aria-hidden="true"
+            ></div>
 
         </section>
 
