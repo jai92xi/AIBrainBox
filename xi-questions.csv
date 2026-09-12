@@ -71,7 +71,7 @@ Input ? Linear ? ReLU ? Linear ? Output
 
 The linear layers transform the data, while the activation function introduces non-linearity.
 
-This allows the neural network to learn complex patterns, curves, and non-linear decision boundaries.",Neural Network,Activation Functions,Xi-00001,Xi-00005
+This allows the neural network to learn complex patterns, curves, and non-linear decision boundaries.",Neural Network,Activation Functions,,Xi-00004
 Xi-00003,"A production NLP system uses a Transformer-based model for classifying customer support tickets. The model performs well during training and validation. However, after deployment, latency becomes too high when ticket text is long.
 
 Profiling shows that most of the latency comes from the **self-attention** layers. The model uses standard full self-attention, where every token attends to every other token.
@@ -104,7 +104,7 @@ Each token attends only to tokens within a predefined local window.
 | **Full attention** | Every token in the sequence |
 | **Local attention** | Nearby tokens within a fixed window |
 | **Sparse attention** | Selected tokens according to a predefined pattern |
-| **Global + local attention** | Nearby tokens + selected global/important tokens |",Transformers,Self-attention; Sparse/Local Attention,,
+| **Global + local attention** | Nearby tokens + selected global/important tokens |",Transformers,Self-attention; Sparse/Local Attention,Xi-00001,Xi-00005
 Xi-00004,"A **production team is fine-tuning BERT for an insurance ticket-classification system with 8 intent classes such as ""Health Claim"", ""Auto Claim"", ""Policy Renewal"", and ""Claim Rejection"".**
 
 During training:
@@ -144,7 +144,7 @@ So, early stopping tells training to stop when validation performance no longer 
 
 Dropout randomly turns off a portion of neurons during training. This prevents the model from becoming too dependent on specific neurons or patterns and encourages it to learn more robust representations.
 
-So: Overfitting ? use regularization such as dropout + early stopping",Neural Network,Regularization; Dropout; Early Stopping,,
+So: Overfitting ? use regularization such as dropout + early stopping",Neural Network,Regularization; Dropout; Early Stopping,Xi-00002,
 Xi-00005,"A production team is training a CNN-based image classifier to identify damaged vs. undamaged vehicle parts for an insurance claims system.
 The model achieves:
 Training accuracy: 99%
@@ -197,4 +197,4 @@ So the solution is:
 
 **Limited data variety ? Data augmentation**
 
-**Both ? Better generalization and reduced overfitting**",CNN,Fine tunnig; Data Augmentation,Xi-00002,
+**Both ? Better generalization and reduced overfitting**",CNN,Fine tunnig; Data Augmentation,Xi-00003,
