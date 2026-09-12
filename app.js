@@ -8,7 +8,7 @@ let currentQuestion = null;
 
 
 /* =========================================================
-   FILE PATHS
+   FILES
    ========================================================= */
 
 const CSV_URL = "./xi-questions.csv";
@@ -16,7 +16,7 @@ const QUOTES_URL = "./xi-Quotes.csv";
 
 
 /* =========================================================
-   QUIZ STATE
+   SCORE / ANSWER STATE
    ========================================================= */
 
 let score = 0;
@@ -53,7 +53,7 @@ const BACKGROUND_SESSION_KEY =
 
 
 /* =========================================================
-   START APPLICATION
+   INITIALIZE
    ========================================================= */
 
 document.addEventListener(
@@ -63,6 +63,11 @@ document.addEventListener(
 
 
 function initializeApp() {
+
+    /*
+     * Old navigation buttons are no longer used.
+     * Related-question navigation is generated dynamically.
+     */
 
     const previousButton =
         document.getElementById(
@@ -75,29 +80,18 @@ function initializeApp() {
         );
 
 
-    /* Previous */
-
     if (previousButton) {
-
-        previousButton.addEventListener(
-            "click",
-            () => navigateQuestion(-1)
-        );
+        previousButton.style.display = "none";
     }
-
-
-    /* Next */
 
     if (nextButton) {
-
-        nextButton.addEventListener(
-            "click",
-            () => navigateQuestion(1)
-        );
+        nextButton.style.display = "none";
     }
 
 
-    /* Browser back / forward */
+    /*
+     * Browser navigation.
+     */
 
     window.addEventListener(
         "popstate",
@@ -105,15 +99,11 @@ function initializeApp() {
     );
 
 
-    /* Keyboard navigation */
+    /*
+     * Keyboard navigation is intentionally
+     * kept disabled for related-question navigation.
+     */
 
-    document.addEventListener(
-        "keydown",
-        handleKeyboardNavigation
-    );
-
-
-    /* Load data */
 
     loadQuestions();
 
@@ -143,14 +133,13 @@ async function loadQuestions() {
     try {
 
         if (loading) {
-
             loading.classList.remove(
                 "hidden"
             );
         }
 
-        if (error) {
 
+        if (error) {
             error.classList.add(
                 "hidden"
             );
@@ -167,7 +156,6 @@ async function loadQuestions() {
 
 
         if (!response.ok) {
-
             throw new Error(
                 "Unable to load questions."
             );
@@ -194,6 +182,7 @@ async function loadQuestions() {
                 "First question:",
                 questions[0]
             );
+
         }
 
 
@@ -202,11 +191,11 @@ async function loadQuestions() {
             throw new Error(
                 "No questions found in CSV."
             );
+
         }
 
 
         if (loading) {
-
             loading.classList.add(
                 "hidden"
             );
@@ -225,7 +214,6 @@ async function loadQuestions() {
 
 
         if (loading) {
-
             loading.classList.add(
                 "hidden"
             );
@@ -240,7 +228,9 @@ async function loadQuestions() {
             error.classList.remove(
                 "hidden"
             );
+
         }
+
     }
 }
 
@@ -267,6 +257,7 @@ async function loadQuotes() {
             throw new Error(
                 "Unable to load quotes."
             );
+
         }
 
 
@@ -275,12 +266,15 @@ async function loadQuotes() {
 
 
         quotes =
-            parseQuotesCSV(csvText);
+            parseQuotesCSV(
+                csvText
+            );
 
 
         if (quotes.length) {
 
             loadMotivationalQuote();
+
         }
 
 
@@ -320,16 +314,18 @@ async function loadQuotes() {
                 author:
                     "AIBrainBox"
             }
+
         ];
 
 
         loadMotivationalQuote();
+
     }
 }
 
 
 /* =========================================================
-   LOAD RANDOM SESSION BACKGROUND
+   RANDOM SESSION BACKGROUND
    ========================================================= */
 
 async function loadSessionBackground() {
@@ -341,7 +337,6 @@ async function loadSessionBackground() {
 
 
     if (!video) {
-
         return;
     }
 
@@ -349,8 +344,8 @@ async function loadSessionBackground() {
     try {
 
         /*
-         * Check whether a background was
-         * already selected during this session.
+         * First check whether a video was already
+         * selected during this browser session.
          */
 
         let selectedVideo =
@@ -360,8 +355,8 @@ async function loadSessionBackground() {
 
 
         /*
-         * If there is no session video,
-         * retrieve the MP4 files from GitHub.
+         * If no video has been selected,
+         * get the MP4 files from GitHub.
          */
 
         if (!selectedVideo) {
@@ -380,6 +375,7 @@ async function loadSessionBackground() {
                 throw new Error(
                     "Unable to access background folder."
                 );
+
             }
 
 
@@ -404,12 +400,9 @@ async function loadSessionBackground() {
                 );
 
                 return;
+
             }
 
-
-            /*
-             * Pick one random video.
-             */
 
             const randomIndex =
                 Math.floor(
@@ -425,20 +418,16 @@ async function loadSessionBackground() {
 
 
             /*
-             * Save it so the same video
-             * remains during this session.
+             * Save it for this browser session.
              */
 
             sessionStorage.setItem(
                 BACKGROUND_SESSION_KEY,
                 selectedVideo
             );
+
         }
 
-
-        /*
-         * Set video source.
-         */
 
         video.src =
             selectedVideo;
@@ -461,8 +450,10 @@ async function loadSessionBackground() {
                     console.warn(
                         "Background video autoplay was blocked."
                     );
+
                 }
             );
+
         }
 
 
@@ -472,6 +463,7 @@ async function loadSessionBackground() {
             "Background video could not be loaded:",
             err
         );
+
     }
 }
 
@@ -492,19 +484,19 @@ function loadQuestionFromURL() {
         params.get("id");
 
 
-    /*
-     * Open requested question if
-     * an ID exists in the URL.
-     */
-
     if (questionId) {
 
         const index =
             questions.findIndex(
                 question =>
-                    getQuestionIdFromObject(
-                        question
-                    ) === questionId
+                    normalizeQuestionId(
+                        getQuestionIdFromObject(
+                            question
+                        )
+                    ) ===
+                    normalizeQuestionId(
+                        questionId
+                    )
             );
 
 
@@ -516,12 +508,14 @@ function loadQuestionFromURL() {
             displayQuestion();
 
             return;
+
         }
+
     }
 
 
     /*
-     * Otherwise start from first question.
+     * Default to first question.
      */
 
     currentQuestionIndex = 0;
@@ -538,10 +532,12 @@ function displayQuestion() {
 
     if (
         currentQuestionIndex < 0 ||
-        currentQuestionIndex >= questions.length
+        currentQuestionIndex >=
+            questions.length
     ) {
 
         return;
+
     }
 
 
@@ -574,6 +570,7 @@ function displayQuestion() {
         questionContainer.classList.remove(
             "hidden"
         );
+
     }
 
 
@@ -582,125 +579,46 @@ function displayQuestion() {
         error.classList.add(
             "hidden"
         );
+
     }
 
 
-    /*
-     * Display question text.
-     */
-
     if (questionElement) {
 
-        let questionText =
+        const questionText =
             getQuestionText(
                 currentQuestion
-            );
-
-
-        /*
-         * Remove markdown bold markers
-         * from CSV text.
-         *
-         * Example:
-         * **production team**
-         *
-         * becomes:
-         * production team
-         */
-
-        questionText =
-            cleanQuestionText(
-                questionText
             );
 
 
         questionElement.innerText =
             questionText ||
             "Question unavailable.";
+
     }
 
 
-    /*
-     * Create answer options.
-     */
-
     createOptions();
-
-
-    /*
-     * Restore previously selected answer.
-     */
 
     restoreAnswerState();
 
-
-    /*
-     * Update Previous / Next buttons.
-     */
-
-    updateNavigation();
-
-
-    /*
-     * Update current streak.
-     */
-
     updateScore();
 
-
-    /*
-     * Show motivational quote.
-     */
+    createRelatedNavigation();
 
     loadMotivationalQuote();
 }
 
 
 /* =========================================================
-   CLEAN QUESTION TEXT
+   QUESTION TEXT
    ========================================================= */
 
-function cleanQuestionText(text) {
-
-    if (!text) {
-
-        return "";
-    }
-
-
-    return String(text)
-
-        /*
-         * Remove **bold**
-         */
-
-        .replace(
-            /\*\*/g,
-            ""
-        )
-
-        /*
-         * Remove unnecessary
-         * Windows line endings.
-         */
-
-        .replace(
-            /\r\n/g,
-            "\n"
-        )
-
-        .trim();
-}
-
-
-/* =========================================================
-   GET QUESTION TEXT
-   ========================================================= */
-
-function getQuestionText(question) {
+function getQuestionText(
+    question
+) {
 
     if (!question) {
-
         return "";
     }
 
@@ -721,6 +639,7 @@ function getQuestionText(question) {
 
         "question description",
         "Question Description"
+
     ];
 
 
@@ -729,36 +648,27 @@ function getQuestionText(question) {
     ) {
 
         if (
-
             question[key] !== undefined &&
-
             question[key] !== null &&
-
             String(
                 question[key]
             ).trim() !== ""
-
         ) {
 
             return String(
                 question[key]
             ).trim();
+
         }
+
     }
 
-
-    /*
-     * Fallback:
-     * Search any column containing
-     * the word "question".
-     */
 
     const fallbackKey =
         Object.keys(
             question
         ).find(
             key =>
-
                 key
                     .replace(
                         /^\uFEFF/,
@@ -773,22 +683,16 @@ function getQuestionText(question) {
 
 
     if (
-
         fallbackKey &&
-
         String(
-            question[
-                fallbackKey
-            ]
+            question[fallbackKey]
         ).trim() !== ""
-
     ) {
 
         return String(
-            question[
-                fallbackKey
-            ]
+            question[fallbackKey]
         ).trim();
+
     }
 
 
@@ -809,26 +713,19 @@ function createOptions() {
 
 
     if (!optionsContainer) {
-
         return;
     }
 
-
-    /*
-     * Clear previous options.
-     */
 
     optionsContainer.innerHTML =
         "";
 
 
     const optionLetters = [
-
         "A",
         "B",
         "C",
         "D"
-
     ];
 
 
@@ -842,19 +739,10 @@ function createOptions() {
                 );
 
 
-            /*
-             * Ignore empty options.
-             */
-
             if (!optionValue) {
-
                 return;
             }
 
-
-            /*
-             * Create label.
-             */
 
             const label =
                 document.createElement(
@@ -865,10 +753,6 @@ function createOptions() {
             label.className =
                 "option";
 
-
-            /*
-             * Radio button.
-             */
 
             const radio =
                 document.createElement(
@@ -888,10 +772,6 @@ function createOptions() {
                 letter;
 
 
-            /*
-             * Option letter.
-             */
-
             const optionLetter =
                 document.createElement(
                     "span"
@@ -906,10 +786,6 @@ function createOptions() {
                 letter;
 
 
-            /*
-             * Option text.
-             */
-
             const optionText =
                 document.createElement(
                     "span"
@@ -921,31 +797,23 @@ function createOptions() {
 
 
             optionText.innerText =
-                cleanQuestionText(
-                    optionValue
-                );
+                optionValue;
 
-
-            /*
-             * Build option.
-             */
 
             label.appendChild(
                 radio
             );
 
+
             label.appendChild(
                 optionLetter
             );
+
 
             label.appendChild(
                 optionText
             );
 
-
-            /*
-             * Check answer when selected.
-             */
 
             radio.addEventListener(
                 "change",
@@ -960,6 +828,7 @@ function createOptions() {
             optionsContainer.appendChild(
                 label
             );
+
         }
     );
 }
@@ -975,7 +844,6 @@ function getOptionValue(
 ) {
 
     if (!question) {
-
         return "";
     }
 
@@ -983,20 +851,17 @@ function getOptionValue(
     const possibleKeys = [
 
         `option ${letter}`,
-
         `Option ${letter}`,
-
         `OPTION ${letter}`,
 
         `option_${letter.toLowerCase()}`,
-
         `option_${letter}`,
 
         `Option_${letter}`,
-
         `OPTION_${letter}`,
 
         letter
+
     ];
 
 
@@ -1005,27 +870,21 @@ function getOptionValue(
     ) {
 
         if (
-
             question[key] !== undefined &&
-
             question[key] !== null &&
-
             String(
                 question[key]
             ).trim() !== ""
-
         ) {
 
             return String(
                 question[key]
             ).trim();
+
         }
+
     }
 
-
-    /*
-     * More flexible fallback.
-     */
 
     const fallbackKey =
         Object.keys(
@@ -1051,20 +910,18 @@ function getOptionValue(
                     normalized ===
                     `option ${letter.toLowerCase()}`
                 );
+
             }
         );
 
 
     if (
-
         fallbackKey &&
-
         String(
             question[
                 fallbackKey
             ]
         ).trim() !== ""
-
     ) {
 
         return String(
@@ -1072,6 +929,7 @@ function getOptionValue(
                 fallbackKey
             ]
         ).trim();
+
     }
 
 
@@ -1114,7 +972,9 @@ function checkAnswer(
 
 
     /*
-     * Correct score handling.
+     * If this question was previously answered
+     * correctly and is changed, remove that
+     * previous correct count.
      */
 
     if (
@@ -1122,12 +982,18 @@ function checkAnswer(
     ) {
 
         score--;
+
     }
 
+
+    /*
+     * Add new correct result.
+     */
 
     if (isCorrect) {
 
         score++;
+
     }
 
 
@@ -1149,7 +1015,7 @@ function checkAnswer(
 
 
     /*
-     * Update streak.
+     * Update 2/3 style score.
      */
 
     updateCurrentStreak(
@@ -1158,16 +1024,8 @@ function checkAnswer(
     );
 
 
-    /*
-     * Remove previous answer styling.
-     */
-
     clearOptionStates();
 
-
-    /*
-     * Highlight selected option.
-     */
 
     if (selectedOption) {
 
@@ -1178,12 +1036,12 @@ function checkAnswer(
                 : "wrong-answer"
 
         );
+
     }
 
 
     /*
-     * If answer is wrong,
-     * show the correct answer too.
+     * If wrong, show the correct answer.
      */
 
     if (!isCorrect) {
@@ -1191,12 +1049,9 @@ function checkAnswer(
         highlightCorrectAnswer(
             correctAnswer
         );
+
     }
 
-
-    /*
-     * Result message.
-     */
 
     const result =
         document.getElementById(
@@ -1215,10 +1070,6 @@ function checkAnswer(
                 "result-correct";
 
 
-            /*
-             * Happy emoji animation.
-             */
-
             showCorrectCelebration();
 
         } else {
@@ -1230,27 +1081,22 @@ function checkAnswer(
                 "result-wrong";
 
 
-            /*
-             * Sad emoji animation.
-             */
-
             showWrongReaction();
+
         }
+
     }
 
 
     /*
-     * IMPORTANT:
-     *
-     * Explanation opens immediately
-     * after selecting an option.
+     * Explanation automatically appears.
      */
 
     showExplanation();
 
 
     /*
-     * Update streak display.
+     * Update score immediately.
      */
 
     updateScore();
@@ -1258,7 +1104,7 @@ function checkAnswer(
 
 
 /* =========================================================
-   UPDATE CURRENT STREAK
+   CURRENT SCORE
    ========================================================= */
 
 function updateCurrentStreak(
@@ -1267,9 +1113,7 @@ function updateCurrentStreak(
 ) {
 
     /*
-     * If this is the first answer
-     * for this question, add it to
-     * the answer history.
+     * Keep question in history.
      */
 
     if (
@@ -1281,56 +1125,66 @@ function updateCurrentStreak(
         answerHistory.push(
             questionId
         );
+
     }
 
 
     /*
-     * Recalculate streak from the
-     * latest answered question.
+     * Count all correct answers.
      *
-     * This means:
+     * Example:
      *
-     * Correct → streak increases
-     * Wrong   → streak resets
+     * Q1 Correct
+     * Q2 Correct
+     * Q3 Wrong
+     *
+     * Current streak = 2/3
      */
 
-    let streak = 0;
+    let correctCount = 0;
 
 
-    for (
-        let i =
-            answerHistory.length - 1;
+    questionResults.forEach(
+        result => {
 
-        i >= 0;
+            if (result === true) {
 
-        i--
-    ) {
+                correctCount++;
 
-        const id =
-            answerHistory[i];
+            }
 
-
-        const result =
-            questionResults.get(
-                id
-            );
-
-
-        if (
-            result === true
-        ) {
-
-            streak++;
-
-        } else {
-
-            break;
         }
-    }
+    );
 
 
     currentStreak =
-        streak;
+        correctCount;
+}
+
+
+/* =========================================================
+   UPDATE SCORE DISPLAY
+   ========================================================= */
+
+function updateScore() {
+
+    const scoreDisplay =
+        document.getElementById(
+            "score-display"
+        );
+
+
+    if (!scoreDisplay) {
+        return;
+    }
+
+
+    const totalAnswered =
+        answeredQuestions.size;
+
+
+    scoreDisplay.innerHTML =
+        `🔥 Current streak: <strong>${currentStreak}/${totalAnswered}</strong>`;
 }
 
 
@@ -1372,6 +1226,7 @@ function restoreAnswerState() {
 
         result.className =
             "";
+
     }
 
 
@@ -1384,12 +1239,9 @@ function restoreAnswerState() {
         hideExplanation();
 
         return;
+
     }
 
-
-    /*
-     * Restore selected radio.
-     */
 
     const radios =
         document.querySelectorAll(
@@ -1401,10 +1253,8 @@ function restoreAnswerState() {
         radio => {
 
             if (
-
                 radio.value.toUpperCase() ===
                 savedAnswer.toUpperCase()
-
             ) {
 
                 radio.checked =
@@ -1426,15 +1276,17 @@ function restoreAnswerState() {
                             : "wrong-answer"
 
                     );
+
                 }
+
             }
+
         }
     );
 
 
     /*
-     * Wrong answer:
-     * highlight correct answer.
+     * Wrong answer.
      */
 
     if (!savedResult) {
@@ -1451,6 +1303,7 @@ function restoreAnswerState() {
 
             result.className =
                 "result-wrong";
+
         }
 
     } else {
@@ -1466,13 +1319,15 @@ function restoreAnswerState() {
 
             result.className =
                 "result-correct";
+
         }
+
     }
 
 
     /*
      * Explanation remains visible
-     * when revisiting an answered question.
+     * when returning to an answered question.
      */
 
     showExplanation();
@@ -1503,6 +1358,7 @@ function showExplanation() {
     ) {
 
         return;
+
     }
 
 
@@ -1513,15 +1369,9 @@ function showExplanation() {
 
 
     explanationText.innerText =
-        cleanQuestionText(
-            text
-        ) ||
+        text ||
         "Explanation not available.";
 
-
-    /*
-     * Remove hidden class.
-     */
 
     explanation.classList.remove(
         "hidden"
@@ -1530,7 +1380,7 @@ function showExplanation() {
 
 
 /* =========================================================
-   GET EXPLANATION TEXT
+   GET EXPLANATION
    ========================================================= */
 
 function getExplanationText(
@@ -1538,7 +1388,6 @@ function getExplanationText(
 ) {
 
     if (!question) {
-
         return "";
     }
 
@@ -1555,11 +1404,9 @@ function getExplanationText(
 
         "explanation text",
         "Explanation Text",
-        "EXPLANATION TEXT",
-
         "explanation_text",
-        "Explanation_Text",
-        "EXPLANATION_TEXT"
+        "Explanation_Text"
+
     ];
 
 
@@ -1568,34 +1415,27 @@ function getExplanationText(
     ) {
 
         if (
-
             question[key] !== undefined &&
-
             question[key] !== null &&
-
             String(
                 question[key]
             ).trim() !== ""
-
         ) {
 
             return String(
                 question[key]
             ).trim();
+
         }
+
     }
 
-
-    /*
-     * Fallback search.
-     */
 
     const fallbackKey =
         Object.keys(
             question
         ).find(
             key =>
-
                 key
                     .replace(
                         /^\uFEFF/,
@@ -1610,15 +1450,12 @@ function getExplanationText(
 
 
     if (
-
         fallbackKey &&
-
         String(
             question[
                 fallbackKey
             ]
         ).trim() !== ""
-
     ) {
 
         return String(
@@ -1626,6 +1463,7 @@ function getExplanationText(
                 fallbackKey
             ]
         ).trim();
+
     }
 
 
@@ -1650,6 +1488,7 @@ function hideExplanation() {
         explanation.classList.add(
             "hidden"
         );
+
     }
 }
 
@@ -1672,12 +1511,11 @@ function clearOptionStates() {
             option.classList.remove(
 
                 "selected",
-
                 "correct-answer",
-
                 "wrong-answer"
 
             );
+
         }
     );
 }
@@ -1701,10 +1539,8 @@ function highlightCorrectAnswer(
         radio => {
 
             if (
-
                 radio.value.toUpperCase() ===
                 correctAnswer.toUpperCase()
-
             ) {
 
                 const option =
@@ -1718,176 +1554,633 @@ function highlightCorrectAnswer(
                     option.classList.add(
                         "correct-answer"
                     );
+
                 }
+
             }
+
         }
     );
 }
 
 
 /* =========================================================
-   NAVIGATE QUESTIONS
+   RELATED QUESTION NAVIGATION
    ========================================================= */
 
-function navigateQuestion(
-    direction
-) {
+/*
+ * This is the important new section.
+ *
+ * The application looks for columns such as:
+ *
+ * Previous related question
+ * Previous Related Question
+ * previous_related_question
+ *
+ * Next related question
+ * Next Related Question
+ * next_related_question
+ *
+ * It also supports plural versions.
+ */
 
-    const newIndex =
-        currentQuestionIndex +
-        direction;
+
+function createRelatedNavigation() {
+
+    const quizWrapper =
+        document.querySelector(
+            ".quiz-wrapper"
+        );
 
 
-    /*
-     * Prevent going outside
-     * available questions.
-     */
-
-    if (
-
-        newIndex < 0 ||
-
-        newIndex >= questions.length
-
-    ) {
-
+    if (!quizWrapper) {
         return;
     }
 
 
+    /*
+     * Remove previously generated navigation.
+     */
+
+    const oldNavigation =
+        document.getElementById(
+            "related-navigation"
+        );
+
+
+    if (oldNavigation) {
+
+        oldNavigation.remove();
+
+    }
+
+
+    /*
+     * Get related questions from CSV.
+     */
+
+    const previousIds =
+        getRelatedQuestionIds(
+            currentQuestion,
+            "previous"
+        );
+
+
+    const nextIds =
+        getRelatedQuestionIds(
+            currentQuestion,
+            "next"
+        );
+
+
+    /*
+     * Create main navigation container.
+     */
+
+    const navigation =
+        document.createElement(
+            "div"
+        );
+
+
+    navigation.id =
+        "related-navigation";
+
+
+    navigation.className =
+        "related-navigation";
+
+
+    /*
+     * Previous column.
+     */
+
+    const previousColumn =
+        createRelatedColumn(
+            "Previous related question",
+            previousIds,
+            "previous"
+        );
+
+
+    /*
+     * Next column.
+     */
+
+    const nextColumn =
+        createRelatedColumn(
+            "Next related question",
+            nextIds,
+            "next"
+        );
+
+
+    navigation.appendChild(
+        previousColumn
+    );
+
+
+    navigation.appendChild(
+        nextColumn
+    );
+
+
+    /*
+     * Put navigation above the quiz.
+     */
+
+    quizWrapper.parentNode.insertBefore(
+        navigation,
+        quizWrapper
+    );
+}
+
+
+/* =========================================================
+   CREATE RELATED COLUMN
+   ========================================================= */
+
+function createRelatedColumn(
+    title,
+    ids,
+    type
+) {
+
+    const column =
+        document.createElement(
+            "div"
+        );
+
+
+    column.className =
+        `related-column ${type}-related-column`;
+
+
+    const heading =
+        document.createElement(
+            "div"
+        );
+
+
+    heading.className =
+        "related-column-title";
+
+
+    heading.innerText =
+        title;
+
+
+    column.appendChild(
+        heading
+    );
+
+
+    const list =
+        document.createElement(
+            "div"
+        );
+
+
+    list.className =
+        "related-question-list";
+
+
+    /*
+     * If no related questions exist,
+     * show a small empty state.
+     */
+
+    if (!ids.length) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+
+        empty.className =
+            "related-empty";
+
+
+        empty.innerText =
+            "—";
+
+
+        list.appendChild(
+            empty
+        );
+
+    }
+
+
+    ids.forEach(
+        id => {
+
+            const normalizedId =
+                normalizeQuestionId(
+                    id
+                );
+
+
+            /*
+             * Find actual question in CSV.
+             */
+
+            const questionIndex =
+                questions.findIndex(
+                    question =>
+                        normalizeQuestionId(
+                            getQuestionIdFromObject(
+                                question
+                            )
+                        ) ===
+                        normalizedId
+                );
+
+
+            if (
+                questionIndex === -1
+            ) {
+
+                return;
+
+            }
+
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "related-question";
+
+
+            /*
+             * Highlight current question.
+             */
+
+            if (
+                questionIndex ===
+                currentQuestionIndex
+            ) {
+
+                button.classList.add(
+                    "current-related-question"
+                );
+
+            }
+
+
+            button.innerText =
+                getQuestionIdFromObject(
+                    questions[
+                        questionIndex
+                    ]
+                );
+
+
+            button.addEventListener(
+                "click",
+                () =>
+                    navigateToQuestion(
+                        questionIndex
+                    )
+            );
+
+
+            list.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    column.appendChild(
+        list
+    );
+
+
+    return column;
+}
+
+
+/* =========================================================
+   GET RELATED QUESTION IDS
+   ========================================================= */
+
+function getRelatedQuestionIds(
+    question,
+    direction
+) {
+
+    if (!question) {
+        return [];
+    }
+
+
+    let possibleKeys;
+
+
+    if (
+        direction ===
+        "previous"
+    ) {
+
+        possibleKeys = [
+
+            "previous related question",
+            "Previous related question",
+            "PREVIOUS RELATED QUESTION",
+
+            "previous related questions",
+            "Previous Related Questions",
+            "PREVIOUS RELATED QUESTIONS",
+
+            "previous_related_question",
+            "Previous_Related_Question",
+            "PREVIOUS_RELATED_QUESTION",
+
+            "previous_related_questions",
+            "Previous_Related_Questions",
+            "PREVIOUS_RELATED_QUESTIONS",
+
+            "previous question",
+            "Previous Question",
+
+            "previous_questions",
+            "previous questions"
+
+        ];
+
+    } else {
+
+        possibleKeys = [
+
+            "next related question",
+            "Next related question",
+            "NEXT RELATED QUESTION",
+
+            "next related questions",
+            "Next Related Questions",
+            "NEXT RELATED QUESTIONS",
+
+            "next_related_question",
+            "Next_Related_Question",
+            "NEXT_RELATED_QUESTION",
+
+            "next_related_questions",
+            "Next_Related_Questions",
+            "NEXT_RELATED_QUESTIONS",
+
+            "next question",
+            "Next Question",
+
+            "next_questions",
+            "next questions"
+
+        ];
+
+    }
+
+
+    let value = "";
+
+
+    /*
+     * Find the matching CSV column.
+     */
+
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            question[key] !== undefined &&
+            question[key] !== null &&
+            String(
+                question[key]
+            ).trim() !== ""
+        ) {
+
+            value =
+                String(
+                    question[key]
+                ).trim();
+
+            break;
+
+        }
+
+    }
+
+
+    /*
+     * If exact headers were not found,
+     * use flexible matching.
+     */
+
+    if (!value) {
+
+        const fallbackKey =
+            Object.keys(
+                question
+            ).find(
+                key => {
+
+                    const normalized =
+                        key
+                            .replace(
+                                /^\uFEFF/,
+                                ""
+                            )
+                            .trim()
+                            .toLowerCase()
+                            .replace(
+                                /[_-]/g,
+                                " "
+                            );
+
+
+                    if (
+                        direction ===
+                        "previous"
+                    ) {
+
+                        return (
+                            normalized.includes(
+                                "previous"
+                            ) &&
+                            normalized.includes(
+                                "related"
+                            )
+                        );
+
+                    }
+
+
+                    return (
+                        normalized.includes(
+                            "next"
+                        ) &&
+                        normalized.includes(
+                            "related"
+                        )
+                    );
+
+                }
+            );
+
+
+        if (fallbackKey) {
+
+            value =
+                String(
+                    question[
+                        fallbackKey
+                    ]
+                ).trim();
+
+        }
+
+    }
+
+
+    if (!value) {
+        return [];
+    }
+
+
+    /*
+     * Support different ways of storing IDs.
+     *
+     * Example:
+     *
+     * Xi-00001
+     *
+     * Xi-00001, Xi-00002
+     *
+     * Xi-00001;Xi-00002
+     *
+     * Xi-00001 | Xi-00002
+     *
+     * Xi-00001
+     * Xi-00002
+     */
+
+    const ids =
+        value
+            .split(
+                /[,;|\n]+/
+            )
+            .map(
+                item =>
+                    item.trim()
+            )
+            .filter(
+                Boolean
+            );
+
+
+    /*
+     * Remove duplicates while keeping
+     * the original CSV order.
+     */
+
+    return [
+        ...new Set(
+            ids.map(
+                id =>
+                    normalizeQuestionId(
+                        id
+                    )
+            )
+        )
+    ];
+}
+
+
+/* =========================================================
+   NAVIGATE TO QUESTION
+   ========================================================= */
+
+function navigateToQuestion(
+    questionIndex
+) {
+
+    if (
+        questionIndex < 0 ||
+        questionIndex >=
+            questions.length
+    ) {
+
+        return;
+
+    }
+
+
     currentQuestionIndex =
-        newIndex;
+        questionIndex;
 
 
     const questionId =
-        getQuestionId();
+        getQuestionIdFromObject(
+            questions[
+                questionIndex
+            ]
+        );
 
 
     /*
      * Update URL.
      */
 
-    if (questionId) {
-
-        const url =
-            new URL(
-                window.location.href
-            );
-
-
-        url.searchParams.set(
-            "id",
-            questionId
+    const url =
+        new URL(
+            window.location.href
         );
 
 
-        history.pushState(
-            {},
-            "",
-            url
-        );
-    }
+    url.searchParams.set(
+        "id",
+        questionId
+    );
+
+
+    history.pushState(
+        {},
+        "",
+        url
+    );
+
+
+    displayQuestion();
 
 
     /*
-     * Display new question.
+     * Scroll to top of quiz.
      */
 
-    displayQuestion();
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 
 /* =========================================================
-   BROWSER BACK / FORWARD
+   POPSTATE
    ========================================================= */
 
 function handlePopState() {
 
     loadQuestionFromURL();
-}
-
-
-/* =========================================================
-   UPDATE NAVIGATION BUTTONS
-   ========================================================= */
-
-function updateNavigation() {
-
-    const previousButton =
-        document.getElementById(
-            "previous-button"
-        );
-
-
-    const nextButton =
-        document.getElementById(
-            "next-button"
-        );
-
-
-    /*
-     * Previous disabled on first question.
-     */
-
-    if (previousButton) {
-
-        previousButton.disabled =
-            currentQuestionIndex <= 0;
-    }
-
-
-    /*
-     * Next disabled on final question.
-     */
-
-    if (nextButton) {
-
-        nextButton.disabled =
-            currentQuestionIndex >=
-            questions.length - 1;
-    }
-
-
-    /*
-     * Question position is intentionally
-     * not displayed.
-     */
-
-    const position =
-        document.getElementById(
-            "question-position"
-        );
-
-
-    if (position) {
-
-        position.innerText =
-            "";
-    }
-}
-
-
-/* =========================================================
-   UPDATE CURRENT STREAK DISPLAY
-   ========================================================= */
-
-function updateScore() {
-
-    const scoreDisplay =
-        document.getElementById(
-            "score-display"
-        );
-
-
-    if (!scoreDisplay) {
-
-        return;
-    }
-
-
-    scoreDisplay.innerHTML =
-
-        `🔥 Current streak: <strong>${currentStreak}</strong>`;
 }
 
 
@@ -1898,7 +2191,6 @@ function updateScore() {
 function loadMotivationalQuote() {
 
     if (!quotes.length) {
-
         return;
     }
 
@@ -1906,12 +2198,9 @@ function loadMotivationalQuote() {
     let randomIndex;
 
 
-    /*
-     * Avoid showing the same quote
-     * consecutively.
-     */
-
-    if (quotes.length === 1) {
+    if (
+        quotes.length === 1
+    ) {
 
         randomIndex = 0;
 
@@ -1929,6 +2218,7 @@ function loadMotivationalQuote() {
             randomIndex ===
             lastQuoteIndex
         );
+
     }
 
 
@@ -1958,74 +2248,17 @@ function loadMotivationalQuote() {
 
         quoteText.innerText =
             `“${selectedQuote.quote}”`;
+
     }
 
 
     if (quoteAuthor) {
 
         quoteAuthor.innerText =
-
             selectedQuote.author
-
                 ? `— ${selectedQuote.author}`
-
                 : "— AIBrainBox";
-    }
-}
 
-
-/* =========================================================
-   KEYBOARD NAVIGATION
-   ========================================================= */
-
-function handleKeyboardNavigation(
-    event
-) {
-
-    const target =
-        event.target;
-
-
-    if (!target) {
-
-        return;
-    }
-
-
-    const tag =
-        target.tagName.toLowerCase();
-
-
-    /*
-     * Don't navigate while interacting
-     * with form fields.
-     */
-
-    if (
-
-        tag === "input" ||
-
-        tag === "textarea" ||
-
-        tag === "button"
-
-    ) {
-
-        return;
-    }
-
-
-    if (
-        event.key === "ArrowLeft"
-    ) {
-
-        navigateQuestion(-1);
-
-    } else if (
-        event.key === "ArrowRight"
-    ) {
-
-        navigateQuestion(1);
     }
 }
 
@@ -2075,7 +2308,9 @@ function showCorrectCelebration() {
             },
 
             i * 100
+
         );
+
     }
 }
 
@@ -2124,7 +2359,9 @@ function showWrongReaction() {
             },
 
             i * 120
+
         );
+
     }
 }
 
@@ -2152,10 +2389,6 @@ function createEmojiBurst(
         emoji;
 
 
-    /*
-     * Random starting position.
-     */
-
     const startLeft =
         10 +
         Math.random() * 80;
@@ -2165,10 +2398,6 @@ function createEmojiBurst(
         55 +
         Math.random() * 25;
 
-
-    /*
-     * Random movement.
-     */
 
     const drift =
         (
@@ -2190,10 +2419,6 @@ function createEmojiBurst(
         1200 +
         Math.random() * 900;
 
-
-    /*
-     * Styling.
-     */
 
     element.style.position =
         "fixed";
@@ -2236,22 +2461,13 @@ function createEmojiBurst(
 
 
     element.style.transition =
-
         `transform ${duration}ms ease-out, opacity ${duration}ms ease-out`;
 
-
-    /*
-     * Add to page.
-     */
 
     document.body.appendChild(
         element
     );
 
-
-    /*
-     * Start animation.
-     */
 
     requestAnimationFrame(
         () => {
@@ -2260,21 +2476,18 @@ function createEmojiBurst(
                 () => {
 
                     element.style.transform =
-
                         `translate(${drift}px, -${180 + Math.random() * 180}px) rotate(${rotation}deg) scale(1.15)`;
 
 
                     element.style.opacity =
                         "0";
+
                 }
             );
+
         }
     );
 
-
-    /*
-     * Remove after animation.
-     */
 
     setTimeout(
         () => {
@@ -2305,7 +2518,6 @@ function getQuestionIdFromObject(
 ) {
 
     if (!question) {
-
         return "";
     }
 
@@ -2332,28 +2544,24 @@ function getQuestionIdFromObject(
     ) {
 
         if (
-
             question[key] !== undefined &&
-
             question[key] !== null &&
-
             String(
                 question[key]
             ).trim() !== ""
-
         ) {
 
             return String(
                 question[key]
             ).trim();
+
         }
+
     }
 
 
     /*
-     * Fallback:
-     * If your CSV has another ID-like
-     * column, try to find it.
+     * Flexible fallback.
      */
 
     const fallbackKey =
@@ -2382,23 +2590,39 @@ function getQuestionIdFromObject(
                         "question id"
                     )
                 );
+
             }
         );
 
 
-    if (
-        fallbackKey
-    ) {
+    if (fallbackKey) {
 
         return String(
             question[
                 fallbackKey
             ]
         ).trim();
+
     }
 
 
     return "";
+}
+
+
+/* =========================================================
+   NORMALIZE QUESTION ID
+   ========================================================= */
+
+function normalizeQuestionId(
+    id
+) {
+
+    return String(
+        id || ""
+    )
+        .trim()
+        .toUpperCase();
 }
 
 
@@ -2409,7 +2633,6 @@ function getQuestionIdFromObject(
 function getCorrectAnswer() {
 
     if (!currentQuestion) {
-
         return "";
     }
 
@@ -2438,15 +2661,11 @@ function getCorrectAnswer() {
     ) {
 
         if (
-
             currentQuestion[key] !== undefined &&
-
             currentQuestion[key] !== null &&
-
             String(
                 currentQuestion[key]
             ).trim() !== ""
-
         ) {
 
             return String(
@@ -2454,7 +2673,9 @@ function getCorrectAnswer() {
             )
                 .trim()
                 .toUpperCase();
+
         }
+
     }
 
 
@@ -2483,37 +2704,29 @@ function getCorrectAnswer() {
 
 
                 return (
-
                     normalized.includes(
                         "correct"
                     ) &&
-
                     (
-
                         normalized.includes(
                             "answer"
                         ) ||
-
                         normalized ===
                             "correct"
-
                     )
-
                 );
+
             }
         );
 
 
     if (
-
         fallbackKey &&
-
         String(
             currentQuestion[
                 fallbackKey
             ]
         ).trim() !== ""
-
     ) {
 
         return String(
@@ -2523,6 +2736,7 @@ function getCorrectAnswer() {
         )
             .trim()
             .toUpperCase();
+
     }
 
 
@@ -2567,93 +2781,68 @@ function parseCSV(
          */
 
         if (
-
             char === '"' &&
-
             insideQuotes &&
-
             nextChar === '"'
-
         ) {
 
             cell += '"';
 
             i++;
 
-        }
-
 
         /*
-         * Opening / closing quote.
+         * Start/end quoted cell.
          */
 
-        else if (
+        } else if (
             char === '"'
         ) {
 
             insideQuotes =
                 !insideQuotes;
-        }
 
 
         /*
-         * Column separator.
+         * Comma outside quotes.
          */
 
-        else if (
-
+        } else if (
             char === "," &&
-
             !insideQuotes
-
         ) {
 
-            row.push(
-                cell
-            );
+            row.push(cell);
 
             cell = "";
-        }
 
 
         /*
-         * Row separator.
+         * New row.
          */
 
-        else if (
-
+        } else if (
             (
                 char === "\n" ||
                 char === "\r"
             ) &&
-
             !insideQuotes
-
         ) {
 
             if (
-
                 char === "\r" &&
-
                 nextChar === "\n"
-
             ) {
 
                 i++;
+
             }
 
 
-            row.push(
-                cell
-            );
-
+            row.push(cell);
 
             cell = "";
 
-
-            /*
-             * Ignore completely empty rows.
-             */
 
             if (
                 row.some(
@@ -2664,20 +2853,20 @@ function parseCSV(
                 )
             ) {
 
-                rows.push(
-                    row
-                );
+                rows.push(row);
+
             }
 
 
             row = [];
-        }
 
 
-        else {
+        } else {
 
             cell += char;
+
         }
+
     }
 
 
@@ -2686,16 +2875,11 @@ function parseCSV(
      */
 
     if (
-
         cell !== "" ||
-
         row.length
-
     ) {
 
-        row.push(
-            cell
-        );
+        row.push(cell);
 
 
         if (
@@ -2707,30 +2891,26 @@ function parseCSV(
             )
         ) {
 
-            rows.push(
-                row
-            );
+            rows.push(row);
+
         }
+
     }
 
 
     if (!rows.length) {
-
         return [];
     }
 
 
     /*
-     * Headers.
+     * Clean headers.
      */
 
     const headers =
         rows[0].map(
             header =>
-
-                String(
-                    header
-                )
+                String(header)
                     .replace(
                         /^\uFEFF/,
                         ""
@@ -2740,7 +2920,7 @@ function parseCSV(
 
 
     /*
-     * Convert rows to objects.
+     * Convert CSV rows into objects.
      */
 
     return rows
@@ -2758,20 +2938,19 @@ function parseCSV(
                     ) => {
 
                         object[header] =
-
                             values[index] !==
                             undefined
-
                                 ? String(
                                     values[index]
                                 ).trim()
-
                                 : "";
+
                     }
                 );
 
 
                 return object;
+
             }
         );
 }
@@ -2797,36 +2976,22 @@ function parseQuotesCSV(
             row => {
 
                 const quote =
-
                     row.quote ||
-
                     row.Quote ||
-
                     row.QUOTE ||
-
                     row["Quote Text"] ||
-
                     row["quote text"] ||
-
                     row["QUOTE TEXT"] ||
-
                     "";
 
 
                 const author =
-
                     row.author ||
-
                     row.Author ||
-
                     row.AUTHOR ||
-
                     row["Quote Author"] ||
-
                     row["quote author"] ||
-
                     row["QUOTE AUTHOR"] ||
-
                     "";
 
 
@@ -2841,7 +3006,9 @@ function parseQuotesCSV(
                         String(
                             author
                         ).trim()
+
                 };
+
             }
         )
 
