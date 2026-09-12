@@ -198,3 +198,58 @@ So the solution is:
 **Limited data variety ? Data augmentation**
 
 **Both ? Better generalization and reduced overfitting**",CNN,Fine tunnig; Data Augmentation,Xi-00003,
+Xi-00006,"You have 500M chunks. Exact hash-based deduplication removes only 20% because many documents are slightly different versions of the same content.
+Which approach is most appropriate for detecting near-duplicates at this scale?",Compare every document with every other document using cosine similarity.,"Use MinHash/LSH or another cheap candidate-generation technique, then perform a more accurate similarity check only on candidates.",Embed every document and compare every embedding against all 500M embeddings.,Randomly sample 10% of documents and delete similar-looking documents.,B,"At 500M chunks, comparing every pair is computationally infeasible.
+
+The scalable pattern is:
+
+Document
+   ?
+Cheap fingerprint / MinHash
+   ?
+LSH candidate retrieval
+   ?
+Only compare likely candidates
+   ?
+Near-duplicate?
+   ??? Yes ? map to canonical ID
+   ??? No  ? create new embedding
+
+Key principle:
+
+Use a cheap method to find candidates, then an expensive method only for those candidates.",RAG,Deduplication,,Xi-00007
+Xi-00007,"A multi-tenant health insurance RAG system receives these documents:
+
+Tenant A ? Policy_A_v1.pdf
+Tenant A ? Policy_A_v2.pdf
+Tenant B ? Policy_B_v1.pdf
+
+After normalization:
+
+Policy_A_v1 and Policy_B_v1 have identical content and identical SHA-256 hash.
+Policy_A_v2 is 98% similar to v1, but the deductible amount changed from $500 ? $1,000.
+Users must always receive the latest policy applicable to their tenant.
+Citations must point to the correct original document.
+Duplicate embeddings should be avoided where safe.
+Which design is BEST?",Treat all three documents as duplicates because they are highly similar; store one canonical embedding and map all documents to it.,Store separate embeddings for all three because tenant and version metadata are different.,"Deduplicate Policy_A_v1 and Policy_B_v1 into one canonical representation, but treat Policy_A_v2 as a separate canonical version because the changed deductible is semantically important; preserve tenant/version/source mappings.","Deduplicate only within each tenant. Therefore, Policy_A_v1 and Policy_B_v1 must have separate embeddings.",C,"Policy_A_v1 and Policy_B_v1 can safely share one canonical representation because their content is exactly identical:
+
+Policy_A_v1 ??
+             ???? Canonical ID 789 ? One embedding
+Policy_B_v1 ??
+
+But Policy_A_v2 changes a business-critical value:
+
+v1 ? Deductible = $500
+v2 ? Deductible = $1,000
+
+Even though the documents are 98% similar, they represent different policy versions. They should therefore have separate canonical representations.
+
+v1 ? Canonical ID 789 ? Embedding A
+v2 ? Canonical ID 790 ? Embedding B
+
+The key distinction is:
+
+Exact duplicate ? safely reuse canonical ID.
+Near-duplicate ? similarity is only a signal; semantic/business differences must be verified before deduplication.
+
+This is where a production system needs business-aware deduplication, not just a similarity threshold.",RAG,Deduplication,Xi-00006,
