@@ -1,3 +1,7 @@
+/* =========================================================
+   AI BRAIN BOX - APP.JS
+   ========================================================= */
+
 let questions = [];
 let currentQuestionIndex = -1;
 let currentQuestion = null;
@@ -5,94 +9,83 @@ let currentQuestion = null;
 const CSV_URL = "./xi-questions.csv";
 const QUOTES_URL = "./xi-Quotes.csv";
 
+/* ---------- QUIZ STATE ---------- */
+
 let score = 0;
-let currentStreak = 0;
 
 let answeredQuestions = new Set();
 let questionResults = new Map();
 let savedAnswers = new Map();
 
+/*
+   Current streak:
+   Number of consecutive correct answers.
+*/
+let currentStreak = 0;
+
+/*
+   Keeps track of the order in which questions
+   were answered for the first time.
+*/
+let answerHistory = [];
+
+
+/* ---------- QUOTES ---------- */
+
 let quotes = [];
 let lastQuoteIndex = -1;
 
 
-/* ============================================================
-   START
-   ============================================================ */
+/* ---------- BACKGROUND VIDEO ---------- */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeApp
-);
+const BACKGROUNDS_API =
+    "https://api.github.com/repos/jai92xi/AIBrainBox/contents/Backgrounds_Folder";
+
+const BACKGROUND_SESSION_KEY =
+    "aibrainbox-session-background";
 
 
-/* ============================================================
-   INITIALIZE
-   ============================================================ */
+/* =========================================================
+   INITIALIZE APP
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", initializeApp);
 
 function initializeApp() {
 
-    const previousButton =
-        document.getElementById(
-            "previous-question-btn"
-        );
-
-    const nextButton =
-        document.getElementById(
-            "next-question-btn"
-        );
-
+    const previousButton = document.getElementById("previous-button");
+    const nextButton = document.getElementById("next-button");
 
     if (previousButton) {
-
-        previousButton.addEventListener(
-            "click",
-            goToPreviousQuestion
-        );
-
+        previousButton.addEventListener("click", () => {
+            navigateQuestion(-1);
+        });
     }
-
 
     if (nextButton) {
-
-        nextButton.addEventListener(
-            "click",
-            goToNextQuestion
-        );
-
+        nextButton.addEventListener("click", () => {
+            navigateQuestion(1);
+        });
     }
 
+    window.addEventListener("popstate", handlePopState);
 
-    window.addEventListener(
-        "popstate",
-        loadQuestion
-    );
-
-
-    document.addEventListener(
-        "keydown",
-        handleKeyboardNavigation
-    );
-
+    document.addEventListener("keydown", handleKeyboardNavigation);
 
     loadQuestions();
     loadQuotes();
-
+    loadSessionBackground();
 }
 
 
-/* ============================================================
+/* =========================================================
    LOAD QUESTIONS
-   ============================================================ */
+   ========================================================= */
 
 async function loadQuestions() {
 
-    const loading =
-        document.getElementById("loading");
-
-    const errorBox =
-        document.getElementById("error");
-
+    const loading = document.getElementById("loading");
+    const error = document.getElementById("error");
 
     try {
 
@@ -100,670 +93,269 @@ async function loadQuestions() {
             loading.classList.remove("hidden");
         }
 
-        if (errorBox) {
-            errorBox.classList.add("hidden");
+        if (error) {
+            error.classList.add("hidden");
         }
 
-
-        const response =
-            await fetch(
-                CSV_URL + "?v=" + Date.now(),
-                {
-                    cache: "no-store"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "HTTP " +
-                response.status +
-                " - " +
-                response.statusText
-            );
-
-        }
-
-
-        const csvText =
-            await response.text();
-
-
-        if (!csvText.trim()) {
-
-            throw new Error(
-                "xi-questions.csv is empty."
-            );
-
-        }
-
-
-        questions =
-            parseCSV(csvText);
-
-
-        if (!questions.length) {
-
-            throw new Error(
-                "No questions were found."
-            );
-
-        }
-
-
-        if (loading) {
-            loading.classList.add("hidden");
-        }
-
-
-        loadQuestion();
-
-
-    } catch (error) {
-
-        console.error(
-            "Question loading error:",
-            error
+        const response = await fetch(
+            `${CSV_URL}?v=${Date.now()}`,
+            {
+                cache: "no-store"
+            }
         );
 
+        if (!response.ok) {
+            throw new Error("Unable to load questions.");
+        }
+
+        const csvText = await response.text();
+
+        questions = parseCSV(csvText);
+
+        if (!questions.length) {
+            throw new Error("No questions found in CSV.");
+        }
 
         if (loading) {
             loading.classList.add("hidden");
         }
 
+        loadQuestionFromURL();
 
-        if (errorBox) {
+    } catch (err) {
 
-            errorBox.classList.remove("hidden");
+        console.error("Question loading error:", err);
 
-            errorBox.innerText =
-                "Unable to load questions.\n\n" +
-                error.message;
-
+        if (loading) {
+            loading.classList.add("hidden");
         }
 
-    }
+        if (error) {
+            error.textContent =
+                "Unable to load questions. Please refresh the page.";
 
+            error.classList.remove("hidden");
+        }
+    }
 }
 
 
-/* ============================================================
+/* =========================================================
    LOAD QUOTES
-   ============================================================ */
+   ========================================================= */
 
 async function loadQuotes() {
 
     try {
 
-        const response =
-            await fetch(
-                QUOTES_URL + "?v=" + Date.now(),
-                {
-                    cache: "no-store"
-                }
-            );
-
+        const response = await fetch(
+            `${QUOTES_URL}?v=${Date.now()}`,
+            {
+                cache: "no-store"
+            }
+        );
 
         if (!response.ok) {
-            throw new Error(
-                "Unable to load quotes."
-            );
+            throw new Error("Unable to load quotes.");
         }
 
+        const csvText = await response.text();
 
-        const csvText =
-            await response.text();
-
-
-        quotes =
-            parseQuotesCSV(csvText);
-
+        quotes = parseQuotesCSV(csvText);
 
         if (quotes.length) {
             loadMotivationalQuote();
         }
 
+    } catch (err) {
 
-    } catch (error) {
-
-        console.error(
-            "Quote loading error:",
-            error
+        console.warn(
+            "Quote CSV could not be loaded. Using fallback quotes."
         );
-
 
         quotes = [
-
             {
-                quote:
-                    "The important thing is not to stop questioning.",
-                author:
-                    "Albert Einstein"
+                quote: "Keep going. Your future self will thank you.",
+                author: "AIBrainBox"
             },
-
             {
-                quote:
-                    "The future depends on what you do today.",
-                author:
-                    "Mahatma Gandhi"
+                quote: "Small progress is still progress.",
+                author: "AIBrainBox"
             },
-
             {
-                quote:
-                    "Great things are done by a series of small things brought together.",
-                author:
-                    "Vincent van Gogh"
+                quote: "Learning never stops.",
+                author: "AIBrainBox"
+            },
+            {
+                quote: "Consistency beats perfection.",
+                author: "AIBrainBox"
             }
-
         ];
 
-
         loadMotivationalQuote();
-
     }
-
 }
 
 
-/* ============================================================
-   CSV PARSER
-   ============================================================ */
+/* =========================================================
+   LOAD RANDOM BACKGROUND VIDEO
+   ========================================================= */
 
-function parseCSV(text) {
+async function loadSessionBackground() {
 
-    const rows = [];
+    const video = document.getElementById("session-background");
 
-    let row = [];
-    let cell = "";
-    let insideQuotes = false;
-
-
-    for (
-        let i = 0;
-        i < text.length;
-        i++
-    ) {
-
-        const char = text[i];
-        const nextChar = text[i + 1];
-
-
-        if (
-            char === '"' &&
-            insideQuotes &&
-            nextChar === '"'
-        ) {
-
-            cell += '"';
-            i++;
-
-        } else if (
-            char === '"'
-        ) {
-
-            insideQuotes =
-                !insideQuotes;
-
-        } else if (
-            char === "," &&
-            !insideQuotes
-        ) {
-
-            row.push(cell);
-            cell = "";
-
-        } else if (
-            (
-                char === "\n" ||
-                char === "\r"
-            ) &&
-            !insideQuotes
-        ) {
-
-            if (
-                char === "\r" &&
-                nextChar === "\n"
-            ) {
-
-                i++;
-
-            }
-
-
-            row.push(cell);
-
-
-            if (
-                row.some(
-                    value =>
-                        value.trim() !== ""
-                )
-            ) {
-
-                rows.push(row);
-
-            }
-
-
-            row = [];
-            cell = "";
-
-        } else {
-
-            cell += char;
-
-        }
-
-    }
-
-
-    if (
-        cell !== "" ||
-        row.length > 0
-    ) {
-
-        row.push(cell);
-
-
-        if (
-            row.some(
-                value =>
-                    value.trim() !== ""
-            )
-        ) {
-
-            rows.push(row);
-
-        }
-
-    }
-
-
-    if (!rows.length) {
-        return [];
-    }
-
-
-    const headers =
-        rows[0].map(
-            normalizeHeader
-        );
-
-
-    return rows
-        .slice(1)
-        .map(row => {
-
-            const question = {};
-
-
-            headers.forEach(
-                (
-                    header,
-                    index
-                ) => {
-
-                    question[header] =
-                        (
-                            row[index] ||
-                            ""
-                        ).trim();
-
-                }
-            );
-
-
-            return question;
-
-        })
-        .filter(
-            question =>
-                Object.values(question)
-                    .some(
-                        value =>
-                            value !== ""
-                    )
-        );
-
-}
-
-
-/* ============================================================
-   QUOTE CSV PARSER
-   ============================================================ */
-
-function parseQuotesCSV(text) {
-
-    const rows = [];
-
-    let row = [];
-    let cell = "";
-    let insideQuotes = false;
-
-
-    for (
-        let i = 0;
-        i < text.length;
-        i++
-    ) {
-
-        const char = text[i];
-        const nextChar = text[i + 1];
-
-
-        if (
-            char === '"' &&
-            insideQuotes &&
-            nextChar === '"'
-        ) {
-
-            cell += '"';
-            i++;
-
-        } else if (
-            char === '"'
-        ) {
-
-            insideQuotes =
-                !insideQuotes;
-
-        } else if (
-            char === "," &&
-            !insideQuotes
-        ) {
-
-            row.push(cell);
-            cell = "";
-
-        } else if (
-            (
-                char === "\n" ||
-                char === "\r"
-            ) &&
-            !insideQuotes
-        ) {
-
-            if (
-                char === "\r" &&
-                nextChar === "\n"
-            ) {
-
-                i++;
-
-            }
-
-
-            row.push(cell);
-
-
-            if (
-                row.some(
-                    value =>
-                        value.trim() !== ""
-                )
-            ) {
-
-                rows.push(row);
-
-            }
-
-
-            row = [];
-            cell = "";
-
-        } else {
-
-            cell += char;
-
-        }
-
-    }
-
-
-    if (
-        cell !== "" ||
-        row.length > 0
-    ) {
-
-        row.push(cell);
-
-
-        if (
-            row.some(
-                value =>
-                    value.trim() !== ""
-            )
-        ) {
-
-            rows.push(row);
-
-        }
-
-    }
-
-
-    if (!rows.length) {
-        return [];
-    }
-
-
-    const headers =
-        rows[0].map(
-            normalizeHeader
-        );
-
-
-    const quoteIndex =
-        headers.findIndex(
-            header =>
-                header === "quote"
-        );
-
-
-    const authorIndex =
-        headers.findIndex(
-            header =>
-                header === "author"
-        );
-
-
-    const result = [];
-
-
-    rows.slice(1).forEach(
-        row => {
-
-            if (quoteIndex !== -1) {
-
-                const quote =
-                    (
-                        row[quoteIndex] ||
-                        ""
-                    ).trim();
-
-
-                const author =
-                    authorIndex !== -1
-                        ? (
-                            row[authorIndex] ||
-                            ""
-                        ).trim()
-                        : "";
-
-
-                if (quote) {
-
-                    result.push({
-                        quote,
-                        author
-                    });
-
-                }
-
-            } else {
-
-                row.forEach(
-                    value => {
-
-                        const quote =
-                            value.trim();
-
-
-                        if (quote) {
-
-                            result.push({
-                                quote,
-                                author: ""
-                            });
-
-                        }
-
-                    }
-                );
-
-            }
-
-        }
-    );
-
-
-    return result;
-
-}
-
-
-/* ============================================================
-   NORMALIZE HEADER
-   ============================================================ */
-
-function normalizeHeader(header) {
-
-    return header
-        .replace(/^\uFEFF/, "")
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, " ");
-
-}
-
-
-/* ============================================================
-   LOAD QUESTION
-   ============================================================ */
-
-function loadQuestion() {
-
-    if (!questions.length) {
+    if (!video) {
         return;
     }
 
+    try {
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+        /*
+           If a video was already selected during this
+           browser session, reuse it.
+        */
+        let selectedVideo =
+            sessionStorage.getItem(BACKGROUND_SESSION_KEY);
 
+        if (!selectedVideo) {
 
-    let id =
-        params.get("id");
-
-
-    if (!id) {
-
-        const firstQuestion =
-            questions[0];
-
-
-        id =
-            firstQuestion.id ||
-            "1";
-
-
-        const url =
-            new URL(
-                window.location.href
+            const response = await fetch(
+                BACKGROUNDS_API,
+                {
+                    cache: "no-store"
+                }
             );
 
+            if (!response.ok) {
+                throw new Error(
+                    "Unable to access background folder."
+                );
+            }
 
-        url.searchParams.set(
-            "id",
-            id
+            const files = await response.json();
+
+            const videoFiles = files.filter(file =>
+                file.type === "file" &&
+                /\.mp4$/i.test(file.name)
+            );
+
+            if (!videoFiles.length) {
+                console.warn(
+                    "No MP4 background videos found."
+                );
+                return;
+            }
+
+            const randomIndex =
+                Math.floor(Math.random() * videoFiles.length);
+
+            selectedVideo =
+                videoFiles[randomIndex].download_url;
+
+            sessionStorage.setItem(
+                BACKGROUND_SESSION_KEY,
+                selectedVideo
+            );
+        }
+
+        video.src = selectedVideo;
+
+        video.load();
+
+        const playPromise = video.play();
+
+        if (playPromise !== undefined) {
+
+            playPromise.catch(() => {
+                console.warn(
+                    "Background video autoplay was blocked."
+                );
+            });
+        }
+
+    } catch (err) {
+
+        console.warn(
+            "Background video could not be loaded:",
+            err
         );
-
-
-        window.history.replaceState(
-            {},
-            "",
-            url
-        );
-
     }
-
-
-    currentQuestionIndex =
-        questions.findIndex(
-            question =>
-                String(
-                    question.id || ""
-                ).trim().toLowerCase() ===
-                String(id)
-                    .trim()
-                    .toLowerCase()
-        );
-
-
-    if (
-        currentQuestionIndex === -1
-    ) {
-
-        currentQuestionIndex = 0;
-
-    }
-
-
-    currentQuestion =
-        questions[
-            currentQuestionIndex
-        ];
-
-
-    displayQuestion();
-
 }
 
 
-/* ============================================================
+/* =========================================================
+   LOAD QUESTION FROM URL
+   ========================================================= */
+
+function loadQuestionFromURL() {
+
+    const params = new URLSearchParams(window.location.search);
+
+    const questionId =
+        params.get("id");
+
+    if (questionId) {
+
+        const index = questions.findIndex(
+            question =>
+                getQuestionIdFromObject(question) === questionId
+        );
+
+        if (index !== -1) {
+
+            currentQuestionIndex = index;
+
+            displayQuestion();
+
+            return;
+        }
+    }
+
+    currentQuestionIndex = 0;
+
+    displayQuestion();
+}
+
+
+/* =========================================================
    DISPLAY QUESTION
-   ============================================================ */
+   ========================================================= */
 
 function displayQuestion() {
 
-    const container =
-        document.getElementById(
-            "question-container"
-        );
-
-
-    const questionElement =
-        document.getElementById(
-            "question"
-        );
-
-
-    if (container) {
-        container.classList.remove("hidden");
+    if (
+        currentQuestionIndex < 0 ||
+        currentQuestionIndex >= questions.length
+    ) {
+        return;
     }
 
+    currentQuestion =
+        questions[currentQuestionIndex];
+
+    const questionContainer =
+        document.getElementById("question-container");
+
+    const error =
+        document.getElementById("error");
+
+    const questionElement =
+        document.getElementById("question");
+
+    if (questionContainer) {
+        questionContainer.classList.remove("hidden");
+    }
+
+    if (error) {
+        error.classList.add("hidden");
+    }
 
     if (questionElement) {
-
         questionElement.innerText =
             currentQuestion.question ||
             "Question unavailable.";
-
     }
-
 
     createOptions();
 
@@ -774,199 +366,266 @@ function displayQuestion() {
     updateScore();
 
     loadMotivationalQuote();
-
 }
 
 
-/* ============================================================
+/* =========================================================
    CREATE OPTIONS
-   ============================================================ */
+   ========================================================= */
 
 function createOptions() {
 
     const optionsContainer =
-        document.getElementById(
-            "options"
-        );
-
+        document.getElementById("options");
 
     if (!optionsContainer) {
         return;
     }
 
-
     optionsContainer.innerHTML = "";
 
+    const optionLetters = ["A", "B", "C", "D"];
 
-    const letters = [
-        "A",
-        "B",
-        "C",
-        "D"
-    ];
+    optionLetters.forEach(letter => {
 
+        const optionValue =
+            getOptionValue(currentQuestion, letter);
 
-    letters.forEach(
-        letter => {
+        if (!optionValue) {
+            return;
+        }
 
-            const optionText =
-                currentQuestion[
-                    letter.toLowerCase()
-                ];
+        const label =
+            document.createElement("label");
 
+        label.className = "option";
 
-            if (
-                !optionText ||
-                !optionText.trim()
-            ) {
+        const radio =
+            document.createElement("input");
 
-                return;
+        radio.type = "radio";
+        radio.name = "quiz-option";
+        radio.value = letter;
 
-            }
+        const optionLetter =
+            document.createElement("span");
 
+        optionLetter.className = "option-letter";
+        optionLetter.innerText = letter;
 
-            const option =
-                document.createElement("div");
+        const optionText =
+            document.createElement("span");
 
+        optionText.className = "option-text";
+        optionText.innerText = optionValue;
 
-            option.className =
-                "option";
+        label.appendChild(radio);
+        label.appendChild(optionLetter);
+        label.appendChild(optionText);
 
+        radio.addEventListener("change", () => {
 
-            const radio =
-                document.createElement("input");
-
-
-            radio.type = "radio";
-            radio.name = "answer";
-            radio.value = letter;
-
-            radio.id =
-                "option-" +
-                letter;
-
-
-            const label =
-                document.createElement("label");
-
-
-            label.htmlFor =
-                "option-" +
-                letter;
-
-
-            const letterSpan =
-                document.createElement("span");
-
-
-            letterSpan.className =
-                "option-letter";
-
-
-            letterSpan.innerText =
-                letter;
-
-
-            const textSpan =
-                document.createElement("span");
-
-
-            textSpan.className =
-                "option-text";
-
-
-            textSpan.innerText =
-                optionText;
-
-
-            label.appendChild(
-                letterSpan
-            );
-
-            label.appendChild(
-                textSpan
-            );
-
-
-            option.appendChild(
-                radio
-            );
-
-            option.appendChild(
+            checkAnswer(
+                radio,
                 label
             );
+        });
 
-
-            optionsContainer.appendChild(
-                option
-            );
-
-
-            radio.addEventListener(
-                "change",
-                () => {
-
-                    checkAnswer(
-                        radio,
-                        option
-                    );
-
-                }
-            );
-
-        }
-    );
-
+        optionsContainer.appendChild(label);
+    });
 }
 
 
-/* ============================================================
+/* =========================================================
    CHECK ANSWER
-   ============================================================ */
+   ========================================================= */
 
-function checkAnswer(
-    selected,
-    selectedOption
-) {
+function checkAnswer(selected, selectedOption) {
 
     const questionId =
         getQuestionId();
 
-
     const userAnswer =
-        selected.value
-            .trim()
-            .toUpperCase();
-
+        selected.value.trim().toUpperCase();
 
     const correctAnswer =
         getCorrectAnswer();
 
-
     const previousResult =
-        questionResults.get(
-            questionId
-        );
+        questionResults.get(questionId);
+
+    const isCorrect =
+        userAnswer === correctAnswer;
 
 
-    /*
-     * If this question was already answered,
-     * remove its old score contribution.
-     */
+    /* -----------------------------------------
+       Update score
+       ----------------------------------------- */
 
-    if (
-        previousResult === true
-    ) {
-
+    if (previousResult === true) {
         score--;
+    }
 
+    if (isCorrect) {
+        score++;
     }
 
 
-    const isCorrect =
-        userAnswer ===
-        correctAnswer;
+    /* -----------------------------------------
+       Save question state
+       ----------------------------------------- */
 
+    questionResults.set(
+        questionId,
+        isCorrect
+    );
+
+    savedAnswers.set(
+        questionId,
+        userAnswer
+    );
+
+    answeredQuestions.add(
+        questionId
+    );
+
+
+    /* -----------------------------------------
+       Update current streak
+       ----------------------------------------- */
+
+    updateCurrentStreak(
+        questionId,
+        isCorrect,
+        previousResult
+    );
+
+
+    /* -----------------------------------------
+       Clear previous option styling
+       ----------------------------------------- */
+
+    clearOptionStates();
+
+
+    /* -----------------------------------------
+       Highlight selected answer
+       ----------------------------------------- */
+
+    if (selectedOption) {
+
+        selectedOption.classList.add(
+            isCorrect
+                ? "correct-answer"
+                : "wrong-answer"
+        );
+    }
+
+
+    /* -----------------------------------------
+       Highlight correct answer if wrong
+       ----------------------------------------- */
+
+    if (!isCorrect) {
+        highlightCorrectAnswer(
+            correctAnswer
+        );
+    }
+
+
+    /* -----------------------------------------
+       Result message
+       ----------------------------------------- */
+
+    const result =
+        document.getElementById("result");
+
+    if (result) {
+
+        if (isCorrect) {
+
+            result.innerHTML =
+                "Correct! 🎉";
+
+            result.className =
+                "result-correct";
+
+            showCorrectCelebration();
+
+        } else {
+
+            result.innerHTML =
+                "Not quite. Keep learning!";
+
+            result.className =
+                "result-wrong";
+
+            showWrongReaction();
+        }
+    }
+
+
+    /* -----------------------------------------
+       AUTO-EXPAND EXPLANATION
+       ----------------------------------------- */
+
+    showExplanation();
+
+
+    /* -----------------------------------------
+       Update streak display
+       ----------------------------------------- */
+
+    updateScore();
+}
+
+
+/* =========================================================
+   CURRENT STREAK LOGIC
+   ========================================================= */
+
+function updateCurrentStreak(
+    questionId,
+    isCorrect,
+    previousResult
+) {
+
+    /*
+       First time answering this question:
+       add it to the answer history.
+    */
+    if (!answerHistory.includes(questionId)) {
+
+        answerHistory.push(questionId);
+
+        if (isCorrect) {
+            currentStreak++;
+        } else {
+            currentStreak = 0;
+        }
+
+        return;
+    }
+
+
+    /*
+       If the user revisits a question and changes
+       the answer, recalculate the streak based on
+       the latest answer history.
+    */
+
+    const historyIndex =
+        answerHistory.indexOf(questionId);
+
+    if (historyIndex === -1) {
+        return;
+    }
+
+
+    /*
+       Update the result and calculate the streak
+       from the most recent answers.
+    */
 
     questionResults.set(
         questionId,
@@ -974,424 +633,307 @@ function checkAnswer(
     );
 
 
-    savedAnswers.set(
-        questionId,
-        userAnswer
-    );
-
-
-    answeredQuestions.add(
-        questionId
-    );
-
-
     /*
-     * CURRENT STREAK
-     *
-     * Correct answer:
-     *      streak + 1
-     *
-     * Wrong answer:
-     *      streak = 0
-     */
+       Current streak is based on consecutive
+       answers from the latest answer backwards.
+    */
 
-    if (isCorrect) {
+    let streak = 0;
 
-        /*
-         * Only increase streak if this is
-         * a new correct answer.
-         *
-         * Changing an already-correct answer
-         * should not keep increasing the streak.
-         */
+    for (
+        let i = answerHistory.length - 1;
+        i >= 0;
+        i--
+    ) {
 
-        if (previousResult !== true) {
+        const id =
+            answerHistory[i];
 
-            currentStreak++;
+        const result =
+            questionResults.get(id);
 
-        }
+        if (result === true) {
 
-    } else {
-
-        currentStreak = 0;
-
-    }
-
-
-    clearOptionStates();
-
-
-    if (isCorrect) {
-
-        selectedOption.classList.add(
-            "correct-answer"
-        );
-
-
-        showCorrectCelebration();
-
-
-    } else {
-
-        selectedOption.classList.add(
-            "wrong-answer"
-        );
-
-
-        highlightCorrectAnswer(
-            correctAnswer
-        );
-
-
-        showWrongReaction();
-
-    }
-
-
-    const result =
-        document.getElementById(
-            "result"
-        );
-
-
-    if (result) {
-
-        if (isCorrect) {
-
-            result.innerText =
-                "Correct! 🎉";
-
-            result.style.color =
-                "#16a34a";
+            streak++;
 
         } else {
 
-            result.innerText =
-                "Not quite. Keep learning!";
-
-            result.style.color =
-                "#dc2626";
-
+            break;
         }
-
     }
 
-
-    /*
-     * Automatically open explanation.
-     */
-
-    showExplanation();
-
-
-    updateScore();
-
+    currentStreak = streak;
 }
 
 
-/* ============================================================
-   CLEAR OPTION STATES
-   ============================================================ */
-
-function clearOptionStates() {
-
-    document
-        .querySelectorAll(".option")
-        .forEach(
-            option => {
-
-                option.classList.remove(
-                    "correct-answer",
-                    "wrong-answer"
-                );
-
-            }
-        );
-
-}
-
-
-/* ============================================================
-   SHOW EXPLANATION
-   ============================================================ */
-
-function showExplanation() {
-
-    const explanation =
-        document.getElementById(
-            "explanation"
-        );
-
-
-    const explanationText =
-        document.getElementById(
-            "explanation-text"
-        );
-
-
-    if (
-        !explanation ||
-        !explanationText ||
-        !currentQuestion
-    ) {
-
-        return;
-
-    }
-
-
-    const text =
-        currentQuestion.explanation ||
-        currentQuestion.explaination ||
-        "No explanation is available for this question.";
-
-
-    explanationText.innerText =
-        text.trim();
-
-
-    explanation.classList.remove(
-        "hidden"
-    );
-
-
-    /*
-     * Do not force the entire page
-     * to scroll.
-     *
-     * The CSS is designed so the
-     * explanation fits inside the
-     * viewport on desktop.
-     */
-
-}
-
-
-/* ============================================================
-   HIDE EXPLANATION
-   ============================================================ */
-
-function hideExplanation() {
-
-    const explanation =
-        document.getElementById(
-            "explanation"
-        );
-
-
-    if (explanation) {
-
-        explanation.classList.add(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-/* ============================================================
-   RESTORE ANSWER
-   ============================================================ */
+/* =========================================================
+   RESTORE ANSWER STATE
+   ========================================================= */
 
 function restoreAnswerState() {
 
     const questionId =
         getQuestionId();
 
-
     const savedAnswer =
-        savedAnswers.get(
-            questionId
-        );
+        savedAnswers.get(questionId);
 
+    const savedResult =
+        questionResults.get(questionId);
 
-    const explanation =
-        document.getElementById(
-            "explanation"
-        );
-
-
-    const explanationText =
-        document.getElementById(
-            "explanation-text"
-        );
-
+    clearOptionStates();
 
     const result =
-        document.getElementById(
-            "result"
-        );
-
-
-    if (explanation) {
-        explanation.classList.add("hidden");
-    }
-
-
-    if (explanationText) {
-        explanationText.innerText = "";
-    }
-
+        document.getElementById("result");
 
     if (result) {
-        result.innerText = "";
+        result.innerHTML = "";
+        result.className = "";
     }
 
 
-    const oldButton =
-        document.getElementById(
-            "show-explanation-btn"
-        );
-
-
-    if (oldButton) {
-        oldButton.remove();
-    }
-
+    /* ---------- No previous answer ---------- */
 
     if (!savedAnswer) {
+
+        hideExplanation();
+
         return;
     }
 
 
-    const radio =
-        document.querySelector(
-            'input[name="answer"][value="' +
-            savedAnswer +
-            '"]'
+    /* ---------- Restore radio selection ---------- */
+
+    const radios =
+        document.querySelectorAll(
+            'input[name="quiz-option"]'
         );
 
+    radios.forEach(radio => {
 
-    if (!radio) {
-        return;
-    }
+        if (
+            radio.value.toUpperCase() ===
+            savedAnswer.toUpperCase()
+        ) {
 
+            radio.checked = true;
 
-    radio.checked = true;
+            const option =
+                radio.closest(".option");
 
+            if (option) {
 
-    const option =
-        radio.closest(".option");
-
-
-    const correctAnswer =
-        getCorrectAnswer();
-
-
-    if (
-        savedAnswer ===
-        correctAnswer
-    ) {
-
-        if (option) {
-
-            option.classList.add(
-                "correct-answer"
-            );
-
+                option.classList.add(
+                    savedResult
+                        ? "correct-answer"
+                        : "wrong-answer"
+                );
+            }
         }
+    });
 
+
+    /* ---------- Restore wrong answer ---------- */
+
+    if (!savedResult) {
+
+        highlightCorrectAnswer(
+            getCorrectAnswer()
+        );
 
         if (result) {
 
-            result.innerText =
-                "Correct! 🎉";
+            result.innerHTML =
+                "Not quite. Keep learning!";
 
-            result.style.color =
-                "#16a34a";
-
+            result.className =
+                "result-wrong";
         }
 
     } else {
 
-        if (option) {
-
-            option.classList.add(
-                "wrong-answer"
-            );
-
-        }
-
-
-        highlightCorrectAnswer(
-            correctAnswer
-        );
-
-
         if (result) {
 
-            result.innerText =
-                "Not quite. Keep learning!";
+            result.innerHTML =
+                "Correct! 🎉";
 
-            result.style.color =
-                "#dc2626";
-
+            result.className =
+                "result-correct";
         }
-
     }
 
 
     /*
-     * Restore explanation automatically.
-     */
-
+       Explanation automatically remains open
+       when revisiting an answered question.
+    */
     showExplanation();
-
 }
 
 
-/* ============================================================
-   HIGHLIGHT CORRECT ANSWER
-   ============================================================ */
+/* =========================================================
+   SHOW EXPLANATION
+   ========================================================= */
 
-function highlightCorrectAnswer(
-    correctAnswer
-) {
+function showExplanation() {
 
-    const radio =
-        document.querySelector(
-            'input[name="answer"][value="' +
-            correctAnswer +
-            '"]'
-        );
+    const explanation =
+        document.getElementById("explanation");
 
+    const explanationText =
+        document.getElementById("explanation-text");
 
-    if (!radio) {
+    if (!explanation || !explanationText) {
         return;
     }
 
+    const text =
+        currentQuestion.explanation ||
+        currentQuestion.explaination ||
+        currentQuestion.Explanation ||
+        "Explanation not available.";
 
-    const option =
-        radio.closest(".option");
+    explanationText.innerText = text;
 
-
-    if (option) {
-
-        option.classList.add(
-            "correct-answer"
-        );
-
-    }
-
+    explanation.classList.remove("hidden");
 }
 
 
-/* ============================================================
+/* =========================================================
+   HIDE EXPLANATION
+   ========================================================= */
+
+function hideExplanation() {
+
+    const explanation =
+        document.getElementById("explanation");
+
+    if (explanation) {
+        explanation.classList.add("hidden");
+    }
+}
+
+
+/* =========================================================
+   CLEAR OPTION STATES
+   ========================================================= */
+
+function clearOptionStates() {
+
+    const options =
+        document.querySelectorAll(".option");
+
+    options.forEach(option => {
+
+        option.classList.remove(
+            "selected",
+            "correct-answer",
+            "wrong-answer"
+        );
+    });
+}
+
+
+/* =========================================================
+   HIGHLIGHT CORRECT ANSWER
+   ========================================================= */
+
+function highlightCorrectAnswer(correctAnswer) {
+
+    const radios =
+        document.querySelectorAll(
+            'input[name="quiz-option"]'
+        );
+
+    radios.forEach(radio => {
+
+        if (
+            radio.value.toUpperCase() ===
+            correctAnswer.toUpperCase()
+        ) {
+
+            const option =
+                radio.closest(".option");
+
+            if (option) {
+                option.classList.add(
+                    "correct-answer"
+                );
+            }
+        }
+    });
+}
+
+
+/* =========================================================
    NAVIGATION
-   ============================================================ */
+   ========================================================= */
+
+function navigateQuestion(direction) {
+
+    const newIndex =
+        currentQuestionIndex + direction;
+
+    if (
+        newIndex < 0 ||
+        newIndex >= questions.length
+    ) {
+        return;
+    }
+
+    currentQuestionIndex =
+        newIndex;
+
+    const questionId =
+        getQuestionId();
+
+    const url =
+        new URL(window.location.href);
+
+    url.searchParams.set(
+        "id",
+        questionId
+    );
+
+    history.pushState(
+        {},
+        "",
+        url
+    );
+
+    displayQuestion();
+}
+
+
+/* =========================================================
+   POPSTATE
+   ========================================================= */
+
+function handlePopState() {
+
+    loadQuestionFromURL();
+}
+
+
+/* =========================================================
+   UPDATE NAVIGATION UI
+   ========================================================= */
 
 function updateNavigation() {
 
     const previousButton =
         document.getElementById(
-            "previous-question-btn"
+            "previous-button"
         );
-
 
     const nextButton =
         document.getElementById(
-            "next-question-btn"
+            "next-button"
+        );
+
+    const position =
+        document.getElementById(
+            "question-position"
         );
 
 
@@ -1399,7 +941,6 @@ function updateNavigation() {
 
         previousButton.disabled =
             currentQuestionIndex <= 0;
-
     }
 
 
@@ -1408,15 +949,24 @@ function updateNavigation() {
         nextButton.disabled =
             currentQuestionIndex >=
             questions.length - 1;
-
     }
 
+
+    /*
+       Question position is intentionally kept
+       empty/hidden because the UI no longer needs
+       "Question 1 of 5".
+    */
+
+    if (position) {
+        position.innerText = "";
+    }
 }
 
 
-/* ============================================================
-   SCORE / CURRENT STREAK
-   ============================================================ */
+/* =========================================================
+   UPDATE SCORE / STREAK
+   ========================================================= */
 
 function updateScore() {
 
@@ -1425,219 +975,220 @@ function updateScore() {
             "score-display"
         );
 
-
     if (!scoreDisplay) {
         return;
     }
 
-
     scoreDisplay.innerHTML =
-        "🔥 Current streak: " +
-        "<strong>" +
-        currentStreak +
-        "</strong>";
-
+        `🔥 Current streak: <strong>${currentStreak}</strong>`;
 }
 
 
-/* ============================================================
-   PREVIOUS QUESTION
-   ============================================================ */
-
-function goToPreviousQuestion() {
-
-    if (
-        currentQuestionIndex <= 0
-    ) {
-
-        return;
-
-    }
-
-
-    navigateToQuestion(
-        questions[
-            currentQuestionIndex - 1
-        ]
-    );
-
-}
-
-
-/* ============================================================
-   NEXT QUESTION
-   ============================================================ */
-
-function goToNextQuestion() {
-
-    if (
-        currentQuestionIndex >=
-        questions.length - 1
-    ) {
-
-        return;
-
-    }
-
-
-    navigateToQuestion(
-        questions[
-            currentQuestionIndex + 1
-        ]
-    );
-
-}
-
-
-/* ============================================================
-   NAVIGATE
-   ============================================================ */
-
-function navigateToQuestion(
-    question
-) {
-
-    if (
-        !question ||
-        !question.id
-    ) {
-
-        return;
-
-    }
-
-
-    const url =
-        new URL(
-            window.location.href
-        );
-
-
-    url.searchParams.set(
-        "id",
-        question.id
-    );
-
-
-    window.history.pushState(
-        {},
-        "",
-        url
-    );
-
-
-    loadQuestion();
-
-}
-
-
-/* ============================================================
+/* =========================================================
    MOTIVATIONAL QUOTE
-   ============================================================ */
+   ========================================================= */
 
 function loadMotivationalQuote() {
+
+    if (!quotes.length) {
+        return;
+    }
+
+    let randomIndex;
+
+    if (quotes.length === 1) {
+
+        randomIndex = 0;
+
+    } else {
+
+        do {
+
+            randomIndex =
+                Math.floor(
+                    Math.random() * quotes.length
+                );
+
+        } while (
+            randomIndex === lastQuoteIndex
+        );
+    }
+
+    lastQuoteIndex =
+        randomIndex;
+
+    const selectedQuote =
+        quotes[randomIndex];
 
     const quoteText =
         document.getElementById(
             "quote-text"
         );
 
-
     const quoteAuthor =
         document.getElementById(
             "quote-author"
         );
 
+    if (quoteText) {
 
-    if (
-        !quoteText ||
-        !quoteAuthor ||
-        !quotes.length
-    ) {
-
-        return;
-
+        quoteText.innerText =
+            `“${selectedQuote.quote}”`;
     }
 
-
-    let index =
-        Math.floor(
-            Math.random() *
-            quotes.length
-        );
-
-
-    if (
-        quotes.length > 1 &&
-        index === lastQuoteIndex
-    ) {
-
-        index =
-            (index + 1) %
-            quotes.length;
-
-    }
-
-
-    lastQuoteIndex =
-        index;
-
-
-    const quote =
-        quotes[index];
-
-
-    quoteText.innerText =
-        "“" +
-        quote.quote +
-        "”";
-
-
-    if (
-        quote.author &&
-        quote.author.trim()
-    ) {
+    if (quoteAuthor) {
 
         quoteAuthor.innerText =
-            "— " +
-            quote.author.trim();
-
-        quoteAuthor.style.display =
-            "block";
-
-    } else {
-
-        quoteAuthor.innerText =
-            "";
-
-        quoteAuthor.style.display =
-            "none";
-
+            selectedQuote.author
+                ? `— ${selectedQuote.author}`
+                : "— AIBrainBox";
     }
-
 }
 
 
-/* ============================================================
-   QUESTION ID
-   ============================================================ */
+/* =========================================================
+   KEYBOARD NAVIGATION
+   ========================================================= */
+
+function handleKeyboardNavigation(event) {
+
+    /*
+       Do not navigate while the user is typing
+       into an input or textarea.
+    */
+
+    const tag =
+        event.target.tagName.toLowerCase();
+
+    if (
+        tag === "input" ||
+        tag === "textarea"
+    ) {
+        return;
+    }
+
+
+    if (event.key === "ArrowLeft") {
+
+        navigateQuestion(-1);
+
+    } else if (event.key === "ArrowRight") {
+
+        navigateQuestion(1);
+    }
+}
+
+
+/* =========================================================
+   CORRECT CELEBRATION
+   ========================================================= */
+
+function showCorrectCelebration() {
+
+    const emojis = [
+        "🎉",
+        "🥳",
+        "🔥",
+        "✨",
+        "🧠"
+    ];
+
+    for (let i = 0; i < 5; i++) {
+
+        setTimeout(() => {
+
+            createEmojiBurst(
+                emojis[
+                    Math.floor(
+                        Math.random() *
+                        emojis.length
+                    )
+                ]
+            );
+
+        }, i * 100);
+    }
+}
+
+
+/* =========================================================
+   WRONG ANSWER REACTION
+   ========================================================= */
+
+function showWrongReaction() {
+
+    createEmojiBurst("💪");
+}
+
+
+/* =========================================================
+   CREATE EMOJI BURST
+   ========================================================= */
+
+function createEmojiBurst(emoji) {
+
+    const element =
+        document.createElement("div");
+
+    element.className =
+        "emoji-burst";
+
+    element.innerText =
+        emoji;
+
+    element.style.left =
+        `${20 + Math.random() * 60}%`;
+
+    element.style.top =
+        `${45 + Math.random() * 20}%`;
+
+    document.body.appendChild(element);
+
+    setTimeout(() => {
+
+        element.remove();
+
+    }, 1100);
+}
+
+
+/* =========================================================
+   GET QUESTION ID
+   ========================================================= */
 
 function getQuestionId() {
 
-    return String(
-        currentQuestion.id
+    return getQuestionIdFromObject(
+        currentQuestion
     );
+}
 
+function getQuestionIdFromObject(question) {
+
+    if (!question) {
+        return "";
+    }
+
+    return String(
+        question.id ||
+        question.ID ||
+        question.Id ||
+        question["question id"] ||
+        question["Question ID"] ||
+        question["question_id"] ||
+        question["Question_ID"] ||
+        ""
+    ).trim();
 }
 
 
-/* ============================================================
-   CORRECT ANSWER
-   ============================================================ */
+/* =========================================================
+   GET CORRECT ANSWER
+   ========================================================= */
 
 function getCorrectAnswer() {
 
-    return (
+    return String(
         currentQuestion["correct answer"] ||
         currentQuestion.correct_answer ||
         currentQuestion.answer ||
@@ -1646,217 +1197,182 @@ function getCorrectAnswer() {
     )
         .trim()
         .toUpperCase();
-
 }
 
 
-/* ============================================================
-   CORRECT CELEBRATION
-   ============================================================ */
+/* =========================================================
+   GET OPTION VALUE
+   ========================================================= */
 
-function showCorrectCelebration() {
+function getOptionValue(question, letter) {
 
-    createEmojiBurst([
-        "🎉",
-        "👏",
-        "🥳",
-        "✨",
-        "🚀",
-        "🧠",
-        "💡",
-        "⭐",
-        "🔥",
-        "🤯",
-        "⚡"
-    ]);
+    const possibleKeys = [
+        `option ${letter}`,
+        `Option ${letter}`,
+        `option_${letter.toLowerCase()}`,
+        `option_${letter}`,
+        `Option_${letter}`,
+        letter
+    ];
 
-}
+    for (const key of possibleKeys) {
 
+        if (
+            question[key] !== undefined &&
+            question[key] !== null &&
+            String(question[key]).trim() !== ""
+        ) {
 
-/* ============================================================
-   WRONG REACTION
-   ============================================================ */
-
-function showWrongReaction() {
-
-    createEmojiBurst([
-        "😅",
-        "🤔",
-        "🫠",
-        "😵",
-        "💭"
-    ]);
-
-}
-
-
-/* ============================================================
-   EMOJI BURST
-   ============================================================ */
-
-function createEmojiBurst(
-    emojis
-) {
-
-    document
-        .querySelectorAll(
-            ".reaction-container"
-        )
-        .forEach(
-            element =>
-                element.remove()
-        );
-
-
-    const container =
-        document.createElement(
-            "div"
-        );
-
-
-    container.className =
-        "reaction-container";
-
-
-    document.body.appendChild(
-        container
-    );
-
-
-    emojis.forEach(
-        emoji => {
-
-            const element =
-                document.createElement(
-                    "span"
-                );
-
-
-            element.className =
-                "reaction-emoji";
-
-
-            element.innerText =
-                emoji;
-
-
-            element.style.setProperty(
-                "--start-left",
-                (
-                    5 +
-                    Math.random() * 90
-                ) + "%"
-            );
-
-
-            element.style.setProperty(
-                "--delay",
-                (
-                    Math.random() * 0.3
-                ) + "s"
-            );
-
-
-            element.style.setProperty(
-                "--duration",
-                (
-                    2 +
-                    Math.random() * 1.4
-                ) + "s"
-            );
-
-
-            element.style.setProperty(
-                "--rotation",
-                (
-                    -40 +
-                    Math.random() * 80
-                ) + "deg"
-            );
-
-
-            element.style.setProperty(
-                "--horizontal",
-                (
-                    -120 +
-                    Math.random() * 240
-                ) + "px"
-            );
-
-
-            element.style.setProperty(
-                "--emoji-size",
-                (
-                    1.7 +
-                    Math.random() * 1.5
-                ) + "rem"
-            );
-
-
-            container.appendChild(
-                element
-            );
-
+            return String(
+                question[key]
+            ).trim();
         }
-    );
+    }
+
+    return "";
+}
 
 
-    setTimeout(
-        () => {
+/* =========================================================
+   CSV PARSER
+   ========================================================= */
 
-            if (
-                container.parentNode
-            ) {
+function parseCSV(csvText) {
 
-                container.remove();
+    const rows = [];
+    let row = [];
+    let cell = "";
+    let insideQuotes = false;
 
+    for (let i = 0; i < csvText.length; i++) {
+
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+
+            cell += '"';
+
+            i++;
+
+        } else if (char === '"') {
+
+            insideQuotes = !insideQuotes;
+
+        } else if (char === "," && !insideQuotes) {
+
+            row.push(cell);
+            cell = "";
+
+        } else if (
+            (char === "\n" || char === "\r") &&
+            !insideQuotes
+        ) {
+
+            if (char === "\r" && nextChar === "\n") {
+                i++;
             }
 
-        },
-        4500
-    );
+            row.push(cell);
+            cell = "";
 
+            if (
+                row.some(
+                    value =>
+                        String(value).trim() !== ""
+                )
+            ) {
+                rows.push(row);
+            }
+
+            row = [];
+
+        } else {
+
+            cell += char;
+        }
+    }
+
+
+    if (cell !== "" || row.length) {
+
+        row.push(cell);
+
+        if (
+            row.some(
+                value =>
+                    String(value).trim() !== ""
+            )
+        ) {
+            rows.push(row);
+        }
+    }
+
+
+    if (!rows.length) {
+        return [];
+    }
+
+
+    const headers =
+        rows[0].map(
+            header =>
+                String(header)
+                    .trim()
+        );
+
+
+    return rows
+        .slice(1)
+        .map(values => {
+
+            const object = {};
+
+            headers.forEach(
+                (header, index) => {
+
+                    object[header] =
+                        values[index] !== undefined
+                            ? String(values[index]).trim()
+                            : "";
+                }
+            );
+
+            return object;
+        });
 }
 
 
-/* ============================================================
-   KEYBOARD NAVIGATION
-   ============================================================ */
+/* =========================================================
+   QUOTE CSV PARSER
+   ========================================================= */
 
-function handleKeyboardNavigation(
-    event
-) {
+function parseQuotesCSV(csvText) {
 
-    const activeElement =
-        document.activeElement;
+    const data =
+        parseCSV(csvText);
 
+    return data
+        .map(row => {
 
-    if (
-        activeElement &&
-        (
-            activeElement.tagName === "INPUT" ||
-            activeElement.tagName === "TEXTAREA" ||
-            activeElement.tagName === "BUTTON"
-        )
-    ) {
+            const quote =
+                row.quote ||
+                row.Quote ||
+                row["Quote Text"] ||
+                row["quote text"] ||
+                "";
 
-        return;
+            const author =
+                row.author ||
+                row.Author ||
+                row["Quote Author"] ||
+                row["quote author"] ||
+                "";
 
-    }
-
-
-    if (
-        event.key === "ArrowLeft"
-    ) {
-
-        goToPreviousQuestion();
-
-    } else if (
-        event.key === "ArrowRight"
-    ) {
-
-        goToNextQuestion();
-
-    }
-
+            return {
+                quote: String(quote).trim(),
+                author: String(author).trim()
+            };
+        })
+        .filter(item => item.quote);
 }
