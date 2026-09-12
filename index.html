@@ -10,17 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="AI Brain Box - Challenge yourself and learn something new."
-    >
-
     <title>AI Brain Box</title>
-
-
-    <!-- =====================================================
-         STYLESHEET
-         ===================================================== -->
 
     <link
         rel="stylesheet"
@@ -34,21 +24,7 @@
 
 
     <!-- =====================================================
-         BACKGROUND VIDEO
-         ===================================================== -->
-
-    <video
-        id="session-background"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="auto"
-    ></video>
-
-
-    <!-- =====================================================
-         DARK BACKGROUND OVERLAY
+         BACKGROUND OVERLAY
          ===================================================== -->
 
     <div
@@ -58,58 +34,55 @@
 
 
     <!-- =====================================================
-         MAIN PAGE
+         MAIN APPLICATION
          ===================================================== -->
 
-    <main
-        class="page-container"
-    >
+    <main class="app">
 
 
         <!-- =================================================
              HEADER
              ================================================= -->
 
-        <header
-            class="brain-box-header"
-        >
+        <header class="brain-box-header">
 
 
-            <!-- ---------------------------------------------
+            <!-- =============================================
                  BRAND
-                 --------------------------------------------- -->
+                 ============================================= -->
 
-            <div
-                class="brand-section"
-            >
+            <div class="brand-section">
 
-                <h1>
+                <div class="brand-title">
 
-                    <span
-                        class="brain-icon"
-                        aria-hidden="true"
-                    >
+                    <span class="brain-icon">
                         🧠
                     </span>
 
-                    AI Brain Box
+                    <span>
+                        AI Brain Box
+                    </span>
 
-                </h1>
+                </div>
 
 
-                <p>
-                    Challenge yourself. Learn something new.
-                </p>
+                <div class="brand-subtitle">
+
+                    Challenge yourself.
+                    Learn something new.
+
+                </div>
 
             </div>
 
 
-            <!-- ---------------------------------------------
+            <!-- =============================================
                  MOTIVATIONAL QUOTE
-                 --------------------------------------------- -->
+                 ============================================= -->
 
             <aside
                 class="quote-section"
+                aria-label="Motivational quote"
             >
 
                 <div
@@ -130,24 +103,25 @@
             </aside>
 
 
+            <!-- =============================================
+                 CURRENT STREAK
+                 ============================================= -->
+
+            <div
+                id="score-display"
+                class="score-display"
+                aria-live="polite"
+            >
+                🔥 Current streak:
+                <strong>0/0</strong>
+            </div>
+
+
         </header>
 
 
         <!-- =================================================
-             CURRENT STREAK
-             ================================================= -->
-
-        <div
-            id="score-display"
-            class="score-display"
-        >
-            🔥 Current streak:
-            <strong>0/0</strong>
-        </div>
-
-
-        <!-- =================================================
-             LOADING
+             LOADING MESSAGE
              ================================================= -->
 
         <div
@@ -159,7 +133,7 @@
 
 
         <!-- =================================================
-             ERROR
+             ERROR MESSAGE
              ================================================= -->
 
         <div
@@ -167,6 +141,7 @@
             class="error hidden"
         >
             Unable to load questions.
+            Please refresh the page.
         </div>
 
 
@@ -180,117 +155,124 @@
         >
 
 
-            <!-- =================================================
-                 RELATED QUESTION NAVIGATION
-                 
-                 app.js dynamically creates:
+            <!-- =============================================
+                 MAIN QUIZ GRID
+                 ============================================= -->
 
-                 Previous related question | Next related question
-                 ================================================= -->
-
-            <!--
-                Do not add question IDs manually here.
-
-                app.js generates the navigation dynamically
-                from the CSV columns.
-            -->
+            <div class="quiz-grid">
 
 
-            <!-- =================================================
-                 QUIZ WRAPPER
-                 ================================================= -->
-
-            <div
-                class="quiz-wrapper"
-            >
-
-
-                <!-- =================================================
-                     QUESTION CARD
-                     ================================================= -->
+                <!-- =========================================
+                     QUESTION COLUMN
+                     ========================================= -->
 
                 <section
                     class="question-panel"
+                    aria-label="Question"
                 >
 
-                    <div
-                        class="panel-label"
-                    >
+
+                    <!-- =====================================
+                         QUESTION LABEL
+                         ===================================== -->
+
+                    <div class="section-label">
                         QUESTION
                     </div>
 
 
+                    <!-- =====================================
+                         QUESTION TEXT
+                         ===================================== -->
+
                     <div
                         id="question"
-                        class="question-text"
+                        class="question"
                     >
-                        Question loading...
+                        Loading question...
                     </div>
+
 
                 </section>
 
 
-                <!-- =================================================
-                     OPTIONS CARD
-                     ================================================= -->
+                <!-- =========================================
+                     OPTIONS COLUMN
+                     ========================================= -->
 
                 <section
                     class="options-panel"
+                    aria-label="Answer options"
                 >
 
 
-                    <div
-                        class="panel-label"
-                    >
+                    <!-- =====================================
+                         OPTIONS HEADER
+                         ===================================== -->
+
+                    <div class="section-label">
                         CHOOSE YOUR ANSWER
                     </div>
 
 
-                    <!-- ---------------------------------------------
-                         OPTIONS
-                         --------------------------------------------- -->
+                    <!-- =====================================
+                         ANSWER OPTIONS
+                         ===================================== -->
 
                     <div
                         id="options"
                         class="options"
                     >
+
+                        <!--
+                            Options are generated
+                            dynamically by app.js
+                        -->
+
                     </div>
 
 
-                    <!-- ---------------------------------------------
-                         ANSWER RESULT
-                         --------------------------------------------- -->
+                    <!-- =====================================
+                         RESULT
+                         ===================================== -->
 
                     <div
                         id="result"
                         class="result"
-                    >
-                    </div>
+                        aria-live="polite"
+                    ></div>
 
 
-                    <!-- ---------------------------------------------
+                    <!-- =====================================
                          EXPLANATION
-                         
-                         Automatically displayed after answer.
-                         --------------------------------------------- -->
+                         ===================================== -->
 
                     <div
                         id="explanation"
                         class="explanation hidden"
                     >
 
+
                         <div
                             class="explanation-title"
                         >
-                            💡 Explanation
+
+                            <span>
+                                💡
+                            </span>
+
+                            <span>
+                                Explanation
+                            </span>
+
                         </div>
 
 
                         <div
                             id="explanation-text"
                             class="explanation-text"
-                        >
-                        </div>
+                        ></div>
+
 
                     </div>
 
@@ -301,6 +283,22 @@
             </div>
 
 
+            <!-- =================================================
+                 SIDE NAVIGATION
+                 ================================================= -->
+
+            <!--
+                These are intentionally outside the two
+                content cards.
+
+                app.js creates the actual ← and → buttons
+                dynamically.
+
+                CSS positions them beside the two columns
+                on desktop and keeps them compact on mobile.
+            -->
+
+
         </section>
 
 
@@ -308,7 +306,7 @@
 
 
     <!-- =====================================================
-         JAVASCRIPT
+         APPLICATION JAVASCRIPT
          ===================================================== -->
 
     <script
