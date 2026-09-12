@@ -1,151 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="AI Brain Box - Challenge yourself and learn something new."
+    >
 
     <title>AI Brain Box</title>
 
-    <link rel="stylesheet" href="style.css">
+
+    <!-- =====================================================
+         STYLESHEET
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-    <!-- Background Video -->
+
+    <!-- =====================================================
+         BACKGROUND VIDEO
+         ===================================================== -->
+
     <video
         id="session-background"
         autoplay
         muted
         loop
         playsinline
+        preload="auto"
     ></video>
 
-    <div id="background-overlay"></div>
+
+    <!-- =====================================================
+         DARK BACKGROUND OVERLAY
+         ===================================================== -->
+
+    <div
+        id="background-overlay"
+        aria-hidden="true"
+    ></div>
 
 
-    <!-- Previous Question -->
-    <button
-        id="previous-button"
-        type="button"
-        class="side-nav previous-nav"
+    <!-- =====================================================
+         MAIN PAGE
+         ===================================================== -->
+
+    <main
+        class="page-container"
     >
-        Previous question
-    </button>
 
 
-    <!-- Next Question -->
-    <button
-        id="next-button"
-        type="button"
-        class="side-nav next-nav"
-    >
-        Next question
-    </button>
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <header
+            class="brain-box-header"
+        >
 
 
-    <!-- Current Streak -->
-    <div id="score-display" class="streak-box">
-        🔥 Current streak:
-        <strong>0</strong>
-    </div>
+            <!-- ---------------------------------------------
+                 BRAND
+                 --------------------------------------------- -->
+
+            <div
+                class="brand-section"
+            >
+
+                <h1>
+
+                    <span
+                        class="brain-icon"
+                        aria-hidden="true"
+                    >
+                        🧠
+                    </span>
+
+                    AI Brain Box
+
+                </h1>
 
 
-    <main class="app-container">
+                <p>
+                    Challenge yourself. Learn something new.
+                </p>
 
-        <!-- Header -->
-        <header class="brain-box-header">
-
-            <div class="brand">
-                <h1>🧠 AI Brain Box</h1>
-                <p>Challenge yourself. Learn something new.</p>
             </div>
 
-            <aside class="quote-box">
-                <div id="quote-text"></div>
-                <div id="quote-author"></div>
+
+            <!-- ---------------------------------------------
+                 MOTIVATIONAL QUOTE
+                 --------------------------------------------- -->
+
+            <aside
+                class="quote-section"
+            >
+
+                <div
+                    id="quote-text"
+                    class="quote-text"
+                >
+                    “Learning never stops.”
+                </div>
+
+
+                <div
+                    id="quote-author"
+                    class="quote-author"
+                >
+                    — AIBrainBox
+                </div>
+
             </aside>
+
 
         </header>
 
 
-        <!-- Loading -->
-        <div id="loading" class="loading">
+        <!-- =================================================
+             CURRENT STREAK
+             ================================================= -->
+
+        <div
+            id="score-display"
+            class="score-display"
+        >
+            🔥 Current streak:
+            <strong>0/0</strong>
+        </div>
+
+
+        <!-- =================================================
+             LOADING
+             ================================================= -->
+
+        <div
+            id="loading"
+            class="loading"
+        >
             Loading questions...
         </div>
 
 
-        <!-- Error -->
-        <div id="error" class="error hidden"></div>
+        <!-- =================================================
+             ERROR
+             ================================================= -->
+
+        <div
+            id="error"
+            class="error hidden"
+        >
+            Unable to load questions.
+        </div>
 
 
-        <!-- Question -->
+        <!-- =================================================
+             QUESTION AREA
+             ================================================= -->
+
         <section
             id="question-container"
             class="question-container hidden"
         >
 
-            <div class="quiz-layout">
 
-                <!-- LEFT: QUESTION -->
-                <section class="question-panel">
+            <!-- =================================================
+                 RELATED QUESTION NAVIGATION
+                 
+                 app.js dynamically creates:
 
-                    <div class="question-label">
-                        Question
+                 Previous related question | Next related question
+                 ================================================= -->
+
+            <!--
+                Do not add question IDs manually here.
+
+                app.js generates the navigation dynamically
+                from the CSV columns.
+            -->
+
+
+            <!-- =================================================
+                 QUIZ WRAPPER
+                 ================================================= -->
+
+            <div
+                class="quiz-wrapper"
+            >
+
+
+                <!-- =================================================
+                     QUESTION CARD
+                     ================================================= -->
+
+                <section
+                    class="question-panel"
+                >
+
+                    <div
+                        class="panel-label"
+                    >
+                        QUESTION
                     </div>
 
-                    <h2 id="question"></h2>
+
+                    <div
+                        id="question"
+                        class="question-text"
+                    >
+                        Question loading...
+                    </div>
 
                 </section>
 
 
-                <!-- RIGHT: OPTIONS + EXPLANATION -->
-                <section class="options-panel">
+                <!-- =================================================
+                     OPTIONS CARD
+                     ================================================= -->
 
-                    <div class="options-label">
-                        Choose your answer
+                <section
+                    class="options-panel"
+                >
+
+
+                    <div
+                        class="panel-label"
+                    >
+                        CHOOSE YOUR ANSWER
                     </div>
 
-                    <div id="options" class="options">
-                        <!-- Options inserted by app.js -->
+
+                    <!-- ---------------------------------------------
+                         OPTIONS
+                         --------------------------------------------- -->
+
+                    <div
+                        id="options"
+                        class="options"
+                    >
                     </div>
 
 
-                    <!-- Result -->
-                    <div id="result"></div>
+                    <!-- ---------------------------------------------
+                         ANSWER RESULT
+                         --------------------------------------------- -->
+
+                    <div
+                        id="result"
+                        class="result"
+                    >
+                    </div>
 
 
-                    <!-- Explanation directly below options -->
-                    <section
+                    <!-- ---------------------------------------------
+                         EXPLANATION
+                         
+                         Automatically displayed after answer.
+                         --------------------------------------------- -->
+
+                    <div
                         id="explanation"
                         class="explanation hidden"
                     >
 
-                        <div class="explanation-title">
+                        <div
+                            class="explanation-title"
+                        >
                             💡 Explanation
                         </div>
 
-                        <div id="explanation-text"></div>
 
-                    </section>
+                        <div
+                            id="explanation-text"
+                            class="explanation-text"
+                        >
+                        </div>
+
+                    </div>
+
 
                 </section>
+
 
             </div>
 
 
-            <!-- Compatibility element for app.js -->
-            <div
-                id="question-position"
-                class="question-position"
-                aria-hidden="true"
-            ></div>
-
         </section>
+
 
     </main>
 
 
-    <script src="app.js"></script>
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script
+        src="app.js"
+    ></script>
+
 
 </body>
+
 </html>
