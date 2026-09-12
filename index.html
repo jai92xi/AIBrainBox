@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>AI Brain Box</title>
+    <meta
+        name="description"
+        content="AIBrainBox — AI Questions, Practice, Learn and Improve."
+    >
+
+    <title>AIBrainBox</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
     <style>
+
+        /* =========================================================
+           AIBRAINBOX - UPDATED UI
+           ========================================================= */
+
         * {
             box-sizing: border-box;
         }
@@ -31,512 +48,1107 @@
                 Arial,
                 sans-serif;
 
+            color: #e2e8f0;
+
+            background: #020617;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================================
+           VIDEO BACKGROUND
+           ========================================================= */
+
+        #session-background {
+            position: fixed;
+
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            z-index: -3;
+
             background:
                 linear-gradient(
                     135deg,
-                    #eef2ff 0%,
-                    #f8fafc 45%,
-                    #ecfeff 100%
+                    #020617,
+                    #0f172a,
+                    #111827
+                );
+        }
+
+
+        /* Dark overlay over video */
+
+        #background-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: -2;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(2, 6, 23, 0.88),
+                    rgba(15, 23, 42, 0.72),
+                    rgba(30, 41, 59, 0.82)
                 );
 
-            color: #1e293b;
-        }
-
-        button,
-        input {
-            font: inherit;
-        }
-
-        .app {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 24px 18px 40px;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .title-area h1 {
-            margin: 0;
-            color: #312e81;
-            font-size: 30px;
-            line-height: 1.15;
-            font-weight: 800;
-        }
-
-        .title-area p {
-            margin: 6px 0 0;
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        #score-display {
-            padding: 9px 14px;
-            border-radius: 999px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            color: #475569;
-            font-size: 13px;
-            white-space: nowrap;
-            box-shadow:
-                0 3px 12px rgba(15, 23, 42, 0.05);
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 18px;
-            box-shadow:
-                0 12px 35px rgba(15, 23, 42, 0.08);
-            overflow: hidden;
-        }
-
-        .question-header {
-            padding: 20px 22px 12px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        #question-position {
-            display: inline-block;
-            margin-bottom: 10px;
-            color: #6366f1;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        #question {
-            margin: 0;
-            color: #0f172a;
-            font-size: 21px;
-            line-height: 1.55;
-            font-weight: 700;
-        }
-
-        #options {
-            padding: 18px 22px 8px;
-        }
-
-        .option {
-            position: relative;
-            margin-bottom: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            background: #ffffff;
-            transition:
-                border-color 0.2s ease,
-                background 0.2s ease,
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        .option:hover {
-            border-color: #a5b4fc;
-            background: #f8faff;
-            transform: translateY(-1px);
-        }
-
-        .option input {
-            position: absolute;
-            opacity: 0;
             pointer-events: none;
         }
 
-        .option label {
-            display: flex;
-            align-items: flex-start;
-            gap: 13px;
+
+        /* =========================================================
+           MAIN CONTAINER
+           ========================================================= */
+
+        .container {
             width: 100%;
-            padding: 15px 16px;
-            cursor: pointer;
+
+            max-width: 1500px;
+
+            margin: 0 auto;
+
+            padding:
+                28px
+                32px
+                45px;
         }
 
-        .option-letter {
+
+        /* =========================================================
+           TOP AI BRAIN BOX
+           ========================================================= */
+
+        .brain-box-header {
+
+            position: relative;
+
             display: flex;
+
             align-items: center;
-            justify-content: center;
-            flex: 0 0 32px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #eef2ff;
-            color: #4f46e5;
-            font-size: 13px;
-            font-weight: 800;
+
+            justify-content: space-between;
+
+            gap: 30px;
+
+            min-height: 125px;
+
+            padding:
+                25px
+                32px;
+
+            margin-bottom: 22px;
+
+            border-radius: 22px;
+
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.25);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(15, 23, 42, 0.94),
+                    rgba(30, 41, 59, 0.82)
+                );
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.30),
+
+                inset 0 1px 0
+                rgba(255, 255, 255, 0.06);
+
+            backdrop-filter:
+                blur(14px);
+
+            -webkit-backdrop-filter:
+                blur(14px);
+
+            overflow: hidden;
         }
 
-        .option-text {
-            flex: 1;
-            padding-top: 5px;
-            color: #334155;
-            font-size: 15px;
+
+        /* subtle glow */
+
+        .brain-box-header::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 280px;
+            height: 280px;
+
+            top: -180px;
+            left: -100px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(99, 102, 241, 0.18);
+
+            filter: blur(50px);
+
+            pointer-events: none;
+        }
+
+
+        .brain-box-title {
+
+            position: relative;
+
+            z-index: 1;
+        }
+
+
+        .brain-box-title h1 {
+
+            margin: 0;
+
+            font-size: clamp(
+                28px,
+                4vw,
+                42px
+            );
+
+            line-height: 1.1;
+
+            font-weight: 850;
+
+            letter-spacing: -0.03em;
+
+            color: #ffffff;
+
+            text-shadow:
+                0 3px 20px
+                rgba(0, 0, 0, 0.35);
+        }
+
+
+        .brain-box-title p {
+
+            margin:
+                9px
+                0
+                0;
+
+            color: #cbd5e1;
+
+            font-size: 16px;
+
             line-height: 1.5;
         }
 
-        .option.correct-answer {
-            border-color: #22c55e;
-            background: #f0fdf4;
+
+        /* =========================================================
+           QUOTE - TOP RIGHT
+           ========================================================= */
+
+        .motivational-quote {
+
+            position: relative;
+
+            z-index: 2;
+
+            flex:
+                0 1
+                430px;
+
+            padding:
+                17px
+                21px;
+
+            border-radius: 15px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.13);
+
+            background:
+                rgba(255, 255, 255, 0.075);
+
+            backdrop-filter:
+                blur(12px);
+
+            -webkit-backdrop-filter:
+                blur(12px);
+
+            color: #f8fafc;
+
             box-shadow:
-                0 0 0 2px rgba(34, 197, 94, 0.08);
+                0 10px 30px
+                rgba(0, 0, 0, 0.18);
         }
 
-        .option.correct-answer .option-letter {
-            background: #dcfce7;
-            color: #15803d;
-        }
 
-        .option.wrong-answer {
-            border-color: #ef4444;
-            background: #fef2f2;
-            box-shadow:
-                0 0 0 2px rgba(239, 68, 68, 0.08);
-        }
+        #quote-text {
 
-        .option.wrong-answer .option-letter {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
+            display: block;
 
-        #result {
-            min-height: 24px;
-            padding: 0 22px;
             font-size: 14px;
-            font-weight: 700;
+
+            line-height: 1.55;
+
+            font-style: italic;
+
+            color: #f1f5f9;
         }
 
-        #explanation {
-            margin: 8px 22px 18px;
-            padding: 15px 16px;
-            border-radius: 12px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+
+        .quote-author {
+
+            display: block;
+
+            margin-top: 7px;
+
+            font-size: 12px;
+
+            color: #94a3b8;
+
+            text-align: right;
         }
 
-        #explanation h3 {
-            margin: 0 0 7px;
-            color: #334155;
-            font-size: 14px;
+
+        /* =========================================================
+           OLD HEADER - HIDDEN
+           ========================================================= */
+
+        .header {
+            display: none !important;
         }
 
-        #explanation-text {
-            margin: 0;
-            color: #475569;
-            font-size: 14px;
-            line-height: 1.6;
+
+        /* =========================================================
+           LOADING
+           ========================================================= */
+
+        .loading {
+
+            padding: 40px;
+
+            text-align: center;
+
+            color: #cbd5e1;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================================
+           ERROR
+           ========================================================= */
+
+        .error {
+
+            margin:
+                20px
+                0;
+
+            padding: 18px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(127, 29, 29, 0.80);
+
+            border:
+                1px solid
+                rgba(248, 113, 113, 0.35);
+
+            color: #fecaca;
+
             white-space: pre-wrap;
         }
+
 
         .hidden {
             display: none !important;
         }
 
-        .navigation {
+
+        /* =========================================================
+           QUESTION NAVIGATION
+           ========================================================= */
+
+        .question-navigation {
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
-            gap: 12px;
-            padding: 18px 22px 22px;
-            border-top: 1px solid #f1f5f9;
-        }
 
-        .navigation button {
-            min-width: 130px;
-            padding: 11px 17px;
-            border: 0;
-            border-radius: 10px;
-            color: #ffffff;
-            background: #4f46e5;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease,
-                opacity 0.2s ease;
-        }
+            gap: 15px;
 
-        .navigation button:hover:not(:disabled) {
-            background: #4338ca;
-            transform: translateY(-1px);
-        }
+            margin-bottom: 18px;
 
-        .navigation button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none;
-        }
+            padding:
+                12px
+                15px;
 
-        #previous-question-btn {
-            background: #64748b;
-        }
-
-        #previous-question-btn:hover:not(:disabled) {
-            background: #475569;
-        }
-
-        #loading {
-            margin: 40px auto;
-            text-align: center;
-            color: #64748b;
-            font-size: 15px;
-        }
-
-        #error {
-            margin: 30px 0;
-            padding: 18px;
-            border: 1px solid #fecaca;
-            border-radius: 12px;
-            background: #fef2f2;
-            color: #991b1b;
-            font-size: 14px;
-            line-height: 1.5;
-            white-space: pre-wrap;
-        }
-
-        .quote-card {
-            margin-top: 18px;
-            padding: 18px 20px;
             border-radius: 15px;
+
             background:
-                linear-gradient(
-                    135deg,
-                    #eef2ff,
-                    #f5f3ff
-                );
-            border: 1px solid #ddd6fe;
-            text-align: center;
+                rgba(15, 23, 42, 0.80);
+
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.18);
+
+            backdrop-filter:
+                blur(12px);
+
+            -webkit-backdrop-filter:
+                blur(12px);
         }
 
-        #quote-text {
-            margin: 0;
-            color: #4338ca;
-            font-size: 15px;
-            line-height: 1.6;
-            font-style: italic;
+
+        .question-navigation button {
+
+            border: 1px solid
+                rgba(148, 163, 184, 0.25);
+
+            border-radius: 10px;
+
+            padding:
+                9px
+                15px;
+
+            background:
+                rgba(255, 255, 255, 0.08);
+
+            color: #e2e8f0;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                all 0.2s ease;
         }
 
-        #quote-author {
-            margin: 8px 0 0;
-            color: #64748b;
-            font-size: 12px;
-            font-weight: 600;
+
+        .question-navigation button:hover:not(:disabled) {
+
+            background:
+                rgba(99, 102, 241, 0.25);
+
+            border-color:
+                rgba(129, 140, 248, 0.55);
+
+            transform:
+                translateY(-1px);
         }
 
-        .reaction-container {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            pointer-events: none;
+
+        .question-navigation button:disabled {
+
+            opacity: 0.35;
+
+            cursor: not-allowed;
+        }
+
+
+        /* Remove Question X of Y visually */
+
+        #question-position {
+
+            display: none !important;
+        }
+
+
+        /* =========================================================
+           SCORE
+           ========================================================= */
+
+        .score-display {
+
+            margin-left: auto;
+
+            padding:
+                8px
+                14px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255, 255, 255, 0.08);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            color: #cbd5e1;
+
+            font-size: 13px;
+
+            white-space: nowrap;
+        }
+
+
+        .score-display strong {
+
+            color: #ffffff;
+        }
+
+
+        /* =========================================================
+           QUESTION CARD
+           ========================================================= */
+
+        .question-card {
+
+            width: 100%;
+
+            border-radius: 22px;
+
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.22);
+
+            background:
+                rgba(15, 23, 42, 0.84);
+
+            box-shadow:
+                0 25px 70px
+                rgba(0, 0, 0, 0.30);
+
+            backdrop-filter:
+                blur(16px);
+
+            -webkit-backdrop-filter:
+                blur(16px);
+
             overflow: hidden;
         }
 
-        .reaction-emoji {
+
+        /* =========================================================
+           QUESTION LEFT / OPTIONS RIGHT
+           ========================================================= */
+
+        .quiz-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                minmax(0, 1fr);
+
+            min-height: 560px;
+        }
+
+
+        /* =========================================================
+           QUESTION PANEL - LEFT
+           ========================================================= */
+
+        .question-panel {
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            padding:
+                55px
+                50px;
+
+            border-right:
+                1px solid
+                rgba(148, 163, 184, 0.18);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 41, 59, 0.62),
+                    rgba(15, 23, 42, 0.45)
+                );
+        }
+
+
+        .panel-label {
+
+            margin-bottom: 20px;
+
+            color: #818cf8;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing:
+                0.14em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        .question {
+
+            color: #f8fafc;
+
+            font-size: clamp(
+                20px,
+                2.1vw,
+                29px
+            );
+
+            line-height: 1.55;
+
+            font-weight: 750;
+
+            letter-spacing:
+                -0.015em;
+        }
+
+
+        /* =========================================================
+           OPTIONS PANEL - RIGHT
+           ========================================================= */
+
+        .options-panel {
+
+            padding:
+                38px
+                40px;
+
+            background:
+                rgba(2, 6, 23, 0.28);
+
+            overflow-y: auto;
+        }
+
+
+        #options {
+
+            padding: 0 !important;
+        }
+
+
+        /* =========================================================
+           OPTIONS
+           ========================================================= */
+
+        .option {
+
+            position: relative;
+
+            margin-bottom: 13px;
+
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.20);
+
+            border-radius: 14px;
+
+            background:
+                rgba(255, 255, 255, 0.055);
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .option:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(129, 140, 248, 0.65);
+
+            background:
+                rgba(99, 102, 241, 0.10);
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.18);
+        }
+
+
+        .option input {
+
             position: absolute;
-            left: var(--start-left);
-            bottom: -60px;
-            font-size: var(--emoji-size);
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        .option label {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 14px;
+
+            width: 100%;
+
+            padding:
+                16px;
+
+            cursor: pointer;
+        }
+
+
+        .option-letter {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex:
+                0 0 34px;
+
+            width: 34px;
+            height: 34px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(99, 102, 241, 0.16);
+
+            color: #a5b4fc;
+
+            font-size: 13px;
+
+            font-weight: 850;
+        }
+
+
+        .option-text {
+
+            flex: 1;
+
+            padding-top: 5px;
+
+            color: #cbd5e1;
+
+            font-size: 15px;
+
+            line-height: 1.55;
+        }
+
+
+        /* =========================================================
+           CORRECT / WRONG
+           ========================================================= */
+
+        .option.correct-answer {
+
+            border-color:
+                rgba(34, 197, 94, 0.65) !important;
+
+            background:
+                rgba(22, 163, 74, 0.14) !important;
+
+            box-shadow:
+                0 0 0 1px
+                rgba(34, 197, 94, 0.12),
+
+                0 8px 25px
+                rgba(22, 163, 74, 0.10);
+        }
+
+
+        .option.correct-answer .option-letter {
+
+            background:
+                rgba(34, 197, 94, 0.22);
+
+            color: #86efac;
+        }
+
+
+        .option.wrong-answer {
+
+            border-color:
+                rgba(239, 68, 68, 0.65) !important;
+
+            background:
+                rgba(220, 38, 38, 0.13) !important;
+        }
+
+
+        .option.wrong-answer .option-letter {
+
+            background:
+                rgba(239, 68, 68, 0.20);
+
+            color: #fca5a5;
+        }
+
+
+        /* =========================================================
+           RESULT
+           ========================================================= */
+
+        .result {
+
+            min-height: 26px;
+
+            margin-top: 10px;
+
+            font-size: 15px;
+
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+           EXPLANATION
+           ========================================================= */
+
+        .explanation {
+
+            margin-top: 16px;
+
+            padding:
+                20px;
+
+            border-radius: 15px;
+
+            border:
+                1px solid
+                rgba(129, 140, 248, 0.30);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(79, 70, 229, 0.13),
+                    rgba(30, 41, 59, 0.65)
+                );
+
             animation:
-                reaction-float
-                var(--duration)
-                ease-out
-                var(--delay)
-                forwards;
+                explanationOpen
+                0.35s ease;
         }
 
-        @keyframes reaction-float {
 
-            0% {
+        @keyframes explanationOpen {
+
+            from {
                 opacity: 0;
                 transform:
-                    translate3d(
-                        0,
-                        0,
-                        0
-                    )
-                    rotate(0deg)
-                    scale(0.6);
+                    translateY(-8px);
             }
 
-            12% {
+            to {
                 opacity: 1;
-            }
-
-            70% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
                 transform:
-                    translate3d(
-                        var(--horizontal),
-                        -85vh,
-                        0
-                    )
-                    rotate(var(--rotation))
-                    scale(1.2);
+                    translateY(0);
             }
         }
 
-        @media (
-            max-width: 600px
-        ) {
 
-            .app {
+        .explanation-title {
+
+            margin-bottom: 10px;
+
+            color: #c4b5fd;
+
+            font-size: 14px;
+
+            font-weight: 800;
+        }
+
+
+        .explanation-text {
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            white-space: pre-wrap;
+        }
+
+
+        /* =========================================================
+           HIDE OLD SHOW EXPLANATION BUTTON
+           ========================================================= */
+
+        #show-explanation-btn {
+
+            display: none !important;
+        }
+
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+
+        .footer {
+
+            padding:
+                25px
+                0
+                5px;
+
+            text-align: center;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 900px) {
+
+            .container {
+
                 padding:
-                    15px
-                    12px
+                    18px
+                    16px
+                    35px;
+            }
+
+
+            .brain-box-header {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+                padding:
+                    22px;
+            }
+
+
+            .motivational-quote {
+
+                max-width: none;
+
+                flex: auto;
+            }
+
+
+            .quiz-layout {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .question-panel {
+
+                min-height: auto;
+
+                padding:
+                    35px
+                    30px;
+
+                border-right: none;
+
+                border-bottom:
+                    1px solid
+                    rgba(148, 163, 184, 0.18);
+            }
+
+
+            .options-panel {
+
+                padding:
                     30px;
             }
+        }
 
-            .header {
-                align-items: flex-start;
-                flex-direction: column;
+
+        @media (max-width: 600px) {
+
+            .brain-box-title h1 {
+
+                font-size: 28px;
             }
 
-            .title-area h1 {
-                font-size: 25px;
+
+            .brain-box-title p {
+
+                font-size: 14px;
             }
 
-            #score-display {
-                align-self: stretch;
+
+            .question-navigation {
+
+                flex-wrap: wrap;
+            }
+
+
+            .score-display {
+
+                order: 3;
+
+                width: 100%;
+
                 text-align: center;
+
+                margin-left: 0;
             }
 
-            .question-header {
+
+            .question-panel {
+
                 padding:
-                    17px
-                    17px
-                    12px;
+                    28px
+                    22px;
             }
 
-            #question {
-                font-size: 18px;
-            }
 
-            #options {
+            .options-panel {
+
                 padding:
-                    15px
-                    17px
-                    5px;
+                    24px
+                    20px;
             }
 
-            .navigation {
-                padding:
-                    15px
-                    17px
-                    18px;
+
+            .question {
+
+                font-size: 20px;
             }
 
-            .navigation button {
-                min-width: 0;
-                flex: 1;
-            }
 
-            #result {
-                padding:
-                    0 17px;
-            }
+            .option-text {
 
-            #explanation {
-                margin:
-                    8px
-                    17px
-                    16px;
+                font-size: 14px;
             }
         }
+
     </style>
 </head>
 
+
 <body>
 
-    <main class="app">
+    <!-- =========================================================
+         SESSION BACKGROUND VIDEO
+         ========================================================= -->
 
-        <header class="header">
+    <video
+        id="session-background"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+    ></video>
 
-            <div class="title-area">
-                <h1>🧠 AI Brain Box</h1>
+    <div
+        id="background-overlay"
+        aria-hidden="true"
+    ></div>
+
+
+    <main class="container">
+
+
+        <!-- =====================================================
+             AI BRAIN BOX HEADER
+             ===================================================== -->
+
+        <header class="brain-box-header">
+
+            <div class="brain-box-title">
+
+                <h1>
+                    🧠 AI Brain Box
+                </h1>
+
                 <p>
                     Challenge yourself. Learn something new.
                 </p>
+
             </div>
 
-            <div id="score-display">
-                Your current streak -
-                <strong>0/0</strong>
-            </div>
+
+            <!-- Motivational Quote - TOP RIGHT -->
+
+            <aside
+                id="motivational-quote"
+                class="motivational-quote"
+                aria-label="Motivational quote"
+            >
+
+                <span id="quote-text">
+                    “Keep going. Your future self will thank you.”
+                </span>
+
+                <span
+                    id="quote-author"
+                    class="quote-author"
+                >
+                    — AIBrainBox
+                </span>
+
+            </aside>
 
         </header>
 
 
-        <div
+        <!-- =====================================================
+             LOADING
+             ===================================================== -->
+
+        <section
             id="loading"
+            class="loading"
         >
-            Loading questions...
-        </div>
+            Loading question...
+        </section>
 
 
-        <div
+        <!-- =====================================================
+             ERROR
+             ===================================================== -->
+
+        <section
             id="error"
-            class="hidden"
-        ></div>
+            class="error hidden"
+            role="alert"
+        ></section>
 
+
+        <!-- =====================================================
+             QUIZ
+             ===================================================== -->
 
         <section
             id="question-container"
-            class="card hidden"
+            class="hidden"
         >
 
-            <div class="question-header">
 
-                <div
-                    id="question-position"
-                >
-                    Question 1 of 1
-                </div>
-
-                <h2
-                    id="question"
-                ></h2>
-
-            </div>
-
-
-            <div
-                id="options"
-            ></div>
-
-
-            <div
-                id="result"
-            ></div>
-
-
-            <div
-                id="explanation"
-                class="hidden"
-            >
-
-                <h3>
-                    Explanation
-                </h3>
-
-                <p
-                    id="explanation-text"
-                ></p>
-
-            </div>
-
+            <!-- =================================================
+                 TOP NAVIGATION
+                 ================================================= -->
 
             <nav
-                class="navigation"
+                id="question-navigation"
+                class="question-navigation"
                 aria-label="Question navigation"
             >
 
@@ -547,6 +1159,28 @@
                     ← Previous
                 </button>
 
+
+                <!--
+                    Kept in DOM because existing app.js references it.
+                    CSS hides it so "Question X of Y" is no longer visible.
+                -->
+
+                <div
+                    id="question-position"
+                    class="question-position"
+                    aria-hidden="true"
+                ></div>
+
+
+                <div
+                    id="score-display"
+                    class="score-display"
+                >
+                    Your current streak -
+                    <strong>0/0</strong>
+                </div>
+
+
                 <button
                     id="next-question-btn"
                     type="button"
@@ -556,31 +1190,403 @@
 
             </nav>
 
+
+            <!-- =================================================
+                 QUESTION CARD
+                 ================================================= -->
+
+            <div class="question-card">
+
+                <div class="quiz-layout">
+
+
+                    <!-- =========================================
+                         QUESTION - LEFT HALF
+                         ========================================= -->
+
+                    <section class="question-panel">
+
+                        <div class="panel-label">
+                            QUESTION
+                        </div>
+
+                        <div
+                            id="question"
+                            class="question"
+                        ></div>
+
+                    </section>
+
+
+                    <!-- =========================================
+                         OPTIONS - RIGHT HALF
+                         ========================================= -->
+
+                    <section class="options-panel">
+
+                        <div class="panel-label">
+                            SELECT YOUR ANSWER
+                        </div>
+
+
+                        <div
+                            id="options"
+                            class="options"
+                            role="radiogroup"
+                            aria-label="Answer options"
+                        ></div>
+
+
+                        <!-- Answer result -->
+
+                        <div
+                            id="result"
+                            class="result"
+                            aria-live="polite"
+                        ></div>
+
+
+                        <!-- Explanation -->
+
+                        <div
+                            id="explanation"
+                            class="explanation hidden"
+                        >
+
+                            <div class="explanation-title">
+                                💡 Explanation
+                            </div>
+
+                            <div
+                                id="explanation-text"
+                                class="explanation-text"
+                            ></div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+            </div>
+
         </section>
 
 
-        <section
-            class="quote-card"
-        >
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
 
-            <p
-                id="quote-text"
-            >
-                “Keep learning, keep growing.”
+        <footer class="footer">
+
+            <p>
+                Keep learning. Keep improving. 🚀
             </p>
 
-            <p
-                id="quote-author"
-            ></p>
-
-        </section>
+        </footer>
 
     </main>
 
 
-    <script
-        src="./app.js"
-    ></script>
+    <!-- =========================================================
+         EXISTING APPLICATION LOGIC
+         ========================================================= -->
+
+    <script src="app.js"></script>
+
+
+    <!-- =========================================================
+         UI OVERRIDES
+         ========================================================= -->
+
+    <script>
+
+        /* ========================================================
+           1. RANDOM SESSION BACKGROUND
+           ========================================================
+
+           The browser cannot directly list files inside a folder.
+
+           Therefore this uses the GitHub Contents API to find all
+           .mp4 files inside:
+
+               Backgrounds_Folder/
+
+           A video is selected once per browser session using
+           sessionStorage.
+        ======================================================== */
+
+        async function setSessionBackground() {
+
+            const video =
+                document.getElementById(
+                    "session-background"
+                );
+
+            if (!video) {
+                return;
+            }
+
+
+            const STORAGE_KEY =
+                "aibrainbox-session-background";
+
+
+            /* ----------------------------------------------------
+               Use existing session background if available
+            ---------------------------------------------------- */
+
+            const savedVideo =
+                sessionStorage.getItem(
+                    STORAGE_KEY
+                );
+
+            if (savedVideo) {
+
+                video.src =
+                    savedVideo;
+
+                video.load();
+
+                video.play().catch(
+                    () => {}
+                );
+
+                return;
+            }
+
+
+            /* ----------------------------------------------------
+               GitHub repository folder
+            ---------------------------------------------------- */
+
+            const API_URL =
+                "https://api.github.com/repos/jai92xi/AIBrainBox/contents/Backgrounds_Folder";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL,
+                        {
+                            cache: "no-store"
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to read Backgrounds_Folder."
+                    );
+                }
+
+
+                const files =
+                    await response.json();
+
+
+                const videos =
+                    files.filter(
+                        file =>
+
+                            file.type === "file" &&
+
+                            /\.mp4$/i.test(
+                                file.name
+                            )
+                    );
+
+
+                if (!videos.length) {
+
+                    console.warn(
+                        "No .mp4 files found in Backgrounds_Folder."
+                    );
+
+                    return;
+                }
+
+
+                /* ------------------------------------------------
+                   Random video
+                ------------------------------------------------ */
+
+                const randomIndex =
+                    Math.floor(
+                        Math.random() *
+                        videos.length
+                    );
+
+
+                const selectedVideo =
+                    videos[randomIndex];
+
+
+                /*
+                   raw.githubusercontent.com is more reliable
+                   for GitHub Pages video playback than the API
+                   download URL.
+                */
+
+                const videoURL =
+                    "https://raw.githubusercontent.com/" +
+                    "jai92xi/AIBrainBox/main/" +
+                    "Backgrounds_Folder/" +
+                    encodeURIComponent(
+                        selectedVideo.name
+                    );
+
+
+                /* ------------------------------------------------
+                   Save for this browser session
+                ------------------------------------------------ */
+
+                sessionStorage.setItem(
+                    STORAGE_KEY,
+                    videoURL
+                );
+
+
+                video.src =
+                    videoURL;
+
+                video.load();
+
+                video.play().catch(
+                    () => {}
+                );
+
+
+                console.log(
+                    "AIBrainBox background:",
+                    selectedVideo.name
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Background video error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* ========================================================
+           2. AUTO EXPAND EXPLANATION
+           ========================================================
+
+           Existing app.js creates a "Show Explanation" button
+           after an answer is selected.
+
+           This override removes that behavior and immediately
+           displays the explanation.
+        ======================================================== */
+
+        window.createExplanationButton =
+            function () {
+
+                const explanation =
+                    document.getElementById(
+                        "explanation"
+                    );
+
+                const explanationText =
+                    document.getElementById(
+                        "explanation-text"
+                    );
+
+
+                if (
+                    !explanation ||
+                    !explanationText ||
+                    !window.currentQuestion
+                ) {
+                    /*
+                       currentQuestion is normally scoped inside
+                       app.js, so this fallback is handled below
+                       through the DOM-based trigger.
+                    */
+                }
+
+
+                /*
+                   app.js keeps currentQuestion in its own scope.
+
+                   Calling the existing showExplanation()
+                   function here allows it to access that object.
+                */
+
+                if (
+                    typeof showExplanation ===
+                    "function"
+                ) {
+
+                    showExplanation();
+
+                    return;
+                }
+
+
+                /*
+                   Fallback in case showExplanation is not available.
+                */
+
+                if (explanation) {
+
+                    explanation.classList.remove(
+                        "hidden"
+                    );
+                }
+
+            };
+
+
+        /* ========================================================
+           3. REMOVE QUESTION X OF Y
+           ========================================================
+
+           Existing app.js still updates this element.
+           Keeping the element hidden prevents JavaScript errors.
+        ======================================================== */
+
+        function hideQuestionPosition() {
+
+            const position =
+                document.getElementById(
+                    "question-position"
+                );
+
+            if (position) {
+
+                position.style.display =
+                    "none";
+            }
+
+        }
+
+
+        /* ========================================================
+           4. INITIALIZE UPDATED UI
+           ======================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                hideQuestionPosition();
+
+                setSessionBackground();
+
+            }
+        );
+
+    </script>
 
 </body>
+
 </html>
