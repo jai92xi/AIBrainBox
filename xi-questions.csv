@@ -1,4 +1,4 @@
-ID,Question,A,B,C,D,Correct Answer,Explaination,Topic,Sub Topics
+ID,Question,A,B,C,D,Correct Answer,Explaination,Topic,Sub Topics,previous related question,next related question
 Xi-00001,"Your RAG system retrieves 10 chunks for every query. Testing shows that 7 of those chunks contain almost identical information, while some useful information is missing.
 What would be the best approach?",Increase top-k from 10 to 30,Use MMR or another diversity-aware retrieval/reranking strategy,Increase LLM temperature,Increase chunk size,B,"A traditional similarity search asks:
 
@@ -35,7 +35,7 @@ MMR can select:
 
 Now the LLM gets **relevant + complementary information** instead of repeated information.
 That's why **MMR is a diversity-aware retrieval technique**.
-It helps improve **context utilization** and reduces wasting the LLM's context window on duplicate information.",RAG,MMR
+It helps improve **context utilization** and reduces wasting the LLM's context window on duplicate information.",RAG,MMR,,Xi-00003
 Xi-00002,"You are building a fraud detection model for a fintech company. The model has 20 hidden layers and a large number of parameters. During training, the model reaches a point where adding more hidden layers or increasing the number of neurons provides almost no improvement. The model performs well on simple patterns but struggles to learn complex relationships between transaction amount, location, device, transaction frequency, and user behavior.
 You have two possible architectural changes. Which one you choose?",Change the hidden-layer design so that each layer can introduce non-linear transformations,Add few more hidden layers and increase the number of neurons in the existing layers,,,A,"Regardless of how many layers a deep neural network has, without activation functions, it would **behave like a linear model**. Activation functions **introduce non-linearity** into the model.
 
@@ -71,7 +71,7 @@ Input ? Linear ? ReLU ? Linear ? Output
 
 The linear layers transform the data, while the activation function introduces non-linearity.
 
-This allows the neural network to learn complex patterns, curves, and non-linear decision boundaries.",Neural Network,Activation Functions
+This allows the neural network to learn complex patterns, curves, and non-linear decision boundaries.",Neural Network,Activation Functions,Xi-00001,Xi-00005
 Xi-00003,"A production NLP system uses a Transformer-based model for classifying customer support tickets. The model performs well during training and validation. However, after deployment, latency becomes too high when ticket text is long.
 
 Profiling shows that most of the latency comes from the **self-attention** layers. The model uses standard full self-attention, where every token attends to every other token.
@@ -104,7 +104,7 @@ Each token attends only to tokens within a predefined local window.
 | **Full attention** | Every token in the sequence |
 | **Local attention** | Nearby tokens within a fixed window |
 | **Sparse attention** | Selected tokens according to a predefined pattern |
-| **Global + local attention** | Nearby tokens + selected global/important tokens |",Transformers,Self-attention; Sparse/Local Attention
+| **Global + local attention** | Nearby tokens + selected global/important tokens |",Transformers,Self-attention; Sparse/Local Attention,,
 Xi-00004,"A **production team is fine-tuning BERT for an insurance ticket-classification system with 8 intent classes such as ""Health Claim"", ""Auto Claim"", ""Policy Renewal"", and ""Claim Rejection"".**
 
 During training:
@@ -144,7 +144,7 @@ So, early stopping tells training to stop when validation performance no longer 
 
 Dropout randomly turns off a portion of neurons during training. This prevents the model from becoming too dependent on specific neurons or patterns and encourages it to learn more robust representations.
 
-So: Overfitting ? use regularization such as dropout + early stopping",Neural Network,Regularization; Dropout; Early Stopping
+So: Overfitting ? use regularization such as dropout + early stopping",Neural Network,Regularization; Dropout; Early Stopping,,
 Xi-00005,"A production team is training a CNN-based image classifier to identify damaged vs. undamaged vehicle parts for an insurance claims system.
 The model achieves:
 Training accuracy: 99%
@@ -197,4 +197,4 @@ So the solution is:
 
 **Limited data variety ? Data augmentation**
 
-**Both ? Better generalization and reduced overfitting**",CNN,Fine tunnig; Data Augmentation
+**Both ? Better generalization and reduced overfitting**",CNN,Fine tunnig; Data Augmentation,Xi-00002,
