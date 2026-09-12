@@ -1,8 +1,6 @@
 /* =========================================================
-   AI BRAIN BOX - LIGHT THEME
+   GLOBAL
    ========================================================= */
-
-/* ---------- RESET ---------- */
 
 * {
     box-sizing: border-box;
@@ -14,26 +12,19 @@ body {
     padding: 0;
     width: 100%;
     min-height: 100%;
-}
-
-body {
     font-family:
-        -apple-system,
-        BlinkMacSystemFont,
+        Inter,
         "Segoe UI",
-        Roboto,
-        Helvetica,
         Arial,
         sans-serif;
 
-    background: #f5f7fb;
     color: #1f2937;
-    overflow-x: hidden;
+    background: #f7f9fc;
 }
 
 
 /* =========================================================
-   VIDEO BACKGROUND
+   BACKGROUND VIDEO
    ========================================================= */
 
 #session-background {
@@ -45,7 +36,8 @@ body {
 
     object-fit: cover;
 
-    z-index: -2;
+    z-index: -3;
+
     pointer-events: none;
 }
 
@@ -53,22 +45,32 @@ body {
     position: fixed;
     inset: 0;
 
-    background: rgba(248, 250, 252, 0.88);
+    background: rgba(255, 255, 255, 0.84);
 
-    z-index: -1;
+    z-index: -2;
+
     pointer-events: none;
 }
 
 
 /* =========================================================
-   MAIN CONTAINER
+   MAIN PAGE
    ========================================================= */
 
-.container {
-    width: min(1500px, calc(100% - 48px));
-    margin: 0 auto;
+body {
+    min-height: 100vh;
 
-    padding: 22px 0 18px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    overflow-x: hidden;
+}
+
+.app-container {
+    width: min(1200px, 94vw);
+
+    margin: 24px auto;
 
     position: relative;
     z-index: 1;
@@ -80,143 +82,75 @@ body {
    ========================================================= */
 
 .brain-box-header {
-    min-height: 145px;
+    background: rgba(255, 255, 255, 0.94);
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 30px;
+    border: 1px solid #e5e7eb;
 
-    padding: 24px 34px;
+    border-radius: 18px;
 
-    background: rgba(255, 255, 255, 0.96);
+    padding: 18px 24px;
 
-    border: 1px solid #e2e8f0;
-    border-radius: 24px;
+    margin-bottom: 14px;
 
     box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08);
-
-    margin-bottom: 18px;
+        0 8px 25px rgba(15, 23, 42, 0.07);
 }
 
-.brain-box-title {
+.brain-box-header h1 {
     margin: 0;
 
-    font-size: clamp(34px, 4vw, 52px);
-    line-height: 1.05;
-    font-weight: 800;
+    font-size: 25px;
 
-    letter-spacing: -1.5px;
+    font-weight: 750;
+
+    letter-spacing: -0.4px;
 
     color: #111827;
 }
 
 .brain-box-header p {
-    margin: 10px 0 0;
+    margin: 5px 0 0;
 
-    font-size: 17px;
-    line-height: 1.5;
+    font-size: 14px;
 
-    color: #64748b;
+    color: #6b7280;
 }
 
 
 /* =========================================================
-   HEADER / QUOTE
+   QUOTE
    ========================================================= */
 
-.header {
-    margin-bottom: 18px;
-}
-
-.header-top {
+.quote-container {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
 
-    gap: 25px;
+    justify-content: flex-end;
+
+    margin-bottom: 12px;
 }
 
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.brand-icon {
-    font-size: 38px;
-}
-
-.brand-name {
-    font-size: 32px;
-    font-weight: 800;
-    color: #111827;
-}
-
-.tagline {
-    color: #64748b;
-    margin: 8px 0 0;
-}
-
-
-/* ---------- MOTIVATIONAL QUOTE ---------- */
-
-.motivational-quote {
-    width: min(430px, 42%);
-
-    padding: 16px 20px;
-
-    background: rgba(255, 255, 255, 0.96);
-
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-
-    box-shadow:
-        0 6px 20px rgba(15, 23, 42, 0.06);
-
-    color: #475569;
-
-    font-size: 15px;
-    line-height: 1.5;
-}
-
-.quote-author {
-    display: block;
-
-    margin-top: 8px;
+.quote {
+    max-width: 520px;
 
     text-align: right;
 
-    color: #64748b;
     font-size: 13px;
+
+    line-height: 1.5;
+
+    color: #6b7280;
+
+    font-style: italic;
 }
 
+#quote-author {
+    margin-left: 5px;
 
-/* =========================================================
-   LOADING / ERROR
-   ========================================================= */
+    font-style: normal;
 
-#loading {
-    text-align: center;
+    font-weight: 600;
 
-    padding: 50px;
-
-    color: #475569;
-    font-size: 16px;
-}
-
-#error {
-    padding: 18px 22px;
-
-    margin: 20px 0;
-
-    background: #fef2f2;
-
-    border: 1px solid #fecaca;
-    border-radius: 12px;
-
-    color: #b91c1c;
+    color: #4b5563;
 }
 
 
@@ -226,253 +160,90 @@ body {
 
 #question-container {
     width: 100%;
-}
-
-.hidden {
-    display: none !important;
-}
-
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-.quiz-navigation {
-    min-height: 52px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 15px;
-
-    padding: 7px 10px;
 
     background: rgba(255, 255, 255, 0.96);
 
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-
-    box-shadow:
-        0 5px 18px rgba(15, 23, 42, 0.06);
-
-    margin-bottom: 18px;
-}
-
-.nav-button {
-    min-height: 40px;
-
-    padding: 8px 17px;
-
-    border-radius: 12px;
-
-    border: 1px solid #dbe2ea;
-
-    background: #ffffff;
-
-    color: #334155;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.nav-button:hover:not(:disabled) {
-    background: #f8fafc;
-    border-color: #818cf8;
-
-    transform: translateY(-1px);
-}
-
-.nav-button:disabled {
-    background: #f1f5f9;
-
-    border-color: #e2e8f0;
-
-    color: #94a3b8;
-
-    cursor: not-allowed;
-}
-
-.question-position {
-    flex: 1;
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 14px;
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   CURRENT STREAK
-   ========================================================= */
-
-.score-display {
-    padding: 8px 15px;
-
-    background: #ffffff;
-
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e5e7eb;
 
     border-radius: 20px;
 
-    color: #334155;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    white-space: nowrap;
-}
-
-.score-display strong {
-    color: #111827;
-    font-weight: 800;
-}
-
-
-/* =========================================================
-   QUESTION CARD
-   ========================================================= */
-
-.question-card {
-    width: 100%;
-
-    height: calc(100dvh - 265px);
-
-    min-height: 500px;
-
-    max-height: 700px;
-
-    background: #ffffff;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 24px;
-
-    overflow: hidden;
+    padding: 22px;
 
     box-shadow:
-        0 14px 35px rgba(15, 23, 42, 0.10);
+        0 10px 35px rgba(15, 23, 42, 0.08);
 }
 
 
 /* =========================================================
-   QUIZ TWO-COLUMN LAYOUT
+   QUESTION + OPTIONS
    ========================================================= */
 
-.quiz-layout {
+.quiz-content {
     display: grid;
 
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
 
-    width: 100%;
-    height: 100%;
+    gap: 24px;
+
+    align-items: stretch;
 }
 
 
-/* =========================================================
-   QUESTION PANEL - LEFT
-   ========================================================= */
+/* Question side */
 
 .question-panel {
     min-width: 0;
 
-    padding: 34px 42px;
-
     display: flex;
+
     flex-direction: column;
 
-    justify-content: flex-start;
+    justify-content: center;
 
-    background: #ffffff;
+    padding: 18px;
 
-    border-right: 1px solid #e5e7eb;
+    background: #f8fafc;
 
-    overflow: hidden;
+    border: 1px solid #e5e7eb;
+
+    border-radius: 16px;
 }
 
-
-/* ---------- QUESTION LABEL ---------- */
-
-.question-label {
-    margin: 0 0 16px;
-
-    color: #6366f1;
-
-    font-size: 12px;
-    font-weight: 800;
-
-    letter-spacing: 1.4px;
-
-    text-transform: uppercase;
-}
-
-
-/* =========================================================
-   QUESTION TEXT
-   ========================================================= */
-
-.question {
+#question {
     margin: 0;
 
-    /*
-       Reduced from the previous large size.
-       Keeps long questions readable while
-       fitting considerably more content.
-    */
+    font-size: 19px;
 
-    font-size: clamp(17px, 1.15vw, 20px);
+    line-height: 1.5;
 
-    line-height: 1.48;
+    font-weight: 650;
 
-    font-weight: 600;
+    color: #111827;
 
-    color: #1f2937;
-
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
 }
 
 
-/* =========================================================
-   OPTIONS PANEL - RIGHT
-   ========================================================= */
+/* Options side */
 
 .options-panel {
     min-width: 0;
 
-    padding: 34px 42px;
-
-    background: #f8fafc;
-
     display: flex;
+
     flex-direction: column;
 
-    overflow: hidden;
+    justify-content: center;
 }
 
+#options {
+    display: flex;
 
-/* ---------- OPTIONS LABEL ---------- */
+    flex-direction: column;
 
-.options-label {
-    margin: 0 0 16px;
-
-    color: #6366f1;
-
-    font-size: 12px;
-    font-weight: 800;
-
-    letter-spacing: 1.4px;
-
-    text-transform: uppercase;
+    gap: 10px;
 }
 
 
@@ -480,62 +251,48 @@ body {
    OPTIONS
    ========================================================= */
 
-#options {
-    display: flex;
-    flex-direction: column;
-
-    gap: 10px;
-
-    flex-shrink: 0;
-}
-
 .option {
     position: relative;
 
     display: flex;
+
     align-items: center;
+
+    gap: 12px;
 
     width: 100%;
 
-    min-height: 58px;
+    min-height: 54px;
 
-    padding: 11px 16px;
+    padding: 11px 14px;
 
     background: #ffffff;
 
-    border: 1px solid #dbe2ea;
+    border: 1px solid #dfe3e8;
 
-    border-radius: 14px;
-
-    color: #334155;
+    border-radius: 12px;
 
     cursor: pointer;
 
-    box-shadow:
-        0 2px 6px rgba(15, 23, 42, 0.04);
-
     transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
 .option:hover {
-    background: #f8fafc;
-
-    border-color: #818cf8;
-
     transform: translateY(-1px);
 
+    border-color: #9ca3af;
+
+    background: #f9fafb;
+
     box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.07);
+        0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
-
-/* ---------- RADIO ---------- */
-
-.option input[type="radio"] {
+.option input {
     position: absolute;
 
     opacity: 0;
@@ -544,119 +301,93 @@ body {
 }
 
 
-/* =========================================================
-   OPTION LETTER
-   ========================================================= */
+/* Option letter */
 
 .option-letter {
-    flex: 0 0 38px;
+    flex: 0 0 32px;
 
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    margin-right: 13px;
-
     border-radius: 50%;
 
-    background: #eef2ff;
+    background: #f1f5f9;
 
-    color: #4f46e5;
+    color: #475569;
 
-    font-size: 14px;
-    font-weight: 800;
+    font-size: 13px;
+
+    font-weight: 750;
 }
 
 
-/* =========================================================
-   OPTION TEXT
-   ========================================================= */
+/* Option text */
 
 .option-text {
     flex: 1;
 
     min-width: 0;
 
-    color: #334155;
-
     font-size: 14px;
 
-    line-height: 1.45;
+    line-height: 1.4;
 
-    font-weight: 500;
+    color: #374151;
 
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
 }
 
 
 /* =========================================================
-   SELECTED OPTION
-   ========================================================= */
-
-.option.selected {
-    border-color: #6366f1;
-
-    background: #eef2ff;
-}
-
-.option.selected .option-letter {
-    background: #6366f1;
-    color: #ffffff;
-}
-
-
-/* =========================================================
-   CORRECT ANSWER
+   CORRECT / WRONG ANSWERS
    ========================================================= */
 
 .option.correct-answer {
-    background: #ecfdf5;
+    border-color: #22c55e;
 
-    border-color: #10b981;
+    background: #f0fdf4;
 
     box-shadow:
-        0 4px 12px rgba(16, 185, 129, 0.10);
+        0 0 0 2px rgba(34, 197, 94, 0.08);
 }
 
 .option.correct-answer .option-letter {
-    background: #d1fae5;
+    background: #22c55e;
 
-    color: #047857;
+    color: #ffffff;
 }
 
 .option.correct-answer .option-text {
-    color: #047857;
+    color: #166534;
 
-    font-weight: 600;
+    font-weight: 650;
 }
 
 
-/* =========================================================
-   WRONG ANSWER
-   ========================================================= */
-
 .option.wrong-answer {
-    background: #fef2f2;
-
     border-color: #ef4444;
 
+    background: #fef2f2;
+
     box-shadow:
-        0 4px 12px rgba(239, 68, 68, 0.08);
+        0 0 0 2px rgba(239, 68, 68, 0.08);
 }
 
 .option.wrong-answer .option-letter {
-    background: #fee2e2;
+    background: #ef4444;
 
-    color: #b91c1c;
+    color: #ffffff;
 }
 
 .option.wrong-answer .option-text {
-    color: #b91c1c;
+    color: #991b1b;
 
-    font-weight: 600;
+    font-weight: 650;
 }
 
 
@@ -665,23 +396,23 @@ body {
    ========================================================= */
 
 #result {
-    min-height: 30px;
+    min-height: 28px;
 
-    margin: 10px 0 7px;
+    margin-top: 12px;
 
-    color: #334155;
-
-    font-size: 15px;
+    font-size: 14px;
 
     font-weight: 700;
+
+    text-align: center;
 }
 
 .result-correct {
-    color: #059669 !important;
+    color: #15803d;
 }
 
 .result-wrong {
-    color: #dc2626 !important;
+    color: #b91c1c;
 }
 
 
@@ -689,72 +420,165 @@ body {
    EXPLANATION
    ========================================================= */
 
-.explanation {
-    margin-top: 4px;
+#explanation {
+    margin-top: 16px;
 
-    padding: 14px 17px;
+    padding: 16px 18px;
 
-    background: #ffffff;
+    background: #f8fafc;
 
-    border: 1px solid #ddd6fe;
+    border: 1px solid #e2e8f0;
 
     border-radius: 14px;
 
-    box-shadow:
-        0 3px 10px rgba(15, 23, 42, 0.04);
-
-    overflow: hidden;
-}
-
-.explanation-title {
-    margin: 0 0 7px;
-
-    color: #6d28d9;
-
-    font-size: 14px;
-
-    font-weight: 800;
+    animation:
+        explanationOpen 0.25s ease;
 }
 
 #explanation-text {
     margin: 0;
 
+    font-size: 14px;
+
+    line-height: 1.6;
+
     color: #475569;
 
-    font-size: 13px;
+    overflow-wrap: anywhere;
+}
 
-    line-height: 1.5;
+@keyframes explanationOpen {
 
-    overflow-wrap: break-word;
+    from {
+        opacity: 0;
+
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
 }
 
 
 /* =========================================================
-   EXPLANATION BUTTON
+   NAVIGATION
    ========================================================= */
 
-.explanation-button {
+.navigation {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 16px;
+}
+
+.navigation button {
+    min-width: 105px;
+
+    padding: 10px 16px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.navigation button:hover:not(:disabled) {
+    background: #f3f4f6;
+
+    border-color: #9ca3af;
+
+    transform: translateY(-1px);
+}
+
+.navigation button:disabled {
+    opacity: 0.4;
+
+    cursor: not-allowed;
+}
+
+#score-display {
+    font-size: 14px;
+
+    color: #374151;
+
+    font-weight: 600;
+
+    text-align: center;
+}
+
+#score-display strong {
+    font-size: 16px;
+
+    color: #111827;
+}
+
+
+/* =========================================================
+   LOADING / ERROR
+   ========================================================= */
+
+#loading {
+    padding: 30px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+#error {
+    margin-top: 15px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    color: #b91c1c;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   HIDDEN
+   ========================================================= */
+
+.hidden {
     display: none !important;
 }
 
 
 /* =========================================================
-   FOOTER
-   ========================================================= */
-
-footer {
-    padding: 12px 0 0;
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 12px;
-}
-
-
-/* =========================================================
-   CELEBRATION / EMOJI
+   FLOATING EMOJIS
    ========================================================= */
 
 .emoji-burst {
@@ -762,285 +586,316 @@ footer {
 
     pointer-events: none;
 
-    z-index: 9999;
+    user-select: none;
 
-    font-size: 28px;
+    z-index: 99999;
 
-    animation:
-        emojiBurst 1s ease-out forwards;
+    font-size: 36px;
+
+    line-height: 1;
+
+    opacity: 1;
+
+    will-change:
+        transform,
+        opacity;
+
+    filter:
+        drop-shadow(
+            0 3px 5px rgba(0, 0, 0, 0.12)
+        );
 }
 
-@keyframes emojiBurst {
+
+/* Happy emojis */
+
+.emoji-burst.happy {
+    animation:
+        happyFloat 1.8s ease-out forwards;
+}
+
+
+/* Sad emojis */
+
+.emoji-burst.sad {
+    animation:
+        sadFloat 1.8s ease-out forwards;
+}
+
+
+/* =========================================================
+   HAPPY EMOJI ANIMATION
+   ========================================================= */
+
+@keyframes happyFloat {
+
     0% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+
+        transform:
+            translate3d(
+                0,
+                0,
+                0
+            )
+            scale(0.65)
+            rotate(-8deg);
+    }
+
+    15% {
+        opacity: 1;
+
+        transform:
+            translate3d(
+                0,
+                -25px,
+                0
+            )
+            scale(1.15)
+            rotate(5deg);
+    }
+
+    55% {
+        opacity: 0.95;
+
+        transform:
+            translate3d(
+                20px,
+                -150px,
+                0
+            )
+            scale(1.1)
+            rotate(-8deg);
     }
 
     100% {
         opacity: 0;
-        transform: translateY(-90px) scale(1.4);
+
+        transform:
+            translate3d(
+                -15px,
+                -330px,
+                0
+            )
+            scale(1.25)
+            rotate(12deg);
     }
 }
 
 
 /* =========================================================
-   MOBILE
+   SAD EMOJI ANIMATION
    ========================================================= */
 
-@media (max-width: 900px) {
+@keyframes sadFloat {
 
-    .container {
-        width: min(100% - 24px, 700px);
+    0% {
+        opacity: 1;
 
-        padding-top: 12px;
+        transform:
+            translate3d(
+                0,
+                0,
+                0
+            )
+            scale(0.65)
+            rotate(5deg);
     }
 
-    .brain-box-header {
-        min-height: auto;
+    20% {
+        opacity: 1;
 
-        padding: 22px;
-
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 15px;
+        transform:
+            translate3d(
+                -10px,
+                -20px,
+                0
+            )
+            scale(1.1)
+            rotate(-5deg);
     }
 
-    .brain-box-title {
-        font-size: 34px;
+    60% {
+        opacity: 0.9;
+
+        transform:
+            translate3d(
+                15px,
+                -130px,
+                0
+            )
+            scale(1.05)
+            rotate(5deg);
     }
 
-    .motivational-quote {
-        width: 100%;
+    100% {
+        opacity: 0;
+
+        transform:
+            translate3d(
+                -20px,
+                -280px,
+                0
+            )
+            scale(1.15)
+            rotate(-10deg);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .app-container {
+        width: 94vw;
+
+        margin: 16px auto;
     }
 
-    .quiz-navigation {
-        padding: 7px;
-    }
-
-    .question-card {
-        height: auto;
-
-        min-height: 0;
-
-        max-height: none;
-    }
-
-    .quiz-layout {
+    .quiz-content {
         grid-template-columns: 1fr;
 
-        height: auto;
+        gap: 14px;
     }
 
     .question-panel {
-        padding: 26px 25px;
+        padding: 16px;
+    }
 
-        border-right: none;
-
-        border-bottom: 1px solid #e5e7eb;
-
-        overflow: visible;
+    #question {
+        font-size: 18px;
     }
 
     .options-panel {
-        padding: 26px 25px;
-
-        overflow: visible;
-    }
-
-    .question {
-        font-size: 18px;
-
-        line-height: 1.5;
-    }
-
-    .option {
-        min-height: 55px;
+        padding: 0;
     }
 }
 
 
 /* =========================================================
-   SMALL MOBILE
+   RESPONSIVE - MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
 
-    .container {
-        width: calc(100% - 16px);
+    .app-container {
+        width: 96vw;
 
-        padding-top: 8px;
+        margin: 10px auto;
     }
 
     .brain-box-header {
-        padding: 18px;
-
-        border-radius: 18px;
-    }
-
-    .brain-box-title {
-        font-size: 29px;
-    }
-
-    .brain-box-header p {
-        font-size: 14px;
-    }
-
-    .quiz-navigation {
-        gap: 6px;
+        padding: 15px 16px;
 
         border-radius: 14px;
     }
 
-    .nav-button {
-        padding: 7px 11px;
+    .brain-box-header h1 {
+        font-size: 21px;
+    }
 
+    .brain-box-header p {
         font-size: 12px;
     }
 
-    .question-position {
-        display: none;
+    .quote-container {
+        margin-bottom: 8px;
     }
 
-    .score-display {
-        font-size: 12px;
+    .quote {
+        max-width: 90%;
 
-        padding: 7px 10px;
+        font-size: 11px;
     }
 
-    .question-card {
-        border-radius: 18px;
+    #question-container {
+        padding: 12px;
+
+        border-radius: 15px;
     }
 
-    .question-panel,
-    .options-panel {
-        padding: 22px 18px;
-    }
-
-    .question {
-        font-size: 17px;
-
-        line-height: 1.48;
-    }
-
-    .option {
-        padding: 9px 11px;
-
-        min-height: 52px;
+    .question-panel {
+        padding: 14px;
 
         border-radius: 12px;
     }
 
-    .option-letter {
-        width: 34px;
-        height: 34px;
-
-        flex-basis: 34px;
-
-        margin-right: 10px;
-    }
-
-    .option-text {
-        font-size: 13px;
-    }
-
-    .explanation {
-        padding: 12px 14px;
-    }
-
-    #explanation-text {
-        font-size: 12px;
-    }
-}
-
-
-/* =========================================================
-   VERY SHORT SCREENS
-   ========================================================= */
-
-@media (min-width: 901px) and (max-height: 800px) {
-
-    .container {
-        padding-top: 12px;
-    }
-
-    .brain-box-header {
-        min-height: 115px;
-
-        padding: 18px 28px;
-
-        margin-bottom: 12px;
-    }
-
-    .brain-box-title {
-        font-size: 38px;
-    }
-
-    .brain-box-header p {
-        margin-top: 6px;
-
-        font-size: 14px;
-    }
-
-    .quiz-navigation {
-        margin-bottom: 12px;
-    }
-
-    .question-card {
-        height: calc(100dvh - 205px);
-
-        min-height: 450px;
-    }
-
-    .question-panel,
-    .options-panel {
-        padding: 25px 32px;
-    }
-
-    .question-label,
-    .options-label {
-        margin-bottom: 10px;
-    }
-
-    .question {
+    #question {
         font-size: 17px;
 
-        line-height: 1.42;
+        line-height: 1.45;
     }
 
     .option {
         min-height: 50px;
 
-        padding: 8px 13px;
+        padding: 9px 11px;
+
+        gap: 9px;
     }
 
     .option-letter {
-        width: 34px;
-        height: 34px;
+        flex-basis: 29px;
 
-        flex-basis: 34px;
+        width: 29px;
+        height: 29px;
+
+        font-size: 12px;
     }
 
     .option-text {
         font-size: 13px;
     }
 
-    #result {
-        margin: 7px 0 4px;
-    }
-
-    .explanation {
-        padding: 11px 14px;
-    }
-
-    .explanation-title {
-        margin-bottom: 4px;
+    #explanation {
+        padding: 13px 14px;
     }
 
     #explanation-text {
-        font-size: 12px;
+        font-size: 13px;
+    }
 
-        line-height: 1.4;
+    .navigation {
+        flex-wrap: wrap;
+
+        justify-content: center;
+    }
+
+    .navigation button {
+        min-width: 90px;
+    }
+
+    #score-display {
+        order: -1;
+
+        width: 100%;
+    }
+
+    .emoji-burst {
+        font-size: 30px;
+    }
+}
+
+
+/* =========================================================
+   REDUCE MOTION ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .emoji-burst {
+        animation: none !important;
+
+        opacity: 0;
+    }
+
+    .option,
+    .navigation button,
+    #explanation {
+        transition: none;
+        animation: none;
     }
 }
