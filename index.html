@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
 
@@ -9,1043 +8,19 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="AIBrainBox — AI Questions, Practice, Learn and Improve."
-    >
-
-    <title>AIBrainBox</title>
+    <title>AI Brain Box</title>
 
     <link
         rel="stylesheet"
         href="style.css"
     >
-
-    <style>
-
-        /* =========================================================
-           AIBRAINBOX - UPDATED UI
-           ========================================================= */
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100%;
-        }
-
-        body {
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Helvetica,
-                Arial,
-                sans-serif;
-
-            color: #e2e8f0;
-
-            background: #020617;
-
-            overflow-x: hidden;
-        }
-
-
-        /* =========================================================
-           VIDEO BACKGROUND
-           ========================================================= */
-
-        #session-background {
-            position: fixed;
-
-            inset: 0;
-
-            width: 100%;
-            height: 100%;
-
-            object-fit: cover;
-
-            z-index: -3;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #020617,
-                    #0f172a,
-                    #111827
-                );
-        }
-
-
-        /* Dark overlay over video */
-
-        #background-overlay {
-            position: fixed;
-
-            inset: 0;
-
-            z-index: -2;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(2, 6, 23, 0.88),
-                    rgba(15, 23, 42, 0.72),
-                    rgba(30, 41, 59, 0.82)
-                );
-
-            pointer-events: none;
-        }
-
-
-        /* =========================================================
-           MAIN CONTAINER
-           ========================================================= */
-
-        .container {
-            width: 100%;
-
-            max-width: 1500px;
-
-            margin: 0 auto;
-
-            padding:
-                28px
-                32px
-                45px;
-        }
-
-
-        /* =========================================================
-           TOP AI BRAIN BOX
-           ========================================================= */
-
-        .brain-box-header {
-
-            position: relative;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 30px;
-
-            min-height: 125px;
-
-            padding:
-                25px
-                32px;
-
-            margin-bottom: 22px;
-
-            border-radius: 22px;
-
-            border:
-                1px solid
-                rgba(148, 163, 184, 0.25);
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(15, 23, 42, 0.94),
-                    rgba(30, 41, 59, 0.82)
-                );
-
-            box-shadow:
-                0 20px 60px
-                rgba(0, 0, 0, 0.30),
-
-                inset 0 1px 0
-                rgba(255, 255, 255, 0.06);
-
-            backdrop-filter:
-                blur(14px);
-
-            -webkit-backdrop-filter:
-                blur(14px);
-
-            overflow: hidden;
-        }
-
-
-        /* subtle glow */
-
-        .brain-box-header::before {
-
-            content: "";
-
-            position: absolute;
-
-            width: 280px;
-            height: 280px;
-
-            top: -180px;
-            left: -100px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(99, 102, 241, 0.18);
-
-            filter: blur(50px);
-
-            pointer-events: none;
-        }
-
-
-        .brain-box-title {
-
-            position: relative;
-
-            z-index: 1;
-        }
-
-
-        .brain-box-title h1 {
-
-            margin: 0;
-
-            font-size: clamp(
-                28px,
-                4vw,
-                42px
-            );
-
-            line-height: 1.1;
-
-            font-weight: 850;
-
-            letter-spacing: -0.03em;
-
-            color: #ffffff;
-
-            text-shadow:
-                0 3px 20px
-                rgba(0, 0, 0, 0.35);
-        }
-
-
-        .brain-box-title p {
-
-            margin:
-                9px
-                0
-                0;
-
-            color: #cbd5e1;
-
-            font-size: 16px;
-
-            line-height: 1.5;
-        }
-
-
-        /* =========================================================
-           QUOTE - TOP RIGHT
-           ========================================================= */
-
-        .motivational-quote {
-
-            position: relative;
-
-            z-index: 2;
-
-            flex:
-                0 1
-                430px;
-
-            padding:
-                17px
-                21px;
-
-            border-radius: 15px;
-
-            border:
-                1px solid
-                rgba(255, 255, 255, 0.13);
-
-            background:
-                rgba(255, 255, 255, 0.075);
-
-            backdrop-filter:
-                blur(12px);
-
-            -webkit-backdrop-filter:
-                blur(12px);
-
-            color: #f8fafc;
-
-            box-shadow:
-                0 10px 30px
-                rgba(0, 0, 0, 0.18);
-        }
-
-
-        #quote-text {
-
-            display: block;
-
-            font-size: 14px;
-
-            line-height: 1.55;
-
-            font-style: italic;
-
-            color: #f1f5f9;
-        }
-
-
-        .quote-author {
-
-            display: block;
-
-            margin-top: 7px;
-
-            font-size: 12px;
-
-            color: #94a3b8;
-
-            text-align: right;
-        }
-
-
-        /* =========================================================
-           OLD HEADER - HIDDEN
-           ========================================================= */
-
-        .header {
-            display: none !important;
-        }
-
-
-        /* =========================================================
-           LOADING
-           ========================================================= */
-
-        .loading {
-
-            padding: 40px;
-
-            text-align: center;
-
-            color: #cbd5e1;
-
-            font-size: 15px;
-        }
-
-
-        /* =========================================================
-           ERROR
-           ========================================================= */
-
-        .error {
-
-            margin:
-                20px
-                0;
-
-            padding: 18px;
-
-            border-radius: 14px;
-
-            background:
-                rgba(127, 29, 29, 0.80);
-
-            border:
-                1px solid
-                rgba(248, 113, 113, 0.35);
-
-            color: #fecaca;
-
-            white-space: pre-wrap;
-        }
-
-
-        .hidden {
-            display: none !important;
-        }
-
-
-        /* =========================================================
-           QUESTION NAVIGATION
-           ========================================================= */
-
-        .question-navigation {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 15px;
-
-            margin-bottom: 18px;
-
-            padding:
-                12px
-                15px;
-
-            border-radius: 15px;
-
-            background:
-                rgba(15, 23, 42, 0.80);
-
-            border:
-                1px solid
-                rgba(148, 163, 184, 0.18);
-
-            backdrop-filter:
-                blur(12px);
-
-            -webkit-backdrop-filter:
-                blur(12px);
-        }
-
-
-        .question-navigation button {
-
-            border: 1px solid
-                rgba(148, 163, 184, 0.25);
-
-            border-radius: 10px;
-
-            padding:
-                9px
-                15px;
-
-            background:
-                rgba(255, 255, 255, 0.08);
-
-            color: #e2e8f0;
-
-            font-size: 13px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-
-            transition:
-                all 0.2s ease;
-        }
-
-
-        .question-navigation button:hover:not(:disabled) {
-
-            background:
-                rgba(99, 102, 241, 0.25);
-
-            border-color:
-                rgba(129, 140, 248, 0.55);
-
-            transform:
-                translateY(-1px);
-        }
-
-
-        .question-navigation button:disabled {
-
-            opacity: 0.35;
-
-            cursor: not-allowed;
-        }
-
-
-        /* Remove Question X of Y visually */
-
-        #question-position {
-
-            display: none !important;
-        }
-
-
-        /* =========================================================
-           SCORE
-           ========================================================= */
-
-        .score-display {
-
-            margin-left: auto;
-
-            padding:
-                8px
-                14px;
-
-            border-radius: 999px;
-
-            background:
-                rgba(255, 255, 255, 0.08);
-
-            border:
-                1px solid
-                rgba(255, 255, 255, 0.12);
-
-            color: #cbd5e1;
-
-            font-size: 13px;
-
-            white-space: nowrap;
-        }
-
-
-        .score-display strong {
-
-            color: #ffffff;
-        }
-
-
-        /* =========================================================
-           QUESTION CARD
-           ========================================================= */
-
-        .question-card {
-
-            width: 100%;
-
-            border-radius: 22px;
-
-            border:
-                1px solid
-                rgba(148, 163, 184, 0.22);
-
-            background:
-                rgba(15, 23, 42, 0.84);
-
-            box-shadow:
-                0 25px 70px
-                rgba(0, 0, 0, 0.30);
-
-            backdrop-filter:
-                blur(16px);
-
-            -webkit-backdrop-filter:
-                blur(16px);
-
-            overflow: hidden;
-        }
-
-
-        /* =========================================================
-           QUESTION LEFT / OPTIONS RIGHT
-           ========================================================= */
-
-        .quiz-layout {
-
-            display: grid;
-
-            grid-template-columns:
-                minmax(0, 1fr)
-                minmax(0, 1fr);
-
-            min-height: 560px;
-        }
-
-
-        /* =========================================================
-           QUESTION PANEL - LEFT
-           ========================================================= */
-
-        .question-panel {
-
-            display: flex;
-
-            flex-direction: column;
-
-            justify-content: center;
-
-            padding:
-                55px
-                50px;
-
-            border-right:
-                1px solid
-                rgba(148, 163, 184, 0.18);
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(30, 41, 59, 0.62),
-                    rgba(15, 23, 42, 0.45)
-                );
-        }
-
-
-        .panel-label {
-
-            margin-bottom: 20px;
-
-            color: #818cf8;
-
-            font-size: 11px;
-
-            font-weight: 800;
-
-            letter-spacing:
-                0.14em;
-
-            text-transform:
-                uppercase;
-        }
-
-
-        .question {
-
-            color: #f8fafc;
-
-            font-size: clamp(
-                20px,
-                2.1vw,
-                29px
-            );
-
-            line-height: 1.55;
-
-            font-weight: 750;
-
-            letter-spacing:
-                -0.015em;
-        }
-
-
-        /* =========================================================
-           OPTIONS PANEL - RIGHT
-           ========================================================= */
-
-        .options-panel {
-
-            padding:
-                38px
-                40px;
-
-            background:
-                rgba(2, 6, 23, 0.28);
-
-            overflow-y: auto;
-        }
-
-
-        #options {
-
-            padding: 0 !important;
-        }
-
-
-        /* =========================================================
-           OPTIONS
-           ========================================================= */
-
-        .option {
-
-            position: relative;
-
-            margin-bottom: 13px;
-
-            border:
-                1px solid
-                rgba(148, 163, 184, 0.20);
-
-            border-radius: 14px;
-
-            background:
-                rgba(255, 255, 255, 0.055);
-
-            transition:
-                transform 0.2s ease,
-                border-color 0.2s ease,
-                background 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-
-        .option:hover {
-
-            transform:
-                translateY(-2px);
-
-            border-color:
-                rgba(129, 140, 248, 0.65);
-
-            background:
-                rgba(99, 102, 241, 0.10);
-
-            box-shadow:
-                0 8px 25px
-                rgba(0, 0, 0, 0.18);
-        }
-
-
-        .option input {
-
-            position: absolute;
-
-            opacity: 0;
-
-            pointer-events: none;
-        }
-
-
-        .option label {
-
-            display: flex;
-
-            align-items: flex-start;
-
-            gap: 14px;
-
-            width: 100%;
-
-            padding:
-                16px;
-
-            cursor: pointer;
-        }
-
-
-        .option-letter {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            flex:
-                0 0 34px;
-
-            width: 34px;
-            height: 34px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(99, 102, 241, 0.16);
-
-            color: #a5b4fc;
-
-            font-size: 13px;
-
-            font-weight: 850;
-        }
-
-
-        .option-text {
-
-            flex: 1;
-
-            padding-top: 5px;
-
-            color: #cbd5e1;
-
-            font-size: 15px;
-
-            line-height: 1.55;
-        }
-
-
-        /* =========================================================
-           CORRECT / WRONG
-           ========================================================= */
-
-        .option.correct-answer {
-
-            border-color:
-                rgba(34, 197, 94, 0.65) !important;
-
-            background:
-                rgba(22, 163, 74, 0.14) !important;
-
-            box-shadow:
-                0 0 0 1px
-                rgba(34, 197, 94, 0.12),
-
-                0 8px 25px
-                rgba(22, 163, 74, 0.10);
-        }
-
-
-        .option.correct-answer .option-letter {
-
-            background:
-                rgba(34, 197, 94, 0.22);
-
-            color: #86efac;
-        }
-
-
-        .option.wrong-answer {
-
-            border-color:
-                rgba(239, 68, 68, 0.65) !important;
-
-            background:
-                rgba(220, 38, 38, 0.13) !important;
-        }
-
-
-        .option.wrong-answer .option-letter {
-
-            background:
-                rgba(239, 68, 68, 0.20);
-
-            color: #fca5a5;
-        }
-
-
-        /* =========================================================
-           RESULT
-           ========================================================= */
-
-        .result {
-
-            min-height: 26px;
-
-            margin-top: 10px;
-
-            font-size: 15px;
-
-            font-weight: 800;
-        }
-
-
-        /* =========================================================
-           EXPLANATION
-           ========================================================= */
-
-        .explanation {
-
-            margin-top: 16px;
-
-            padding:
-                20px;
-
-            border-radius: 15px;
-
-            border:
-                1px solid
-                rgba(129, 140, 248, 0.30);
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(79, 70, 229, 0.13),
-                    rgba(30, 41, 59, 0.65)
-                );
-
-            animation:
-                explanationOpen
-                0.35s ease;
-        }
-
-
-        @keyframes explanationOpen {
-
-            from {
-                opacity: 0;
-                transform:
-                    translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform:
-                    translateY(0);
-            }
-        }
-
-
-        .explanation-title {
-
-            margin-bottom: 10px;
-
-            color: #c4b5fd;
-
-            font-size: 14px;
-
-            font-weight: 800;
-        }
-
-
-        .explanation-text {
-
-            color: #cbd5e1;
-
-            font-size: 14px;
-
-            line-height: 1.7;
-
-            white-space: pre-wrap;
-        }
-
-
-        /* =========================================================
-           HIDE OLD SHOW EXPLANATION BUTTON
-           ========================================================= */
-
-        #show-explanation-btn {
-
-            display: none !important;
-        }
-
-
-        /* =========================================================
-           FOOTER
-           ========================================================= */
-
-        .footer {
-
-            padding:
-                25px
-                0
-                5px;
-
-            text-align: center;
-
-            color: #64748b;
-
-            font-size: 12px;
-        }
-
-
-        /* =========================================================
-           RESPONSIVE
-           ========================================================= */
-
-        @media (max-width: 900px) {
-
-            .container {
-
-                padding:
-                    18px
-                    16px
-                    35px;
-            }
-
-
-            .brain-box-header {
-
-                flex-direction: column;
-
-                align-items: stretch;
-
-                padding:
-                    22px;
-            }
-
-
-            .motivational-quote {
-
-                max-width: none;
-
-                flex: auto;
-            }
-
-
-            .quiz-layout {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            .question-panel {
-
-                min-height: auto;
-
-                padding:
-                    35px
-                    30px;
-
-                border-right: none;
-
-                border-bottom:
-                    1px solid
-                    rgba(148, 163, 184, 0.18);
-            }
-
-
-            .options-panel {
-
-                padding:
-                    30px;
-            }
-        }
-
-
-        @media (max-width: 600px) {
-
-            .brain-box-title h1 {
-
-                font-size: 28px;
-            }
-
-
-            .brain-box-title p {
-
-                font-size: 14px;
-            }
-
-
-            .question-navigation {
-
-                flex-wrap: wrap;
-            }
-
-
-            .score-display {
-
-                order: 3;
-
-                width: 100%;
-
-                text-align: center;
-
-                margin-left: 0;
-            }
-
-
-            .question-panel {
-
-                padding:
-                    28px
-                    22px;
-            }
-
-
-            .options-panel {
-
-                padding:
-                    24px
-                    20px;
-            }
-
-
-            .question {
-
-                font-size: 20px;
-            }
-
-
-            .option-text {
-
-                font-size: 14px;
-            }
-        }
-
-    </style>
 </head>
-
 
 <body>
 
-    <!-- =========================================================
-         SESSION BACKGROUND VIDEO
-         ========================================================= -->
+    <!-- =====================================================
+         BACKGROUND VIDEO
+         ===================================================== -->
 
     <video
         id="session-background"
@@ -1053,28 +28,27 @@
         muted
         loop
         playsinline
-        preload="auto"
-        aria-hidden="true"
     ></video>
 
-    <div
-        id="background-overlay"
-        aria-hidden="true"
-    ></div>
+    <div id="background-overlay"></div>
 
+
+    <!-- =====================================================
+         MAIN CONTAINER
+         ===================================================== -->
 
     <main class="container">
 
 
-        <!-- =====================================================
+        <!-- =================================================
              AI BRAIN BOX HEADER
-             ===================================================== -->
+             ================================================= -->
 
-        <header class="brain-box-header">
+        <section class="brain-box-header">
 
-            <div class="brain-box-title">
+            <div class="brain-box-content">
 
-                <h1>
+                <h1 class="brain-box-title">
                     🧠 AI Brain Box
                 </h1>
 
@@ -1085,12 +59,13 @@
             </div>
 
 
-            <!-- Motivational Quote - TOP RIGHT -->
+            <!-- =============================================
+                 MOTIVATIONAL QUOTE
+                 ============================================= -->
 
             <aside
                 id="motivational-quote"
                 class="motivational-quote"
-                aria-label="Motivational quote"
             >
 
                 <span id="quote-text">
@@ -1106,35 +81,31 @@
 
             </aside>
 
-        </header>
-
-
-        <!-- =====================================================
-             LOADING
-             ===================================================== -->
-
-        <section
-            id="loading"
-            class="loading"
-        >
-            Loading question...
         </section>
 
 
-        <!-- =====================================================
+        <!-- =================================================
+             LOADING
+             ================================================= -->
+
+        <div id="loading">
+            Loading questions...
+        </div>
+
+
+        <!-- =================================================
              ERROR
-             ===================================================== -->
+             ================================================= -->
 
-        <section
+        <div
             id="error"
-            class="error hidden"
-            role="alert"
-        ></section>
+            class="hidden"
+        ></div>
 
 
-        <!-- =====================================================
-             QUIZ
-             ===================================================== -->
+        <!-- =================================================
+             QUESTION CONTAINER
+             ================================================= -->
 
         <section
             id="question-container"
@@ -1142,125 +113,127 @@
         >
 
 
-            <!-- =================================================
-                 TOP NAVIGATION
-                 ================================================= -->
+            <!-- =============================================
+                 NAVIGATION
+                 ============================================= -->
 
-            <nav
-                id="question-navigation"
-                class="question-navigation"
-                aria-label="Question navigation"
-            >
+            <div class="quiz-navigation">
+
+
+                <!-- Previous -->
 
                 <button
-                    id="previous-question-btn"
+                    id="previous-button"
+                    class="nav-button"
                     type="button"
                 >
                     ← Previous
                 </button>
 
 
-                <!--
-                    Kept in DOM because existing app.js references it.
-                    CSS hides it so "Question X of Y" is no longer visible.
-                -->
+                <!-- Question position
+                     Kept for JS compatibility but hidden
+                     through CSS. -->
 
                 <div
                     id="question-position"
                     class="question-position"
-                    aria-hidden="true"
                 ></div>
 
+
+                <!-- Current streak -->
 
                 <div
                     id="score-display"
                     class="score-display"
                 >
-                    Your current streak -
-                    <strong>0/0</strong>
+                    🔥 Current streak:
+                    <strong>0</strong>
                 </div>
 
 
+                <!-- Next -->
+
                 <button
-                    id="next-question-btn"
+                    id="next-button"
+                    class="nav-button"
                     type="button"
                 >
                     Next →
                 </button>
 
-            </nav>
+            </div>
 
 
-            <!-- =================================================
+            <!-- =============================================
                  QUESTION CARD
-                 ================================================= -->
+                 ============================================= -->
 
             <div class="question-card">
+
+
+                <!-- =========================================
+                     TWO COLUMN QUIZ LAYOUT
+                     ========================================= -->
 
                 <div class="quiz-layout">
 
 
-                    <!-- =========================================
-                         QUESTION - LEFT HALF
-                         ========================================= -->
+                    <!-- =====================================
+                         LEFT: QUESTION
+                         ===================================== -->
 
                     <section class="question-panel">
 
-                        <div class="panel-label">
-                            QUESTION
+                        <div class="question-label">
+                            Question
                         </div>
 
-                        <div
+                        <h2
                             id="question"
                             class="question"
-                        ></div>
+                        >
+                            Loading question...
+                        </h2>
 
                     </section>
 
 
-                    <!-- =========================================
-                         OPTIONS - RIGHT HALF
-                         ========================================= -->
+                    <!-- =====================================
+                         RIGHT: OPTIONS + EXPLANATION
+                         ===================================== -->
 
                     <section class="options-panel">
 
-                        <div class="panel-label">
-                            SELECT YOUR ANSWER
+                        <div class="options-label">
+                            Select your answer
                         </div>
 
 
-                        <div
-                            id="options"
-                            class="options"
-                            role="radiogroup"
-                            aria-label="Answer options"
-                        ></div>
+                        <!-- Answer options -->
+
+                        <div id="options"></div>
 
 
-                        <!-- Answer result -->
+                        <!-- Result -->
 
-                        <div
-                            id="result"
-                            class="result"
-                            aria-live="polite"
-                        ></div>
+                        <div id="result"></div>
 
 
-                        <!-- Explanation -->
+                        <!-- =================================
+                             Explanation
+                             ================================= -->
 
                         <div
                             id="explanation"
                             class="explanation hidden"
                         >
 
-                            <div class="explanation-title">
+                            <h3 class="explanation-title">
                                 💡 Explanation
-                            </div>
+                            </h3>
 
-                            <div
-                                id="explanation-text"
-                                class="explanation-text"
-                            ></div>
+                            <p id="explanation-text"></p>
 
                         </div>
 
@@ -1273,320 +246,22 @@
         </section>
 
 
-        <!-- =====================================================
+        <!-- =================================================
              FOOTER
-             ===================================================== -->
+             ================================================= -->
 
-        <footer class="footer">
-
-            <p>
-                Keep learning. Keep improving. 🚀
-            </p>
-
+        <footer>
+            AI Brain Box • Practice • Learn • Improve
         </footer>
 
     </main>
 
 
-    <!-- =========================================================
-         EXISTING APPLICATION LOGIC
-         ========================================================= -->
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
 
     <script src="app.js"></script>
 
-
-    <!-- =========================================================
-         UI OVERRIDES
-         ========================================================= -->
-
-    <script>
-
-        /* ========================================================
-           1. RANDOM SESSION BACKGROUND
-           ========================================================
-
-           The browser cannot directly list files inside a folder.
-
-           Therefore this uses the GitHub Contents API to find all
-           .mp4 files inside:
-
-               Backgrounds_Folder/
-
-           A video is selected once per browser session using
-           sessionStorage.
-        ======================================================== */
-
-        async function setSessionBackground() {
-
-            const video =
-                document.getElementById(
-                    "session-background"
-                );
-
-            if (!video) {
-                return;
-            }
-
-
-            const STORAGE_KEY =
-                "aibrainbox-session-background";
-
-
-            /* ----------------------------------------------------
-               Use existing session background if available
-            ---------------------------------------------------- */
-
-            const savedVideo =
-                sessionStorage.getItem(
-                    STORAGE_KEY
-                );
-
-            if (savedVideo) {
-
-                video.src =
-                    savedVideo;
-
-                video.load();
-
-                video.play().catch(
-                    () => {}
-                );
-
-                return;
-            }
-
-
-            /* ----------------------------------------------------
-               GitHub repository folder
-            ---------------------------------------------------- */
-
-            const API_URL =
-                "https://api.github.com/repos/jai92xi/AIBrainBox/contents/Backgrounds_Folder";
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        API_URL,
-                        {
-                            cache: "no-store"
-                        }
-                    );
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Unable to read Backgrounds_Folder."
-                    );
-                }
-
-
-                const files =
-                    await response.json();
-
-
-                const videos =
-                    files.filter(
-                        file =>
-
-                            file.type === "file" &&
-
-                            /\.mp4$/i.test(
-                                file.name
-                            )
-                    );
-
-
-                if (!videos.length) {
-
-                    console.warn(
-                        "No .mp4 files found in Backgrounds_Folder."
-                    );
-
-                    return;
-                }
-
-
-                /* ------------------------------------------------
-                   Random video
-                ------------------------------------------------ */
-
-                const randomIndex =
-                    Math.floor(
-                        Math.random() *
-                        videos.length
-                    );
-
-
-                const selectedVideo =
-                    videos[randomIndex];
-
-
-                /*
-                   raw.githubusercontent.com is more reliable
-                   for GitHub Pages video playback than the API
-                   download URL.
-                */
-
-                const videoURL =
-                    "https://raw.githubusercontent.com/" +
-                    "jai92xi/AIBrainBox/main/" +
-                    "Backgrounds_Folder/" +
-                    encodeURIComponent(
-                        selectedVideo.name
-                    );
-
-
-                /* ------------------------------------------------
-                   Save for this browser session
-                ------------------------------------------------ */
-
-                sessionStorage.setItem(
-                    STORAGE_KEY,
-                    videoURL
-                );
-
-
-                video.src =
-                    videoURL;
-
-                video.load();
-
-                video.play().catch(
-                    () => {}
-                );
-
-
-                console.log(
-                    "AIBrainBox background:",
-                    selectedVideo.name
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Background video error:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        /* ========================================================
-           2. AUTO EXPAND EXPLANATION
-           ========================================================
-
-           Existing app.js creates a "Show Explanation" button
-           after an answer is selected.
-
-           This override removes that behavior and immediately
-           displays the explanation.
-        ======================================================== */
-
-        window.createExplanationButton =
-            function () {
-
-                const explanation =
-                    document.getElementById(
-                        "explanation"
-                    );
-
-                const explanationText =
-                    document.getElementById(
-                        "explanation-text"
-                    );
-
-
-                if (
-                    !explanation ||
-                    !explanationText ||
-                    !window.currentQuestion
-                ) {
-                    /*
-                       currentQuestion is normally scoped inside
-                       app.js, so this fallback is handled below
-                       through the DOM-based trigger.
-                    */
-                }
-
-
-                /*
-                   app.js keeps currentQuestion in its own scope.
-
-                   Calling the existing showExplanation()
-                   function here allows it to access that object.
-                */
-
-                if (
-                    typeof showExplanation ===
-                    "function"
-                ) {
-
-                    showExplanation();
-
-                    return;
-                }
-
-
-                /*
-                   Fallback in case showExplanation is not available.
-                */
-
-                if (explanation) {
-
-                    explanation.classList.remove(
-                        "hidden"
-                    );
-                }
-
-            };
-
-
-        /* ========================================================
-           3. REMOVE QUESTION X OF Y
-           ========================================================
-
-           Existing app.js still updates this element.
-           Keeping the element hidden prevents JavaScript errors.
-        ======================================================== */
-
-        function hideQuestionPosition() {
-
-            const position =
-                document.getElementById(
-                    "question-position"
-                );
-
-            if (position) {
-
-                position.style.display =
-                    "none";
-            }
-
-        }
-
-
-        /* ========================================================
-           4. INITIALIZE UPDATED UI
-           ======================================================== */
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
-
-                hideQuestionPosition();
-
-                setSessionBackground();
-
-            }
-        );
-
-    </script>
-
 </body>
-
 </html>
