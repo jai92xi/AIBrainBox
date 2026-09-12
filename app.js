@@ -30,32 +30,50 @@ document.addEventListener(
 
 function initializeApp() {
 
-    document
-        .getElementById("previous-question-btn")
-        .addEventListener(
+    const previousButton =
+        document.getElementById(
+            "previous-question-btn"
+        );
+
+    const nextButton =
+        document.getElementById(
+            "next-question-btn"
+        );
+
+    if (previousButton) {
+
+        previousButton.addEventListener(
             "click",
             goToPreviousQuestion
         );
 
-    document
-        .getElementById("next-question-btn")
-        .addEventListener(
+    }
+
+    if (nextButton) {
+
+        nextButton.addEventListener(
             "click",
             goToNextQuestion
         );
+
+    }
+
 
     window.addEventListener(
         "popstate",
         loadQuestion
     );
 
+
     document.addEventListener(
         "keydown",
         handleKeyboardNavigation
     );
 
+
     loadQuestions();
     loadQuotes();
+
 }
 
 
@@ -66,59 +84,94 @@ function initializeApp() {
 async function loadQuestions() {
 
     const loading =
-        document.getElementById("loading");
+        document.getElementById(
+            "loading"
+        );
 
     const errorBox =
-        document.getElementById("error");
+        document.getElementById(
+            "error"
+        );
 
     try {
 
-        loading.classList.remove("hidden");
-        errorBox.classList.add("hidden");
+        if (loading) {
+            loading.classList.remove(
+                "hidden"
+            );
+        }
+
+        if (errorBox) {
+            errorBox.classList.add(
+                "hidden"
+            );
+        }
+
 
         const response =
             await fetch(
-                CSV_URL + "?v=" + Date.now(),
+                CSV_URL +
+                "?v=" +
+                Date.now(),
                 {
                     cache: "no-store"
                 }
             );
 
+
         if (!response.ok) {
+
             throw new Error(
                 "HTTP " +
                 response.status +
                 " - " +
                 response.statusText
             );
+
         }
+
 
         const csvText =
             await response.text();
 
+
         if (!csvText.trim()) {
+
             throw new Error(
                 "xi-questions.csv is empty."
             );
+
         }
+
 
         questions =
             parseCSV(csvText);
 
+
         if (!questions.length) {
+
             throw new Error(
                 "No questions were found in xi-questions.csv."
             );
+
         }
+
 
         console.log(
             "Questions loaded:",
             questions.length
         );
 
-        loading.classList.add("hidden");
+
+        if (loading) {
+            loading.classList.add(
+                "hidden"
+            );
+        }
+
 
         loadQuestion();
+
 
     } catch (error) {
 
@@ -127,17 +180,31 @@ async function loadQuestions() {
             error
         );
 
-        loading.classList.add("hidden");
 
-        errorBox.classList.remove("hidden");
+        if (loading) {
+            loading.classList.add(
+                "hidden"
+            );
+        }
 
-        errorBox.innerText =
-            "Unable to load the question database.\n\n" +
-            "Error: " +
-            error.message +
-            "\n\n" +
-            "Please make sure xi-questions.csv exists in the same folder as index.html.";
+
+        if (errorBox) {
+
+            errorBox.classList.remove(
+                "hidden"
+            );
+
+            errorBox.innerText =
+                "Unable to load the question database.\n\n" +
+                "Error: " +
+                error.message +
+                "\n\n" +
+                "Please make sure xi-questions.csv exists in the same folder as index.html.";
+
+        }
+
     }
+
 }
 
 
@@ -151,41 +218,56 @@ async function loadQuotes() {
 
         const response =
             await fetch(
-                QUOTES_URL + "?v=" + Date.now(),
+                QUOTES_URL +
+                "?v=" +
+                Date.now(),
                 {
                     cache: "no-store"
                 }
             );
 
+
         if (!response.ok) {
+
             throw new Error(
                 "HTTP " +
                 response.status +
                 " - " +
                 response.statusText
             );
+
         }
+
 
         const csvText =
             await response.text();
 
+
         if (!csvText.trim()) {
+
             throw new Error(
                 "xi-Quotes.csv is empty."
             );
+
         }
+
 
         quotes =
             parseQuotesCSV(csvText);
+
 
         console.log(
             "Quotes loaded:",
             quotes.length
         );
 
+
         if (quotes.length) {
+
             loadMotivationalQuote();
+
         }
+
 
     } catch (error) {
 
@@ -194,29 +276,41 @@ async function loadQuotes() {
             error
         );
 
+
+        /*
+         * Fallback quotes
+         */
+
         quotes = [
+
             {
                 quote:
                     "The future depends on what you do today.",
                 author:
                     "Mahatma Gandhi"
             },
+
             {
                 quote:
                     "Great things are done by a series of small things brought together.",
                 author:
                     "Vincent van Gogh"
             },
+
             {
                 quote:
                     "The important thing is not to stop questioning.",
                 author:
                     "Albert Einstein"
             }
+
         ];
 
+
         loadMotivationalQuote();
+
     }
+
 }
 
 
@@ -232,14 +326,19 @@ function parseCSV(text) {
     let cell = "";
     let insideQuotes = false;
 
+
     for (
         let i = 0;
         i < text.length;
         i++
     ) {
 
-        const char = text[i];
-        const nextChar = text[i + 1];
+        const char =
+            text[i];
+
+        const nextChar =
+            text[i + 1];
+
 
         if (
             char === '"' &&
@@ -250,12 +349,14 @@ function parseCSV(text) {
             cell += '"';
             i++;
 
+
         } else if (
             char === '"'
         ) {
 
             insideQuotes =
                 !insideQuotes;
+
 
         } else if (
             char === "," &&
@@ -264,6 +365,7 @@ function parseCSV(text) {
 
             row.push(cell);
             cell = "";
+
 
         } else if (
             (
@@ -277,10 +379,14 @@ function parseCSV(text) {
                 char === "\r" &&
                 nextChar === "\n"
             ) {
+
                 i++;
+
             }
 
+
             row.push(cell);
+
 
             if (
                 row.some(
@@ -288,17 +394,24 @@ function parseCSV(text) {
                         value.trim() !== ""
                 )
             ) {
+
                 rows.push(row);
+
             }
+
 
             row = [];
             cell = "";
 
+
         } else {
 
             cell += char;
+
         }
+
     }
+
 
     if (
         cell !== "" ||
@@ -307,30 +420,38 @@ function parseCSV(text) {
 
         row.push(cell);
 
+
         if (
             row.some(
                 value =>
                     value.trim() !== ""
             )
         ) {
+
             rows.push(row);
+
         }
+
     }
+
 
     if (!rows.length) {
         return [];
     }
+
 
     const headers =
         rows[0].map(
             normalizeHeader
         );
 
+
     return rows
         .slice(1)
         .map(row => {
 
             const question = {};
+
 
             headers.forEach(
                 (
@@ -340,19 +461,27 @@ function parseCSV(text) {
 
                     question[header] =
                         (
-                            row[index] || ""
+                            row[index] ||
+                            ""
                         ).trim();
+
                 }
             );
 
+
             return question;
+
         })
-        .filter(question =>
-            Object.values(question).some(
-                value =>
-                    value !== ""
-            )
+        .filter(
+            question =>
+                Object.values(
+                    question
+                ).some(
+                    value =>
+                        value !== ""
+                )
         );
+
 }
 
 
@@ -368,14 +497,19 @@ function parseQuotesCSV(text) {
     let cell = "";
     let insideQuotes = false;
 
+
     for (
         let i = 0;
         i < text.length;
         i++
     ) {
 
-        const char = text[i];
-        const nextChar = text[i + 1];
+        const char =
+            text[i];
+
+        const nextChar =
+            text[i + 1];
+
 
         if (
             char === '"' &&
@@ -386,12 +520,14 @@ function parseQuotesCSV(text) {
             cell += '"';
             i++;
 
+
         } else if (
             char === '"'
         ) {
 
             insideQuotes =
                 !insideQuotes;
+
 
         } else if (
             char === "," &&
@@ -400,6 +536,7 @@ function parseQuotesCSV(text) {
 
             row.push(cell);
             cell = "";
+
 
         } else if (
             (
@@ -413,10 +550,14 @@ function parseQuotesCSV(text) {
                 char === "\r" &&
                 nextChar === "\n"
             ) {
+
                 i++;
+
             }
 
+
             row.push(cell);
+
 
             if (
                 row.some(
@@ -424,17 +565,24 @@ function parseQuotesCSV(text) {
                         value.trim() !== ""
                 )
             ) {
+
                 rows.push(row);
+
             }
+
 
             row = [];
             cell = "";
 
+
         } else {
 
             cell += char;
+
         }
+
     }
+
 
     if (
         cell !== "" ||
@@ -443,24 +591,31 @@ function parseQuotesCSV(text) {
 
         row.push(cell);
 
+
         if (
             row.some(
                 value =>
                     value.trim() !== ""
             )
         ) {
+
             rows.push(row);
+
         }
+
     }
+
 
     if (!rows.length) {
         return [];
     }
 
+
     const headers =
         rows[0].map(
             normalizeHeader
         );
+
 
     const quoteColumn =
         headers.findIndex(
@@ -468,16 +623,26 @@ function parseQuotesCSV(text) {
                 header === "quote"
         );
 
+
     const authorColumn =
         headers.findIndex(
             header =>
                 header === "author"
         );
 
+
+    /*
+     * xi-Quotes.csv can contain
+     * multiple quote columns.
+     */
+
     const quoteColumns =
         headers
             .map(
-                (header, index) =>
+                (
+                    header,
+                    index
+                ) =>
                     header.includes("quote")
                         ? index
                         : -1
@@ -487,11 +652,20 @@ function parseQuotesCSV(text) {
                     index !== -1
             );
 
+
     const parsedQuotes = [];
+
 
     rows
         .slice(1)
         .forEach(row => {
+
+
+            /*
+             * Standard:
+             *
+             * Quote,Author
+             */
 
             if (
                 quoteColumn !== -1 &&
@@ -500,15 +674,21 @@ function parseQuotesCSV(text) {
 
                 const quote =
                     (
-                        row[quoteColumn] ||
+                        row[
+                            quoteColumn
+                        ] ||
                         ""
                     ).trim();
 
+
                 const author =
                     (
-                        row[authorColumn] ||
+                        row[
+                            authorColumn
+                        ] ||
                         ""
                     ).trim();
+
 
                 if (quote) {
 
@@ -516,21 +696,34 @@ function parseQuotesCSV(text) {
                         quote,
                         author
                     });
+
                 }
 
+
                 return;
+
             }
 
-            if (quoteColumns.length) {
+
+            /*
+             * Multiple quote columns
+             */
+
+            if (
+                quoteColumns.length
+            ) {
 
                 quoteColumns.forEach(
                     columnIndex => {
 
                         const quote =
                             (
-                                row[columnIndex] ||
+                                row[
+                                    columnIndex
+                                ] ||
                                 ""
                             ).trim();
+
 
                         if (quote) {
 
@@ -538,29 +731,46 @@ function parseQuotesCSV(text) {
                                 quote,
                                 author: ""
                             });
+
                         }
+
                     }
                 );
 
+
                 return;
+
             }
 
-            row.forEach(cell => {
 
-                const quote =
-                    cell.trim();
+            /*
+             * Generic fallback
+             */
 
-                if (quote) {
+            row.forEach(
+                cell => {
 
-                    parsedQuotes.push({
-                        quote,
-                        author: ""
-                    });
+                    const quote =
+                        cell.trim();
+
+
+                    if (quote) {
+
+                        parsedQuotes.push({
+                            quote,
+                            author: ""
+                        });
+
+                    }
+
                 }
-            });
+            );
+
         });
 
+
     return parsedQuotes;
+
 }
 
 
@@ -568,13 +778,22 @@ function parseQuotesCSV(text) {
    NORMALIZE CSV HEADER
    ============================================================ */
 
-function normalizeHeader(header) {
+function normalizeHeader(
+    header
+) {
 
     return header
-        .replace(/^\uFEFF/, "")
+        .replace(
+            /^\uFEFF/,
+            ""
+        )
         .trim()
         .toLowerCase()
-        .replace(/\s+/g, " ");
+        .replace(
+            /\s+/g,
+            " "
+        );
+
 }
 
 
@@ -588,18 +807,22 @@ function loadQuestion() {
         return;
     }
 
+
     const params =
         new URLSearchParams(
             window.location.search
         );
 
+
     let id =
         params.get("id");
+
 
     if (!id) {
 
         const firstQuestion =
             questions[0];
+
 
         if (
             firstQuestion &&
@@ -612,24 +835,30 @@ function loadQuestion() {
         } else {
 
             id = "1";
+
         }
+
 
         const url =
             new URL(
                 window.location.href
             );
 
+
         url.searchParams.set(
             "id",
             id
         );
+
 
         window.history.replaceState(
             {},
             "",
             url
         );
+
     }
+
 
     currentQuestionIndex =
         questions.findIndex(
@@ -644,19 +873,24 @@ function loadQuestion() {
                     .toLowerCase()
         );
 
+
     if (
         currentQuestionIndex === -1
     ) {
 
         currentQuestionIndex = 0;
+
     }
+
 
     currentQuestion =
         questions[
             currentQuestionIndex
         ];
 
+
     displayQuestion();
+
 }
 
 
@@ -666,35 +900,70 @@ function loadQuestion() {
 
 function displayQuestion() {
 
-    document
-        .getElementById(
+    const container =
+        document.getElementById(
             "question-container"
-        )
-        .classList.remove("hidden");
+        );
 
-    document
-        .getElementById(
+
+    const error =
+        document.getElementById(
             "error"
-        )
-        .classList.add("hidden");
+        );
 
-    document
-        .getElementById(
+
+    const questionElement =
+        document.getElementById(
             "question"
-        )
-        .innerText =
-        currentQuestion.question ||
-        "Question unavailable.";
+        );
+
+
+    if (container) {
+
+        container.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    if (error) {
+
+        error.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (questionElement) {
+
+        questionElement.innerText =
+            currentQuestion.question ||
+            "Question unavailable.";
+
+    }
+
 
     createOptions();
 
+
     restoreAnswerState();
+
 
     updateNavigation();
 
+
     updateScore();
 
+
+    /*
+     * Keep quote changes independent
+     * from question layout.
+     */
+
     loadMotivationalQuote();
+
 }
 
 
@@ -709,7 +978,15 @@ function createOptions() {
             "options"
         );
 
-    optionsContainer.innerHTML = "";
+
+    if (!optionsContainer) {
+        return;
+    }
+
+
+    optionsContainer.innerHTML =
+        "";
+
 
     const letters = [
         "A",
@@ -718,90 +995,136 @@ function createOptions() {
         "D"
     ];
 
-    letters.forEach(letter => {
 
-        const optionText =
-            currentQuestion[
-                letter.toLowerCase()
-            ];
+    letters.forEach(
+        letter => {
 
-        if (
-            !optionText ||
-            !optionText.trim()
-        ) {
-            return;
-        }
 
-        const option =
-            document.createElement("div");
+            const optionText =
+                currentQuestion[
+                    letter.toLowerCase()
+                ];
 
-        option.className =
-            "option";
 
-        const radio =
-            document.createElement("input");
+            if (
+                !optionText ||
+                !optionText.trim()
+            ) {
 
-        radio.type = "radio";
-        radio.name = "answer";
-        radio.value = letter;
-        radio.id =
-            "option-" + letter;
+                return;
 
-        const label =
-            document.createElement("label");
-
-        label.htmlFor =
-            "option-" + letter;
-
-        const letterSpan =
-            document.createElement("span");
-
-        letterSpan.className =
-            "option-letter";
-
-        letterSpan.innerText =
-            letter;
-
-        const textSpan =
-            document.createElement("span");
-
-        textSpan.className =
-            "option-text";
-
-        textSpan.innerText =
-            optionText;
-
-        label.appendChild(
-            letterSpan
-        );
-
-        label.appendChild(
-            textSpan
-        );
-
-        option.appendChild(
-            radio
-        );
-
-        option.appendChild(
-            label
-        );
-
-        optionsContainer.appendChild(
-            option
-        );
-
-        radio.addEventListener(
-            "change",
-            () => {
-
-                checkAnswer(
-                    radio,
-                    option
-                );
             }
-        );
-    });
+
+
+            const option =
+                document.createElement(
+                    "div"
+                );
+
+
+            option.className =
+                "option";
+
+
+            const radio =
+                document.createElement(
+                    "input"
+                );
+
+
+            radio.type =
+                "radio";
+
+            radio.name =
+                "answer";
+
+            radio.value =
+                letter;
+
+            radio.id =
+                "option-" +
+                letter;
+
+
+            const label =
+                document.createElement(
+                    "label"
+                );
+
+
+            label.htmlFor =
+                "option-" +
+                letter;
+
+
+            const letterSpan =
+                document.createElement(
+                    "span"
+                );
+
+
+            letterSpan.className =
+                "option-letter";
+
+
+            letterSpan.innerText =
+                letter;
+
+
+            const textSpan =
+                document.createElement(
+                    "span"
+                );
+
+
+            textSpan.className =
+                "option-text";
+
+
+            textSpan.innerText =
+                optionText;
+
+
+            label.appendChild(
+                letterSpan
+            );
+
+
+            label.appendChild(
+                textSpan
+            );
+
+
+            option.appendChild(
+                radio
+            );
+
+
+            option.appendChild(
+                label
+            );
+
+
+            optionsContainer.appendChild(
+                option
+            );
+
+
+            radio.addEventListener(
+                "change",
+                () => {
+
+                    checkAnswer(
+                        radio,
+                        option
+                    );
+
+                }
+            );
+
+        }
+    );
+
 }
 
 
@@ -817,13 +1140,22 @@ function checkAnswer(
     const questionId =
         getQuestionId();
 
+
     const userAnswer =
         selected.value
             .trim()
             .toUpperCase();
 
+
     const correctAnswer =
         getCorrectAnswer();
+
+
+    /*
+     * If the user changes an already
+     * answered question, remove the
+     * previous score contribution.
+     */
 
     if (
         questionResults.has(
@@ -836,30 +1168,42 @@ function checkAnswer(
                 questionId
             );
 
-        if (previousResult === true) {
+
+        if (
+            previousResult === true
+        ) {
+
             score--;
+
         }
+
     }
+
 
     const isCorrect =
         userAnswer ===
         correctAnswer;
+
 
     questionResults.set(
         questionId,
         isCorrect
     );
 
+
     savedAnswers.set(
         questionId,
         userAnswer
     );
 
+
     answeredQuestions.add(
         questionId
     );
 
+
     clearOptionStates();
+
 
     selectedOption.classList.add(
         isCorrect
@@ -867,47 +1211,83 @@ function checkAnswer(
             : "wrong-answer"
     );
 
+
+    /*
+     * Show the correct answer if
+     * the selected answer is wrong.
+     */
+
     if (!isCorrect) {
 
         highlightCorrectAnswer(
             correctAnswer
         );
+
     }
+
+
+    /*
+     * Result message
+     */
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
 
     if (isCorrect) {
 
         score++;
 
+
         showCorrectCelebration();
 
-        document
-            .getElementById("result")
-            .innerText =
-            "Correct! 🎉";
 
-        document
-            .getElementById("result")
-            .style.color =
-            "#16a34a";
+        if (result) {
+
+            result.innerText =
+                "Correct! 🎉";
+
+            result.style.color =
+                "#16a34a";
+
+        }
+
 
     } else {
 
         showWrongReaction();
 
-        document
-            .getElementById("result")
-            .innerText =
-            "Not quite. Keep learning!";
 
-        document
-            .getElementById("result")
-            .style.color =
-            "#dc2626";
+        if (result) {
+
+            result.innerText =
+                "Not quite. Keep learning!";
+
+            result.style.color =
+                "#dc2626";
+
+        }
+
     }
 
-    createExplanationButton();
+
+    /*
+     * IMPORTANT:
+     *
+     * Explanation is now opened
+     * automatically.
+     *
+     * No "Show Explanation"
+     * button is created.
+     */
+
+    showExplanation();
+
 
     updateScore();
+
 }
 
 
@@ -918,101 +1298,21 @@ function checkAnswer(
 function clearOptionStates() {
 
     document
-        .querySelectorAll(".option")
-        .forEach(option => {
+        .querySelectorAll(
+            ".option"
+        )
+        .forEach(
+            option => {
 
-            option.classList.remove(
-                "selected",
-                "correct-answer",
-                "wrong-answer"
-            );
-        });
-}
+                option.classList.remove(
+                    "selected",
+                    "correct-answer",
+                    "wrong-answer"
+                );
 
-
-/* ============================================================
-   CREATE EXPLANATION BUTTON
-   ============================================================ */
-
-function createExplanationButton() {
-
-    const oldButton =
-        document.getElementById(
-            "show-explanation-btn"
+            }
         );
 
-    if (oldButton) {
-        oldButton.remove();
-    }
-
-    const explanation =
-        document.getElementById(
-            "explanation"
-        );
-
-    explanation.classList.add(
-        "hidden"
-    );
-
-    const button =
-        document.createElement("button");
-
-    button.id =
-        "show-explanation-btn";
-
-    button.type =
-        "button";
-
-    button.innerText =
-        "💡 Show Explanation";
-
-    button.style.display =
-        "block";
-
-    button.style.width =
-        "100%";
-
-    button.style.marginTop =
-        "14px";
-
-    button.style.padding =
-        "10px 15px";
-
-    button.style.border =
-        "1px solid #c7d2fe";
-
-    button.style.borderRadius =
-        "10px";
-
-    button.style.background =
-        "#f5f3ff";
-
-    button.style.color =
-        "#4f46e5";
-
-    button.style.fontSize =
-        "13px";
-
-    button.style.fontWeight =
-        "700";
-
-    button.style.cursor =
-        "pointer";
-
-    button.addEventListener(
-        "click",
-        showExplanation
-    );
-
-    const optionsContainer =
-        document.getElementById(
-            "options"
-        );
-
-    optionsContainer.parentNode.insertBefore(
-        button,
-        explanation
-    );
 }
 
 
@@ -1022,72 +1322,98 @@ function createExplanationButton() {
 
 function showExplanation() {
 
-    const button =
-        document.getElementById(
-            "show-explanation-btn"
-        );
-
     const explanation =
         document.getElementById(
             "explanation"
         );
+
 
     const explanationText =
         document.getElementById(
             "explanation-text"
         );
 
+
+    if (
+        !explanation ||
+        !explanationText ||
+        !currentQuestion
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * Support both spellings:
+     *
+     * explanation
+     * explaination
+     */
+
     const text =
         currentQuestion.explanation ||
         currentQuestion.explaination ||
         "No explanation is available for this question.";
 
+
     explanationText.innerText =
         text.trim();
+
 
     explanation.classList.remove(
         "hidden"
     );
 
-    if (button) {
 
-        button.innerText =
-            "🙈 Hide Explanation";
+    /*
+     * Smoothly bring the explanation
+     * into view after answering.
+     */
 
-        button.onclick =
-            hideExplanation;
-    }
+    setTimeout(
+        () => {
+
+            explanation.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
+
+        },
+        100
+    );
+
 }
 
 
 /* ============================================================
    HIDE EXPLANATION
-   ============================================================ */
+   ============================================================
+
+   Kept as a compatibility function.
+
+   There is no button anymore, but keeping this function
+   prevents errors if another part of the application
+   references it.
+   */
 
 function hideExplanation() {
-
-    const button =
-        document.getElementById(
-            "show-explanation-btn"
-        );
 
     const explanation =
         document.getElementById(
             "explanation"
         );
 
-    explanation.classList.add(
-        "hidden"
-    );
 
-    if (button) {
+    if (explanation) {
 
-        button.innerText =
-            "💡 Show Explanation";
+        explanation.classList.add(
+            "hidden"
+        );
 
-        button.onclick =
-            showExplanation;
     }
+
 }
 
 
@@ -1100,45 +1426,89 @@ function restoreAnswerState() {
     const questionId =
         getQuestionId();
 
+
     const savedAnswer =
         savedAnswers.get(
             questionId
         );
+
 
     const explanation =
         document.getElementById(
             "explanation"
         );
 
+
     const explanationText =
         document.getElementById(
             "explanation-text"
         );
+
 
     const result =
         document.getElementById(
             "result"
         );
 
-    explanation.classList.add(
-        "hidden"
-    );
 
-    explanationText.innerText = "";
-    result.innerText = "";
+    /*
+     * Reset current UI
+     */
+
+    if (explanation) {
+
+        explanation.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (explanationText) {
+
+        explanationText.innerText =
+            "";
+
+    }
+
+
+    if (result) {
+
+        result.innerText =
+            "";
+
+    }
+
+
+    /*
+     * Remove old explanation button
+     * if it exists from an older cached
+     * version of the application.
+     */
 
     const oldButton =
         document.getElementById(
             "show-explanation-btn"
         );
 
+
     if (oldButton) {
+
         oldButton.remove();
+
     }
 
+
+    /*
+     * No saved answer yet.
+     */
+
     if (!savedAnswer) {
+
         return;
+
     }
+
 
     const radio =
         document.querySelector(
@@ -1147,51 +1517,97 @@ function restoreAnswerState() {
             '"]'
         );
 
+
     if (!radio) {
+
         return;
+
     }
 
-    radio.checked = true;
+
+    radio.checked =
+        true;
+
 
     const option =
-        radio.closest(".option");
+        radio.closest(
+            ".option"
+        );
+
 
     const correctAnswer =
         getCorrectAnswer();
+
+
+    /*
+     * Restore correct / wrong state.
+     */
 
     if (
         savedAnswer ===
         correctAnswer
     ) {
 
-        option.classList.add(
-            "correct-answer"
-        );
+        if (option) {
 
-        result.innerText =
-            "Correct! 🎉";
+            option.classList.add(
+                "correct-answer"
+            );
 
-        result.style.color =
-            "#16a34a";
+        }
+
+
+        if (result) {
+
+            result.innerText =
+                "Correct! 🎉";
+
+            result.style.color =
+                "#16a34a";
+
+        }
+
 
     } else {
 
-        option.classList.add(
-            "wrong-answer"
-        );
+        if (option) {
+
+            option.classList.add(
+                "wrong-answer"
+            );
+
+        }
+
 
         highlightCorrectAnswer(
             correctAnswer
         );
 
-        result.innerText =
-            "Not quite. Keep learning!";
 
-        result.style.color =
-            "#dc2626";
+        if (result) {
+
+            result.innerText =
+                "Not quite. Keep learning!";
+
+            result.style.color =
+                "#dc2626";
+
+        }
+
     }
 
-    createExplanationButton();
+
+    /*
+     * IMPORTANT:
+     *
+     * Previously the explanation was hidden
+     * until the user clicked "Show Explanation".
+     *
+     * Now it is restored automatically.
+     */
+
+    showExplanation();
+
 }
 
 
@@ -1210,48 +1626,26 @@ function highlightCorrectAnswer(
             '"]'
         );
 
+
     if (!radio) {
         return;
     }
 
+
     const option =
-        radio.closest(".option");
+        radio.closest(
+            ".option"
+        );
+
 
     if (option) {
 
         option.classList.add(
             "correct-answer"
         );
-    }
-}
 
-
-/* ============================================================
-   FIND QUESTION BY ID
-   ============================================================ */
-
-function findQuestionById(
-    questionId
-) {
-
-    if (!questionId) {
-        return null;
     }
 
-    const targetId =
-        String(questionId)
-            .trim()
-            .toLowerCase();
-
-    return questions.find(
-        question =>
-            String(
-                question.id || ""
-            )
-                .trim()
-                .toLowerCase() ===
-            targetId
-    ) || null;
 }
 
 
@@ -1266,55 +1660,37 @@ function updateNavigation() {
             "previous-question-btn"
         );
 
+
     const nextButton =
         document.getElementById(
             "next-question-btn"
         );
 
-    const position =
-        document.getElementById(
-            "question-position"
-        );
 
-    if (!currentQuestion) {
-        return;
+    /*
+     * "Question X of Y" has been
+     * completely removed.
+     *
+     * There is intentionally no
+     * position text update here.
+     */
+
+    if (previousButton) {
+
+        previousButton.disabled =
+            currentQuestionIndex <= 0;
+
     }
 
-    const previousQuestionId =
-        String(
-            currentQuestion[
-                "previous related question"
-            ] || ""
-        ).trim();
 
-    const nextQuestionId =
-        String(
-            currentQuestion[
-                "next related question"
-            ] || ""
-        ).trim();
+    if (nextButton) {
 
-    const previousQuestion =
-        findQuestionById(
-            previousQuestionId
-        );
+        nextButton.disabled =
+            currentQuestionIndex >=
+            questions.length - 1;
 
-    const nextQuestion =
-        findQuestionById(
-            nextQuestionId
-        );
+    }
 
-    previousButton.disabled =
-        !previousQuestion;
-
-    nextButton.disabled =
-        !nextQuestion;
-
-    position.innerText =
-        "Question " +
-        (currentQuestionIndex + 1) +
-        " of " +
-        questions.length;
 }
 
 
@@ -1329,12 +1705,15 @@ function updateScore() {
             "score-display"
         );
 
+
     if (!scoreDisplay) {
         return;
     }
 
+
     const answeredCount =
         answeredQuestions.size;
+
 
     scoreDisplay.innerHTML =
         "Your current streak - " +
@@ -1343,88 +1722,64 @@ function updateScore() {
         "/" +
         answeredCount +
         "</strong>";
+
 }
 
 
 /* ============================================================
-   PREVIOUS RELATED QUESTION
+   PREVIOUS QUESTION
    ============================================================ */
 
 function goToPreviousQuestion() {
 
-    if (!currentQuestion) {
+    if (
+        currentQuestionIndex <= 0
+    ) {
+
         return;
+
     }
 
-    const previousQuestionId =
-        String(
-            currentQuestion[
-                "previous related question"
-            ] || ""
-        ).trim();
-
-    if (!previousQuestionId) {
-        return;
-    }
 
     const question =
-        findQuestionById(
-            previousQuestionId
-        );
+        questions[
+            currentQuestionIndex - 1
+        ];
 
-    if (!question) {
-        console.warn(
-            "Previous related question not found:",
-            previousQuestionId
-        );
-
-        return;
-    }
 
     navigateToQuestion(
         question
     );
+
 }
 
 
 /* ============================================================
-   NEXT RELATED QUESTION
+   NEXT QUESTION
    ============================================================ */
 
 function goToNextQuestion() {
 
-    if (!currentQuestion) {
+    if (
+        currentQuestionIndex >=
+        questions.length - 1
+    ) {
+
         return;
+
     }
 
-    const nextQuestionId =
-        String(
-            currentQuestion[
-                "next related question"
-            ] || ""
-        ).trim();
-
-    if (!nextQuestionId) {
-        return;
-    }
 
     const question =
-        findQuestionById(
-            nextQuestionId
-        );
+        questions[
+            currentQuestionIndex + 1
+        ];
 
-    if (!question) {
-        console.warn(
-            "Next related question not found:",
-            nextQuestionId
-        );
-
-        return;
-    }
 
     navigateToQuestion(
         question
     );
+
 }
 
 
@@ -1440,18 +1795,23 @@ function navigateToQuestion(
         !question ||
         !question.id
     ) {
+
         return;
+
     }
+
 
     const url =
         new URL(
             window.location.href
         );
 
+
     url.searchParams.set(
         "id",
-        String(question.id).trim()
+        question.id
     );
+
 
     window.history.pushState(
         {},
@@ -1459,7 +1819,9 @@ function navigateToQuestion(
         url
     );
 
+
     loadQuestion();
+
 }
 
 
@@ -1474,24 +1836,35 @@ function loadMotivationalQuote() {
             "quote-text"
         );
 
+
     const quoteAuthor =
         document.getElementById(
             "quote-author"
         );
+
 
     if (
         !quoteText ||
         !quoteAuthor ||
         !quotes.length
     ) {
+
         return;
+
     }
+
 
     let index =
         Math.floor(
             Math.random() *
             quotes.length
         );
+
+
+    /*
+     * Avoid showing exactly the
+     * same quote twice in a row.
+     */
 
     if (
         quotes.length > 1 &&
@@ -1503,18 +1876,23 @@ function loadMotivationalQuote() {
                 index + 1
             ) %
             quotes.length;
+
     }
+
 
     lastQuoteIndex =
         index;
 
+
     const quote =
         quotes[index];
+
 
     quoteText.innerText =
         "“" +
         quote.quote +
         "”";
+
 
     if (
         quote.author &&
@@ -1525,16 +1903,21 @@ function loadMotivationalQuote() {
             "— " +
             quote.author.trim();
 
+
         quoteAuthor.style.display =
             "block";
 
     } else {
 
-        quoteAuthor.innerText = "";
+        quoteAuthor.innerText =
+            "";
+
 
         quoteAuthor.style.display =
             "none";
+
     }
+
 }
 
 
@@ -1547,6 +1930,7 @@ function getQuestionId() {
     return String(
         currentQuestion.id
     );
+
 }
 
 
@@ -1557,14 +1941,23 @@ function getQuestionId() {
 function getCorrectAnswer() {
 
     return (
-        currentQuestion["correct answer"] ||
-        currentQuestion["correct_answer"] ||
+        currentQuestion[
+            "correct answer"
+        ] ||
+
+        currentQuestion[
+            "correct_answer"
+        ] ||
+
         currentQuestion.answer ||
+
         currentQuestion.correct ||
+
         ""
     )
         .trim()
         .toUpperCase();
+
 }
 
 
@@ -1575,6 +1968,7 @@ function getCorrectAnswer() {
 function showCorrectCelebration() {
 
     createEmojiBurst([
+
         "🎉",
         "👏",
         "🥳",
@@ -1586,7 +1980,9 @@ function showCorrectCelebration() {
         "🔥",
         "🤯",
         "⚡"
+
     ]);
+
 }
 
 
@@ -1597,12 +1993,15 @@ function showCorrectCelebration() {
 function showWrongReaction() {
 
     createEmojiBurst([
+
         "😅",
         "🤔",
         "🫠",
         "😵",
         "💭"
+
     ]);
+
 }
 
 
@@ -1614,6 +2013,10 @@ function createEmojiBurst(
     emojis
 ) {
 
+    /*
+     * Remove previous reaction.
+     */
+
     document
         .querySelectorAll(
             ".reaction-container"
@@ -1623,17 +2026,21 @@ function createEmojiBurst(
                 element.remove()
         );
 
+
     const container =
         document.createElement(
             "div"
         );
 
+
     container.className =
         "reaction-container";
+
 
     document.body.appendChild(
         container
     );
+
 
     emojis.forEach(
         emoji => {
@@ -1643,11 +2050,14 @@ function createEmojiBurst(
                     "span"
                 );
 
+
             element.className =
                 "reaction-emoji";
 
+
             element.innerText =
                 emoji;
+
 
             element.style.setProperty(
                 "--start-left",
@@ -1658,6 +2068,7 @@ function createEmojiBurst(
                 "%"
             );
 
+
             element.style.setProperty(
                 "--delay",
                 (
@@ -1665,6 +2076,7 @@ function createEmojiBurst(
                 ) +
                 "s"
             );
+
 
             element.style.setProperty(
                 "--duration",
@@ -1675,6 +2087,7 @@ function createEmojiBurst(
                 "s"
             );
 
+
             element.style.setProperty(
                 "--rotation",
                 (
@@ -1683,6 +2096,7 @@ function createEmojiBurst(
                 ) +
                 "deg"
             );
+
 
             element.style.setProperty(
                 "--horizontal",
@@ -1693,6 +2107,7 @@ function createEmojiBurst(
                 "px"
             );
 
+
             element.style.setProperty(
                 "--emoji-size",
                 (
@@ -1702,11 +2117,14 @@ function createEmojiBurst(
                 "rem"
             );
 
+
             container.appendChild(
                 element
             );
+
         }
     );
+
 
     setTimeout(
         () => {
@@ -1714,12 +2132,15 @@ function createEmojiBurst(
             if (
                 container.parentNode
             ) {
+
                 container.remove();
+
             }
 
         },
         4500
     );
+
 }
 
 
@@ -1734,29 +2155,43 @@ function handleKeyboardNavigation(
     const activeElement =
         document.activeElement;
 
+
     if (
         activeElement &&
         (
-            activeElement.tagName === "INPUT" ||
-            activeElement.tagName === "TEXTAREA" ||
-            activeElement.tagName === "BUTTON"
+            activeElement.tagName ===
+                "INPUT" ||
+
+            activeElement.tagName ===
+                "TEXTAREA" ||
+
+            activeElement.tagName ===
+                "BUTTON"
         )
     ) {
+
         return;
+
     }
 
+
     if (
-        event.key === "ArrowLeft"
+        event.key ===
+        "ArrowLeft"
     ) {
 
         goToPreviousQuestion();
 
+
     } else if (
-        event.key === "ArrowRight"
+        event.key ===
+        "ArrowRight"
     ) {
 
         goToNextQuestion();
+
     }
+
 }
 
 
@@ -1768,27 +2203,52 @@ function showError(
     message
 ) {
 
-    document
-        .getElementById(
+    const loading =
+        document.getElementById(
             "loading"
-        )
-        .classList.add("hidden");
+        );
 
-    document
-        .getElementById(
+
+    const questionContainer =
+        document.getElementById(
             "question-container"
-        )
-        .classList.add("hidden");
+        );
+
 
     const errorBox =
         document.getElementById(
             "error"
         );
 
-    errorBox.classList.remove(
-        "hidden"
-    );
 
-    errorBox.innerText =
-        message;
+    if (loading) {
+
+        loading.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (questionContainer) {
+
+        questionContainer.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (errorBox) {
+
+        errorBox.classList.remove(
+            "hidden"
+        );
+
+
+        errorBox.innerText =
+            message;
+
+    }
+
 }
