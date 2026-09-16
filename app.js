@@ -58,7 +58,6 @@ let lastQuoteIndex = -1;
 const BACKGROUNDS_API =
     "https://api.github.com/repos/jai92xi/AIBrainBox/contents/Backgrounds_Folder";
 
-
 /*
  * The random background is stored here so that
  * refreshing the page does not immediately select
@@ -67,6 +66,41 @@ const BACKGROUNDS_API =
 
 const BACKGROUND_SESSION_KEY =
     "aibrainbox-session-background";
+
+
+/* =========================================================
+   HTML RENDERING
+   ========================================================= */
+
+/*
+ * Quiz content in the CSV is allowed to use
+ * <b>...</b> for keyword highlighting.
+ *
+ * Only <b> tags are preserved.
+ * Other HTML tags are removed.
+ *
+ * This prevents arbitrary HTML from being
+ * rendered while allowing keyword highlighting.
+ */
+
+function renderQuizHTML(
+    text
+) {
+
+    if (
+        text === undefined ||
+        text === null
+    ) {
+        return "";
+    }
+
+    return String(text)
+        .replace(
+            /<(?!\/?b\b)[^>]*>/gi,
+            ""
+        );
+
+}
 
 
 /* =========================================================
@@ -145,7 +179,6 @@ function moveScoreIntoHeader() {
             scoreDisplay
         )
     ) {
-
         header.appendChild(
             scoreDisplay
         );
@@ -174,7 +207,6 @@ async function loadQuestions() {
     try {
 
         if (loading) {
-
             loading.classList.remove(
                 "hidden"
             );
@@ -389,7 +421,7 @@ async function loadQuotes() {
  *
  *   New browser session  -> random background
  *   Page refresh          -> same background
- *   New browser session  -> new random background
+ *   New browser session   -> new random background
  *
  * Supported visual formats include:
  *
@@ -800,6 +832,7 @@ function createBackgroundElement(
                     console.warn(
                         "Background video autoplay was blocked."
                     );
+
                 }
             );
         }
@@ -1084,7 +1117,9 @@ function loadQuestionFromURL() {
             currentQuestionIndex =
                 index;
 
+
             displayQuestion();
+
 
             return;
         }
@@ -1172,9 +1207,11 @@ function displayQuestion() {
             );
 
 
-        questionElement.innerText =
-            questionText ||
-            "Question unavailable.";
+        questionElement.innerHTML =
+            renderQuizHTML(
+                questionText ||
+                "Question unavailable."
+            );
     }
 
 
@@ -1288,12 +1325,7 @@ function getQuestionText(
 
 
     if (
-        fallbackKey &&
-        String(
-            question[
-                fallbackKey
-            ]
-        ).trim() !== ""
+        fallbackKey
     ) {
 
         return String(
@@ -1333,12 +1365,10 @@ function createOptions() {
 
 
     const optionLetters = [
-
         "A",
         "B",
         "C",
         "D"
-
     ];
 
 
@@ -1353,20 +1383,20 @@ function createOptions() {
 
 
             if (
-                !optionValue
+                optionValue === ""
             ) {
 
                 return;
             }
 
 
-            const label =
+            const option =
                 document.createElement(
                     "label"
                 );
 
 
-            label.className =
+            option.className =
                 "option";
 
 
@@ -1388,17 +1418,30 @@ function createOptions() {
                 letter;
 
 
-            const optionLetter =
+            radio.addEventListener(
+                "change",
+                () => {
+
+                    checkAnswer(
+                        radio,
+                        option
+                    );
+
+                }
+            );
+
+
+            const letterSpan =
                 document.createElement(
                     "span"
                 );
 
 
-            optionLetter.className =
+            letterSpan.className =
                 "option-letter";
 
 
-            optionLetter.innerText =
+            letterSpan.innerText =
                 letter;
 
 
@@ -1412,37 +1455,29 @@ function createOptions() {
                 "option-text";
 
 
-            optionText.innerText =
-                optionValue;
+            optionText.innerHTML =
+                renderQuizHTML(
+                    optionValue
+                );
 
 
-            label.appendChild(
+            option.appendChild(
                 radio
             );
 
 
-            label.appendChild(
-                optionLetter
+            option.appendChild(
+                letterSpan
             );
 
 
-            label.appendChild(
+            option.appendChild(
                 optionText
             );
 
 
-            radio.addEventListener(
-                "change",
-                () =>
-                    checkAnswer(
-                        radio,
-                        label
-                    )
-            );
-
-
             optionsContainer.appendChild(
-                label
+                option
             );
 
         }
@@ -1469,17 +1504,17 @@ function getOptionValue(
 
     const possibleKeys = [
 
+        letter,
+        letter.toLowerCase(),
+
         `option ${letter}`,
         `Option ${letter}`,
-        `OPTION ${letter}`,
 
-        `option_${letter.toLowerCase()}`,
         `option_${letter}`,
-
         `Option_${letter}`,
-        `OPTION_${letter}`,
 
-        letter
+        `option-${letter}`,
+        `Option-${letter}`
 
     ];
 
@@ -1527,6 +1562,7 @@ function getOptionValue(
                     normalized ===
                     `option ${letter.toLowerCase()}`
                 );
+
             }
         );
 
@@ -1692,6 +1728,7 @@ function checkAnswer(
             result.innerHTML =
                 "Correct! 🎉";
 
+
             result.className =
                 "result-correct";
 
@@ -1703,6 +1740,7 @@ function checkAnswer(
 
             result.innerHTML =
                 "Not quite. Keep learning!";
+
 
             result.className =
                 "result-wrong";
@@ -1734,197 +1772,376 @@ function checkAnswer(
 
 function createRelatedNavigation() {
 
-    /*
-     * Remove old navigation.
-     */
-
-    const existingNavigation =
-        document.querySelector(
-            ".related-navigation"
-        );
-
-
-    if (
-        existingNavigation
-    ) {
-
-        existingNavigation.remove();
-    }
-
-
-    const questionContainer =
+    const navigation =
         document.getElementById(
-            "question-container"
+            "related-navigation"
         );
 
 
     if (
-        !questionContainer
+        !navigation
     ) {
 
         return;
     }
 
 
-    const navigation =
-        document.createElement(
-            "div"
+    navigation.innerHTML =
+        "";
+
+
+    const previousId =
+        getRelatedQuestionId(
+            currentQuestion,
+            "previous"
         );
 
 
-    navigation.className =
-        "related-navigation";
-
-
-    /*
-     * =====================================================
-     * PREVIOUS
-     * =====================================================
-     */
-
-    const previousColumn =
-        document.createElement(
-            "div"
+    const nextId =
+        getRelatedQuestionId(
+            currentQuestion,
+            "next"
         );
 
 
-    previousColumn.className =
-        "related-column";
+    if (
+        previousId
+    ) {
+
+        const previousButton =
+            document.createElement(
+                "button"
+            );
 
 
-    const previousButton =
-        document.createElement(
-            "button"
+        previousButton.type =
+            "button";
+
+
+        previousButton.innerText =
+            "← Previous";
+
+
+        previousButton.addEventListener(
+            "click",
+            () => {
+
+                navigateToQuestionId(
+                    previousId
+                );
+
+            }
         );
 
 
-    previousButton.type =
-        "button";
+        navigation.appendChild(
+            previousButton
+        );
+    }
 
 
-    previousButton.className =
-        "related-question previous-related";
+    if (
+        nextId
+    ) {
+
+        const nextButton =
+            document.createElement(
+                "button"
+            );
 
 
-    previousButton.innerHTML =
-        "←";
+        nextButton.type =
+            "button";
 
 
-    previousButton.setAttribute(
-        "aria-label",
-        "Previous question"
-    );
+        nextButton.innerText =
+            "Next →";
 
 
-    previousButton.title =
-        "Previous question";
+        nextButton.addEventListener(
+            "click",
+            () => {
 
+                navigateToQuestionId(
+                    nextId
+                );
 
-    previousButton.disabled =
-        currentQuestionIndex <= 0;
-
-
-    previousButton.addEventListener(
-        "click",
-        () =>
-            navigateQuestion(
-                -1
-            )
-    );
-
-
-    previousColumn.appendChild(
-        previousButton
-    );
-
-
-    /*
-     * =====================================================
-     * NEXT
-     * =====================================================
-     */
-
-    const nextColumn =
-        document.createElement(
-            "div"
+            }
         );
 
 
-    nextColumn.className =
-        "related-column";
+        navigation.appendChild(
+            nextButton
+        );
+    }
+}
 
 
-    const nextButton =
-        document.createElement(
-            "button"
+/* =========================================================
+   GET RELATED QUESTION ID
+   ========================================================= */
+
+function getRelatedQuestionId(
+    question,
+    direction
+) {
+
+    if (
+        !question
+    ) {
+
+        return "";
+    }
+
+
+    const keys =
+        direction === "previous"
+
+            ? [
+
+                "previous related question",
+                "Previous related question",
+                "previous_related_question",
+                "Previous_Related_Question"
+
+            ]
+
+            : [
+
+                "next related question",
+                "Next related question",
+                "next_related_question",
+                "Next_Related_Question"
+
+            ];
+
+
+    for (
+        const key of keys
+    ) {
+
+        if (
+            question[key] !== undefined &&
+            question[key] !== null
+        ) {
+
+            const value =
+                String(
+                    question[key]
+                ).trim();
+
+
+            if (
+                value
+            ) {
+
+                return value;
+            }
+        }
+    }
+
+
+    return "";
+}
+
+
+/* =========================================================
+   NAVIGATE TO QUESTION ID
+   ========================================================= */
+
+function navigateToQuestionId(
+    questionId
+) {
+
+    if (
+        !questionId
+    ) {
+
+        return;
+    }
+
+
+    const index =
+        questions.findIndex(
+            question =>
+                getQuestionIdFromObject(
+                    question
+                ) === questionId
         );
 
 
-    nextButton.type =
-        "button";
+    if (
+        index === -1
+    ) {
+
+        return;
+    }
 
 
-    nextButton.className =
-        "related-question next-related";
+    currentQuestionIndex =
+        index;
 
 
-    nextButton.innerHTML =
-        "→";
+    const url =
+        new URL(
+            window.location.href
+        );
 
 
-    nextButton.setAttribute(
-        "aria-label",
-        "Next question"
+    url.searchParams.set(
+        "id",
+        questionId
     );
 
 
-    nextButton.title =
-        "Next question";
-
-
-    nextButton.disabled =
-        currentQuestionIndex >=
-        questions.length - 1;
-
-
-    nextButton.addEventListener(
-        "click",
-        () =>
-            navigateQuestion(
-                1
-            )
+    window.history.pushState(
+        {},
+        "",
+        url
     );
 
 
-    nextColumn.appendChild(
-        nextButton
+    displayQuestion();
+}
+
+
+/* =========================================================
+   HANDLE POP STATE
+   ========================================================= */
+
+function handlePopState() {
+
+    loadQuestionFromURL();
+}
+
+
+/* =========================================================
+   NAVIGATE QUESTION
+   ========================================================= */
+
+function navigateQuestion(
+    direction
+) {
+
+    const nextIndex =
+        currentQuestionIndex +
+        direction;
+
+
+    if (
+        nextIndex < 0 ||
+        nextIndex >= questions.length
+    ) {
+
+        return;
+    }
+
+
+    currentQuestionIndex =
+        nextIndex;
+
+
+    const questionId =
+        getQuestionIdFromObject(
+            questions[
+                currentQuestionIndex
+            ]
+        );
+
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    if (
+        questionId
+    ) {
+
+        url.searchParams.set(
+            "id",
+            questionId
+        );
+    }
+
+
+    window.history.pushState(
+        {},
+        "",
+        url
     );
 
 
-    /*
-     * =====================================================
-     * ADD BOTH
-     * =====================================================
-     */
+    displayQuestion();
+}
 
-    navigation.appendChild(
-        previousColumn
+
+/* =========================================================
+   CLEAR OPTION STATES
+   ========================================================= */
+
+function clearOptionStates() {
+
+    const options =
+        document.querySelectorAll(
+            ".option"
+        );
+
+
+    options.forEach(
+        option => {
+
+            option.classList.remove(
+                "correct-answer",
+                "wrong-answer"
+            );
+
+        }
     );
+}
 
 
-    navigation.appendChild(
-        nextColumn
-    );
+/* =========================================================
+   HIGHLIGHT CORRECT ANSWER
+   ========================================================= */
+
+function highlightCorrectAnswer(
+    correctAnswer
+) {
+
+    const radios =
+        document.querySelectorAll(
+            'input[name="quiz-option"]'
+        );
 
 
-    /*
-     * Place navigation above
-     * the question content.
-     */
+    radios.forEach(
+        radio => {
 
-    questionContainer.insertBefore(
-        navigation,
-        questionContainer.firstChild
+            if (
+                radio.value
+                    .trim()
+                    .toUpperCase() ===
+                correctAnswer
+            ) {
+
+                const option =
+                    radio.closest(
+                        ".option"
+                    );
+
+
+                if (
+                    option
+                ) {
+
+                    option.classList.add(
+                        "correct-answer"
+                    );
+                }
+            }
+        }
     );
 }
 
@@ -1951,9 +2168,6 @@ function restoreAnswerState() {
         );
 
 
-    clearOptionStates();
-
-
     const result =
         document.getElementById(
             "result"
@@ -1961,26 +2175,8 @@ function restoreAnswerState() {
 
 
     if (
-        result
-    ) {
-
-        result.innerHTML =
-            "";
-
-        result.className =
-            "";
-    }
-
-
-    /*
-     * Not answered yet.
-     */
-
-    if (
         !savedAnswer
     ) {
-
-        hideExplanation();
 
         return;
     }
@@ -2047,6 +2243,7 @@ function restoreAnswerState() {
             result.innerHTML =
                 "Not quite. Keep learning!";
 
+
             result.className =
                 "result-wrong";
         }
@@ -2064,6 +2261,7 @@ function restoreAnswerState() {
 
             result.innerHTML =
                 "Correct! 🎉";
+
 
             result.className =
                 "result-correct";
@@ -2112,9 +2310,11 @@ function showExplanation() {
         );
 
 
-    explanationText.innerText =
-        text ||
-        "Explanation not available.";
+    explanationText.innerHTML =
+        renderQuizHTML(
+            text ||
+            "Explanation not available."
+        );
 
 
     explanation.classList.remove(
@@ -2197,12 +2397,7 @@ function getExplanationText(
 
 
     if (
-        fallbackKey &&
-        String(
-            question[
-                fallbackKey
-            ]
-        ).trim() !== ""
+        fallbackKey
     ) {
 
         return String(
@@ -2218,247 +2413,205 @@ function getExplanationText(
 
 
 /* =========================================================
-   HIDE EXPLANATION
+   GET QUESTION ID
    ========================================================= */
 
-function hideExplanation() {
+function getQuestionId() {
 
-    const explanation =
-        document.getElementById(
-            "explanation"
-        );
-
-
-    if (
-        explanation
-    ) {
-
-        explanation.classList.add(
-            "hidden"
-        );
-    }
-}
-
-
-/* =========================================================
-   CLEAR OPTION STATES
-   ========================================================= */
-
-function clearOptionStates() {
-
-    const options =
-        document.querySelectorAll(
-            ".option"
-        );
-
-
-    options.forEach(
-        option => {
-
-            option.classList.remove(
-
-                "selected",
-
-                "correct-answer",
-
-                "wrong-answer"
-
-            );
-        }
+    return getQuestionIdFromObject(
+        currentQuestion
     );
 }
 
 
-/* =========================================================
-   HIGHLIGHT CORRECT ANSWER
-   ========================================================= */
-
-function highlightCorrectAnswer(
-    correctAnswer
+function getQuestionIdFromObject(
+    question
 ) {
 
-    const radios =
-        document.querySelectorAll(
-            'input[name="quiz-option"]'
-        );
+    if (
+        !question
+    ) {
+
+        return "";
+    }
 
 
-    radios.forEach(
-        radio => {
+    const possibleKeys = [
+
+        "ID",
+        "Id",
+        "id",
+
+        "\uFEFFID",
+        "\uFEFFId",
+        "\uFEFFid"
+
+    ];
+
+
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            question[key] !== undefined &&
+            question[key] !== null
+        ) {
+
+            const value =
+                String(
+                    question[key]
+                ).trim();
+
 
             if (
-                radio.value.toUpperCase() ===
-                correctAnswer.toUpperCase()
+                value
             ) {
 
-                const option =
-                    radio.closest(
-                        ".option"
-                    );
-
-
-                if (
-                    option
-                ) {
-
-                    option.classList.add(
-                        "correct-answer"
-                    );
-                }
+                return value;
             }
         }
-    );
+    }
+
+
+    const fallbackKey =
+        Object.keys(
+            question
+        ).find(
+            key =>
+                key
+                    .replace(
+                        /^\uFEFF/,
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase() ===
+                "id"
+        );
+
+
+    if (
+        fallbackKey
+    ) {
+
+        return String(
+            question[
+                fallbackKey
+            ]
+        ).trim();
+    }
+
+
+    return "";
 }
 
 
 /* =========================================================
-   NAVIGATE QUESTION
+   GET CORRECT ANSWER
    ========================================================= */
 
-function navigateQuestion(
-    direction
-) {
-
-    const newIndex =
-        currentQuestionIndex +
-        direction;
-
+function getCorrectAnswer() {
 
     if (
-        newIndex < 0 ||
-        newIndex >= questions.length
+        !currentQuestion
     ) {
 
-        return;
+        return "";
     }
 
 
-    currentQuestionIndex =
-        newIndex;
+    const possibleKeys = [
+
+        "Correct Answer",
+        "correct answer",
+        "CorrectAnswer",
+        "correct_answer",
+
+        "Answer",
+        "answer",
+
+        "Correct",
+        "correct"
+
+    ];
 
 
-    const questionId =
-        getQuestionId();
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            currentQuestion[key] !== undefined &&
+            currentQuestion[key] !== null
+        ) {
+
+            const value =
+                String(
+                    currentQuestion[key]
+                )
+                    .trim()
+                    .toUpperCase();
 
 
-    /*
-     * Update URL.
-     */
+            if (
+                value
+            ) {
 
-    const url =
-        new URL(
-            window.location.href
+                return value;
+            }
+        }
+    }
+
+
+    const fallbackKey =
+        Object.keys(
+            currentQuestion
+        ).find(
+            key =>
+                key
+                    .replace(
+                        /^\uFEFF/,
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase()
+                    .replace(
+                        /[_-]/g,
+                        " "
+                    ) ===
+                "correct answer"
         );
 
 
     if (
-        questionId
+        fallbackKey
     ) {
 
-        url.searchParams.set(
-            "id",
-            questionId
-        );
+        return String(
+            currentQuestion[
+                fallbackKey
+            ]
+        )
+            .trim()
+            .toUpperCase();
     }
 
 
-    history.pushState(
-        {},
-        "",
-        url
-    );
-
-
-    displayQuestion();
+    return "";
 }
 
 
 /* =========================================================
-   BROWSER BACK / FORWARD
+   UPDATE SCORE
    ========================================================= */
-
-function handlePopState() {
-
-    loadQuestionFromURL();
-}
-
-
-/* =========================================================
-   UPDATE NAVIGATION
-   ========================================================= */
-
-function updateNavigation() {
-
-    const previousButton =
-        document.getElementById(
-            "previous-button"
-        );
-
-
-    const nextButton =
-        document.getElementById(
-            "next-button"
-        );
-
-
-    const position =
-        document.getElementById(
-            "question-position"
-        );
-
-
-    if (
-        previousButton
-    ) {
-
-        previousButton.disabled =
-            currentQuestionIndex <= 0;
-    }
-
-
-    if (
-        nextButton
-    ) {
-
-        nextButton.disabled =
-            currentQuestionIndex >=
-            questions.length - 1;
-    }
-
-
-    if (
-        position
-    ) {
-
-        position.innerText =
-            "";
-    }
-}
-
-
-/* =========================================================
-   UPDATE CURRENT STREAK / SCORE
-   ========================================================= */
-
-/*
- * Example:
- *
- * Q1 -> Correct
- * Q2 -> Correct
- * Q3 -> Wrong
- *
- * Display:
- *
- * 🔥 Current streak: 2/3
- *
- * This represents:
- *
- * Correct answers / Answered questions
- *
- * It does NOT reset to zero after a wrong answer.
- */
 
 function updateScore() {
+
+    const scoreElement =
+        document.getElementById(
+            "score"
+        );
+
 
     const scoreDisplay =
         document.getElementById(
@@ -2467,24 +2620,32 @@ function updateScore() {
 
 
     if (
-        !scoreDisplay
+        scoreElement
     ) {
 
-        return;
+        scoreElement.innerText =
+            String(
+                score
+            );
     }
 
 
-    const totalAnswered =
-        answeredQuestions.size;
+    if (
+        scoreDisplay
+    ) {
+
+        const total =
+            answeredQuestions.size;
 
 
-    scoreDisplay.innerHTML =
-        `🔥 Current streak: <strong>${score}/${totalAnswered}</strong>`;
+        scoreDisplay.innerText =
+            `${total} answered • ${score} correct`;
+    }
 }
 
 
 /* =========================================================
-   LOAD MOTIVATIONAL QUOTE
+   MOTIVATIONAL QUOTE
    ========================================================= */
 
 function loadMotivationalQuote() {
@@ -2500,28 +2661,19 @@ function loadMotivationalQuote() {
     let randomIndex;
 
 
-    if (
-        quotes.length === 1
-    ) {
+    do {
 
         randomIndex =
-            0;
+            Math.floor(
+                Math.random() *
+                quotes.length
+            );
 
-    } else {
-
-        do {
-
-            randomIndex =
-                Math.floor(
-                    Math.random() *
-                    quotes.length
-                );
-
-        } while (
-            randomIndex ===
+    } while (
+        quotes.length > 1 &&
+        randomIndex ===
             lastQuoteIndex
-        );
-    }
+    );
 
 
     lastQuoteIndex =
@@ -2757,23 +2909,6 @@ function createEmojiBurst(
         ) * 160;
 
 
-    const rotation =
-        (
-            Math.random() -
-            0.5
-        ) * 50;
-
-
-    const duration =
-        1200 +
-        Math.random() *
-        900;
-
-
-    element.style.position =
-        "fixed";
-
-
     element.style.left =
         `${startLeft}%`;
 
@@ -2782,58 +2917,14 @@ function createEmojiBurst(
         `${startTop}%`;
 
 
-    element.style.zIndex =
-        "99999";
-
-
-    element.style.pointerEvents =
-        "none";
-
-
-    element.style.userSelect =
-        "none";
-
-
-    element.style.fontSize =
-        `${28 + Math.random() * 18}px`;
-
-
-    element.style.lineHeight =
-        "1";
-
-
-    element.style.willChange =
-        "transform, opacity";
-
-
-    element.style.opacity =
-        "1";
-
-
-    element.style.transition =
-        `transform ${duration}ms ease-out, opacity ${duration}ms ease-out`;
+    element.style.setProperty(
+        "--drift",
+        `${drift}px`
+    );
 
 
     document.body.appendChild(
         element
-    );
-
-
-    requestAnimationFrame(
-        () => {
-
-            requestAnimationFrame(
-                () => {
-
-                    element.style.transform =
-                        `translate(${drift}px, -${180 + Math.random() * 180}px) rotate(${rotation}deg) scale(1.15)`;
-
-
-                    element.style.opacity =
-                        "0";
-                }
-            );
-        }
     );
 
 
@@ -2844,209 +2935,8 @@ function createEmojiBurst(
 
         },
 
-        duration + 100
+        1800
     );
-}
-
-
-/* =========================================================
-   QUESTION ID
-   ========================================================= */
-
-function getQuestionId() {
-
-    return getQuestionIdFromObject(
-        currentQuestion
-    );
-}
-
-
-function getQuestionIdFromObject(
-    question
-) {
-
-    if (
-        !question
-    ) {
-
-        return "";
-    }
-
-
-    const possibleKeys = [
-
-        "id",
-        "ID",
-        "Id",
-
-        "question id",
-        "Question ID",
-        "QUESTION ID",
-
-        "question_id",
-        "Question_ID",
-        "QUESTION_ID"
-
-    ];
-
-
-    for (
-        const key of possibleKeys
-    ) {
-
-        if (
-            question[key] !== undefined &&
-            question[key] !== null &&
-            String(
-                question[key]
-            ).trim() !== ""
-        ) {
-
-            return String(
-                question[key]
-            ).trim();
-        }
-    }
-
-
-    /*
-     * Fallback if CSV has no ID.
-     */
-
-    const index =
-        questions.indexOf(
-            question
-        );
-
-
-    if (
-        index !== -1
-    ) {
-
-        return String(
-            index + 1
-        );
-    }
-
-
-    return "";
-}
-
-
-/* =========================================================
-   CORRECT ANSWER
-   ========================================================= */
-
-function getCorrectAnswer() {
-
-    if (
-        !currentQuestion
-    ) {
-
-        return "";
-    }
-
-
-    const possibleKeys = [
-
-        "correct answer",
-        "Correct Answer",
-        "CORRECT ANSWER",
-
-        "correct_answer",
-        "Correct_Answer",
-        "CORRECT_ANSWER",
-
-        "answer",
-        "Answer",
-
-        "correct",
-        "Correct"
-
-    ];
-
-
-    for (
-        const key of possibleKeys
-    ) {
-
-        if (
-            currentQuestion[key] !== undefined &&
-            currentQuestion[key] !== null &&
-            String(
-                currentQuestion[key]
-            ).trim() !== ""
-        ) {
-
-            return String(
-                currentQuestion[key]
-            )
-                .trim()
-                .toUpperCase();
-        }
-    }
-
-
-    const fallbackKey =
-        Object.keys(
-            currentQuestion
-        ).find(
-            key => {
-
-                const normalized =
-                    key
-                        .replace(
-                            /^\uFEFF/,
-                            ""
-                        )
-                        .trim()
-                        .toLowerCase()
-                        .replace(
-                            /[_-]/g,
-                            " "
-                        );
-
-
-                return (
-
-                    normalized.includes(
-                        "correct"
-                    ) &&
-
-                    (
-                        normalized.includes(
-                            "answer"
-                        ) ||
-
-                        normalized ===
-                        "correct"
-                    )
-
-                );
-            }
-        );
-
-
-    if (
-        fallbackKey &&
-        String(
-            currentQuestion[
-                fallbackKey
-            ]
-        ).trim() !== ""
-    ) {
-
-        return String(
-            currentQuestion[
-                fallbackKey
-            ]
-        )
-            .trim()
-            .toUpperCase();
-    }
-
-
-    return "";
 }
 
 
@@ -3110,6 +3000,7 @@ function parseCSV(
                 cell
             );
 
+
             cell = "";
 
 
@@ -3136,6 +3027,7 @@ function parseCSV(
             row.push(
                 cell
             );
+
 
             cell = "";
 
@@ -3247,6 +3139,7 @@ function parseCSV(
                                     values[index]
                                 ).trim()
                                 : "";
+
                     }
                 );
 
@@ -3258,76 +3151,52 @@ function parseCSV(
 
 
 /* =========================================================
-   QUOTE CSV PARSER
+   PARSE QUOTES CSV
    ========================================================= */
 
 function parseQuotesCSV(
     csvText
 ) {
 
-    const data =
+    const rows =
         parseCSV(
             csvText
         );
 
 
-    return data
+    return rows.map(
+        row => {
 
-        .map(
-            row => {
-
-                const quote =
-
-                    row.quote ||
-
-                    row.Quote ||
-
-                    row.QUOTE ||
-
-                    row["Quote Text"] ||
-
-                    row["quote text"] ||
-
-                    row["QUOTE TEXT"] ||
-
-                    "";
+            const quote =
+                row.quote ||
+                row.Quote ||
+                row.QUOTE ||
+                "";
 
 
-                const author =
-
-                    row.author ||
-
-                    row.Author ||
-
-                    row.AUTHOR ||
-
-                    row["Quote Author"] ||
-
-                    row["quote author"] ||
-
-                    row["QUOTE AUTHOR"] ||
-
-                    "";
+            const author =
+                row.author ||
+                row.Author ||
+                row.AUTHOR ||
+                "";
 
 
-                return {
+            return {
 
-                    quote:
-                        String(
-                            quote
-                        ).trim(),
+                quote:
+                    String(
+                        quote
+                    ).trim(),
 
-                    author:
-                        String(
-                            author
-                        ).trim()
-                };
-            }
-        )
+                author:
+                    String(
+                        author
+                    ).trim()
 
-
-        .filter(
-            item =>
-                item.quote
-        );
+            };
+        }
+    ).filter(
+        item =>
+            item.quote
+    );
 }
