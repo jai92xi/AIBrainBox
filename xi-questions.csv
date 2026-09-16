@@ -261,13 +261,13 @@ Claim 3 → 50 words
 Claim 4 → 100 words
 Claim 5 → 500 words
 
-If BERT puts all 5 documents into the same batch, the shorter documents may be padded to the length of the longest document (500 words).
+If BERT puts all 5 documents into the same batch, the shorter documents may be <b>padded to the length of the longest document</b> (500 words).
 
-This means BERT processes many unnecessary padding tokens, wasting computation and increasing inference latency.
+This means BERT processes many <b>unnecessary padding tokens</b>, wasting computation and increasing inference latency.
 
-Simple solution:
+<b>Simple solution:</b>
 
-Group inputs with similar sequence lengths into the same batch.
+Group inputs with <b>similar sequence lengths</b> into the same batch.
 
 For example:
 
@@ -277,9 +277,9 @@ Batch 3: 450, 500 words
 
 Now much less padding is needed, so BERT processes fewer unnecessary tokens.
 
-This technique is called dynamic padding with length-based batching (bucketing).
+This technique is called <b>dynamic padding with length-based batching (bucketing)</b>.
 
-In a real-time production system:
+<b>In a real-time production system:</b>
 
 Users
 ↓
@@ -295,4 +295,6 @@ Predictions
 ↓
 Users
 
-Correct answer: A. Dynamic padding / length-based batching","BERT","Inference optimization, Dynamic padding, Length-based batching","",""
+Therefore, the most directly relevant optimization is <b>Dynamic padding / length-based batching</b>.
+
+<b>Correct answer: A. Dynamic padding / length-based batching</b>","BERT","Inference optimization, Dynamic padding, Length-based batching","",""
