@@ -1,8 +1,8 @@
 /* =========================================================
    AI BRAIN BOX
-   GLOBAL STYLES
+   STYLE SHEET
+   Compatible with index.html + app.js
    ========================================================= */
-
 
 /* =========================================================
    RESET
@@ -14,15 +14,13 @@
     padding: 0;
 }
 
-
 html {
     min-height: 100%;
+    scroll-behavior: smooth;
 }
-
 
 body {
     min-height: 100vh;
-
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -33,17 +31,27 @@ body {
         sans-serif;
 
     color: #172033;
-
-    background:
-        linear-gradient(
-            rgba(15, 23, 42, 0.45),
-            rgba(15, 23, 42, 0.45)
-        ),
-        #dbeafe;
+    background: #dbeafe;
 
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
+button,
+input {
+    font: inherit;
+}
+
+button {
+    border: 0;
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid rgba(79, 70, 229, 0.35);
+    outline-offset: 3px;
+}
 
 /* =========================================================
    BACKGROUND
@@ -52,9 +60,7 @@ body {
 #session-background,
 #session-background-image {
     position: fixed;
-
-    top: 0;
-    left: 0;
+    inset: 0;
 
     width: 100%;
     height: 100%;
@@ -62,258 +68,183 @@ body {
     object-fit: cover;
 
     z-index: -3;
-
     pointer-events: none;
-
     user-select: none;
 }
 
-
-/*
- * Darker overlay so the background is clearly visible
- * but the quiz remains easy to read.
- */
-
 #background-overlay {
     position: fixed;
-
     inset: 0;
 
     background:
-        rgba(15, 23, 42, 0.42);
+        linear-gradient(
+            135deg,
+            rgba(15, 23, 42, 0.52),
+            rgba(30, 41, 59, 0.38)
+        );
 
     z-index: -2;
-
     pointer-events: none;
 }
-
 
 /* =========================================================
    MAIN APPLICATION
    ========================================================= */
 
 .app {
-    width: 100%;
+    position: relative;
 
+    width: 100%;
     max-width: 1450px;
 
+    min-height: 100vh;
+
     margin: 0 auto;
-
-    padding:
-        18px
-        28px
-        40px;
+    padding: 24px 30px 50px;
 }
-
 
 /* =========================================================
    HEADER
    ========================================================= */
 
 .brain-box-header {
-
     position: relative;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
-    gap: 30px;
+    gap: 28px;
 
     width: 100%;
+    min-height: 120px;
 
-    min-height: 118px;
+    margin-bottom: 28px;
+    padding: 22px 28px;
 
-    padding:
-        22px
-        28px;
-
-    margin-bottom: 30px;
-
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 22px;
 
-    background:
-        rgba(255, 255, 255, 0.94);
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.94);
 
     box-shadow:
-        0 12px 35px
-        rgba(15, 23, 42, 0.16);
+        0 18px 45px rgba(15, 23, 42, 0.18);
 
-    backdrop-filter:
-        blur(12px);
-
-    -webkit-backdrop-filter:
-        blur(12px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
-
 /* =========================================================
-   BRAND SECTION
+   BRAND
    ========================================================= */
 
 .brand-section {
-
-    flex:
-        1 1 auto;
-
     min-width: 0;
+    flex: 1 1 auto;
 }
-
 
 .brand-title {
-
     display: flex;
-
     align-items: center;
 
-    gap: 10px;
+    gap: 11px;
 
-    font-size: 32px;
+    color: #111827;
 
-    line-height: 1.1;
+    font-size: 31px;
+    line-height: 1.15;
+    font-weight: 850;
 
-    font-weight: 800;
-
-    letter-spacing: -0.8px;
-
-    /*
-     * Catchy brand gradient.
-     */
-
-    background:
-        linear-gradient(
-            90deg,
-            #4f46e5,
-            #9333ea,
-            #ec4899
-        );
-
-    -webkit-background-clip: text;
-
-    background-clip: text;
-
-    color: transparent;
+    letter-spacing: -0.7px;
 }
 
-
 .brain-icon {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
 
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
+
+    flex: 0 0 46px;
 
     border-radius: 13px;
 
     background:
         linear-gradient(
             135deg,
-            #fce7f3,
-            #ede9fe
+            #6366f1,
+            #2563eb
         );
 
+    font-size: 27px;
+
     box-shadow:
-        0 5px 15px
-        rgba(147, 51, 234, 0.18);
-
-    font-size: 25px;
-
-    flex-shrink: 0;
+        0 8px 20px rgba(79, 70, 229, 0.28);
 }
-
 
 .brand-subtitle {
-
-    margin-top: 7px;
-
-    color: #64748b;
-
-    font-size: 16px;
-
-    font-weight: 500;
-}
-
-
-/* =========================================================
-   QUOTE
-   ========================================================= */
-
-.quote-section {
-
-    flex:
-        0 1 460px;
-
-    text-align: right;
-
-    padding:
-        4px 8px;
-}
-
-
-.quote-text {
-
-    color: #475569;
-
-    font-size: 15px;
-
-    line-height: 1.6;
-
-    font-style: italic;
-
-    font-weight: 500;
-}
-
-
-.quote-author {
-
-    margin-top: 4px;
+    margin-top: 8px;
+    padding-left: 57px;
 
     color: #64748b;
 
     font-size: 14px;
-
-    font-weight: 600;
+    line-height: 1.5;
+    font-weight: 500;
 }
 
+/* =========================================================
+   MOTIVATIONAL QUOTE
+   ========================================================= */
+
+.quote-section {
+    flex: 0 1 420px;
+
+    min-width: 0;
+
+    padding: 6px 10px;
+
+    text-align: center;
+}
+
+.quote-text {
+    color: #334155;
+
+    font-size: 15px;
+    line-height: 1.55;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.quote-author {
+    margin-top: 6px;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+}
 
 /* =========================================================
-   CURRENT STREAK
+   SCORE DISPLAY
    ========================================================= */
 
 .score-display {
-
-    flex:
-        0 0 auto;
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
 
-    min-width: 155px;
+    flex: 0 0 auto;
 
-    min-height: 48px;
+    min-height: 44px;
 
-    padding:
-        10px
-        16px;
+    padding: 10px 15px;
 
-    border-radius: 14px;
-
-    /*
-     * Catchy blue/purple streak box.
-     */
+    border: 1px solid #c7d2fe;
+    border-radius: 13px;
 
     background:
         linear-gradient(
@@ -322,131 +253,103 @@ body {
             #eef2ff
         );
 
-    border:
-        1px solid
-        #c7d2fe;
-
     color: #334155;
 
     font-size: 14px;
-
-    font-weight: 600;
+    line-height: 1.25;
+    font-weight: 700;
 
     white-space: nowrap;
 
     box-shadow:
-        0 6px 18px
-        rgba(79, 70, 229, 0.12);
-
-    z-index: 2;
+        0 7px 20px rgba(79, 70, 229, 0.12);
 }
 
-
 .score-display strong {
-
     margin-left: 5px;
 
     color: #4f46e5;
 
     font-size: 17px;
-
-    font-weight: 800;
+    font-weight: 850;
 }
-
 
 /* =========================================================
    LOADING
    ========================================================= */
 
 .loading {
-
     width: fit-content;
+    max-width: calc(100% - 20px);
 
-    margin:
-        35px auto;
+    margin: 35px auto;
+    padding: 13px 20px;
 
-    padding:
-        12px
-        20px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 13px;
 
-    border-radius: 12px;
-
-    background:
-        rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.94);
 
     color: #475569;
 
     font-size: 15px;
+    line-height: 1.4;
+    font-weight: 650;
 
-    font-weight: 600;
+    text-align: center;
 
     box-shadow:
-        0 8px 20px
-        rgba(15, 23, 42, 0.12);
+        0 10px 25px rgba(15, 23, 42, 0.12);
 }
-
 
 /* =========================================================
    ERROR
    ========================================================= */
 
 .error {
+    width: min(600px, calc(100% - 20px));
 
-    margin:
-        30px auto;
+    margin: 30px auto;
+    padding: 16px 20px;
 
-    max-width: 600px;
+    border: 1px solid #fecaca;
+    border-radius: 13px;
 
-    padding:
-        15px
-        20px;
+    background: #fee2e2;
+    color: #b91c1c;
 
-    border-radius: 12px;
-
-    background:
-        #fee2e2;
-
-    border:
-        1px solid
-        #fecaca;
-
-    color:
-        #b91c1c;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 700;
 
     text-align: center;
 
-    font-weight: 600;
+    box-shadow:
+        0 8px 20px rgba(185, 28, 28, 0.08);
 }
-
 
 /* =========================================================
    HIDDEN
    ========================================================= */
 
 .hidden {
-
     display: none !important;
 }
-
 
 /* =========================================================
    QUESTION CONTAINER
    ========================================================= */
 
 .question-container {
-
     position: relative;
-
     width: 100%;
 }
 
-
 /* =========================================================
-   MAIN TWO-COLUMN QUIZ
+   QUIZ GRID
    ========================================================= */
 
 .quiz-grid {
-
     display: grid;
 
     grid-template-columns:
@@ -458,143 +361,89 @@ body {
     width: 100%;
 }
 
-
 /* =========================================================
    QUESTION PANEL
    ========================================================= */
 
 .question-panel {
-
     min-width: 0;
-
     min-height: 530px;
 
-    padding:
-        34px
-        36px;
+    padding: 34px 36px;
 
+    border: 1px solid rgba(255, 255, 255, 0.82);
     border-radius: 22px;
 
-    background:
-        rgba(255, 255, 255, 0.94);
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.95);
 
     box-shadow:
-        0 12px 35px
-        rgba(15, 23, 42, 0.15);
+        0 18px 45px rgba(15, 23, 42, 0.16);
 
-    backdrop-filter:
-        blur(10px);
-
-    -webkit-backdrop-filter:
-        blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
-
-
-/* =========================================================
-   SECTION LABEL
-   ========================================================= */
-
-.section-label {
-
-    margin-bottom: 17px;
-
-    color: #94a3b8;
-
-    font-size: 14px;
-
-    line-height: 1.2;
-
-    font-weight: 800;
-
-    letter-spacing: 0.7px;
-}
-
-
-/* =========================================================
-   QUESTION TEXT
-   ========================================================= */
-
-/*
- * Reduced significantly compared with the old
- * large question font.
- *
- * It now visually matches the option text much more closely.
- */
-
-.question {
-
-    color: #172033;
-
-    font-size: 16px;
-
-    line-height: 1.65;
-
-    font-weight: 500;
-
-    word-break: normal;
-
-    overflow-wrap: anywhere;
-
-    white-space: pre-line;
-}
-
-
-/*
- * Make markdown-style bold text visually stronger.
- *
- * The current JS uses innerText, so markdown such as
- * **text** remains literal text. This rule is kept
- * harmlessly for future HTML rendering.
- */
-
 
 /* =========================================================
    OPTIONS PANEL
    ========================================================= */
 
 .options-panel {
-
     min-width: 0;
-
     min-height: 530px;
 
-    padding:
-        34px
-        34px;
+    padding: 34px;
 
+    border: 1px solid rgba(255, 255, 255, 0.82);
     border-radius: 22px;
 
-    background:
-        rgba(255, 255, 255, 0.95);
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.96);
 
     box-shadow:
-        0 12px 35px
-        rgba(15, 23, 42, 0.15);
+        0 18px 45px rgba(15, 23, 42, 0.16);
 
-    backdrop-filter:
-        blur(10px);
-
-    -webkit-backdrop-filter:
-        blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
+/* =========================================================
+   SECTION LABEL
+   ========================================================= */
+
+.section-label {
+    margin-bottom: 17px;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 850;
+
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
 
 /* =========================================================
-   OPTIONS
+   QUESTION
+   ========================================================= */
+
+.question {
+    color: #172033;
+
+    font-size: 16px;
+    line-height: 1.65;
+    font-weight: 550;
+
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* =========================================================
+   OPTIONS CONTAINER
    ========================================================= */
 
 .options {
-
     display: flex;
-
     flex-direction: column;
 
     gap: 12px;
@@ -602,37 +451,28 @@ body {
     width: 100%;
 }
 
-
 /* =========================================================
    OPTION
    ========================================================= */
 
 .option {
-
     position: relative;
 
     display: flex;
-
     align-items: center;
 
-    gap: 13px;
-
     width: 100%;
-
     min-height: 64px;
 
-    padding:
-        10px
-        15px;
+    gap: 13px;
+    padding: 10px 15px;
 
-    border:
-        1px solid
-        #dbe1e8;
-
+    border: 1px solid #dbe1e8;
     border-radius: 15px;
 
-    background:
-        rgba(248, 250, 252, 0.96);
+    background: rgba(248, 250, 252, 0.97);
+
+    color: #1e293b;
 
     cursor: pointer;
 
@@ -643,380 +483,279 @@ body {
         box-shadow 0.18s ease;
 }
 
-
 .option:hover {
+    transform: translateY(-1px);
 
-    transform:
-        translateY(-1px);
+    border-color: #93c5fd;
 
-    border-color:
-        #93c5fd;
-
-    background:
-        #f8fbff;
+    background: #f8fbff;
 
     box-shadow:
-        0 5px 14px
-        rgba(59, 130, 246, 0.10);
+        0 6px 16px rgba(59, 130, 246, 0.1);
 }
 
+.option:active {
+    transform: translateY(0);
+}
 
 /* =========================================================
    RADIO INPUT
    ========================================================= */
 
-.option input {
-
+.option input[type="radio"] {
     position: absolute;
+
+    width: 1px;
+    height: 1px;
 
     opacity: 0;
 
     pointer-events: none;
 }
 
-
 /* =========================================================
    OPTION LETTER
    ========================================================= */
 
 .option-letter {
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    flex:
-        0 0 auto;
+    flex: 0 0 40px;
 
     width: 40px;
-
     height: 40px;
 
     border-radius: 50%;
 
-    background:
-        #e2e8f0;
-
-    color:
-        #334155;
+    background: #e2e8f0;
+    color: #334155;
 
     font-size: 15px;
-
-    font-weight: 800;
+    line-height: 1;
+    font-weight: 850;
 
     transition:
         background 0.18s ease,
-        color 0.18s ease;
+        color 0.18s ease,
+        transform 0.18s ease;
 }
-
 
 /* =========================================================
    OPTION TEXT
    ========================================================= */
 
 .option-text {
+    min-width: 0;
+    flex: 1;
 
-    color:
-        #1e293b;
+    color: #1e293b;
 
     font-size: 16px;
-
     line-height: 1.45;
-
     font-weight: 500;
 
     overflow-wrap: anywhere;
 }
 
+/* =========================================================
+   SELECTED OPTION
+   ========================================================= */
+
+.option.selected {
+    border-color: #93c5fd;
+    background: #eff6ff;
+
+    box-shadow:
+        0 5px 16px rgba(37, 99, 235, 0.1);
+}
+
+.option.selected .option-letter {
+    background: #3b82f6;
+    color: #ffffff;
+}
 
 /* =========================================================
    CORRECT ANSWER
    ========================================================= */
 
 .option.correct-answer {
+    border-color: #34d399;
 
-    border-color:
-        #34d399;
-
-    background:
-        #ecfdf5;
+    background: #ecfdf5;
 
     box-shadow:
-        0 5px 18px
-        rgba(16, 185, 129, 0.10);
+        0 6px 18px rgba(16, 185, 129, 0.12);
 }
 
-
-.option.correct-answer
-.option-letter {
-
-    background:
-        #10b981;
-
-    color:
-        #ffffff;
+.option.correct-answer .option-letter {
+    background: #10b981;
+    color: #ffffff;
 }
 
-
-.option.correct-answer
-.option-text {
-
-    color:
-        #047857;
-
-    font-weight: 700;
+.option.correct-answer .option-text {
+    color: #047857;
+    font-weight: 750;
 }
-
 
 /* =========================================================
    WRONG ANSWER
    ========================================================= */
 
 .option.wrong-answer {
+    border-color: #fb7185;
 
-    border-color:
-        #fb7185;
-
-    background:
-        #fff1f2;
+    background: #fff1f2;
 
     box-shadow:
-        0 5px 18px
-        rgba(244, 63, 94, 0.08);
+        0 6px 18px rgba(244, 63, 94, 0.1);
 }
 
-
-.option.wrong-answer
-.option-letter {
-
-    background:
-        #f43f5e;
-
-    color:
-        #ffffff;
+.option.wrong-answer .option-letter {
+    background: #f43f5e;
+    color: #ffffff;
 }
 
-
-.option.wrong-answer
-.option-text {
-
-    color:
-        #be123c;
-
-    font-weight: 700;
+.option.wrong-answer .option-text {
+    color: #be123c;
+    font-weight: 750;
 }
-
 
 /* =========================================================
    RESULT
    ========================================================= */
 
 .result {
-
     min-height: 32px;
 
-    margin-top: 13px;
+    margin-top: 14px;
 
     font-size: 16px;
-
     line-height: 1.5;
-
-    font-weight: 700;
+    font-weight: 750;
 }
-
 
 .result-correct {
-
-    color:
-        #059669;
+    color: #059669;
 }
-
 
 .result-wrong {
-
-    color:
-        #e11d48;
+    color: #e11d48;
 }
-
 
 /* =========================================================
    EXPLANATION
    ========================================================= */
 
 .explanation {
-
     width: 100%;
 
-    margin-top: 12px;
+    margin-top: 13px;
+    padding: 17px 18px;
 
-    padding:
-        16px
-        18px;
-
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #6366f1;
     border-radius: 15px;
 
-    background:
-        #f8fafc;
-
-    border:
-        1px solid
-        #cbd5e1;
-
-    border-left:
-        4px solid
-        #6366f1;
+    background: #f8fafc;
 
     box-shadow:
-        0 5px 16px
-        rgba(15, 23, 42, 0.07);
+        0 6px 18px rgba(15, 23, 42, 0.07);
 
     animation:
         explanationIn 0.25s ease;
 }
 
-
 @keyframes explanationIn {
-
     from {
-
         opacity: 0;
-
-        transform:
-            translateY(-5px);
+        transform: translateY(-5px);
     }
 
     to {
-
         opacity: 1;
-
-        transform:
-            translateY(0);
+        transform: translateY(0);
     }
 }
-
 
 /* =========================================================
    EXPLANATION TITLE
    ========================================================= */
 
 .explanation-title {
-
     display: flex;
-
     align-items: center;
 
     gap: 7px;
 
     margin-bottom: 9px;
 
-    color:
-        #4f46e5;
+    color: #4f46e5;
 
     font-size: 15px;
-
-    font-weight: 800;
+    line-height: 1.3;
+    font-weight: 850;
 }
-
 
 /* =========================================================
    EXPLANATION TEXT
    ========================================================= */
 
 .explanation-text {
-
-    color:
-        #475569;
+    color: #475569;
 
     font-size: 14px;
-
     line-height: 1.65;
-
     font-weight: 450;
 
     white-space: pre-line;
-
     overflow-wrap: anywhere;
 }
 
-
 /* =========================================================
    RELATED NAVIGATION
+   Generated dynamically by app.js
    ========================================================= */
 
-/*
- * app.js dynamically creates:
- *
- * .related-navigation
- *     .related-column
- *         .previous-related
- *     .related-column
- *         .next-related
- *
- * The navigation is positioned beside the
- * question/options columns.
- */
-
 .related-navigation {
-
     position: absolute;
 
     top: 50%;
-
     left: 0;
-
     right: 0;
 
-    transform:
-        translateY(-50%);
-
     display: flex;
-
+    align-items: center;
     justify-content: space-between;
 
-    align-items: center;
+    transform: translateY(-50%);
+
+    width: 100%;
 
     pointer-events: none;
 
-    z-index: 10;
+    z-index: 20;
 }
 
-
-/* =========================================================
-   NAVIGATION COLUMNS
-   ========================================================= */
-
 .related-column {
-
     display: flex;
-
     align-items: center;
 
     pointer-events: auto;
 }
 
-
-/* =========================================================
-   NAVIGATION BUTTON
-   ========================================================= */
-
 .related-question {
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     width: 48px;
-
     height: 72px;
 
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.85);
+    padding: 0;
 
+    border: 1px solid rgba(255, 255, 255, 0.85);
     border-radius: 14px;
 
     background:
@@ -1026,20 +765,16 @@ body {
             #4f46e5
         );
 
-    color:
-        #ffffff;
+    color: #ffffff;
 
     font-size: 30px;
-
     line-height: 1;
-
     font-weight: 500;
 
     cursor: pointer;
 
     box-shadow:
-        0 8px 22px
-        rgba(37, 99, 235, 0.30);
+        0 8px 22px rgba(37, 99, 235, 0.3);
 
     transition:
         transform 0.18s ease,
@@ -1047,102 +782,61 @@ body {
         opacity 0.18s ease;
 }
 
-
 .related-question:hover:not(:disabled) {
-
-    transform:
-        scale(1.07);
+    transform: scale(1.07);
 
     box-shadow:
-        0 11px 28px
-        rgba(37, 99, 235, 0.40);
+        0 11px 28px rgba(37, 99, 235, 0.4);
 }
-
 
 .related-question:active:not(:disabled) {
-
-    transform:
-        scale(0.97);
+    transform: scale(0.97);
 }
-
 
 .related-question:disabled {
+    opacity: 0.3;
 
-    opacity:
-        0.30;
+    cursor: not-allowed;
 
-    cursor:
-        not-allowed;
-
-    box-shadow:
-        none;
+    box-shadow: none;
 }
-
-
-/* =========================================================
-   PREVIOUS BUTTON
-   ========================================================= */
 
 .previous-related {
-
-    margin-left:
-        -68px;
+    margin-left: -68px;
 }
-
-
-/* =========================================================
-   NEXT BUTTON
-   ========================================================= */
 
 .next-related {
-
-    margin-right:
-        -68px;
+    margin-right: -68px;
 }
-
-
-/* =========================================================
-   FOCUS STATES
-   ========================================================= */
 
 .related-question:focus-visible {
-
-    outline:
-        3px solid
-        rgba(147, 197, 253, 0.9);
-
-    outline-offset:
-        3px;
+    outline: 3px solid rgba(147, 197, 253, 0.9);
+    outline-offset: 3px;
 }
 
+/* =========================================================
+   OPTION FOCUS
+   ========================================================= */
 
 .option:has(input:focus-visible) {
-
-    outline:
-        3px solid
-        rgba(96, 165, 250, 0.35);
-
-    outline-offset:
-        2px;
+    outline: 3px solid rgba(96, 165, 250, 0.35);
+    outline-offset: 2px;
 }
-
 
 /* =========================================================
    EMOJI CELEBRATION
+   Generated dynamically by app.js
    ========================================================= */
 
 .emoji-burst {
-
     position: fixed;
 
     pointer-events: none;
-
     user-select: none;
 
     z-index: 99999;
 
     font-size: 36px;
-
     line-height: 1;
 
     will-change:
@@ -1150,31 +844,18 @@ body {
         opacity;
 
     text-shadow:
-        0 3px 10px
-        rgba(0, 0, 0, 0.15);
+        0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
-
-/* =========================================================
-   HAPPY EMOJI
-   ========================================================= */
-
 .emoji-burst.happy {
-
     filter:
         drop-shadow(
             0 4px 8px
-            rgba(16, 185, 129, 0.20)
+            rgba(16, 185, 129, 0.2)
         );
 }
 
-
-/* =========================================================
-   SAD EMOJI
-   ========================================================= */
-
 .emoji-burst.sad {
-
     filter:
         drop-shadow(
             0 4px 8px
@@ -1182,816 +863,510 @@ body {
         );
 }
 
-
 /* =========================================================
-   DESKTOP LARGE SCREEN
+   LARGE DESKTOP
    ========================================================= */
 
-@media (
-    min-width: 1500px
-) {
-
+@media (min-width: 1500px) {
     .app {
-
-        max-width:
-            1500px;
-
-        padding-left:
-            40px;
-
-        padding-right:
-            40px;
+        max-width: 1500px;
+        padding-left: 40px;
+        padding-right: 40px;
     }
-
 
     .question-panel,
     .options-panel {
-
-        min-height:
-            560px;
+        min-height: 560px;
     }
 }
 
-
 /* =========================================================
-   LAPTOP / MEDIUM DESKTOP
+   LAPTOP
    ========================================================= */
 
-@media (
-    max-width: 1250px
-) {
-
+@media (max-width: 1250px) {
     .app {
-
-        padding-left:
-            22px;
-
-        padding-right:
-            22px;
+        padding-left: 22px;
+        padding-right: 22px;
     }
-
 
     .brain-box-header {
-
-        gap:
-            20px;
-
-        padding:
-            20px
-            22px;
+        gap: 20px;
+        padding: 20px 22px;
     }
-
 
     .brand-title {
-
-        font-size:
-            29px;
+        font-size: 28px;
     }
-
 
     .quote-section {
-
-        flex-basis:
-            360px;
+        flex-basis: 330px;
     }
-
 
     .question-panel,
     .options-panel {
-
-        padding:
-            28px;
+        padding: 28px;
     }
-
-
-    /*
-     * Bring arrows slightly closer
-     * at medium widths.
-     */
 
     .previous-related {
-
-        margin-left:
-            -58px;
+        margin-left: -55px;
     }
-
 
     .next-related {
-
-        margin-right:
-            -58px;
+        margin-right: -55px;
     }
 }
-
 
 /* =========================================================
    TABLET
    ========================================================= */
 
-@media (
-    max-width: 1000px
-) {
-
+@media (max-width: 1000px) {
     .brain-box-header {
-
-        flex-wrap:
-            wrap;
-
-        align-items:
-            flex-start;
+        flex-wrap: wrap;
+        align-items: flex-start;
     }
-
 
     .brand-section {
-
-        flex:
-            1 1 55%;
+        flex: 1 1 55%;
     }
-
 
     .quote-section {
-
-        flex:
-            1 1 35%;
-
-        max-width:
-            430px;
+        flex: 1 1 35%;
+        max-width: 430px;
     }
-
 
     .score-display {
-
-        order:
-            3;
-
-        margin-left:
-            auto;
+        order: 3;
+        margin-left: auto;
     }
-
 
     .quiz-grid {
-
-        gap:
-            20px;
+        gap: 20px;
     }
-
 
     .question-panel,
     .options-panel {
-
-        min-height:
-            500px;
-
-        padding:
-            25px;
+        min-height: 500px;
+        padding: 25px;
     }
-
 
     .question {
-
-        font-size:
-            15px;
-
-        line-height:
-            1.6;
+        font-size: 15px;
+        line-height: 1.6;
     }
-
 
     .option-text {
-
-        font-size:
-            15px;
+        font-size: 15px;
     }
-
-
-    /*
-     * Navigation buttons remain outside
-     * the content cards.
-     */
 
     .related-question {
+        width: 44px;
+        height: 64px;
 
-        width:
-            44px;
-
-        height:
-            64px;
-
-        font-size:
-            26px;
+        font-size: 26px;
     }
-
 
     .previous-related {
-
-        margin-left:
-            -50px;
+        margin-left: -50px;
     }
 
-
     .next-related {
-
-        margin-right:
-            -50px;
+        margin-right: -50px;
     }
 }
 
-
 /* =========================================================
-   MOBILE
+   MOBILE / SMALL TABLET
    ========================================================= */
 
-@media (
-    max-width: 760px
-) {
-
+@media (max-width: 760px) {
     body {
-
-        overflow-x:
-            hidden;
+        overflow-x: hidden;
     }
-
 
     .app {
-
-        padding:
-            12px
-            12px
-            30px;
+        width: 100%;
+        padding: 12px 12px 30px;
     }
 
-
-    /* ================================================
+    /* -------------------------
        HEADER
-       ================================================ */
+       ------------------------- */
 
     .brain-box-header {
+        display: grid;
 
-        display:
-            grid;
+        grid-template-columns: minmax(0, 1fr) auto;
 
-        grid-template-columns:
-            1fr auto;
+        gap: 12px;
 
-        gap:
-            12px;
+        min-height: auto;
 
-        min-height:
-            auto;
+        margin-bottom: 18px;
+        padding: 18px;
 
-        padding:
-            18px;
-
-        margin-bottom:
-            18px;
-
-        border-radius:
-            18px;
+        border-radius: 18px;
     }
-
 
     .brand-section {
-
-        min-width:
-            0;
+        min-width: 0;
     }
-
 
     .brand-title {
+        gap: 8px;
 
-        font-size:
-            24px;
-
-        letter-spacing:
-            -0.4px;
+        font-size: 24px;
+        letter-spacing: -0.4px;
     }
-
 
     .brain-icon {
+        width: 34px;
+        height: 34px;
 
-        width:
-            34px;
+        flex-basis: 34px;
 
-        height:
-            34px;
+        border-radius: 10px;
 
-        border-radius:
-            10px;
-
-        font-size:
-            20px;
+        font-size: 20px;
     }
-
 
     .brand-subtitle {
+        margin-top: 5px;
+        padding-left: 42px;
 
-        margin-top:
-            5px;
-
-        font-size:
-            13px;
-
-        line-height:
-            1.4;
+        font-size: 13px;
+        line-height: 1.4;
     }
-
 
     .quote-section {
+        grid-column: 1 / -1;
+        grid-row: 2;
 
-        grid-column:
-            1 / -1;
+        width: 100%;
+        max-width: none;
 
-        grid-row:
-            2;
+        padding: 2px 0;
 
-        max-width:
-            none;
-
-        padding:
-            2px 0;
-
-        text-align:
-            left;
+        text-align: left;
     }
-
 
     .quote-text {
-
-        font-size:
-            12px;
-
-        line-height:
-            1.45;
+        font-size: 12px;
+        line-height: 1.45;
     }
-
 
     .quote-author {
-
-        font-size:
-            12px;
+        font-size: 12px;
     }
-
 
     .score-display {
+        grid-column: 2;
+        grid-row: 1;
 
-        grid-column:
-            2;
+        align-self: start;
 
-        grid-row:
-            1;
+        min-width: auto;
+        min-height: 40px;
 
-        min-width:
-            auto;
+        padding: 8px 11px;
 
-        min-height:
-            40px;
+        border-radius: 11px;
 
-        padding:
-            8px
-            11px;
-
-        border-radius:
-            11px;
-
-        font-size:
-            12px;
-
-        align-self:
-            start;
+        font-size: 12px;
     }
-
 
     .score-display strong {
-
-        font-size:
-            14px;
+        font-size: 14px;
     }
 
+    /* -------------------------
+       LOADING / ERROR
+       ------------------------- */
 
-    /* ================================================
-       QUIZ GRID
-       ================================================ */
+    .loading {
+        margin: 20px auto;
+        padding: 11px 15px;
+
+        font-size: 13px;
+    }
+
+    .error {
+        margin: 20px auto;
+        padding: 13px 15px;
+
+        font-size: 13px;
+    }
+
+    /* -------------------------
+       QUIZ
+       ------------------------- */
 
     .quiz-grid {
+        display: flex;
+        flex-direction: column;
 
-        display:
-            flex;
-
-        flex-direction:
-            column;
-
-        gap:
-            15px;
+        gap: 15px;
     }
-
 
     .question-panel,
     .options-panel {
+        min-height: auto;
 
-        min-height:
-            auto;
+        padding: 20px;
 
-        padding:
-            20px;
-
-        border-radius:
-            17px;
+        border-radius: 17px;
     }
 
-
-    /* ================================================
+    /* -------------------------
        QUESTION
-       ================================================ */
+       ------------------------- */
 
     .section-label {
+        margin-bottom: 12px;
 
-        margin-bottom:
-            12px;
-
-        font-size:
-            12px;
+        font-size: 12px;
     }
-
 
     .question {
-
-        font-size:
-            15px;
-
-        line-height:
-            1.55;
+        font-size: 15px;
+        line-height: 1.55;
     }
 
-
-    /* ================================================
+    /* -------------------------
        OPTIONS
-       ================================================ */
+       ------------------------- */
 
     .options {
-
-        gap:
-            9px;
+        gap: 9px;
     }
-
 
     .option {
+        min-height: 56px;
 
-        min-height:
-            56px;
+        padding: 8px 11px;
 
-        padding:
-            8px
-            11px;
+        gap: 10px;
 
-        gap:
-            10px;
-
-        border-radius:
-            12px;
+        border-radius: 12px;
     }
-
 
     .option-letter {
+        width: 34px;
+        height: 34px;
 
-        width:
-            34px;
+        flex-basis: 34px;
 
-        height:
-            34px;
-
-        font-size:
-            13px;
+        font-size: 13px;
     }
-
 
     .option-text {
-
-        font-size:
-            14px;
-
-        line-height:
-            1.4;
-
-        color:
-            #1e293b;
+        font-size: 14px;
+        line-height: 1.4;
     }
 
-
-    /* ================================================
+    /* -------------------------
        RESULT
-       ================================================ */
+       ------------------------- */
 
     .result {
+        min-height: 27px;
 
-        margin-top:
-            10px;
+        margin-top: 10px;
 
-        min-height:
-            27px;
-
-        font-size:
-            14px;
+        font-size: 14px;
     }
 
-
-    /* ================================================
+    /* -------------------------
        EXPLANATION
-       ================================================ */
+       ------------------------- */
 
     .explanation {
+        margin-top: 8px;
 
-        margin-top:
-            8px;
+        padding: 13px 14px;
 
-        padding:
-            13px
-            14px;
-
-        border-radius:
-            12px;
+        border-radius: 12px;
     }
-
 
     .explanation-title {
+        margin-bottom: 7px;
 
-        margin-bottom:
-            7px;
-
-        font-size:
-            14px;
+        font-size: 14px;
     }
-
 
     .explanation-text {
-
-        font-size:
-            13px;
-
-        line-height:
-            1.55;
+        font-size: 13px;
+        line-height: 1.55;
     }
 
-
-    /* ================================================
+    /* -------------------------
        MOBILE NAVIGATION
-       ================================================ */
-
-    /*
-     * Keep BOTH arrows in ONE ROW.
-     *
-     * They are no longer tall side buttons.
-     *
-     * This prevents them from consuming large
-     * amounts of mobile screen space.
-     */
+       ------------------------- */
 
     .related-navigation {
+        position: relative;
 
-        position:
-            relative;
+        top: auto;
+        left: auto;
+        right: auto;
 
-        top:
-            auto;
+        display: flex;
 
-        left:
-            auto;
+        align-items: center;
+        justify-content: space-between;
 
-        right:
-            auto;
+        width: 100%;
 
-        transform:
-            none;
+        margin-bottom: 12px;
 
-        display:
-            flex;
+        transform: none;
 
-        justify-content:
-            space-between;
+        pointer-events: auto;
 
-        align-items:
-            center;
-
-        width:
-            100%;
-
-        margin-bottom:
-            12px;
-
-        pointer-events:
-            auto;
-
-        z-index:
-            20;
+        z-index: 20;
     }
-
 
     .related-column {
-
-        display:
-            flex;
-
-        align-items:
-            center;
+        display: flex;
+        align-items: center;
     }
-
 
     .related-question {
+        width: 44px;
+        height: 42px;
 
-        width:
-            44px;
+        border-radius: 11px;
 
-        height:
-            42px;
-
-        border-radius:
-            11px;
-
-        font-size:
-            25px;
+        font-size: 25px;
 
         box-shadow:
-            0 5px 14px
-            rgba(37, 99, 235, 0.25);
+            0 5px 14px rgba(37, 99, 235, 0.25);
     }
-
 
     .previous-related {
-
-        margin-left:
-            0;
+        margin-left: 0;
     }
 
-
     .next-related {
-
-        margin-right:
-            0;
+        margin-right: 0;
     }
 }
 
-
 /* =========================================================
-   SMALL MOBILE
+   VERY SMALL PHONES
    ========================================================= */
 
-@media (
-    max-width: 480px
-) {
-
+@media (max-width: 420px) {
     .app {
-
-        padding:
-            8px
-            8px
-            24px;
+        padding-left: 9px;
+        padding-right: 9px;
     }
-
 
     .brain-box-header {
-
-        padding:
-            15px;
-
-        margin-bottom:
-            13px;
+        padding: 15px;
+        border-radius: 16px;
     }
-
 
     .brand-title {
-
-        font-size:
-            21px;
+        font-size: 20px;
     }
-
 
     .brain-icon {
+        width: 31px;
+        height: 31px;
 
-        width:
-            30px;
+        flex-basis: 31px;
 
-        height:
-            30px;
-
-        font-size:
-            18px;
+        font-size: 18px;
     }
-
 
     .brand-subtitle {
-
-        font-size:
-            12px;
+        padding-left: 39px;
+        font-size: 11px;
     }
-
 
     .score-display {
+        min-height: 36px;
 
-        padding:
-            7px
-            9px;
+        padding: 7px 8px;
 
-        font-size:
-            11px;
+        font-size: 10px;
     }
-
 
     .score-display strong {
-
-        font-size:
-            13px;
+        font-size: 12px;
     }
 
+    .quote-text,
+    .quote-author {
+        font-size: 11px;
+    }
 
     .question-panel,
     .options-panel {
+        padding: 16px;
 
-        padding:
-            16px;
+        border-radius: 15px;
     }
-
 
     .question {
-
-        font-size:
-            14px;
-
-        line-height:
-            1.5;
+        font-size: 14px;
+        line-height: 1.5;
     }
-
 
     .option {
+        min-height: 52px;
 
-        min-height:
-            52px;
+        padding: 7px 9px;
 
-        padding:
-            7px
-            9px;
+        gap: 9px;
     }
-
 
     .option-letter {
+        width: 32px;
+        height: 32px;
 
-        width:
-            31px;
+        flex-basis: 32px;
 
-        height:
-            31px;
-
-        font-size:
-            12px;
+        font-size: 12px;
     }
-
 
     .option-text {
-
-        font-size:
-            13px;
+        font-size: 13px;
     }
 
-
-    .related-navigation {
-
-        margin-bottom:
-            10px;
+    .explanation {
+        padding: 12px;
     }
 
+    .explanation-text {
+        font-size: 12px;
+    }
 
     .related-question {
+        width: 40px;
+        height: 40px;
 
-        width:
-            40px;
-
-        height:
-            38px;
-
-        font-size:
-            22px;
+        font-size: 23px;
     }
 }
-
 
 /* =========================================================
    REDUCED MOTION
    ========================================================= */
 
-@media (
-    prefers-reduced-motion: reduce
-) {
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
 
-    * {
-
-        scroll-behavior:
-            auto !important;
-
-        animation-duration:
-            0.01ms !important;
-
-        animation-iteration-count:
-            1 !important;
-
-        transition-duration:
-            0.01ms !important;
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
