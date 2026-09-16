@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -10,22 +8,1095 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>AI Brain Box</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
+    <meta
+        name="description"
+        content="AI Brain Box - AI, Machine Learning, RAG, NLP and Deep Learning Quiz"
     >
 
-</head>
+    <title>AI Brain Box</title>
 
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            background:
+                #0f172a;
+
+            color:
+                #f8fafc;
+
+            overflow-x:
+                hidden;
+        }
+
+        /* =====================================================
+           BACKGROUND
+           ===================================================== */
+
+        #background-overlay {
+            position: fixed;
+            inset: 0;
+
+            background:
+                rgba(2, 6, 23, 0.68);
+
+            z-index: -2;
+
+            pointer-events: none;
+        }
+
+        #background-overlay::after {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(15, 23, 42, 0.82),
+                    rgba(30, 41, 59, 0.48)
+                );
+
+            pointer-events: none;
+        }
+
+        #session-background,
+        #session-background-image {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            z-index: -3;
+
+            pointer-events: none;
+        }
+
+        /* =====================================================
+           APP CONTAINER
+           ===================================================== */
+
+        .app {
+            width: 100%;
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+
+            padding:
+                24px 16px 48px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+
+            margin: 0 auto;
+        }
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .brain-box-header {
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding:
+                18px 22px;
+
+            margin-bottom:
+                22px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.12);
+
+            border-radius:
+                18px;
+
+            background:
+                rgba(15, 23, 42, 0.78);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+            box-shadow:
+                0 12px 40px
+                rgba(0, 0, 0, 0.24);
+        }
+
+        .brand {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius:
+                14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6366f1,
+                    #8b5cf6
+                );
+
+            font-size:
+                24px;
+
+            box-shadow:
+                0 8px 24px
+                rgba(99, 102, 241, 0.32);
+        }
+
+        .brand-text h1 {
+            margin: 0;
+
+            font-size:
+                clamp(22px, 4vw, 30px);
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                -0.5px;
+        }
+
+        .brand-text p {
+            margin:
+                3px 0 0;
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+        }
+
+        /* =====================================================
+           SCORE
+           ===================================================== */
+
+        #score-display {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            white-space: nowrap;
+
+            padding:
+                10px 14px;
+
+            border:
+                1px solid
+                rgba(129, 140, 248, 0.3);
+
+            border-radius:
+                12px;
+
+            background:
+                rgba(79, 70, 229, 0.14);
+
+            color:
+                #c7d2fe;
+
+            font-size:
+                13px;
+
+            font-weight:
+                700;
+        }
+
+        #score {
+            color:
+                #a5b4fc;
+        }
+
+        /* =====================================================
+           QUOTE
+           ===================================================== */
+
+        #quote-container {
+            width: 100%;
+
+            margin-bottom:
+                18px;
+
+            padding:
+                18px 22px;
+
+            border-radius:
+                16px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.1);
+
+            background:
+                rgba(15, 23, 42, 0.68);
+
+            backdrop-filter:
+                blur(14px);
+
+            -webkit-backdrop-filter:
+                blur(14px);
+
+            text-align:
+                center;
+        }
+
+        #quote-text {
+            margin:
+                0;
+
+            color:
+                #e2e8f0;
+
+            font-size:
+                15px;
+
+            line-height:
+                1.6;
+
+            font-style:
+                italic;
+        }
+
+        #quote-author {
+            display: block;
+
+            margin-top:
+                7px;
+
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+        }
+
+        /* =====================================================
+           MAIN QUIZ CARD
+           ===================================================== */
+
+        #quiz-container {
+            width: 100%;
+
+            padding:
+                clamp(20px, 4vw, 34px);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            border-radius:
+                22px;
+
+            background:
+                rgba(15, 23, 42, 0.82);
+
+            backdrop-filter:
+                blur(20px);
+
+            -webkit-backdrop-filter:
+                blur(20px);
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.28);
+        }
+
+        /* =====================================================
+           LOADING
+           ===================================================== */
+
+        #loading {
+            min-height:
+                260px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            color:
+                #cbd5e1;
+
+            font-size:
+                15px;
+        }
+
+        .loader {
+            width: 42px;
+            height: 42px;
+
+            border:
+                4px solid
+                rgba(255, 255, 255, 0.15);
+
+            border-top-color:
+                #818cf8;
+
+            border-radius:
+                50%;
+
+            animation:
+                spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+        /* =====================================================
+           QUESTION
+           ===================================================== */
+
+        .question-label {
+            margin-bottom:
+                10px;
+
+            color:
+                #818cf8;
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1.2px;
+
+            text-transform:
+                uppercase;
+        }
+
+        #question {
+            margin:
+                0 0 28px;
+
+            color:
+                #f8fafc;
+
+            font-size:
+                clamp(18px, 3vw, 24px);
+
+            line-height:
+                1.65;
+
+            font-weight:
+                650;
+
+            word-wrap:
+                break-word;
+        }
+
+        /* =====================================================
+           BOLD KEYWORDS
+           ===================================================== */
+
+        #question b,
+        .option-text b,
+        #explanation-text b {
+            color:
+                #c4b5fd;
+
+            font-weight:
+                800;
+        }
+
+        /* =====================================================
+           OPTIONS
+           ===================================================== */
+
+        .answer-label {
+            margin-bottom:
+                12px;
+
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1px;
+
+            text-transform:
+                uppercase;
+        }
+
+        #options {
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                12px;
+        }
+
+        .option {
+            position:
+                relative;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                13px;
+
+            width:
+                100%;
+
+            padding:
+                16px 18px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.1);
+
+            border-radius:
+                14px;
+
+            background:
+                rgba(30, 41, 59, 0.64);
+
+            color:
+                #e2e8f0;
+
+            cursor:
+                pointer;
+
+            transition:
+                all 0.2s ease;
+        }
+
+        .option:hover {
+            border-color:
+                rgba(129, 140, 248, 0.5);
+
+            background:
+                rgba(49, 46, 129, 0.25);
+
+            transform:
+                translateY(-1px);
+        }
+
+        .option input {
+            position:
+                absolute;
+
+            opacity:
+                0;
+
+            pointer-events:
+                none;
+        }
+
+        .option-letter {
+            flex:
+                0 0 auto;
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(99, 102, 241, 0.18);
+
+            color:
+                #a5b4fc;
+
+            font-weight:
+                800;
+
+            font-size:
+                14px;
+        }
+
+        .option-text {
+            flex:
+                1;
+
+            font-size:
+                15px;
+
+            line-height:
+                1.55;
+
+            word-break:
+                break-word;
+        }
+
+        .option.correct-answer {
+            border-color:
+                rgba(34, 197, 94, 0.7);
+
+            background:
+                rgba(22, 101, 52, 0.3);
+
+            box-shadow:
+                0 0 0 1px
+                rgba(34, 197, 94, 0.14);
+        }
+
+        .option.correct-answer .option-letter {
+            background:
+                rgba(34, 197, 94, 0.22);
+
+            color:
+                #86efac;
+        }
+
+        .option.wrong-answer {
+            border-color:
+                rgba(239, 68, 68, 0.7);
+
+            background:
+                rgba(127, 29, 29, 0.3);
+
+            box-shadow:
+                0 0 0 1px
+                rgba(239, 68, 68, 0.14);
+        }
+
+        .option.wrong-answer .option-letter {
+            background:
+                rgba(239, 68, 68, 0.22);
+
+            color:
+                #fca5a5;
+        }
+
+        /* =====================================================
+           RESULT
+           ===================================================== */
+
+        #result {
+            min-height:
+                28px;
+
+            margin:
+                20px 0 0;
+
+            text-align:
+                center;
+
+            font-size:
+                16px;
+
+            font-weight:
+                800;
+        }
+
+        .result-correct {
+            color:
+                #86efac;
+        }
+
+        .result-wrong {
+            color:
+                #fca5a5;
+        }
+
+        /* =====================================================
+           EXPLANATION
+           ===================================================== */
+
+        #explanation {
+            margin-top:
+                28px;
+
+            padding:
+                22px;
+
+            border:
+                1px solid
+                rgba(129, 140, 248, 0.22);
+
+            border-radius:
+                16px;
+
+            background:
+                rgba(49, 46, 129, 0.16);
+        }
+
+        .explanation-title {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            margin-bottom:
+                14px;
+
+            color:
+                #c4b5fd;
+
+            font-size:
+                15px;
+
+            font-weight:
+                800;
+        }
+
+        #explanation-text {
+            color:
+                #cbd5e1;
+
+            font-size:
+                15px;
+
+            line-height:
+                1.8;
+
+            white-space:
+                pre-wrap;
+
+            word-wrap:
+                break-word;
+        }
+
+        /*
+         * Preserve paragraphs/new lines coming
+         * directly from the CSV explanation.
+         */
+
+        #explanation-text br {
+            display:
+                block;
+
+            content:
+                "";
+
+            margin-bottom:
+                8px;
+        }
+
+        /* =====================================================
+           RELATED NAVIGATION
+           ===================================================== */
+
+        #related-navigation {
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            gap:
+                12px;
+
+            margin-top:
+                28px;
+        }
+
+        #related-navigation button {
+            min-width:
+                120px;
+
+            padding:
+                11px 16px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            border-radius:
+                11px;
+
+            background:
+                rgba(30, 41, 59, 0.72);
+
+            color:
+                #e2e8f0;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                700;
+
+            transition:
+                all 0.2s ease;
+        }
+
+        #related-navigation button:hover {
+            border-color:
+                rgba(129, 140, 248, 0.5);
+
+            background:
+                rgba(79, 70, 229, 0.25);
+        }
+
+        /* =====================================================
+           ERROR
+           ===================================================== */
+
+        #error {
+            width:
+                100%;
+
+            padding:
+                18px;
+
+            margin-bottom:
+                18px;
+
+            border:
+                1px solid
+                rgba(239, 68, 68, 0.35);
+
+            border-radius:
+                14px;
+
+            background:
+                rgba(127, 29, 29, 0.28);
+
+            color:
+                #fecaca;
+
+            text-align:
+                center;
+        }
+
+        /* =====================================================
+           HIDDEN
+           ===================================================== */
+
+        .hidden {
+            display:
+                none !important;
+        }
+
+        /* =====================================================
+           EMOJI ANIMATION
+           ===================================================== */
+
+        .emoji-burst {
+            position:
+                fixed;
+
+            z-index:
+                1000;
+
+            font-size:
+                30px;
+
+            pointer-events:
+                none;
+
+            animation:
+                emojiFloat 1.8s
+                ease-out
+                forwards;
+        }
+
+        .emoji-burst.happy {
+            filter:
+                drop-shadow(
+                    0 4px 12px
+                    rgba(250, 204, 21, 0.4)
+                );
+        }
+
+        .emoji-burst.sad {
+            filter:
+                drop-shadow(
+                    0 4px 12px
+                    rgba(96, 165, 250, 0.35)
+                );
+        }
+
+        @keyframes emojiFloat {
+
+            0% {
+                opacity:
+                    0;
+
+                transform:
+                    translate(
+                        0,
+                        30px
+                    )
+                    scale(
+                        0.6
+                    );
+            }
+
+            15% {
+                opacity:
+                    1;
+
+                transform:
+                    translate(
+                        0,
+                        0
+                    )
+                    scale(
+                        1
+                    );
+            }
+
+            100% {
+                opacity:
+                    0;
+
+                transform:
+                    translate(
+                        var(--drift),
+                        -180px
+                    )
+                    rotate(
+                        18deg
+                    )
+                    scale(
+                        1.25
+                    );
+            }
+        }
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        .footer {
+            width:
+                100%;
+
+            max-width:
+                1000px;
+
+            margin-top:
+                22px;
+
+            text-align:
+                center;
+
+            color:
+                #64748b;
+
+            font-size:
+                12px;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (
+            max-width: 700px
+        ) {
+
+            .app {
+                padding:
+                    12px 10px 30px;
+            }
+
+            .brain-box-header {
+                padding:
+                    15px;
+
+                border-radius:
+                    15px;
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+            }
+
+            .brand {
+                justify-content:
+                    center;
+
+                text-align:
+                    center;
+            }
+
+            #score-display {
+                align-self:
+                    center;
+            }
+
+            #quote-container {
+                padding:
+                    15px;
+            }
+
+            #quiz-container {
+                padding:
+                    20px 16px;
+
+                border-radius:
+                    18px;
+            }
+
+            #question {
+                font-size:
+                    18px;
+
+                line-height:
+                    1.55;
+            }
+
+            .option {
+                padding:
+                    13px;
+
+                gap:
+                    10px;
+            }
+
+            .option-letter {
+                width:
+                    32px;
+
+                height:
+                    32px;
+            }
+
+            .option-text {
+                font-size:
+                    14px;
+            }
+
+            #explanation {
+                padding:
+                    17px;
+            }
+
+            #explanation-text {
+                font-size:
+                    14px;
+
+                line-height:
+                    1.7;
+            }
+
+            #related-navigation {
+                flex-direction:
+                    column;
+            }
+
+            #related-navigation button {
+                width:
+                    100%;
+            }
+        }
+
+        @media (
+            prefers-reduced-motion: reduce
+        ) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration:
+                    0.01ms !important;
+
+                animation-iteration-count:
+                    1 !important;
+
+                scroll-behavior:
+                    auto !important;
+
+                transition-duration:
+                    0.01ms !important;
+            }
+        }
+    </style>
+</head>
 
 <body>
 
-
     <!-- =====================================================
          BACKGROUND OVERLAY
-         ===================================================== -->
+         ====================================================== -->
 
     <div
         id="background-overlay"
@@ -34,286 +1105,207 @@
 
 
     <!-- =====================================================
-         MAIN APPLICATION
-         ===================================================== -->
+         APP
+         ====================================================== -->
 
     <main class="app">
 
+        <div class="container">
 
-        <!-- =================================================
-             HEADER
-             ================================================= -->
+            <!-- =================================================
+                 HEADER
+                 ================================================== -->
 
-        <header class="brain-box-header">
+            <header class="brain-box-header">
 
+                <div class="brand">
 
-            <!-- =============================================
-                 BRAND
-                 ============================================= -->
-
-            <div class="brand-section">
-
-                <div class="brand-title">
-
-                    <span class="brain-icon">
+                    <div
+                        class="brand-icon"
+                        aria-hidden="true"
+                    >
                         🧠
-                    </span>
+                    </div>
 
-                    <span>
-                        AI Brain Box
-                    </span>
+                    <div class="brand-text">
+
+                        <h1>
+                            AI Brain Box
+                        </h1>
+
+                        <p>
+                            Test your AI &amp; Machine Learning knowledge
+                        </p>
+
+                    </div>
 
                 </div>
 
 
-                <div class="brand-subtitle">
-
-                    Challenge yourself.
-                    Learn something new.
-
+                <div
+                    id="score-display"
+                    aria-live="polite"
+                >
+                    <span id="score">
+                        0
+                    </span>
+                    &nbsp;correct
                 </div>
 
-            </div>
+            </header>
 
 
-            <!-- =============================================
+            <!-- =================================================
                  MOTIVATIONAL QUOTE
-                 ============================================= -->
+                 ================================================== -->
 
-            <aside
-                class="quote-section"
-                aria-label="Motivational quote"
-            >
-
-                <div
-                    id="quote-text"
-                    class="quote-text"
-                >
-                    “Learning never stops.”
-                </div>
-
-
-                <div
-                    id="quote-author"
-                    class="quote-author"
-                >
-                    — AIBrainBox
-                </div>
-
-            </aside>
-
-
-            <!-- =============================================
-                 CURRENT STREAK
-                 ============================================= -->
-
-            <div
-                id="score-display"
-                class="score-display"
+            <section
+                id="quote-container"
                 aria-live="polite"
             >
-                🔥 Current streak:
-                <strong>0/0</strong>
-            </div>
+
+                <p id="quote-text">
+                    Keep learning. Keep building.
+                </p>
+
+                <span id="quote-author">
+                    — AIBrainBox
+                </span>
+
+            </section>
 
 
-        </header>
+            <!-- =================================================
+                 ERROR
+                 ================================================== -->
+
+            <div
+                id="error"
+                class="hidden"
+                role="alert"
+            ></div>
 
 
-        <!-- =================================================
-             LOADING MESSAGE
-             ================================================= -->
+            <!-- =================================================
+                 LOADING
+                 ================================================== -->
 
-        <div
-            id="loading"
-            class="loading"
-        >
-            Loading questions...
-        </div>
+            <div id="loading">
 
-
-        <!-- =================================================
-             ERROR MESSAGE
-             ================================================= -->
-
-        <div
-            id="error"
-            class="error hidden"
-        >
-            Unable to load questions.
-            Please refresh the page.
-        </div>
-
-
-        <!-- =================================================
-             QUESTION AREA
-             ================================================= -->
-
-        <section
-            id="question-container"
-            class="question-container hidden"
-        >
-
-
-            <!-- =============================================
-                 MAIN QUIZ GRID
-                 ============================================= -->
-
-            <div class="quiz-grid">
-
-
-                <!-- =========================================
-                     QUESTION COLUMN
-                     ========================================= -->
-
-                <section
-                    class="question-panel"
-                    aria-label="Question"
-                >
-
-
-                    <!-- =====================================
-                         QUESTION LABEL
-                         ===================================== -->
-
-                    <div class="section-label">
-                        QUESTION
-                    </div>
-
-
-                    <!-- =====================================
-                         QUESTION TEXT
-                         ===================================== -->
-
-                    <div
-                        id="question"
-                        class="question"
-                    >
-                        Loading question...
-                    </div>
-
-
-                </section>
-
-
-                <!-- =========================================
-                     OPTIONS COLUMN
-                     ========================================= -->
-
-                <section
-                    class="options-panel"
-                    aria-label="Answer options"
-                >
-
-
-                    <!-- =====================================
-                         OPTIONS HEADER
-                         ===================================== -->
-
-                    <div class="section-label">
-                        CHOOSE YOUR ANSWER
-                    </div>
-
-
-                    <!-- =====================================
-                         ANSWER OPTIONS
-                         ===================================== -->
-
-                    <div
-                        id="options"
-                        class="options"
-                    >
-
-                        <!--
-                            Options are generated
-                            dynamically by app.js
-                        -->
-
-                    </div>
-
-
-                    <!-- =====================================
-                         RESULT
-                         ===================================== -->
-
-                    <div
-                        id="result"
-                        class="result"
-                        aria-live="polite"
-                    ></div>
-
-
-                    <!-- =====================================
-                         EXPLANATION
-                         ===================================== -->
-
-                    <div
-                        id="explanation"
-                        class="explanation hidden"
-                    >
-
-
-                        <div
-                            class="explanation-title"
-                        >
-
-                            <span>
-                                💡
-                            </span>
-
-                            <span>
-                                Explanation
-                            </span>
-
-                        </div>
-
-
-                        <div
-                            id="explanation-text"
-                            class="explanation-text"
-                        ></div>
-
-
-                    </div>
-
-
-                </section>
-
+                <div
+                    class="loader"
+                    aria-label="Loading"
+                ></div>
 
             </div>
 
 
             <!-- =================================================
-                 SIDE NAVIGATION
-                 ================================================= -->
+                 QUIZ
+                 ================================================== -->
 
-            <!--
-                These are intentionally outside the two
-                content cards.
+            <section
+                id="quiz-container"
+                class="hidden"
+                aria-live="polite"
+            >
 
-                app.js creates the actual ← and → buttons
-                dynamically.
+                <div
+                    id="question-container"
+                >
 
-                CSS positions them beside the two columns
-                on desktop and keeps them compact on mobile.
-            -->
+                    <div class="question-label">
+                        Question
+                    </div>
+
+                    <div id="question"></div>
+
+                </div>
 
 
-        </section>
+                <!-- =================================================
+                     ANSWER OPTIONS
+                     ================================================== -->
 
+                <div class="answer-label">
+                    Choose your answer
+                </div>
+
+                <div
+                    id="options"
+                    role="radiogroup"
+                    aria-label="Answer options"
+                ></div>
+
+
+                <!-- =================================================
+                     RESULT
+                     ================================================== -->
+
+                <div
+                    id="result"
+                    aria-live="assertive"
+                ></div>
+
+
+                <!-- =================================================
+                     EXPLANATION
+                     ================================================== -->
+
+                <section
+                    id="explanation"
+                    class="hidden"
+                >
+
+                    <div class="explanation-title">
+                        <span aria-hidden="true">
+                            💡
+                        </span>
+
+                        <span>
+                            Explanation
+                        </span>
+                    </div>
+
+                    <div
+                        id="explanation-text"
+                    ></div>
+
+                </section>
+
+
+                <!-- =================================================
+                     RELATED QUESTION NAVIGATION
+                     ================================================== -->
+
+                <nav
+                    id="related-navigation"
+                    aria-label="Related questions"
+                ></nav>
+
+            </section>
+
+        </div>
+
+
+        <!-- =====================================================
+             FOOTER
+             ====================================================== -->
+
+        <footer class="footer">
+
+            AI Brain Box · Learn · Practice · Build
+
+        </footer>
 
     </main>
 
 
     <!-- =====================================================
-         APPLICATION JAVASCRIPT
-         ===================================================== -->
+         JAVASCRIPT
+         ====================================================== -->
 
-    <script
-        src="app.js"
-    ></script>
-
+    <script src="./app.js"></script>
 
 </body>
-
 </html>
