@@ -2,7 +2,7 @@ ID,Question,A,B,C,D,Correct Answer,Explaination,Topic,Sub Topics,previous relate
 Xi-00001,"Your RAG system retrieves 10 chunks for every query. Testing shows that 7 of those chunks contain almost identical information, while some useful information is missing.
 What would be the best approach?",Increase top-k from 10 to 30,Use MMR or another diversity-aware retrieval/reranking strategy,Increase LLM temperature,Increase chunk size,B,"A traditional similarity search asks:
 
-> **�Which chunks are most similar to my query?� (User query ? Search vector DB ? Retrieve relevant chunks)**
+> **“Which chunks are most similar to my query?” (User query ? Search vector DB ? Retrieve relevant chunks)**
 > 
 
 But what if the retrieved chunks contain nearly identical information?
@@ -10,7 +10,7 @@ We are effectively **wasting the context window** on duplicate information, whil
 
 **This is where MMR helps.**
 
-**MMR � Maximal Marginal Relevance** helps retrieve **less redundant and more diverse/complementary chunks**.
+**MMR — Maximal Marginal Relevance** helps retrieve **less redundant and more diverse/complementary chunks**.
 
 <aside>
 ??
@@ -51,7 +51,7 @@ Substitute y?:
 y? = w?(w?x + b?) + b?
 y? = w?w?x + w?b? + b?
 y? = (w?w?)x + (w?b? + b?)
-y? = w�x + b�
+y? = w’x + b’
 
 This shows that without an activation function, multiple layers can be mathematically collapsed into a single linear transformation.
 Even if we have 10, 100, or 1000 layers, we can effectively combine the weights and biases and reduce the whole network to: y = Wx + b
@@ -78,7 +78,7 @@ Profiling shows that most of the latency comes from the **self-attention** layer
 
 Which change would most directly address the computational bottleneck for long sequences?",Replace ReLU with GELU,Increase the number of Transformer layers,"Use an attention mechanism with reduced attention complexity, such as sparse/local attention",Increase the embedding dimension,C,"In standard Transformer self-attention, every token attends to every other token.
 
-For **n tokens**, the attention matrix has **n � n** entries, so the computational complexity with respect to sequence length is approximately **O(n�)**.
+For **n tokens**, the attention matrix has **n × n** entries, so the computational complexity with respect to sequence length is approximately **O(n²)**.
 
 - **1,000 tokens ? 1 million attention relationships**
 - **100,000 tokens ? ~10 billion**
@@ -160,7 +160,7 @@ What is the most appropriate first approach?","Use transfer learning with a pret
 2. **Training accuracy 99% vs validation accuracy 72%** ? model fits training data much better than unseen data.
 3. **Small dataset + training from scratch** ? not enough data to effectively learn robust visual features.
 
-### Problem 1 � Small dataset
+### Problem 1 — Small dataset
 
 If the data is limited, how will a CNN learn enough patterns to distinguish:
 
@@ -177,7 +177,7 @@ These models have already learned general visual features such as:
 
 Then **fine-tune** the pretrained model using the vehicle-damage dataset.
 
-### Problem 2 � Limited variety in training data
+### Problem 2 — Limited variety in training data
 
 Even with the available images, the model may see very similar examples and start memorizing them.
 
@@ -253,3 +253,46 @@ Exact duplicate ? safely reuse canonical ID.
 Near-duplicate ? similarity is only a signal; semantic/business differences must be verified before deduplication.
 
 This is where a production system needs business-aware deduplication, not just a similarity threshold.",RAG,Deduplication,Xi-00006,
+"Xi-00008","A production BERT model for insurance claim classification has stable training and validation performance. During deployment, the model receives batches containing very different sequence lengths. GPU utilization is low, but inference latency is high because many sequences are much shorter than the maximum sequence length in the batch.","Dynamic padding / length-based batching","Increase BERT's hidden dimension","Increase dropout during inference","Increase the number of attention heads","A","Imagine you have 5 insurance claim documents:
+
+Claim 1 → 20 words
+Claim 2 → 30 words
+Claim 3 → 50 words
+Claim 4 → 100 words
+Claim 5 → 500 words
+
+If BERT puts all 5 documents into the same batch, the shorter documents may be padded to the length of the longest document (500 words).
+
+This means BERT processes many unnecessary padding tokens, wasting computation and increasing inference latency.
+
+Simple solution:
+
+Group inputs with similar sequence lengths into the same batch.
+
+For example:
+
+Batch 1: 20, 30, 50 words
+Batch 2: 100, 120, 150 words
+Batch 3: 450, 500 words
+
+Now much less padding is needed, so BERT processes fewer unnecessary tokens.
+
+This technique is called dynamic padding with length-based batching (bucketing).
+
+In a real-time production system:
+
+Users
+↓
+API Server
+↓
+Dynamic Batching Queue
+↓
+Length Bucketing
+↓
+BERT GPU
+↓
+Predictions
+↓
+Users
+
+Correct answer: A. Dynamic padding / length-based batching","BERT","Inference optimization, Dynamic padding, Length-based batching","",""
