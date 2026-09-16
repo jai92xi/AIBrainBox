@@ -1,259 +1,292 @@
 ID,Question,A,B,C,D,Correct Answer,Explaination,Topic,Sub Topics,previous related question,next related question
-Xi-00001,"Your RAG system retrieves 10 chunks for every query. Testing shows that 7 of those chunks contain almost identical information, while some useful information is missing.
-What would be the best approach?",Increase top-k from 10 to 30,Use MMR or another diversity-aware retrieval/reranking strategy,Increase LLM temperature,Increase chunk size,B,"A traditional similarity search asks:
+"Xi-00001","Your <b>RAG system</b> retrieves 10 chunks for every query. Testing shows that 7 of those chunks contain almost identical information, while some useful information is missing.
+What would be the <b>best approach</b>?","Increase top-k from 10 to 30","Use <b>MMR</b> or another <b>diversity-aware retrieval/reranking strategy</b>","Increase LLM temperature","Increase chunk size","B","A traditional similarity search asks:
 
-> **“Which chunks are most similar to my query?” (User query ? Search vector DB ? Retrieve relevant chunks)**
-> 
+<b>Which chunks are most similar to my query?</b>
+
+User query → Search vector DB → Retrieve relevant chunks
 
 But what if the retrieved chunks contain nearly identical information?
-We are effectively **wasting the context window** on duplicate information, while potentially missing other useful information.
 
-**This is where MMR helps.**
+We are effectively <b>wasting the context window</b> on duplicate information, while potentially missing other useful information.
 
-**MMR — Maximal Marginal Relevance** helps retrieve **less redundant and more diverse/complementary chunks**.
+<b>This is where MMR helps.</b>
 
-<aside>
-??
+<b>MMR — Maximal Marginal Relevance</b> helps retrieve <b>less redundant and more diverse/complementary chunks</b>.
 
 MMR considers two things:
-*** Relevant to the query
-* Different from the chunks already selected**
 
-</aside>
+• <b>Relevant to the query</b>
+• <b>Different from the chunks already selected</b>
 
 So instead of retrieving:
-**Chunk 1:** Coverage details
-**Chunk 2:** Same coverage details
-**Chunk 3:** Same coverage details
-**Chunk 4:** Same coverage details
+
+<b>Chunk 1:</b> Coverage details
+<b>Chunk 2:</b> Same coverage details
+<b>Chunk 3:</b> Same coverage details
+<b>Chunk 4:</b> Same coverage details
 
 MMR can select:
-**Chunk 1:** Coverage details
-**Chunk 2:** Waiting period
-**Chunk 3:** Exclusions
-**Chunk 4:** Claim process
 
-Now the LLM gets **relevant + complementary information** instead of repeated information.
-That's why **MMR is a diversity-aware retrieval technique**.
-It helps improve **context utilization** and reduces wasting the LLM's context window on duplicate information.",RAG,MMR,,Xi-00003
-Xi-00002,"You are building a fraud detection model for a fintech company. The model has 20 hidden layers and a large number of parameters. During training, the model reaches a point where adding more hidden layers or increasing the number of neurons provides almost no improvement. The model performs well on simple patterns but struggles to learn complex relationships between transaction amount, location, device, transaction frequency, and user behavior.
-You have two possible architectural changes. Which one you choose?",Change the hidden-layer design so that each layer can introduce non-linear transformations,Add few more hidden layers and increase the number of neurons in the existing layers,,,A,"Regardless of how many layers a deep neural network has, without activation functions, it would **behave like a linear model**. Activation functions **introduce non-linearity** into the model.
+<b>Chunk 1:</b> Coverage details
+<b>Chunk 2:</b> Waiting period
+<b>Chunk 3:</b> Exclusions
+<b>Chunk 4:</b> Claim process
 
-But what does Introducing non-linearity means?
-The model can learn curves, complex patterns, and non-linear relationships, not just straight-line relationships.
+Now the LLM gets <b>relevant + complementary information</b> instead of repeated information.
+
+That's why <b>MMR is a diversity-aware retrieval technique</b>. It helps improve <b>context utilization</b> and reduces wasting the LLM's context window on duplicate information.","RAG","MMR","","Xi-00003"
+"Xi-00002","You are building a <b>fraud detection model</b> for a fintech company. The model has 20 hidden layers and a large number of parameters. During training, the model reaches a point where adding more hidden layers or increasing the number of neurons provides almost no improvement. The model performs well on simple patterns but struggles to learn complex relationships between transaction amount, location, device, transaction frequency, and user behavior.
+You have two possible architectural changes. Which one you choose?","Change the hidden-layer design so that each layer can introduce <b>non-linear transformations</b>","Add few more hidden layers and increase the number of neurons in the existing layers","","","A","Regardless of how many layers a deep neural network has, without <b>activation functions</b>, it would behave like a <b>linear model</b>. Activation functions introduce <b>non-linearity</b> into the model.
+
+What does introducing non-linearity mean?
+
+The model can learn <b>curves, complex patterns, and non-linear relationships</b>, not just straight-line relationships.
 
 Suppose we have two layers without activation functions:
 
-y? = w?x + b?
-y? = w?y? + b?
+y₁ = w₁x + b₁
+y₂ = w₂y₁ + b₂
 
-Substitute y?:
-y? = w?(w?x + b?) + b?
-y? = w?w?x + w?b? + b?
-y? = (w?w?)x + (w?b? + b?)
-y? = w’x + b’
+Substitute y₁:
 
-This shows that without an activation function, multiple layers can be mathematically collapsed into a single linear transformation.
-Even if we have 10, 100, or 1000 layers, we can effectively combine the weights and biases and reduce the whole network to: y = Wx + b
+y₂ = w₂(w₁x + b₁) + b₂
+y₂ = w₂w₁x + w₂b₁ + b₂
+y₂ = (w₂w₁)x + (w₂b₁ + b₂)
+y₂ = w'x + b'
+
+This shows that without an activation function, multiple layers can be mathematically collapsed into a <b>single linear transformation</b>.
+
+Even if we have 10, 100, or 1000 layers, we can effectively combine the weights and biases and reduce the whole network to:
+
+<b>y = Wx + b</b>
+
 So, simply adding more linear layers does not allow the network to learn more complex patterns.
 
-Now, let's introduce an activation function such as ReLU:
-y? = ReLU(w?x + b?)
-where:	ReLU(z) = max(0, z)
+Now, let's introduce an activation function such as <b>ReLU</b>:
 
-Then:	y? = w?y? + b?	or:	y? = w?ReLU(w?x + b?) + b?
+y₁ = ReLU(w₁x + b₁)
 
-Now we cannot simply multiply w? and w? together, because ReLU is applied between the two layers and changes the output non-linearly.
+where:
+
+<b>ReLU(z) = max(0, z)</b>
+
+Then:
+
+y₂ = w₂y₁ + b₂
+
+or:
+
+y₂ = w₂ReLU(w₁x + b₁) + b₂
+
+Now we cannot simply multiply w₁ and w₂ together, because ReLU is applied between the two layers and changes the output <b>non-linearly</b>.
 
 So the structure becomes:
 
-Input ? Linear ? ReLU ? Linear ? Output
+<b>Input → Linear → ReLU → Linear → Output</b>
 
-The linear layers transform the data, while the activation function introduces non-linearity.
+The linear layers transform the data, while the activation function introduces <b>non-linearity</b>.
 
-This allows the neural network to learn complex patterns, curves, and non-linear decision boundaries.",Neural Network,Activation Functions,,Xi-00004
-Xi-00003,"A production NLP system uses a Transformer-based model for classifying customer support tickets. The model performs well during training and validation. However, after deployment, latency becomes too high when ticket text is long.
+This allows the neural network to learn <b>complex patterns, curves, and non-linear decision boundaries</b>.","Neural Network","Activation Functions","","Xi-00004"
+"Xi-00003","A production <b>NLP system</b> uses a <b>Transformer-based model</b> for classifying customer support tickets. The model performs well during training and validation. However, after deployment, latency becomes too high when ticket text is long.
 
-Profiling shows that most of the latency comes from the **self-attention** layers. The model uses standard full self-attention, where every token attends to every other token.
+Profiling shows that most of the latency comes from the <b>self-attention</b> layers. The model uses standard full self-attention, where every token attends to every other token.
 
-Which change would most directly address the computational bottleneck for long sequences?",Replace ReLU with GELU,Increase the number of Transformer layers,"Use an attention mechanism with reduced attention complexity, such as sparse/local attention",Increase the embedding dimension,C,"In standard Transformer self-attention, every token attends to every other token.
+Which change would most directly address the <b>computational bottleneck for long sequences</b>?","Replace ReLU with GELU","Increase the number of Transformer layers","Use an <b>attention mechanism with reduced attention complexity</b>, such as <b>sparse/local attention</b>","Increase the embedding dimension","C","In standard Transformer <b>self-attention</b>, every token attends to every other token.
 
-For **n tokens**, the attention matrix has **n × n** entries, so the computational complexity with respect to sequence length is approximately **O(n²)**.
+For <b>n tokens</b>, the attention matrix has n × n entries, so the computational complexity with respect to sequence length is approximately <b>O(n²)</b>.
 
-- **1,000 tokens ? 1 million attention relationships**
-- **100,000 tokens ? ~10 billion**
+• 1,000 tokens → 1 million attention relationships
+• 100,000 tokens → approximately 10 billion attention relationships
 
 As the sequence becomes longer, the computational and memory cost increases rapidly, which can lead to significant latency.
 
-### Do we have to live with this latency?
+<b>Do we have to live with this latency?</b>
 
-**local attention, sparse attention, and global + local attention** helps here
+Not necessarily. <b>Local attention, sparse attention, and global + local attention</b> can reduce the amount of attention computation.
 
-Instead of attending all tokens - the key idea is to **restrict which tokens can attend to which other tokens**.
+Instead of allowing every token to attend to every other token, the key idea is to <b>restrict which tokens can attend to which other tokens</b>.
 
-**Full attention:** `Token 1 ? Token 1, Token 2, Token 3, ..., Token n` 
+<b>Full attention:</b> Token 1 → Token 1, Token 2, Token 3, ..., Token n
 
-**Local attention:** `Token 1 ? nearby tokens only`
+<b>Local attention:</b> Token 1 → nearby tokens only
 
 Each token attends only to tokens within a predefined local window.
 
-### Types of attention
+<b>Types of attention:</b>
 
-| Type | What does each token attend to? |
-| --- | --- |
-| **Full attention** | Every token in the sequence |
-| **Local attention** | Nearby tokens within a fixed window |
-| **Sparse attention** | Selected tokens according to a predefined pattern |
-| **Global + local attention** | Nearby tokens + selected global/important tokens |",Transformers,Self-attention; Sparse/Local Attention,Xi-00001,Xi-00005
-Xi-00004,"A **production team is fine-tuning BERT for an insurance ticket-classification system with 8 intent classes such as ""Health Claim"", ""Auto Claim"", ""Policy Renewal"", and ""Claim Rejection"".**
+<b>Full attention:</b> Every token in the sequence
+
+<b>Local attention:</b> Nearby tokens within a fixed window
+
+<b>Sparse attention:</b> Selected tokens according to a predefined pattern
+
+<b>Global + local attention:</b> Nearby tokens + selected global or important tokens","Transformers","Self-attention; Sparse/Local Attention","Xi-00001","Xi-00005"
+"Xi-00004","A <b>production team</b> is fine-tuning <b>BERT</b> for an insurance ticket-classification system with 8 intent classes such as ""Health Claim"", ""Auto Claim"", ""Policy Renewal"", and ""Claim Rejection"".
 
 During training:
 
-- Training loss steadily decreases.
-- Validation loss decreases initially but starts increasing after several epochs.
-- Training accuracy reaches 99%.
-- Validation accuracy remains around 91%.
-- The gap continues to grow with additional training.
+• Training loss steadily decreases.
+• Validation loss decreases initially but starts increasing after several epochs.
+• Training accuracy reaches <b>99%</b>.
+• Validation accuracy remains around <b>91%</b>.
+• The gap continues to grow with additional training.
 
-Which change would most directly address the problem?",Increase the learning rate significantly,Add regularization such as dropout and use early stopping,Increase the number of BERT layers,Train for more epochs,B,"The key signal
+Which change would most directly address the problem?","Increase the learning rate significantly","Add <b>regularization such as dropout</b> and use <b>early stopping</b>","Increase the number of BERT layers","Train for more epochs","B","<b>The key signal:</b>
 
-Training loss ? + Training accuracy ? 99% + Validation loss ? + Validation accuracy stagnates
+Training loss ↓
+Training accuracy → <b>99%</b>
+Validation loss ↑
+Validation accuracy → <b>91%</b>
 
-This is a classic overfitting pattern.
+This is a classic <b>overfitting pattern</b>.
 
-### What does overfitting mean?
+<b>What does overfitting mean?</b>
 
-The model learns the training data too well, including its specific patterns and noise, but doesn't perform as well on new/unseen data.
+The model learns the training data too well, including its specific patterns and noise, but does not perform as well on new or unseen data.
 
 Here:
 
-Training data ? 99% accuracy
-New/unseen validation data ? 91% accuracy
+Training data → 99% accuracy
+New/unseen validation data → 91% accuracy
 
-So the model is becoming very good at the training examples, but its ability to generalize to new examples is not improving.
+So the model is becoming very good at the training examples, but its ability to <b>generalize to new examples</b> is not improving.
 
-### So, how do we reduce overfitting?
+<b>How do we reduce overfitting?</b>
 
-**One approach is early stopping.**
+One approach is <b>early stopping</b>.
 
 If the model keeps training even after validation performance has stopped improving, there is little benefit in continuing.
 
-So, early stopping tells training to stop when validation performance no longer improves for a predefined number of epochs (patience).
+Early stopping tells training to stop when validation performance no longer improves for a predefined number of epochs called <b>patience</b>.
 
-**Another approach is dropout**.
+Another approach is <b>dropout</b>.
 
-Dropout randomly turns off a portion of neurons during training. This prevents the model from becoming too dependent on specific neurons or patterns and encourages it to learn more robust representations.
+Dropout randomly turns off a portion of neurons during training. This prevents the model from becoming too dependent on specific neurons or patterns and encourages it to learn <b>more robust representations</b>.
 
-So: Overfitting ? use regularization such as dropout + early stopping",Neural Network,Regularization; Dropout; Early Stopping,Xi-00002,
-Xi-00005,"A production team is training a CNN-based image classifier to identify damaged vs. undamaged vehicle parts for an insurance claims system.
+So:
+
+<b>Overfitting → Regularization such as dropout + early stopping</b>","Neural Network","Regularization; Dropout; Early Stopping","Xi-00002",""
+"Xi-00005","A production team is training a <b>CNN-based image classifier</b> to identify damaged vs. undamaged vehicle parts for an insurance claims system.
+
 The model achieves:
-Training accuracy: 99%
-Validation accuracy: 72%
-Training loss: continues decreasing
-Validation loss: continues increasing
+
+<b>Training accuracy: 99%</b>
+<b>Validation accuracy: 72%</b>
+<b>Training loss: continues decreasing</b>
+<b>Validation loss: continues increasing</b>
 
 The dataset is relatively small, and the model is trained from scratch.
-What is the most appropriate first approach?","Use transfer learning with a pretrained CNN such as ResNet or EfficientNet, along with appropriate data augmentation
-",Add more CNN layers and increase the number of parameters,Train for many more epochs,,A,"### Key hints in the question
 
-1. **Training loss ? + validation loss ?** ? strong sign of **overfitting**.
-2. **Training accuracy 99% vs validation accuracy 72%** ? model fits training data much better than unseen data.
-3. **Small dataset + training from scratch** ? not enough data to effectively learn robust visual features.
+What is the <b>most appropriate first approach</b>?","Use <b>transfer learning</b> with a pretrained CNN such as <b>ResNet or EfficientNet</b>, along with appropriate <b>data augmentation</b>","Add more CNN layers and increase the number of parameters","Train for many more epochs","","A","<b>Key hints in the question:</b>
 
-### Problem 1 — Small dataset
+1. <b>Training loss decreases + validation loss increases</b> → strong sign of overfitting.
+2. <b>Training accuracy 99% vs validation accuracy 72%</b> → model fits training data much better than unseen data.
+3. <b>Small dataset + training from scratch</b> → not enough data to effectively learn robust visual features.
+
+<b>Problem 1 — Small dataset</b>
 
 If the data is limited, how will a CNN learn enough patterns to distinguish:
 
-`Damaged vehicle part` vs `Undamaged vehicle part`
+Damaged vehicle part vs Undamaged vehicle part
 
-Instead of training from scratch, use a **pretrained CNN** such as **ResNet or EfficientNet**.
+Instead of training from scratch, use a <b>pretrained CNN</b> such as <b>ResNet or EfficientNet</b>.
 
 These models have already learned general visual features such as:
 
-- Edges
-- Shapes
-- Textures
-- Patterns
+• Edges
+• Shapes
+• Textures
+• Patterns
 
-Then **fine-tune** the pretrained model using the vehicle-damage dataset.
+Then <b>fine-tune</b> the pretrained model using the vehicle-damage dataset.
 
-### Problem 2 — Limited variety in training data
+<b>Problem 2 — Limited variety in training data</b>
 
 Even with the available images, the model may see very similar examples and start memorizing them.
 
-**Data augmentation** helps by creating varied versions of existing training images using:
+<b>Data augmentation</b> helps by creating varied versions of existing training images using:
 
-- Rotation
-- Cropping
-- Flipping
-- Scaling
-- Brightness/contrast changes
+• Rotation
+• Cropping
+• Flipping
+• Scaling
+• Brightness/contrast changes
 
-This increases the **variety of training examples** and helps improve generalization.
+This increases the <b>variety of training examples</b> and helps improve generalization.
 
 So the solution is:
 
-**Small dataset ? Pretrained CNN + Fine-tuning**
+<b>Small dataset → Pretrained CNN + Fine-tuning</b>
 
-**Limited data variety ? Data augmentation**
+<b>Limited data variety → Data augmentation</b>
 
-**Both ? Better generalization and reduced overfitting**",CNN,Fine tunnig; Data Augmentation,Xi-00003,
-Xi-00006,"You have 500M chunks. Exact hash-based deduplication removes only 20% because many documents are slightly different versions of the same content.
-Which approach is most appropriate for detecting near-duplicates at this scale?",Compare every document with every other document using cosine similarity.,"Use MinHash/LSH or another cheap candidate-generation technique, then perform a more accurate similarity check only on candidates.",Embed every document and compare every embedding against all 500M embeddings.,Randomly sample 10% of documents and delete similar-looking documents.,B,"At 500M chunks, comparing every pair is computationally infeasible.
+<b>Both → Better generalization and reduced overfitting</b>","CNN","Fine-tuning; Data Augmentation","Xi-00003",""
+"Xi-00006","You have <b>500M chunks</b>. Exact hash-based deduplication removes only 20% because many documents are slightly different versions of the same content.
+
+Which approach is most appropriate for detecting <b>near-duplicates at this scale</b>?","Compare every document with every other document using cosine similarity.","Use <b>MinHash/LSH</b> or another cheap <b>candidate-generation technique</b>, then perform a more accurate similarity check only on candidates.","Embed every document and compare every embedding against all 500M embeddings.","Randomly sample 10% of documents and delete similar-looking documents.","B","At <b>500M chunks</b>, comparing every pair is computationally infeasible.
 
 The scalable pattern is:
 
 Document
-   ?
-Cheap fingerprint / MinHash
-   ?
-LSH candidate retrieval
-   ?
+↓
+<b>Cheap fingerprint / MinHash</b>
+↓
+<b>LSH candidate retrieval</b>
+↓
 Only compare likely candidates
-   ?
+↓
 Near-duplicate?
-   ??? Yes ? map to canonical ID
-   ??? No  ? create new embedding
+→ Yes → map to canonical ID
+→ No → create new embedding
 
-Key principle:
+<b>Key principle:</b>
 
-Use a cheap method to find candidates, then an expensive method only for those candidates.",RAG,Deduplication,,Xi-00007
-Xi-00007,"A multi-tenant health insurance RAG system receives these documents:
+Use a <b>cheap method to find candidates</b>, then use a more expensive similarity method only for those candidates.","RAG","Deduplication","","Xi-00007"
+"Xi-00007","A <b>multi-tenant health insurance RAG system</b> receives these documents:
 
-Tenant A ? Policy_A_v1.pdf
-Tenant A ? Policy_A_v2.pdf
-Tenant B ? Policy_B_v1.pdf
+Tenant A → Policy_A_v1.pdf
+Tenant A → Policy_A_v2.pdf
+Tenant B → Policy_B_v1.pdf
 
 After normalization:
 
-Policy_A_v1 and Policy_B_v1 have identical content and identical SHA-256 hash.
-Policy_A_v2 is 98% similar to v1, but the deductible amount changed from $500 ? $1,000.
-Users must always receive the latest policy applicable to their tenant.
+Policy_A_v1 and Policy_B_v1 have <b>identical content and identical SHA-256 hash</b>.
+
+Policy_A_v2 is 98% similar to v1, but the <b>deductible amount changed from $500 → $1,000</b>.
+
+Users must always receive the <b>latest policy applicable to their tenant</b>.
 Citations must point to the correct original document.
 Duplicate embeddings should be avoided where safe.
-Which design is BEST?",Treat all three documents as duplicates because they are highly similar; store one canonical embedding and map all documents to it.,Store separate embeddings for all three because tenant and version metadata are different.,"Deduplicate Policy_A_v1 and Policy_B_v1 into one canonical representation, but treat Policy_A_v2 as a separate canonical version because the changed deductible is semantically important; preserve tenant/version/source mappings.","Deduplicate only within each tenant. Therefore, Policy_A_v1 and Policy_B_v1 must have separate embeddings.",C,"Policy_A_v1 and Policy_B_v1 can safely share one canonical representation because their content is exactly identical:
 
-Policy_A_v1 ??
-             ???? Canonical ID 789 ? One embedding
-Policy_B_v1 ??
+Which design is <b>BEST</b>?","Treat all three documents as duplicates because they are highly similar; store one canonical embedding and map all documents to it.","Store separate embeddings for all three because tenant and version metadata are different.","Deduplicate Policy_A_v1 and Policy_B_v1 into one canonical representation, but treat Policy_A_v2 as a separate canonical version because the changed deductible is semantically important; preserve tenant/version/source mappings.","Deduplicate only within each tenant. Therefore, Policy_A_v1 and Policy_B_v1 must have separate embeddings.","C","Policy_A_v1 and Policy_B_v1 can safely share one <b>canonical representation</b> because their content is exactly identical:
 
-But Policy_A_v2 changes a business-critical value:
+Policy_A_v1
+        ↓
+<b>Canonical ID 789 → One embedding</b>
+        ↑
+Policy_B_v1
 
-v1 ? Deductible = $500
-v2 ? Deductible = $1,000
+But Policy_A_v2 changes a <b>business-critical value</b>:
 
-Even though the documents are 98% similar, they represent different policy versions. They should therefore have separate canonical representations.
+v1 → Deductible = $500
+v2 → Deductible = $1,000
 
-v1 ? Canonical ID 789 ? Embedding A
-v2 ? Canonical ID 790 ? Embedding B
+Even though the documents are 98% similar, they represent <b>different policy versions</b>. They should therefore have separate canonical representations.
+
+v1 → Canonical ID 789 → Embedding A
+v2 → Canonical ID 790 → Embedding B
 
 The key distinction is:
 
-Exact duplicate ? safely reuse canonical ID.
-Near-duplicate ? similarity is only a signal; semantic/business differences must be verified before deduplication.
+<b>Exact duplicate → safely reuse canonical ID.</b>
 
-This is where a production system needs business-aware deduplication, not just a similarity threshold.",RAG,Deduplication,Xi-00006,
-"Xi-00008","A production BERT model for insurance claim classification has stable training and validation performance. During deployment, the model receives batches containing very different sequence lengths. GPU utilization is low, but inference latency is high because many sequences are much shorter than the maximum sequence length in the batch.","Dynamic padding / length-based batching","Increase BERT's hidden dimension","Increase dropout during inference","Increase the number of attention heads","A","Imagine you have 5 insurance claim documents:
+<b>Near-duplicate → similarity is only a signal; semantic/business differences must be verified before deduplication.</b>
+
+This is where a production system needs <b>business-aware deduplication</b>, not just a similarity threshold.","RAG","Deduplication","Xi-00006",""
+"Xi-00008","A production <b>BERT model</b> for insurance claim classification has stable training and validation performance. During deployment, the model receives batches containing <b>very different sequence lengths</b>. GPU utilization is low, but inference latency is high because many sequences are much shorter than the maximum sequence length in the batch.
+
+Which optimization is <b>most directly relevant</b>?","<b>Dynamic padding / length-based batching</b>","Increase BERT's hidden dimension","Increase dropout during inference","Increase the number of attention heads","A","Imagine you have 5 insurance claim documents:
 
 Claim 1 → 20 words
 Claim 2 → 30 words
