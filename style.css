@@ -1,6 +1,12 @@
 /* =========================================================
-   AI BRAIN BOX
-   LIGHT THEME
+   AI Brain Box - style.css
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+
+/* =========================================================
+   RESET
    ========================================================= */
 
 * {
@@ -8,21 +14,18 @@
 }
 
 html {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
     scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
     padding: 0;
+
     min-height: 100vh;
 
     font-family:
-        Inter,
-        "Segoe UI",
-        Roboto,
+        'Inter',
+        'Segoe UI',
         Arial,
         sans-serif;
 
@@ -41,78 +44,91 @@ body {
 
 #background-overlay {
     position: fixed;
+
     inset: 0;
+
+    z-index: -10;
 
     width: 100%;
     height: 100%;
 
     background:
-        rgba(255, 255, 255, 0.30);
+        linear-gradient(
+            135deg,
+            #e0f2fe,
+            #ede9fe
+        );
 
-    z-index: -2;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
     pointer-events: none;
 }
 
-#session-background,
-#session-background-image {
-    position: fixed;
+#background-overlay::after {
+    content: "";
 
-    top: 0;
-    left: 0;
+    position: absolute;
 
-    width: 100%;
-    height: 100%;
+    inset: 0;
 
-    object-fit: cover;
-
-    z-index: -3;
+    background:
+        rgba(255, 255, 255, 0.58);
 
     pointer-events: none;
 }
 
 
 /* =========================================================
-   MAIN PAGE
+   APP CONTAINER
    ========================================================= */
 
-.page-wrapper {
+.app-container {
+    width: min(
+        1180px,
+        calc(100% - 32px)
+    );
+
+    margin:
+        28px auto
+        50px;
+
     position: relative;
 
-    width: 100%;
-    min-height: 100vh;
-
-    padding:
-        20px
-        24px
-        40px;
+    z-index: 1;
 }
 
 
 /* =========================================================
-   TOP HEADER / AI BRAIN BOX
+   TOP HEADER
    ========================================================= */
 
 .brain-box-header {
     position: relative;
 
     width: 100%;
+
     min-height: 130px;
 
-    display: flex;
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        auto
+        1fr;
+
     align-items: center;
 
-    padding:
-        22px
-        28px;
+    gap: 24px;
 
-    margin-bottom: 18px;
+    padding:
+        22px 28px;
+
+    margin-bottom: 22px;
 
     border-radius: 20px;
 
-    /*
-     * Catchy light background instead of plain white.
-     */
     background:
         linear-gradient(
             135deg,
@@ -136,24 +152,21 @@ body {
    BRAND
    ========================================================= */
 
-.brand-area {
-    position: relative;
+.brand-section {
+    min-width: 0;
 
-    z-index: 3;
+    justify-self: start;
 
-    flex:
-        1 1 auto;
-
-    min-width: 220px;
-
-    padding-right: 20px;
+    text-align: left;
 }
 
-.brand-title {
+.brand-section h1 {
     margin: 0;
 
+    color: #172554;
+
     font-size: clamp(
-        26px,
+        27px,
         3vw,
         38px
     );
@@ -162,21 +175,21 @@ body {
 
     font-weight: 800;
 
-    letter-spacing: -0.8px;
-
-    color: #172554;
-
-    text-shadow:
-        0 1px 0
-        rgba(255, 255, 255, 0.8);
+    letter-spacing: -1px;
 }
 
-
-/*
- * Caption is intentionally hidden.
- */
 .brand-subtitle {
-    display: none !important;
+    margin:
+        7px 0
+        0;
+
+    color: #475569;
+
+    font-size: 14px;
+
+    line-height: 1.4;
+
+    font-weight: 500;
 }
 
 
@@ -189,21 +202,19 @@ body {
 
     z-index: 5;
 
-    flex:
-        0 0 auto;
+    justify-self: center;
 
-    margin-left: auto;
+    margin: 0;
 
-    margin-right: 18px;
+    min-width: 165px;
 
     padding:
-        11px
-        16px;
+        11px 18px;
 
     border-radius: 12px;
 
     background:
-        rgba(255, 255, 255, 0.88);
+        rgba(255, 255, 255, 0.90);
 
     border:
         1px solid
@@ -215,17 +226,23 @@ body {
 
     color: #1e3a8a;
 
-    font-size: 15px;
+    font-size: 14px;
 
-    font-weight: 700;
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    text-align: center;
 
     white-space: nowrap;
 }
 
 .score-display strong {
+    color: #2563eb;
+
     font-size: 17px;
 
-    color: #2563eb;
+    font-weight: 800;
 }
 
 
@@ -234,134 +251,37 @@ body {
    ========================================================= */
 
 .quote-section {
-    position: relative;
+    min-width: 0;
 
-    z-index: 3;
+    justify-self: end;
 
-    flex:
-        0 1 390px;
+    max-width: 330px;
 
-    max-width: 390px;
-
-    padding:
-        9px
-        14px;
-
-    border-left:
-        3px solid
-        #6366f1;
-
-    background:
-        rgba(255, 255, 255, 0.48);
-
-    border-radius: 0 10px 10px 0;
+    text-align: right;
 }
 
 .quote-text {
     color: #334155;
 
-    font-size: 13px;
+    font-size: 14px;
 
-    line-height: 1.45;
-
-    font-style: italic;
+    line-height: 1.55;
 
     font-weight: 500;
+
+    font-style: italic;
 }
 
 .quote-author {
-    margin-top: 4px;
+    margin-top: 5px;
 
     color: #64748b;
 
-    font-size: 11px;
+    font-size: 12px;
 
-    font-weight: 700;
-
-    text-align: right;
-}
-
-
-/* =========================================================
-   QUIZ AREA
-   ========================================================= */
-
-.quiz-area {
-    width: 100%;
-
-    position: relative;
-}
-
-
-/* =========================================================
-   LOADING
-   ========================================================= */
-
-.loading {
-    width: fit-content;
-
-    margin:
-        60px
-        auto;
-
-    padding:
-        14px
-        22px;
-
-    border-radius: 12px;
-
-    background:
-        rgba(255, 255, 255, 0.92);
-
-    color: #334155;
-
-    font-size: 15px;
+    line-height: 1.4;
 
     font-weight: 600;
-
-    box-shadow:
-        0 8px 25px
-        rgba(15, 23, 42, 0.10);
-}
-
-
-/* =========================================================
-   ERROR
-   ========================================================= */
-
-.error {
-    width: min(
-        700px,
-        92%
-    );
-
-    margin:
-        30px
-        auto;
-
-    padding:
-        16px
-        20px;
-
-    border-radius: 12px;
-
-    background:
-        #fff1f2;
-
-    border:
-        1px solid
-        #fecdd3;
-
-    color:
-        #be123c;
-
-    font-weight: 600;
-
-    text-align: center;
-}
-
-.hidden {
-    display: none !important;
 }
 
 
@@ -370,24 +290,73 @@ body {
    ========================================================= */
 
 .question-container {
-    position: relative;
-
     width: 100%;
 
-    margin: 0 auto;
+    padding:
+        30px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    border:
+        1px solid
+        rgba(148, 163, 184, 0.25);
+
+    box-shadow:
+        0 12px 35px
+        rgba(15, 23, 42, 0.10);
+
+    backdrop-filter:
+        blur(10px);
+
+    -webkit-backdrop-filter:
+        blur(10px);
 }
 
 
 /* =========================================================
-   RELATED QUESTION NAVIGATION
+   QUESTION SECTION
+   ========================================================= */
+
+.question-section {
+    width: 100%;
+
+    margin-bottom: 24px;
+}
+
+.question {
+    width: 100%;
+
+    color: #172033;
+
+    font-size: 20px;
+
+    line-height: 1.65;
+
+    font-weight: 650;
+
+    letter-spacing: -0.15px;
+
+    text-align: left;
+
+    overflow-wrap: anywhere;
+}
+
+.question strong {
+    color: #1d4ed8;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   RELATED NAVIGATION
    ========================================================= */
 
 .related-navigation {
-    position: relative;
-
     width: 100%;
-
-    height: 46px;
 
     display: flex;
 
@@ -395,269 +364,73 @@ body {
 
     justify-content: space-between;
 
-    margin-bottom: 10px;
-
-    /*
-     * Navigation stays at the top.
-     * It does not become part of the flowing
-     * question/options height.
-     */
-    z-index: 20;
+    margin-bottom: 22px;
 }
 
 .related-question {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
 
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    padding: 0;
-
-    border: none;
-
     border-radius: 50%;
 
-    font-size: 26px;
+    border:
+        1px solid
+        #cbd5e1;
+
+    background:
+        rgba(248, 250, 252, 0.95);
+
+    color: #334155;
+
+    font-family:
+        'Inter',
+        'Segoe UI',
+        Arial,
+        sans-serif;
+
+    font-size: 22px;
+
+    font-weight: 700;
 
     line-height: 1;
-
-    font-weight: 800;
 
     cursor: pointer;
 
     transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
         transform 0.18s ease,
-        box-shadow 0.18s ease,
-        opacity 0.18s ease;
-
-    box-shadow:
-        0 5px 14px
-        rgba(15, 23, 42, 0.14);
-}
-
-.previous-related {
-    background:
-        #dbeafe;
-
-    color:
-        #1d4ed8;
-
-    border:
-        1px solid
-        #93c5fd;
-}
-
-.next-related {
-    background:
-        #dcfce7;
-
-    color:
-        #15803d;
-
-    border:
-        1px solid
-        #86efac;
+        box-shadow 0.18s ease;
 }
 
 .related-question:hover:not(:disabled) {
+    background:
+        #eff6ff;
+
+    border-color:
+        #93c5fd;
+
+    color:
+        #2563eb;
+
     transform:
-        translateY(-2px)
-        scale(1.05);
+        translateY(-2px);
 
     box-shadow:
-        0 8px 18px
-        rgba(15, 23, 42, 0.18);
-}
-
-.related-question:active:not(:disabled) {
-    transform:
-        scale(0.94);
+        0 5px 14px
+        rgba(37, 99, 235, 0.12);
 }
 
 .related-question:disabled {
-    opacity: 0.30;
+    opacity: 0.35;
 
     cursor: not-allowed;
-
-    box-shadow: none;
-}
-
-
-/* =========================================================
-   TWO-COLUMN LAYOUT
-   ========================================================= */
-
-.quiz-columns {
-    width: 100%;
-
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 1fr)
-        minmax(0, 1fr);
-
-    gap: 22px;
-
-    align-items: start;
-}
-
-
-/* =========================================================
-   LEFT QUESTION PANE
-   ========================================================= */
-
-.question-pane {
-    position: relative;
-
-    width: min(
-        100%,
-        720px
-    );
-
-    /*
-     * Prevent the question from occupying
-     * the complete left side.
-     */
-    margin:
-        0
-        auto;
-
-    min-height: 420px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    padding:
-        34px
-        38px;
-
-    border-radius: 20px;
-
-    background:
-        rgba(255, 255, 255, 0.88);
-
-    border:
-        1px solid
-        rgba(148, 163, 184, 0.35);
-
-    box-shadow:
-        0 12px 32px
-        rgba(15, 23, 42, 0.10);
-
-    backdrop-filter:
-        blur(8px);
-
-    -webkit-backdrop-filter:
-        blur(8px);
-}
-
-
-/* =========================================================
-   PANE LABEL
-   ========================================================= */
-
-.pane-label {
-    margin-bottom: 15px;
-
-    color:
-        #64748b;
-
-    font-size: 12px;
-
-    font-weight: 800;
-
-    letter-spacing:
-        1px;
-
-    text-transform:
-        uppercase;
-}
-
-
-/* =========================================================
-   QUESTION TEXT
-   ========================================================= */
-
-.question {
-    width: 100%;
-
-    color:
-        #172033;
-
-    /*
-     * Same general size as options.
-     */
-    font-size:
-        clamp(
-            17px,
-            1.35vw,
-            20px
-        );
-
-    line-height:
-        1.6;
-
-    font-weight:
-        600;
-
-    overflow-wrap:
-        anywhere;
-}
-
-.question strong,
-.question b {
-    color:
-        #111827;
-
-    font-weight:
-        800;
-}
-
-
-/* =========================================================
-   RIGHT OPTIONS PANE
-   ========================================================= */
-
-.options-pane {
-    position: relative;
-
-    width: min(
-        100%,
-        720px
-    );
-
-    margin:
-        0
-        auto;
-
-    padding:
-        28px
-        30px;
-
-    border-radius: 20px;
-
-    background:
-        rgba(255, 255, 255, 0.91);
-
-    border:
-        1px solid
-        rgba(148, 163, 184, 0.35);
-
-    box-shadow:
-        0 12px 32px
-        rgba(15, 23, 42, 0.10);
-
-    backdrop-filter:
-        blur(8px);
-
-    -webkit-backdrop-filter:
-        blur(8px);
 }
 
 
@@ -672,12 +445,14 @@ body {
 
     flex-direction: column;
 
-    gap: 11px;
+    gap: 12px;
+
+    margin-bottom: 22px;
 }
 
 
 /* =========================================================
-   OPTION
+   OPTION BUTTON
    ========================================================= */
 
 .option {
@@ -685,24 +460,22 @@ body {
 
     width: 100%;
 
-    min-height: 56px;
+    min-height: 58px;
 
     display: grid;
 
     grid-template-columns:
-        22px
-        38px
+        40px
         minmax(0, 1fr);
 
     align-items: center;
 
-    column-gap: 10px;
+    column-gap: 12px;
 
     padding:
-        13px
-        15px;
+        12px 16px;
 
-    border-radius: 13px;
+    border-radius: 12px;
 
     background:
         #f8fafc;
@@ -711,10 +484,17 @@ body {
         1px solid
         #dbe3ec;
 
-    color:
-        #172033;
+    color: #172033;
 
     cursor: pointer;
+
+    text-align: left;
+
+    font-family:
+        'Inter',
+        'Segoe UI',
+        Arial,
+        sans-serif;
 
     transition:
         background 0.18s ease,
@@ -723,9 +503,13 @@ body {
         box-shadow 0.18s ease;
 
     user-select: none;
+
+    appearance: none;
+
+    -webkit-appearance: none;
 }
 
-.option:hover {
+.option:hover:not(:disabled) {
     background:
         #eff6ff;
 
@@ -740,31 +524,26 @@ body {
         rgba(37, 99, 235, 0.08);
 }
 
+.option:focus-visible {
+    outline:
+        3px solid
+        rgba(59, 130, 246, 0.25);
 
-/* =========================================================
-   RADIO
-   ========================================================= */
+    outline-offset: 2px;
+}
 
-.option input[type="radio"] {
-    width: 17px;
-    height: 17px;
-
-    margin: 0;
-
-    accent-color:
-        #2563eb;
-
-    cursor: pointer;
+.option:disabled {
+    cursor: default;
 }
 
 
 /* =========================================================
-   OPTION LETTER
+   OPTION LABEL
    ========================================================= */
 
-.option-letter {
-    width: 34px;
-    height: 34px;
+.option-label {
+    width: 32px;
+    height: 32px;
 
     display: flex;
 
@@ -782,6 +561,10 @@ body {
     font-size: 13px;
 
     font-weight: 800;
+
+    line-height: 1;
+
+    flex-shrink: 0;
 }
 
 
@@ -795,56 +578,30 @@ body {
     color:
         #172033;
 
-    font-size:
-        clamp(
-            16px,
-            1.25vw,
-            19px
-        );
+    font-size: 17px;
 
-    line-height:
-        1.5;
+    line-height: 1.55;
 
-    font-weight:
-        500;
+    font-weight: 500;
 
-    overflow-wrap:
-        anywhere;
+    text-align: left;
+
+    overflow-wrap: anywhere;
 }
 
-.option-text strong,
-.option-text b {
+.option-text strong {
     color:
-        #111827;
+        #1d4ed8;
 
-    font-weight:
-        800;
+    font-weight: 800;
 }
 
 
 /* =========================================================
-   SELECTED OPTION
+   CORRECT OPTION
    ========================================================= */
 
-.option:has(
-    input[type="radio"]:checked
-) {
-    border-color:
-        #60a5fa;
-
-    background:
-        #eff6ff;
-
-    box-shadow:
-        0 0 0 2px
-        rgba(59, 130, 246, 0.08);
-}
-
-
-/* =========================================================
-   CORRECT ANSWER
-   ========================================================= */
-
+.option.correct,
 .option.correct-answer {
     background:
         #ecfdf5;
@@ -860,8 +617,8 @@ body {
         rgba(34, 197, 94, 0.12);
 }
 
-.option.correct-answer
-.option-letter {
+.option.correct .option-label,
+.option.correct-answer .option-label {
     background:
         #dcfce7;
 
@@ -869,17 +626,24 @@ body {
         #15803d;
 }
 
-.option.correct-answer
-.option-text {
+.option.correct .option-text,
+.option.correct-answer .option-text {
     color:
         #166534;
 }
 
+.option.correct .option-text strong,
+.option.correct-answer .option-text strong {
+    color:
+        #15803d;
+}
+
 
 /* =========================================================
-   WRONG ANSWER
+   WRONG OPTION
    ========================================================= */
 
+.option.wrong,
 .option.wrong-answer {
     background:
         #fff1f2;
@@ -895,8 +659,8 @@ body {
         rgba(244, 63, 94, 0.10);
 }
 
-.option.wrong-answer
-.option-letter {
+.option.wrong .option-label,
+.option.wrong-answer .option-label {
     background:
         #ffe4e6;
 
@@ -904,10 +668,16 @@ body {
         #be123c;
 }
 
-.option.wrong-answer
-.option-text {
+.option.wrong .option-text,
+.option.wrong-answer .option-text {
     color:
         #9f1239;
+}
+
+.option.wrong .option-text strong,
+.option.wrong-answer .option-text strong {
+    color:
+        #be123c;
 }
 
 
@@ -918,57 +688,29 @@ body {
 .result {
     width: 100%;
 
-    min-height: 0;
+    min-height: 26px;
 
-    margin-top: 14px;
-
-    padding:
-        0;
-
-    font-size:
+    margin:
+        8px 0
         16px;
 
-    line-height:
-        1.5;
+    font-size: 17px;
 
-    font-weight:
-        800;
+    line-height: 1.5;
 
-    text-align:
-        center;
+    font-weight: 700;
+
+    text-align: center;
 }
 
-.result:not(:empty) {
-    padding:
-        11px
-        14px;
-
-    border-radius:
-        10px;
-}
-
-.result-correct {
-    background:
-        #ecfdf5;
-
+.correct-result {
     color:
         #15803d;
-
-    border:
-        1px solid
-        #bbf7d0;
 }
 
-.result-wrong {
-    background:
-        #fff1f2;
-
+.wrong-result {
     color:
         #be123c;
-
-    border:
-        1px solid
-        #fecdd3;
 }
 
 
@@ -979,219 +721,243 @@ body {
 .explanation {
     width: 100%;
 
-    margin-top: 15px;
+    margin-top: 20px;
 
     padding:
-        19px
-        20px;
+        20px 22px;
 
-    border-radius:
-        14px;
+    border-radius: 14px;
 
     background:
         #f8fafc;
 
     border:
         1px solid
-        #cbd5e1;
+        #dbeafe;
 
     box-shadow:
-        0 6px 18px
-        rgba(15, 23, 42, 0.07);
-
-    animation:
-        explanationIn
-        0.28s ease
-        both;
+        0 5px 16px
+        rgba(15, 23, 42, 0.05);
 }
 
-@keyframes explanationIn {
+.explanation-header {
+    display: flex;
 
-    from {
-        opacity: 0;
+    align-items: center;
 
-        transform:
-            translateY(-7px);
-    }
+    gap: 9px;
 
-    to {
-        opacity: 1;
-
-        transform:
-            translateY(0);
-    }
-}
-
-.explanation-title {
-    margin-bottom:
-        9px;
+    margin-bottom: 10px;
 
     color:
         #1e3a8a;
 
-    font-size:
-        15px;
+    font-size: 16px;
 
-    font-weight:
-        800;
+    line-height: 1.4;
+
+    font-weight: 800;
+}
+
+.explanation-icon {
+    font-size: 19px;
+
+    line-height: 1;
 }
 
 .explanation-text {
     color:
         #334155;
 
-    font-size:
-        15px;
+    font-size: 15px;
 
-    line-height:
-        1.6;
+    line-height: 1.7;
 
-    font-weight:
-        500;
+    font-weight: 400;
+
+    text-align: left;
+
+    overflow-wrap: anywhere;
 }
 
-.explanation-text strong,
-.explanation-text b {
+.explanation-text strong {
     color:
-        #111827;
+        #1d4ed8;
 
-    font-weight:
-        800;
+    font-weight: 800;
 }
 
 
 /* =========================================================
-   FLOATING EMOJIS
+   LOADING
    ========================================================= */
 
-.emoji-burst {
+.loading {
+    min-height: 260px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 14px;
+
+    color:
+        #475569;
+
+    font-size: 15px;
+
+    font-weight: 500;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    border:
+        4px solid
+        #dbeafe;
+
+    border-top-color:
+        #2563eb;
+
+    animation:
+        spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error {
+    width: 100%;
+
+    padding:
+        18px 20px;
+
+    border-radius: 12px;
+
+    background:
+        #fff1f2;
+
+    border:
+        1px solid
+        #fecdd3;
+
+    color:
+        #be123c;
+
+    font-size: 15px;
+
+    line-height: 1.55;
+
+    font-weight: 600;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   HIDDEN
+   ========================================================= */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   FLOATING FEEDBACK
+   ========================================================= */
+
+.floating-feedback {
     position: fixed;
+
+    z-index: 9999;
 
     pointer-events: none;
 
-    user-select: none;
-
-    z-index: 99999;
+    font-size:
+        clamp(
+            28px,
+            4vw,
+            48px
+        );
 
     line-height: 1;
+
+    filter:
+        drop-shadow(
+            0 4px 8px
+            rgba(15, 23, 42, 0.16)
+        );
+
+    animation:
+        feedbackFloat
+        2.2s
+        ease-out
+        forwards;
 }
 
+@keyframes feedbackFloat {
+    0% {
+        opacity: 0;
 
-/* =========================================================
-   FOCUS ACCESSIBILITY
-   ========================================================= */
-
-button:focus-visible,
-input:focus-visible,
-.option:focus-within {
-    outline:
-        3px solid
-        rgba(59, 130, 246, 0.35);
-
-    outline-offset:
-        2px;
-}
-
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (
-    max-width: 1000px
-) {
-
-    .page-wrapper {
-        padding:
-            16px
-            18px
-            30px;
+        transform:
+            translateY(40px)
+            scale(0.45)
+            rotate(-12deg);
     }
 
-    .brain-box-header {
-        min-height:
-            120px;
+    12% {
+        opacity: 1;
 
-        padding:
-            18px
-            20px;
+        transform:
+            translateY(0)
+            scale(1.15)
+            rotate(5deg);
     }
 
-    .brand-title {
-        font-size:
-            28px;
+    45% {
+        opacity: 1;
+
+        transform:
+            translateY(-80px)
+            scale(1)
+            rotate(-4deg);
     }
 
-    .quote-section {
-        max-width:
-            300px;
+    100% {
+        opacity: 0;
 
-        flex-basis:
-            300px;
-    }
-
-    .quiz-columns {
-        gap:
-            16px;
-    }
-
-    .question-pane {
-        padding:
-            28px;
-    }
-
-    .options-pane {
-        padding:
-            23px;
-    }
-
-    .option {
-        grid-template-columns:
-            20px
-            34px
-            minmax(0, 1fr);
-
-        padding:
-            11px;
-    }
-
-    .option-letter {
-        width:
-            31px;
-
-        height:
-            31px;
+        transform:
+            translateY(-230px)
+            scale(0.75)
+            rotate(12deg);
     }
 }
 
 
 /* =========================================================
-   MOBILE
+   RESPONSIVE - TABLET
    ========================================================= */
 
 @media (
-    max-width: 760px
+    max-width: 900px
 ) {
-
-    .page-wrapper {
-        padding:
-            10px
-            12px
-            25px;
-    }
-
-
-    /* =============================================
-       HEADER
-       ============================================= */
-
     .brain-box-header {
-        min-height:
-            auto;
-
-        display:
-            grid;
-
         grid-template-columns:
             1fr
             auto;
@@ -1200,182 +966,150 @@ input:focus-visible,
             "brand score"
             "quote quote";
 
-        gap:
-            12px;
+        gap: 16px;
 
         padding:
-            16px;
-
-        border-radius:
-            16px;
+            20px 22px;
     }
 
-    .brand-area {
+    .brand-section {
         grid-area:
             brand;
-
-        min-width:
-            0;
-
-        padding:
-            0;
-    }
-
-    .brand-title {
-        font-size:
-            25px;
     }
 
     .score-display {
         grid-area:
             score;
 
-        margin:
-            0;
-
-        align-self:
-            start;
-
-        padding:
-            8px
-            10px;
-
-        font-size:
-            12px;
-    }
-
-    .score-display strong {
-        font-size:
-            14px;
+        justify-self:
+            end;
     }
 
     .quote-section {
         grid-area:
             quote;
 
-        width:
-            100%;
+        justify-self:
+            center;
 
         max-width:
-            none;
+            100%;
 
+        text-align:
+            center;
+    }
+
+    .question-container {
         padding:
-            8px
-            11px;
+            24px;
     }
-
-    .quote-text {
-        font-size:
-            12px;
-    }
-
-    .quote-author {
-        font-size:
-            10px;
-    }
+}
 
 
-    /* =============================================
-       NAVIGATION
-       ============================================= */
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
 
-    .related-navigation {
-        height:
-            42px;
-
-        margin-bottom:
-            7px;
-    }
-
-    .related-question {
+@media (
+    max-width: 640px
+) {
+    .app-container {
         width:
-            38px;
+            calc(100% - 20px);
 
-        height:
-            38px;
-
-        font-size:
-            23px;
+        margin:
+            10px auto
+            28px;
     }
 
-
-    /* =============================================
-       SINGLE COLUMN
-       ============================================= */
-
-    .quiz-columns {
+    .brain-box-header {
         grid-template-columns:
             1fr;
 
-        gap:
-            13px;
-    }
-
-    .question-pane,
-    .options-pane {
-        width:
-            100%;
+        grid-template-areas:
+            "brand"
+            "score"
+            "quote";
 
         min-height:
             auto;
 
         padding:
-            20px;
+            20px 18px;
+
+        border-radius:
+            16px;
+
+        text-align:
+            center;
+    }
+
+    .brand-section {
+        justify-self:
+            center;
+
+        text-align:
+            center;
+    }
+
+    .brand-section h1 {
+        font-size:
+            30px;
+    }
+
+    .brand-subtitle {
+        font-size:
+            13px;
+    }
+
+    .score-display {
+        justify-self:
+            center;
+
+        min-width:
+            160px;
+    }
+
+    .quote-section {
+        justify-self:
+            center;
+
+        text-align:
+            center;
+    }
+
+    .question-container {
+        padding:
+            18px 14px;
 
         border-radius:
             16px;
     }
 
-    .question-pane {
-        min-height:
-            230px;
-
-        justify-content:
-            center;
-    }
-
     .question {
         font-size:
-            17px;
+            18px;
 
         line-height:
-            1.55;
-    }
-
-    .options-pane {
-        padding:
-            18px;
-    }
-
-    .pane-label {
-        margin-bottom:
-            11px;
-
-        font-size:
-            10px;
+            1.6;
     }
 
     .option {
         min-height:
-            52px;
+            54px;
 
         grid-template-columns:
-            19px
-            32px
+            36px
             minmax(0, 1fr);
 
         column-gap:
-            8px;
+            10px;
 
         padding:
-            10px
-            11px;
-
-        border-radius:
-            11px;
+            10px 12px;
     }
 
-    .option-letter {
+    .option-label {
         width:
             30px;
 
@@ -1391,15 +1125,12 @@ input:focus-visible,
             16px;
 
         line-height:
-            1.45;
+            1.5;
     }
 
     .explanation {
         padding:
-            15px;
-
-        border-radius:
-            12px;
+            16px;
     }
 
     .explanation-text {
@@ -1407,67 +1138,47 @@ input:focus-visible,
             14px;
 
         line-height:
-            1.55;
+            1.65;
+    }
+
+    .related-question {
+        width:
+            40px;
+
+        height:
+            40px;
+
+        font-size:
+            20px;
     }
 }
 
 
 /* =========================================================
-   SMALL MOBILE
+   VERY SMALL SCREENS
    ========================================================= */
 
 @media (
-    max-width: 430px
+    max-width: 380px
 ) {
-
-    .page-wrapper {
-        padding:
-            8px
-            8px
-            20px;
+    .app-container {
+        width:
+            calc(100% - 14px);
     }
 
     .brain-box-header {
         padding:
-            13px;
-
-        border-radius:
-            14px;
+            17px 13px;
     }
 
-    .brand-title {
-        font-size:
-            22px;
-    }
-
-    .score-display {
-        font-size:
-            11px;
-
+    .question-container {
         padding:
-            7px
-            8px;
-    }
-
-    .score-display strong {
-        font-size:
-            12px;
-    }
-
-    .question-pane,
-    .options-pane {
-        padding:
-            16px;
-    }
-
-    .question-pane {
-        min-height:
-            210px;
+            15px 11px;
     }
 
     .question {
         font-size:
-            16px;
+            17px;
     }
 
     .option-text {
@@ -1475,19 +1186,14 @@ input:focus-visible,
             15px;
     }
 
-    .option {
-        grid-template-columns:
-            18px
-            29px
-            minmax(0, 1fr);
+    .score-display {
+        font-size:
+            13px;
     }
 
-    .option-letter {
-        width:
-            28px;
-
-        height:
-            28px;
+    .score-display strong {
+        font-size:
+            16px;
     }
 }
 
@@ -1499,7 +1205,6 @@ input:focus-visible,
 @media (
     prefers-reduced-motion: reduce
 ) {
-
     html {
         scroll-behavior:
             auto;
