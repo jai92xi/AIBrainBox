@@ -15,23 +15,29 @@ let questions = [];
 let quotes = [];
 
 let currentQuestionIndex = 0;
+let currentQuestion = null;
+
 let answeredCount = 0;
 let correctCount = 0;
 
 let answeredQuestions = {};
-let currentQuestion = null;
 
 
 /* =========================================================
    INITIALIZATION
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", initializeApp);
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeApp
+);
 
 async function initializeApp() {
     document.body.classList.add("light-theme");
 
-    const subtitle = document.querySelector(".brand-subtitle");
+    const subtitle =
+        document.querySelector(".brand-subtitle");
+
     if (subtitle) {
         subtitle.textContent = "";
         subtitle.style.display = "none";
@@ -53,12 +59,20 @@ async function initializeApp() {
    ========================================================= */
 
 async function loadQuestions() {
-    const loading = document.getElementById("loading");
-    const error = document.getElementById("error");
+    const loading =
+        document.getElementById("loading");
+
+    const error =
+        document.getElementById("error");
 
     try {
-        if (loading) loading.classList.remove("hidden");
-        if (error) error.classList.add("hidden");
+        if (loading) {
+            loading.classList.remove("hidden");
+        }
+
+        if (error) {
+            error.classList.add("hidden");
+        }
 
         const response = await fetch(
             `${CSV_URL}?v=${Date.now()}`,
@@ -68,43 +82,73 @@ async function loadQuestions() {
         );
 
         if (!response.ok) {
-            throw new Error(`Unable to load questions (${response.status})`);
+            throw new Error(
+                `Unable to load questions (${response.status})`
+            );
         }
 
-        const csvText = await response.text();
+        const csvText =
+            await response.text();
 
-        questions = parseCSV(csvText);
+        questions =
+            parseCSV(csvText);
 
         if (!questions.length) {
-            throw new Error("No questions found in CSV.");
+            throw new Error(
+                "No questions found in CSV."
+            );
         }
 
-        const questionId = getQuestionIdFromURL();
+        const questionId =
+            getQuestionIdFromURL();
 
         let index = -1;
 
         if (questionId) {
-            index = questions.findIndex(
-                question =>
-                    String(getQuestionIdFromObject(question)).trim().toLowerCase() ===
-                    String(questionId).trim().toLowerCase()
-            );
+            const requestedId =
+                String(questionId)
+                    .trim()
+                    .toLowerCase();
+
+            index =
+                questions.findIndex(
+                    question =>
+                        String(
+                            getQuestionIdFromObject(
+                                question
+                            )
+                        )
+                            .trim()
+                            .toLowerCase() ===
+                        requestedId
+                );
         }
 
-        currentQuestionIndex = index >= 0 ? index : 0;
+        currentQuestionIndex =
+            index >= 0 ? index : 0;
 
-        if (loading) loading.classList.add("hidden");
+        if (loading) {
+            loading.classList.add("hidden");
+        }
 
-        displayQuestion(currentQuestionIndex);
+        displayQuestion(
+            currentQuestionIndex
+        );
 
     } catch (err) {
-        console.error("Question loading error:", err);
+        console.error(
+            "Question loading error:",
+            err
+        );
 
-        if (loading) loading.classList.add("hidden");
+        if (loading) {
+            loading.classList.add("hidden");
+        }
 
         if (error) {
             error.textContent =
-                "Unable to load the questions. Please check the CSV file.";
+                "Unable to load the question database. Please check that xi-questions.csv exists in the repository.";
+
             error.classList.remove("hidden");
         }
     }
@@ -116,8 +160,11 @@ async function loadQuestions() {
    ========================================================= */
 
 async function loadQuotes() {
-    const quoteText = document.getElementById("quote-text");
-    const quoteAuthor = document.getElementById("quote-author");
+    const quoteText =
+        document.getElementById("quote-text");
+
+    const quoteAuthor =
+        document.getElementById("quote-author");
 
     try {
         const response = await fetch(
@@ -128,83 +175,121 @@ async function loadQuotes() {
         );
 
         if (!response.ok) {
-            throw new Error("Quote CSV unavailable");
+            throw new Error(
+                "Quote CSV unavailable"
+            );
         }
 
-        const csvText = await response.text();
-        quotes = parseCSV(csvText);
+        const csvText =
+            await response.text();
+
+        quotes =
+            parseCSV(csvText);
 
         if (!quotes.length) {
-            throw new Error("No quotes found");
+            throw new Error(
+                "No quotes found"
+            );
         }
 
         displayRandomQuote();
 
     } catch (err) {
-        console.warn("Using fallback quote:", err);
+        console.warn(
+            "Using fallback quote:",
+            err
+        );
 
         const fallbackQuotes = [
             {
-                quote: "Keep learning. Keep improving.",
-                author: "AIBrainBox"
+                quote:
+                    "Keep learning. Keep improving.",
+                author:
+                    "AIBrainBox"
             },
             {
-                quote: "The best way to learn AI is to keep solving real problems.",
-                author: "AIBrainBox"
+                quote:
+                    "The best way to learn AI is to keep solving real problems.",
+                author:
+                    "AIBrainBox"
             },
             {
-                quote: "Every difficult question is an opportunity to understand something better.",
-                author: "AIBrainBox"
+                quote:
+                    "Every difficult question is an opportunity to understand something better.",
+                author:
+                    "AIBrainBox"
             }
         ];
 
         const selected =
             fallbackQuotes[
-                Math.floor(Math.random() * fallbackQuotes.length)
+                Math.floor(
+                    Math.random() *
+                    fallbackQuotes.length
+                )
             ];
 
         if (quoteText) {
-            quoteText.textContent = `“${selected.quote}”`;
+            quoteText.textContent =
+                `“${selected.quote}”`;
         }
 
         if (quoteAuthor) {
-            quoteAuthor.textContent = `— ${selected.author}`;
+            quoteAuthor.textContent =
+                `— ${selected.author}`;
         }
     }
 }
 
 
 function displayRandomQuote() {
-    if (!quotes.length) return;
+    if (!quotes.length) {
+        return;
+    }
 
     const selected =
-        quotes[Math.floor(Math.random() * quotes.length)];
+        quotes[
+            Math.floor(
+                Math.random() *
+                quotes.length
+            )
+        ];
 
-    const quoteText = document.getElementById("quote-text");
-    const quoteAuthor = document.getElementById("quote-author");
+    const quoteText =
+        document.getElementById("quote-text");
+
+    const quoteAuthor =
+        document.getElementById("quote-author");
 
     const quote =
-        getValue(selected, [
-            "Quote",
-            "quote",
-            "Quotes",
-            "quotes",
-            "Text",
-            "text"
-        ]);
+        getValue(
+            selected,
+            [
+                "Quote",
+                "quote",
+                "Quotes",
+                "quotes",
+                "Text",
+                "text"
+            ]
+        );
 
     const author =
-        getValue(selected, [
-            "Author",
-            "author",
-            "Quote Author",
-            "quote author"
-        ]);
+        getValue(
+            selected,
+            [
+                "Author",
+                "author",
+                "Quote Author",
+                "quote author"
+            ]
+        );
 
     if (quoteText) {
-        quoteText.textContent = quote
-            ? `“${stripHtml(quote)}”`
-            : "“Keep learning. Keep improving.”";
+        quoteText.textContent =
+            quote
+                ? `“${stripHtml(quote)}”`
+                : "“Keep learning. Keep improving.”";
     }
 
     if (quoteAuthor) {
@@ -221,21 +306,29 @@ function displayRandomQuote() {
    ========================================================= */
 
 async function loadSessionBackground() {
-    const overlay = document.getElementById("background-overlay");
+    const overlay =
+        document.getElementById(
+            "background-overlay"
+        );
 
-    if (!overlay) return;
+    if (!overlay) {
+        return;
+    }
 
     try {
         let selectedBackground =
-            sessionStorage.getItem(BACKGROUND_SESSION_KEY);
+            sessionStorage.getItem(
+                BACKGROUND_SESSION_KEY
+            );
 
         if (!selectedBackground) {
-            const response = await fetch(
-                `${BACKGROUNDS_API}?v=${Date.now()}`,
-                {
-                    cache: "no-store"
-                }
-            );
+            const response =
+                await fetch(
+                    `${BACKGROUNDS_API}?v=${Date.now()}`,
+                    {
+                        cache: "no-store"
+                    }
+                );
 
             if (!response.ok) {
                 throw new Error(
@@ -243,29 +336,33 @@ async function loadSessionBackground() {
                 );
             }
 
-            const files = await response.json();
+            const files =
+                await response.json();
 
-            /*
-             * IMPORTANT:
-             * Do NOT restrict this to .mp4.
-             * Any file inside Backgrounds_Folder can be used.
-             */
-            const validFiles = files.filter(file =>
-                file &&
-                file.type === "file" &&
-                file.download_url
-            );
+            const validFiles =
+                files.filter(
+                    file =>
+                        file &&
+                        file.type === "file" &&
+                        file.download_url
+                );
 
             if (!validFiles.length) {
-                throw new Error("No background files found.");
+                throw new Error(
+                    "No background files found."
+                );
             }
 
             const selected =
                 validFiles[
-                    Math.floor(Math.random() * validFiles.length)
+                    Math.floor(
+                        Math.random() *
+                        validFiles.length
+                    )
                 ];
 
-            selectedBackground = selected.download_url;
+            selectedBackground =
+                selected.download_url;
 
             sessionStorage.setItem(
                 BACKGROUND_SESSION_KEY,
@@ -273,10 +370,15 @@ async function loadSessionBackground() {
             );
         }
 
-        applyBackground(selectedBackground);
+        applyBackground(
+            selectedBackground
+        );
 
     } catch (err) {
-        console.warn("Background loading failed:", err);
+        console.warn(
+            "Background loading failed:",
+            err
+        );
 
         overlay.style.background =
             "linear-gradient(135deg, #e0f2fe, #ede9fe)";
@@ -285,11 +387,19 @@ async function loadSessionBackground() {
 
 
 function applyBackground(url) {
-    const overlay = document.getElementById("background-overlay");
+    const overlay =
+        document.getElementById(
+            "background-overlay"
+        );
 
-    if (!overlay || !url) return;
+    if (!overlay || !url) {
+        return;
+    }
 
-    const cleanUrl = String(url).split("?")[0].toLowerCase();
+    const cleanUrl =
+        String(url)
+            .split("?")[0]
+            .toLowerCase();
 
     const videoExtensions = [
         ".mp4",
@@ -300,52 +410,93 @@ function applyBackground(url) {
     ];
 
     const isVideo =
-        videoExtensions.some(ext =>
-            cleanUrl.endsWith(ext)
+        videoExtensions.some(
+            ext =>
+                cleanUrl.endsWith(ext)
         );
 
     if (isVideo) {
         const existingVideo =
-            document.getElementById("background-video");
+            document.getElementById(
+                "background-video"
+            );
 
         if (existingVideo) {
             existingVideo.remove();
         }
 
-        const video = document.createElement("video");
+        const video =
+            document.createElement(
+                "video"
+            );
 
-        video.id = "background-video";
-        video.src = url;
-        video.autoplay = true;
-        video.loop = true;
-        video.muted = true;
-        video.playsInline = true;
+        video.id =
+            "background-video";
 
-        video.setAttribute("aria-hidden", "true");
+        video.src =
+            url;
 
-        video.style.position = "absolute";
-        video.style.inset = "0";
-        video.style.width = "100%";
-        video.style.height = "100%";
-        video.style.objectFit = "cover";
-        video.style.pointerEvents = "none";
+        video.autoplay =
+            true;
 
-        overlay.innerHTML = "";
-        overlay.appendChild(video);
+        video.loop =
+            true;
 
-        video.play().catch(() => {});
+        video.muted =
+            true;
+
+        video.playsInline =
+            true;
+
+        video.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        video.style.position =
+            "absolute";
+
+        video.style.inset =
+            "0";
+
+        video.style.width =
+            "100%";
+
+        video.style.height =
+            "100%";
+
+        video.style.objectFit =
+            "cover";
+
+        video.style.pointerEvents =
+            "none";
+
+        overlay.innerHTML =
+            "";
+
+        overlay.appendChild(
+            video
+        );
+
+        video.play().catch(
+            () => {}
+        );
+
     } else {
-        /*
-         * For images and other supported browser background files.
-         */
-        overlay.innerHTML = "";
+        overlay.innerHTML =
+            "";
 
         overlay.style.backgroundImage =
             `url("${url}")`;
 
-        overlay.style.backgroundSize = "cover";
-        overlay.style.backgroundPosition = "center";
-        overlay.style.backgroundRepeat = "no-repeat";
+        overlay.style.backgroundSize =
+            "cover";
+
+        overlay.style.backgroundPosition =
+            "center";
+
+        overlay.style.backgroundRepeat =
+            "no-repeat";
     }
 }
 
@@ -355,123 +506,207 @@ function applyBackground(url) {
    ========================================================= */
 
 function displayQuestion(index) {
-    if (!questions.length) return;
-
-    if (index < 0 || index >= questions.length) {
+    if (!questions.length) {
         return;
     }
 
-    currentQuestionIndex = index;
-    currentQuestion = questions[index];
+    if (
+        index < 0 ||
+        index >= questions.length
+    ) {
+        return;
+    }
+
+    currentQuestionIndex =
+        index;
+
+    currentQuestion =
+        questions[index];
 
     const container =
-        document.getElementById("question-container");
+        document.getElementById(
+            "question-container"
+        );
 
     const questionElement =
-        document.getElementById("question");
+        document.getElementById(
+            "question"
+        );
 
     const optionsElement =
-        document.getElementById("options");
+        document.getElementById(
+            "options"
+        );
 
     const resultElement =
-        document.getElementById("result");
+        document.getElementById(
+            "result"
+        );
 
     const explanation =
-        document.getElementById("explanation");
+        document.getElementById(
+            "explanation"
+        );
 
     const explanationText =
-        document.getElementById("explanation-text");
+        document.getElementById(
+            "explanation-text"
+        );
 
-    if (!container || !questionElement || !optionsElement) {
+    if (
+        !container ||
+        !questionElement ||
+        !optionsElement
+    ) {
         return;
     }
 
-    container.classList.remove("hidden");
+    container.classList.remove(
+        "hidden"
+    );
 
     if (resultElement) {
-        resultElement.innerHTML = "";
-        resultElement.className = "result";
+        resultElement.innerHTML =
+            "";
+
+        resultElement.className =
+            "result";
     }
 
     if (explanation) {
-        explanation.classList.add("hidden");
+        explanation.classList.add(
+            "hidden"
+        );
     }
 
     if (explanationText) {
-        explanationText.innerHTML = "";
+        explanationText.innerHTML =
+            "";
     }
 
-    /*
-     * Question
-     */
+
+    /* ---------------------------------------------------------
+       QUESTION
+       --------------------------------------------------------- */
+
     const questionText =
-        getValue(currentQuestion, [
-            "Question",
-            "question",
-            "Question Text",
-            "question text",
-            "Question_Text"
-        ]);
+        getValue(
+            currentQuestion,
+            [
+                "Question",
+                "question",
+                "Question Text",
+                "question text",
+                "Question_Text"
+            ]
+        );
 
     const keywords =
-        getKeywords(currentQuestion);
+        getKeywords(
+            currentQuestion
+        );
 
     questionElement.innerHTML =
-        highlightKeywords(questionText, keywords);
+        highlightKeywords(
+            questionText,
+            keywords
+        );
 
-    /*
-     * Options
-     */
-    optionsElement.innerHTML = "";
 
-    const optionColumns = getOptionColumns(currentQuestion);
+    /* ---------------------------------------------------------
+       OPTIONS
+       --------------------------------------------------------- */
 
-    optionColumns.forEach((option, index) => {
-        if (!option.value) return;
+    optionsElement.innerHTML =
+        "";
 
-        const button = document.createElement("button");
+    const optionColumns =
+        getOptionColumns(
+            currentQuestion
+        );
 
-        button.type = "button";
-        button.className = "option-button";
+    optionColumns.forEach(
+        option => {
+            if (!option.value) {
+                return;
+            }
 
-        button.dataset.option =
-            option.label;
+            const button =
+                document.createElement(
+                    "button"
+                );
 
-        button.innerHTML =
-            `<span class="option-label">${escapeHtml(option.label)}</span>
-             <span class="option-text">${highlightKeywords(
-                 option.value,
-                 keywords
-             )}</span>`;
+            button.type =
+                "button";
 
-        button.addEventListener("click", () => {
-            selectAnswer(
-                option.label,
-                option.value,
+            /*
+             * IMPORTANT:
+             * CSS uses .option.
+             */
+            button.className =
+                "option";
+
+            button.dataset.option =
+                option.label;
+
+            button.innerHTML =
+                `<span class="option-label">${escapeHtml(
+                    option.label
+                )}</span>
+                 <span class="option-text">${highlightKeywords(
+                     option.value,
+                     keywords
+                 )}</span>`;
+
+            button.addEventListener(
+                "click",
+                () => {
+                    selectAnswer(
+                        option.label,
+                        option.value,
+                        button
+                    );
+                }
+            );
+
+            optionsElement.appendChild(
                 button
             );
-        });
+        }
+    );
 
-        optionsElement.appendChild(button);
-    });
 
-    /*
-     * Related navigation arrows
-     */
-    createRelatedNavigation(currentQuestion);
+    /* ---------------------------------------------------------
+       RELATED QUESTION NAVIGATION
+       --------------------------------------------------------- */
 
-    /*
-     * Restore previously answered question
-     */
+    createRelatedNavigation(
+        currentQuestion
+    );
+
+
+    /* ---------------------------------------------------------
+       RESTORE PREVIOUS ANSWER
+       --------------------------------------------------------- */
+
     const questionId =
-        getQuestionIdFromObject(currentQuestion);
+        getQuestionIdFromObject(
+            currentQuestion
+        );
+
+    const answerKey =
+        normalizeQuestionId(
+            questionId
+        );
 
     if (
-        questionId &&
-        answeredQuestions[questionId]
+        answerKey &&
+        answeredQuestions[answerKey]
     ) {
         restoreAnsweredQuestion(
-            answeredQuestions[questionId]
+            answeredQuestions[
+                answerKey
+            ]
         );
     }
 
@@ -487,24 +722,89 @@ function getOptionColumns(row) {
     const options = [];
 
     const possibleOptions = [
-        ["A", ["Option A", "option a", "A", "a", "Option_A"]],
-        ["B", ["Option B", "option b", "B", "b", "Option_B"]],
-        ["C", ["Option C", "option c", "C", "c", "Option_C"]],
-        ["D", ["Option D", "option d", "D", "d", "Option_D"]],
-        ["E", ["Option E", "option e", "E", "e", "Option_E"]],
-        ["F", ["Option F", "option f", "F", "f", "Option_F"]]
+        [
+            "A",
+            [
+                "Option A",
+                "option a",
+                "A",
+                "a",
+                "Option_A"
+            ]
+        ],
+        [
+            "B",
+            [
+                "Option B",
+                "option b",
+                "B",
+                "b",
+                "Option_B"
+            ]
+        ],
+        [
+            "C",
+            [
+                "Option C",
+                "option c",
+                "C",
+                "c",
+                "Option_C"
+            ]
+        ],
+        [
+            "D",
+            [
+                "Option D",
+                "option d",
+                "D",
+                "d",
+                "Option_D"
+            ]
+        ],
+        [
+            "E",
+            [
+                "Option E",
+                "option e",
+                "E",
+                "e",
+                "Option_E"
+            ]
+        ],
+        [
+            "F",
+            [
+                "Option F",
+                "option f",
+                "F",
+                "f",
+                "Option_F"
+            ]
+        ]
     ];
 
-    possibleOptions.forEach(([label, keys]) => {
-        const value = getValue(row, keys);
+    possibleOptions.forEach(
+        ([label, keys]) => {
+            const value =
+                getValue(
+                    row,
+                    keys
+                );
 
-        if (value !== null && value !== undefined && String(value).trim()) {
-            options.push({
-                label,
-                value: String(value).trim()
-            });
+            if (
+                value !== null &&
+                value !== undefined &&
+                String(value).trim()
+            ) {
+                options.push({
+                    label,
+                    value:
+                        String(value).trim()
+                });
+            }
         }
-    });
+    );
 
     return options;
 }
@@ -514,54 +814,86 @@ function getOptionColumns(row) {
    SELECT ANSWER
    ========================================================= */
 
-function selectAnswer(selectedLabel, selectedValue, selectedButton) {
-    if (!currentQuestion) return;
+function selectAnswer(
+    selectedLabel,
+    selectedValue,
+    selectedButton
+) {
+    if (!currentQuestion) {
+        return;
+    }
 
     const questionId =
-        getQuestionIdFromObject(currentQuestion);
+        getQuestionIdFromObject(
+            currentQuestion
+        );
+
+    const answerKey =
+        normalizeQuestionId(
+            questionId
+        );
 
     /*
-     * Prevent answering the same question repeatedly.
+     * Prevent answering the same
+     * question repeatedly.
      */
     if (
-        questionId &&
-        answeredQuestions[questionId]
+        answerKey &&
+        answeredQuestions[answerKey]
     ) {
         return;
     }
 
     const correctAnswer =
-        getCorrectAnswer(currentQuestion);
-
-    const normalizedSelected =
-        normalizeAnswer(selectedLabel, selectedValue);
-
-    const normalizedCorrect =
-        normalizeAnswer(correctAnswer, correctAnswer);
-
-    const isCorrect =
-        normalizedSelected === normalizedCorrect;
-
-    /*
-     * Some CSVs store the answer as:
-     * A
-     * Option A
-     * The actual option text
-     */
-    const options =
-        getOptionColumns(currentQuestion);
-
-    const correctOption =
-        options.find(option =>
-            normalizeAnswer(option.label, option.value) ===
-            normalizedCorrect
+        getCorrectAnswer(
+            currentQuestion
         );
 
-    let finalCorrect = isCorrect;
+    const normalizedSelected =
+        normalizeAnswer(
+            selectedLabel,
+            selectedValue
+        );
 
-    if (!finalCorrect && correctOption) {
-        finalCorrect =
-            normalizeAnswer(selectedLabel, selectedValue) ===
+    const normalizedCorrect =
+        normalizeAnswer(
+            correctAnswer,
+            correctAnswer
+        );
+
+    let isCorrect =
+        normalizedSelected ===
+        normalizedCorrect;
+
+    const options =
+        getOptionColumns(
+            currentQuestion
+        );
+
+    const correctOption =
+        options.find(
+            option =>
+                normalizeAnswer(
+                    option.label,
+                    option.value
+                ) ===
+                normalizedCorrect
+        );
+
+    /*
+     * If the CSV stores the correct
+     * answer as the actual option text,
+     * compare the selected option with it.
+     */
+    if (
+        !isCorrect &&
+        correctOption
+    ) {
+        isCorrect =
+            normalizeAnswer(
+                selectedLabel,
+                selectedValue
+            ) ===
             normalizeAnswer(
                 correctOption.label,
                 correctOption.value
@@ -570,72 +902,102 @@ function selectAnswer(selectedLabel, selectedValue, selectedButton) {
 
     answeredCount++;
 
-    if (finalCorrect) {
+    if (isCorrect) {
         correctCount++;
     }
 
-    if (questionId) {
-        answeredQuestions[questionId] = {
+    if (answerKey) {
+        answeredQuestions[
+            answerKey
+        ] = {
             selectedLabel,
             selectedValue,
-            isCorrect: finalCorrect
+            isCorrect
         };
     }
 
-    /*
-     * Disable all buttons after answer.
-     */
+
+    /* ---------------------------------------------------------
+       DISABLE ALL OPTIONS
+       --------------------------------------------------------- */
+
     const buttons =
-        document.querySelectorAll(".option-button");
+        document.querySelectorAll(
+            ".option"
+        );
 
-    buttons.forEach(button => {
-        button.disabled = true;
+    buttons.forEach(
+        button => {
+            button.disabled =
+                true;
 
-        const label =
-            button.dataset.option;
+            const label =
+                button.dataset.option;
 
-        if (
-            label &&
-            normalizeAnswer(label, "") ===
-            normalizeAnswer(
-                selectedLabel,
-                selectedValue
-            )
-        ) {
-            button.classList.add(
-                finalCorrect ? "correct" : "wrong"
-            );
-        }
-    });
-
-    /*
-     * Highlight correct option.
-     */
-    if (correctOption) {
-        buttons.forEach(button => {
             if (
-                button.dataset.option ===
-                correctOption.label
+                label ===
+                selectedLabel
             ) {
-                button.classList.add("correct-answer");
+                button.classList.add(
+                    isCorrect
+                        ? "correct"
+                        : "wrong"
+                );
             }
-        });
+        }
+    );
+
+
+    /* ---------------------------------------------------------
+       HIGHLIGHT CORRECT OPTION
+       --------------------------------------------------------- */
+
+    if (correctOption) {
+        buttons.forEach(
+            button => {
+                if (
+                    button.dataset.option ===
+                    correctOption.label
+                ) {
+                    button.classList.add(
+                        "correct-answer"
+                    );
+                }
+            }
+        );
     }
 
-    /*
-     * Result message
-     */
-    showResult(finalCorrect);
 
-    /*
-     * Explanation appears immediately.
-     */
-    showExplanation(currentQuestion);
+    /* ---------------------------------------------------------
+       RESULT
+       --------------------------------------------------------- */
 
-    /*
-     * Floating emoji feedback.
-     */
-    showFloatingFeedback(finalCorrect);
+    showResult(
+        isCorrect
+    );
+
+
+    /* ---------------------------------------------------------
+       EXPLANATION
+       --------------------------------------------------------- */
+
+    showExplanation(
+        currentQuestion
+    );
+
+
+    /* ---------------------------------------------------------
+       FLOATING FEEDBACK
+       --------------------------------------------------------- */
+
+    showFloatingFeedback(
+        isCorrect
+    );
+
+
+    /* ---------------------------------------------------------
+       SCORE
+       --------------------------------------------------------- */
 
     updateScore();
 }
@@ -647,20 +1009,37 @@ function selectAnswer(selectedLabel, selectedValue, selectedButton) {
 
 function showResult(isCorrect) {
     const result =
-        document.getElementById("result");
+        document.getElementById(
+            "result"
+        );
 
-    if (!result) return;
+    if (!result) {
+        return;
+    }
 
     if (isCorrect) {
         result.innerHTML =
             "✅ Correct!";
-        result.classList.add("correct-result");
-        result.classList.remove("wrong-result");
+
+        result.classList.add(
+            "correct-result"
+        );
+
+        result.classList.remove(
+            "wrong-result"
+        );
+
     } else {
         result.innerHTML =
             "❌ Incorrect";
-        result.classList.add("wrong-result");
-        result.classList.remove("correct-result");
+
+        result.classList.add(
+            "wrong-result"
+        );
+
+        result.classList.remove(
+            "correct-result"
+        );
     }
 }
 
@@ -671,59 +1050,84 @@ function showResult(isCorrect) {
 
 function showExplanation(row) {
     const explanation =
-        document.getElementById("explanation");
+        document.getElementById(
+            "explanation"
+        );
 
     const explanationText =
-        document.getElementById("explanation-text");
+        document.getElementById(
+            "explanation-text"
+        );
 
-    if (!explanation || !explanationText) {
+    if (
+        !explanation ||
+        !explanationText
+    ) {
         return;
     }
 
+    /*
+     * IMPORTANT:
+     *
+     * The actual CSV column is:
+     *
+     * Explaination
+     *
+     * Keep support for Explanation as
+     * a fallback as well.
+     */
     const text =
-        getValue(row, [
-            "Explanation",
-            "explanation",
-            "Answer Explanation",
-            "answer explanation",
-            "Answer_Explanation",
-            "Explanation Text",
-            "explanation text"
-        ]);
+        getValue(
+            row,
+            [
+                "Explaination",
+                "explaination",
+                "Explanation",
+                "explanation",
+                "Answer Explanation",
+                "answer explanation",
+                "Answer_Explanation",
+                "Explanation Text",
+                "explanation text"
+            ]
+        );
 
     const keywords =
         getKeywords(row);
 
     explanationText.innerHTML =
         highlightKeywords(
-            text || "No explanation available.",
+            text ||
+                "No explanation available.",
             keywords
         );
 
-    explanation.classList.remove("hidden");
+    explanation.classList.remove(
+        "hidden"
+    );
+
 
     /*
-     * Keep explanation directly below the options/result.
+     * Keep explanation below the
+     * result/options area.
      */
-    const options =
-        document.getElementById("options");
+    const parent =
+        explanation.parentElement;
+
+    const result =
+        document.getElementById(
+            "result"
+        );
 
     if (
-        options &&
-        explanation.parentElement
+        parent &&
+        result &&
+        explanation.previousElementSibling !==
+            result
     ) {
-        const parent =
-            explanation.parentElement;
-
-        const result =
-            document.getElementById("result");
-
-        if (
-            result &&
-            explanation.previousElementSibling !== result
-        ) {
-            parent.appendChild(explanation);
-        }
+        parent.appendChild(
+            explanation
+        );
     }
 }
 
@@ -732,52 +1136,81 @@ function showExplanation(row) {
    RESTORE ANSWER
    ========================================================= */
 
-function restoreAnsweredQuestion(answerData) {
-    if (!answerData) return;
+function restoreAnsweredQuestion(
+    answerData
+) {
+    if (!answerData) {
+        return;
+    }
 
     const buttons =
-        document.querySelectorAll(".option-button");
+        document.querySelectorAll(
+            ".option"
+        );
 
-    buttons.forEach(button => {
-        button.disabled = true;
+    buttons.forEach(
+        button => {
+            button.disabled =
+                true;
 
-        if (
-            button.dataset.option ===
-            answerData.selectedLabel
-        ) {
-            button.classList.add(
-                answerData.isCorrect
-                    ? "correct"
-                    : "wrong"
-            );
+            if (
+                button.dataset.option ===
+                answerData.selectedLabel
+            ) {
+                button.classList.add(
+                    answerData.isCorrect
+                        ? "correct"
+                        : "wrong"
+                );
+            }
         }
-    });
+    );
 
     const correctAnswer =
-        getCorrectAnswer(currentQuestion);
+        getCorrectAnswer(
+            currentQuestion
+        );
 
     const options =
-        getOptionColumns(currentQuestion);
+        getOptionColumns(
+            currentQuestion
+        );
 
     const correctOption =
-        options.find(option =>
-            normalizeAnswer(option.label, option.value) ===
-            normalizeAnswer(correctAnswer, correctAnswer)
+        options.find(
+            option =>
+                normalizeAnswer(
+                    option.label,
+                    option.value
+                ) ===
+                normalizeAnswer(
+                    correctAnswer,
+                    correctAnswer
+                )
         );
 
     if (correctOption) {
-        buttons.forEach(button => {
-            if (
-                button.dataset.option ===
-                correctOption.label
-            ) {
-                button.classList.add("correct-answer");
+        buttons.forEach(
+            button => {
+                if (
+                    button.dataset.option ===
+                    correctOption.label
+                ) {
+                    button.classList.add(
+                        "correct-answer"
+                    );
+                }
             }
-        });
+        );
     }
 
-    showResult(answerData.isCorrect);
-    showExplanation(currentQuestion);
+    showResult(
+        answerData.isCorrect
+    );
+
+    showExplanation(
+        currentQuestion
+    );
 }
 
 
@@ -787,22 +1220,21 @@ function restoreAnsweredQuestion(answerData) {
 
 function updateScore() {
     const scoreDisplay =
-        document.getElementById("score-display");
+        document.getElementById(
+            "score-display"
+        );
 
-    if (!scoreDisplay) return;
+    if (!scoreDisplay) {
+        return;
+    }
 
     /*
-     * IMPORTANT:
+     * Current streak remains:
      *
-     * This intentionally shows:
+     * Correct / Answered
      *
+     * Example:
      * Current streak: 2/3
-     *
-     * where:
-     * 2 = correct
-     * 3 = answered
-     *
-     * A wrong answer does NOT reset the first number to zero.
      */
     scoreDisplay.innerHTML =
         `🔥 Current streak: <strong>${correctCount}/${answeredCount}</strong>`;
@@ -815,26 +1247,36 @@ function updateScore() {
 
 function createRelatedNavigation(row) {
     const existing =
-        document.querySelector(".related-navigation");
+        document.querySelector(
+            ".related-navigation"
+        );
 
     if (existing) {
         existing.remove();
     }
 
     const questionContainer =
-        document.getElementById("question-container");
+        document.getElementById(
+            "question-container"
+        );
 
-    if (!questionContainer) return;
+    if (!questionContainer) {
+        return;
+    }
 
     const navigation =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     navigation.className =
         "related-navigation";
 
-    /*
-     * Previous arrow
-     */
+
+    /* ---------------------------------------------------------
+       PREVIOUS RELATED QUESTION
+       --------------------------------------------------------- */
+
     const previousId =
         getRelatedQuestionId(
             row,
@@ -849,13 +1291,19 @@ function createRelatedNavigation(row) {
         );
 
     const previousButton =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
-    previousButton.type = "button";
+    previousButton.type =
+        "button";
+
     previousButton.className =
         "related-question previous-related";
 
-    previousButton.innerHTML = "←";
+    previousButton.innerHTML =
+        "←";
+
     previousButton.setAttribute(
         "aria-label",
         "Previous related question"
@@ -864,15 +1312,21 @@ function createRelatedNavigation(row) {
     if (previousId) {
         previousButton.addEventListener(
             "click",
-            () => navigateToQuestionId(previousId)
+            () =>
+                navigateToQuestionId(
+                    previousId
+                )
         );
     } else {
-        previousButton.disabled = true;
+        previousButton.disabled =
+            true;
     }
 
-    /*
-     * Next arrow
-     */
+
+    /* ---------------------------------------------------------
+       NEXT RELATED QUESTION
+       --------------------------------------------------------- */
+
     const nextId =
         getRelatedQuestionId(
             row,
@@ -887,13 +1341,19 @@ function createRelatedNavigation(row) {
         );
 
     const nextButton =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
-    nextButton.type = "button";
+    nextButton.type =
+        "button";
+
     nextButton.className =
         "related-question next-related";
 
-    nextButton.innerHTML = "→";
+    nextButton.innerHTML =
+        "→";
+
     nextButton.setAttribute(
         "aria-label",
         "Next related question"
@@ -902,55 +1362,101 @@ function createRelatedNavigation(row) {
     if (nextId) {
         nextButton.addEventListener(
             "click",
-            () => navigateToQuestionId(nextId)
+            () =>
+                navigateToQuestionId(
+                    nextId
+                )
         );
     } else {
-        nextButton.disabled = true;
+        nextButton.disabled =
+            true;
     }
 
-    navigation.appendChild(previousButton);
-    navigation.appendChild(nextButton);
+    navigation.appendChild(
+        previousButton
+    );
+
+    navigation.appendChild(
+        nextButton
+    );
 
     /*
-     * Keep arrows at the top of the question area.
+     * Keep navigation at the top
+     * of the question area.
      */
-    questionContainer.prepend(navigation);
+    questionContainer.prepend(
+        navigation
+    );
 }
 
 
-function getRelatedQuestionId(row, keys) {
+function getRelatedQuestionId(
+    row,
+    keys
+) {
     const value =
-        getValue(row, keys);
+        getValue(
+            row,
+            keys
+        );
 
-    if (!value) return null;
+    if (!value) {
+        return null;
+    }
 
     const values =
         String(value)
-            .split(/[,;|\/\n]+/)
-            .map(item => item.trim())
+            .split(
+                /[,;|\/\n]+/
+            )
+            .map(
+                item =>
+                    item.trim()
+            )
             .filter(Boolean);
 
     /*
-     * Prefer a proper Xi question ID.
+     * Prefer an actual Xi question ID.
      */
     const xiId =
-        values.find(value =>
-            /^Xi-\d+$/i.test(value)
+        values.find(
+            value =>
+                /^Xi-\d+$/i.test(
+                    value
+                )
         );
 
-    return xiId || values[0] || null;
+    return (
+        xiId ||
+        values[0] ||
+        null
+    );
 }
 
 
-function navigateToQuestionId(questionId) {
-    if (!questionId) return;
+function navigateToQuestionId(
+    questionId
+) {
+    if (!questionId) {
+        return;
+    }
+
+    const normalizedId =
+        String(questionId)
+            .trim()
+            .toLowerCase();
 
     const index =
-        questions.findIndex(question =>
-            String(
-                getQuestionIdFromObject(question)
-            ).trim().toLowerCase() ===
-            String(questionId).trim().toLowerCase()
+        questions.findIndex(
+            question =>
+                String(
+                    getQuestionIdFromObject(
+                        question
+                    )
+                )
+                    .trim()
+                    .toLowerCase() ===
+                normalizedId
         );
 
     if (index === -1) {
@@ -958,17 +1464,29 @@ function navigateToQuestionId(questionId) {
             "Related question not found:",
             questionId
         );
+
         return;
     }
 
+    const actualId =
+        getQuestionIdFromObject(
+            questions[index]
+        );
+
+    /*
+     * Every question has its own URL:
+     *
+     * ?id=Xi-00001
+     * ?id=Xi-00003
+     */
     const url =
-        new URL(window.location.href);
+        new URL(
+            window.location.href
+        );
 
     url.searchParams.set(
         "id",
-        getQuestionIdFromObject(
-            questions[index]
-        )
+        actualId
     );
 
     window.history.pushState(
@@ -977,7 +1495,9 @@ function navigateToQuestionId(questionId) {
         url
     );
 
-    displayQuestion(index);
+    displayQuestion(
+        index
+    );
 
     window.scrollTo({
         top: 0,
@@ -992,59 +1512,90 @@ function navigateToQuestionId(questionId) {
 
 function getKeywords(row) {
     const keywordValue =
-        getValue(row, [
-            "Keywords",
-            "keywords",
-            "Keyword",
-            "keyword",
-            "Key Words",
-            "key words",
-            "Key_Words"
-        ]);
+        getValue(
+            row,
+            [
+                "Keywords",
+                "keywords",
+                "Keyword",
+                "keyword",
+                "Key Words",
+                "key words",
+                "Key_Words"
+            ]
+        );
 
     const keywords = [];
 
     if (keywordValue) {
         keywords.push(
             ...String(keywordValue)
-                .split(/[,;|]/)
-                .map(item => item.trim())
+                .split(
+                    /[,;|]/
+                )
+                .map(
+                    item =>
+                        item.trim()
+                )
                 .filter(Boolean)
         );
     }
 
-    /*
-     * Topic / sub-topic can also be treated as keywords.
-     */
+
+    /* ---------------------------------------------------------
+       TOPIC
+       --------------------------------------------------------- */
+
     const topic =
-        getValue(row, [
-            "Topic",
-            "topic"
-        ]);
+        getValue(
+            row,
+            [
+                "Topic",
+                "topic"
+            ]
+        );
 
     if (topic) {
         keywords.push(
             ...String(topic)
-                .split(/[,;|]/)
-                .map(item => item.trim())
+                .split(
+                    /[,;|]/
+                )
+                .map(
+                    item =>
+                        item.trim()
+                )
                 .filter(Boolean)
         );
     }
 
+
+    /* ---------------------------------------------------------
+       SUB TOPIC
+       --------------------------------------------------------- */
+
     const subTopic =
-        getValue(row, [
-            "Sub Topics",
-            "sub topics",
-            "Sub Topic",
-            "sub topic",
-            "Sub_Topics"
-        ]);
+        getValue(
+            row,
+            [
+                "Sub Topics",
+                "sub topics",
+                "Sub Topic",
+                "sub topic",
+                "Sub_Topics"
+            ]
+        );
 
     if (subTopic) {
         keywords.push(
             ...String(subTopic)
-                .split(/[,;|]/)
-                .map(item => item.trim())
+                .split(
+                    /[,;|]/
+                )
+                .map(
+                    item =>
+                        item.trim()
+                )
                 .filter(Boolean)
         );
     }
@@ -1052,7 +1603,8 @@ function getKeywords(row) {
     return [
         ...new Set(
             keywords.filter(
-                keyword => keyword.length > 1
+                keyword =>
+                    keyword.length > 1
             )
         )
     ];
@@ -1060,11 +1612,13 @@ function getKeywords(row) {
 
 
 /* =========================================================
-   IMPORTANT:
-   BOLD TAG FIX
+   HIGHLIGHT KEYWORDS / BOLD TEXT
    ========================================================= */
 
-function highlightKeywords(text, keywords = []) {
+function highlightKeywords(
+    text,
+    keywords = []
+) {
     if (
         text === null ||
         text === undefined
@@ -1072,103 +1626,122 @@ function highlightKeywords(text, keywords = []) {
         return "";
     }
 
-    let result = String(text);
+    let result =
+        String(text);
+
 
     /*
-     * -----------------------------------------------------
-     * STEP 1:
-     * Convert escaped HTML entities.
-     *
-     * Example:
-     *
-     * &lt;b&gt;BEST&lt;/b&gt;
-     *
-     * becomes:
-     *
-     * <b>BEST</b>
-     * -----------------------------------------------------
+     * Decode common escaped HTML entities.
      */
+    result =
+        result
+            .replace(
+                /&lt;/gi,
+                "<"
+            )
+            .replace(
+                /&gt;/gi,
+                ">"
+            )
+            .replace(
+                /&amp;/gi,
+                "&"
+            )
+            .replace(
+                /&quot;/gi,
+                '"'
+            )
+            .replace(
+                /&#39;/gi,
+                "'"
+            );
 
-    result = result
-        .replace(/&lt;/gi, "<")
-        .replace(/&gt;/gi, ">")
-        .replace(/&amp;/gi, "&")
-        .replace(/&quot;/gi, '"')
-        .replace(/&#39;/gi, "'");
 
     /*
-     * -----------------------------------------------------
-     * STEP 2:
-     * Convert <b>...</b> to temporary placeholders.
-     *
-     * This prevents escapeHtml() from displaying the
-     * actual <b> tags on the screen.
-     * -----------------------------------------------------
+     * Preserve <b>...</b>.
      */
-
     const boldParts = [];
 
-    result = result.replace(
-        /<b\b[^>]*>([\s\S]*?)<\/b>/gi,
-        function (_, content) {
-            const index = boldParts.length;
+    result =
+        result.replace(
+            /<b\b[^>]*>([\s\S]*?)<\/b>/gi,
+            function (
+                _,
+                content
+            ) {
+                const index =
+                    boldParts.length;
 
-            boldParts.push(content);
+                boldParts.push(
+                    content
+                );
 
-            return `___AIBRAINBOX_BOLD_${index}___`;
-        }
-    );
+                return `___AIBRAINBOX_BOLD_${index}___`;
+            }
+        );
 
-    /*
-     * Also support <strong>...</strong>
-     */
-    result = result.replace(
-        /<strong\b[^>]*>([\s\S]*?)<\/strong>/gi,
-        function (_, content) {
-            const index = boldParts.length;
-
-            boldParts.push(content);
-
-            return `___AIBRAINBOX_BOLD_${index}___`;
-        }
-    );
 
     /*
-     * -----------------------------------------------------
-     * STEP 3:
-     * Convert Markdown **bold** to placeholders.
-     * -----------------------------------------------------
+     * Preserve <strong>...</strong>.
      */
+    result =
+        result.replace(
+            /<strong\b[^>]*>([\s\S]*?)<\/strong>/gi,
+            function (
+                _,
+                content
+            ) {
+                const index =
+                    boldParts.length;
 
-    result = result.replace(
-        /\*\*([\s\S]*?)\*\*/g,
-        function (_, content) {
-            const index = boldParts.length;
+                boldParts.push(
+                    content
+                );
 
-            boldParts.push(content);
+                return `___AIBRAINBOX_BOLD_${index}___`;
+            }
+        );
 
-            return `___AIBRAINBOX_BOLD_${index}___`;
-        }
-    );
 
     /*
-     * -----------------------------------------------------
-     * STEP 4:
-     * Escape all remaining HTML.
-     * -----------------------------------------------------
+     * Preserve Markdown **bold**.
      */
+    result =
+        result.replace(
+            /\*\*([\s\S]*?)\*\*/g,
+            function (
+                _,
+                content
+            ) {
+                const index =
+                    boldParts.length;
 
-    result = escapeHtml(result);
+                boldParts.push(
+                    content
+                );
+
+                return `___AIBRAINBOX_BOLD_${index}___`;
+            }
+        );
+
 
     /*
-     * -----------------------------------------------------
-     * STEP 5:
-     * Restore the bold sections as real HTML.
-     * -----------------------------------------------------
+     * Escape remaining HTML.
      */
+    result =
+        escapeHtml(
+            result
+        );
 
+
+    /*
+     * Restore bold text.
+     */
     boldParts.forEach(
-        function (content, index) {
+        function (
+            content,
+            index
+        ) {
             const safeContent =
                 escapeHtml(
                     String(content)
@@ -1185,15 +1758,10 @@ function highlightKeywords(text, keywords = []) {
         }
     );
 
-    /*
-     * -----------------------------------------------------
-     * STEP 6:
-     * Highlight CSV keywords.
-     * -----------------------------------------------------
-     *
-     * Do this without damaging the <strong> tags.
-     */
 
+    /*
+     * Highlight keywords.
+     */
     if (
         Array.isArray(keywords) &&
         keywords.length
@@ -1205,46 +1773,45 @@ function highlightKeywords(text, keywords = []) {
                     String(b).length -
                     String(a).length
             )
-            .forEach(keyword => {
-                const escapedKeyword =
-                    escapeRegExp(
-                        String(keyword)
-                    );
+            .forEach(
+                keyword => {
+                    const escapedKeyword =
+                        escapeRegExp(
+                            String(keyword)
+                        );
 
-                /*
-                 * Split around existing HTML tags so
-                 * keyword highlighting doesn't corrupt
-                 * the generated <strong> markup.
-                 */
-                const parts =
-                    result.split(
-                        /(<[^>]+>)/g
-                    );
+                    const parts =
+                        result.split(
+                            /(<[^>]+>)/g
+                        );
 
-                for (
-                    let i = 0;
-                    i < parts.length;
-                    i++
-                ) {
-                    if (
-                        parts[i].startsWith("<")
+                    for (
+                        let i = 0;
+                        i < parts.length;
+                        i++
                     ) {
-                        continue;
+                        if (
+                            parts[i].startsWith(
+                                "<"
+                            )
+                        ) {
+                            continue;
+                        }
+
+                        parts[i] =
+                            parts[i].replace(
+                                new RegExp(
+                                    `(${escapedKeyword})`,
+                                    "gi"
+                                ),
+                                "<strong>$1</strong>"
+                            );
                     }
 
-                    parts[i] =
-                        parts[i].replace(
-                            new RegExp(
-                                `(${escapedKeyword})`,
-                                "gi"
-                            ),
-                            "<strong>$1</strong>"
-                        );
+                    result =
+                        parts.join("");
                 }
-
-                result =
-                    parts.join("");
-            });
+            );
     }
 
     return result;
@@ -1257,7 +1824,9 @@ function highlightKeywords(text, keywords = []) {
 
 function escapeHtml(text) {
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     div.textContent =
         String(text);
@@ -1267,17 +1836,23 @@ function escapeHtml(text) {
 
 
 function stripHtml(text) {
-    if (!text) return "";
+    if (!text) {
+        return "";
+    }
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     div.innerHTML =
         String(text);
 
-    return div.textContent ||
+    return (
+        div.textContent ||
         div.innerText ||
-        "";
+        ""
+    );
 }
 
 
@@ -1293,7 +1868,10 @@ function escapeRegExp(text) {
    ANSWER NORMALIZATION
    ========================================================= */
 
-function normalizeAnswer(label, value) {
+function normalizeAnswer(
+    label,
+    value
+) {
     let answer =
         label ||
         value ||
@@ -1305,11 +1883,13 @@ function normalizeAnswer(label, value) {
             .toLowerCase();
 
     /*
-     * Remove option prefixes such as:
+     * Remove:
+     *
      * A
      * Option A
      * A.
      * A)
+     * A -
      */
     answer =
         answer.replace(
@@ -1327,21 +1907,37 @@ function normalizeAnswer(label, value) {
 }
 
 
+function normalizeQuestionId(
+    questionId
+) {
+    if (!questionId) {
+        return "";
+    }
+
+    return String(questionId)
+        .trim()
+        .toLowerCase();
+}
+
+
 /* =========================================================
    CORRECT ANSWER
    ========================================================= */
 
 function getCorrectAnswer(row) {
-    return getValue(row, [
-        "Correct Answer",
-        "correct answer",
-        "Correct_Answer",
-        "correct_answer",
-        "Answer",
-        "answer",
-        "Correct",
-        "correct"
-    ]);
+    return getValue(
+        row,
+        [
+            "Correct Answer",
+            "correct answer",
+            "Correct_Answer",
+            "correct_answer",
+            "Answer",
+            "answer",
+            "Correct",
+            "correct"
+        ]
+    );
 }
 
 
@@ -1349,10 +1945,21 @@ function getCorrectAnswer(row) {
    GENERIC CSV VALUE HELPERS
    ========================================================= */
 
-function getValue(row, possibleKeys) {
-    if (!row) return "";
+function getValue(
+    row,
+    possibleKeys
+) {
+    if (!row) {
+        return "";
+    }
 
-    for (const key of possibleKeys) {
+
+    /*
+     * Exact key lookup.
+     */
+    for (
+        const key of possibleKeys
+    ) {
         if (
             Object.prototype.hasOwnProperty.call(
                 row,
@@ -1367,10 +1974,13 @@ function getValue(row, possibleKeys) {
                 value !== undefined &&
                 String(value).trim() !== ""
             ) {
-                return String(value).trim();
+                return String(
+                    value
+                ).trim();
             }
         }
     }
+
 
     /*
      * Case-insensitive fallback.
@@ -1378,7 +1988,9 @@ function getValue(row, possibleKeys) {
     const rowKeys =
         Object.keys(row);
 
-    for (const wantedKey of possibleKeys) {
+    for (
+        const wantedKey of possibleKeys
+    ) {
         const foundKey =
             rowKeys.find(
                 actualKey =>
@@ -1399,7 +2011,9 @@ function getValue(row, possibleKeys) {
                 value !== undefined &&
                 String(value).trim() !== ""
             ) {
-                return String(value).trim();
+                return String(
+                    value
+                ).trim();
             }
         }
     }
@@ -1412,17 +2026,22 @@ function getValue(row, possibleKeys) {
    QUESTION ID
    ========================================================= */
 
-function getQuestionIdFromObject(row) {
-    return getValue(row, [
-        "ID",
-        "Id",
-        "id",
-        "Question ID",
-        "Question Id",
-        "question id",
-        "Question_ID",
-        "question_id"
-    ]);
+function getQuestionIdFromObject(
+    row
+) {
+    return getValue(
+        row,
+        [
+            "ID",
+            "Id",
+            "id",
+            "Question ID",
+            "Question Id",
+            "question id",
+            "Question_ID",
+            "question_id"
+        ]
+    );
 }
 
 
@@ -1432,7 +2051,9 @@ function getQuestionIdFromURL() {
             window.location.search
         );
 
-    return params.get("id");
+    return params.get(
+        "id"
+    );
 }
 
 
@@ -1452,9 +2073,16 @@ function parseCSV(text) {
         i < text.length;
         i++
     ) {
-        const char = text[i];
-        const next = text[i + 1];
+        const char =
+            text[i];
 
+        const next =
+            text[i + 1];
+
+
+        /*
+         * Handle quotes.
+         */
         if (char === '"') {
             if (
                 insideQuotes &&
@@ -1470,18 +2098,33 @@ function parseCSV(text) {
             continue;
         }
 
+
+        /*
+         * Handle comma.
+         */
         if (
             char === "," &&
             !insideQuotes
         ) {
-            row.push(field);
-            field = "";
+            row.push(
+                field
+            );
+
+            field =
+                "";
+
             continue;
         }
 
+
+        /*
+         * Handle line breaks.
+         */
         if (
-            (char === "\n" ||
-                char === "\r") &&
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
             !insideQuotes
         ) {
             if (
@@ -1491,41 +2134,56 @@ function parseCSV(text) {
                 i++;
             }
 
-            row.push(field);
-            field = "";
+            row.push(
+                field
+            );
+
+            field =
+                "";
 
             if (
                 row.some(
                     value =>
-                        String(value).trim() !== ""
+                        String(value)
+                            .trim() !== ""
                 )
             ) {
-                rows.push(row);
+                rows.push(
+                    row
+                );
             }
 
             row = [];
+
             continue;
         }
 
-        field += char;
+        field +=
+            char;
     }
 
+
     /*
-     * Last field/row.
+     * Last field / row.
      */
     if (
         field.length > 0 ||
         row.length > 0
     ) {
-        row.push(field);
+        row.push(
+            field
+        );
 
         if (
             row.some(
                 value =>
-                    String(value).trim() !== ""
+                    String(value)
+                        .trim() !== ""
             )
         ) {
-            rows.push(row);
+            rows.push(
+                row
+            );
         }
     }
 
@@ -1533,44 +2191,93 @@ function parseCSV(text) {
         return [];
     }
 
+
+    /*
+     * Headers.
+     */
     const headers =
         rows[0].map(
             header =>
                 String(header)
-                    .replace(/^\uFEFF/, "")
+                    .replace(
+                        /^\uFEFF/,
+                        ""
+                    )
                     .trim()
         );
 
+
+    /*
+     * Convert rows into objects.
+     */
     return rows
         .slice(1)
-        .map(values => {
-            const object = {};
+        .map(
+            values => {
+                const object = {};
 
-            headers.forEach(
-                (header, index) => {
-                    object[header] =
-                        values[index] !== undefined
-                            ? values[index].trim()
-                            : "";
-                }
-            );
+                headers.forEach(
+                    (
+                        header,
+                        index
+                    ) => {
+                        object[header] =
+                            values[
+                                index
+                            ] !== undefined
+                                ? values[
+                                      index
+                                  ].trim()
+                                : "";
+                    }
+                );
 
-            return object;
-        });
+                return object;
+            }
+        );
 }
 
 
 /* =========================================================
-   FLOATING FEEDBACK EMOJIS
+   FLOATING FEEDBACK
    ========================================================= */
 
-function showFloatingFeedback(isCorrect) {
-    const emojis = isCorrect
-        ? ["🎉", "😄", "🥳", "🔥", "✨", "👏"]
-        : ["😢", "😞", "💔", "😕", "🙁"];
+function showFloatingFeedback(
+    isCorrect
+) {
+    /*
+     * Correct answer:
+     * Use celebrations, claps and
+     * positive feedback.
+     *
+     * Wrong answer:
+     * Only sad/wrong feedback.
+     */
+    const emojis =
+        isCorrect
+            ? [
+                  "🎉",
+                  "😄",
+                  "🥳",
+                  "🔥",
+                  "✨",
+                  "👏",
+                  "👏",
+                  "🎊"
+              ]
+            : [
+                  "😢",
+                  "😞",
+                  "💔",
+                  "😕",
+                  "🙁",
+                  "😔"
+              ];
 
     const count =
-        isCorrect ? 8 : 6;
+        isCorrect
+            ? 10
+            : 6;
 
     for (
         let i = 0;
@@ -1578,7 +2285,9 @@ function showFloatingFeedback(isCorrect) {
         i++
     ) {
         const emoji =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         emoji.className =
             "floating-feedback";
@@ -1600,10 +2309,13 @@ function showFloatingFeedback(isCorrect) {
         emoji.style.animationDelay =
             `${Math.random() * 0.5}s`;
 
-        document.body.appendChild(emoji);
+        document.body.appendChild(
+            emoji
+        );
 
         setTimeout(
-            () => emoji.remove(),
+            () =>
+                emoji.remove(),
             2200
         );
     }
@@ -1621,15 +2333,22 @@ function setupKeyboardNavigation() {
             if (
                 event.target &&
                 (
-                    event.target.tagName === "INPUT" ||
-                    event.target.tagName === "TEXTAREA"
+                    event.target.tagName ===
+                        "INPUT" ||
+                    event.target.tagName ===
+                        "TEXTAREA"
                 )
             ) {
                 return;
             }
 
+
+            /*
+             * Previous related question.
+             */
             if (
-                event.key === "ArrowLeft"
+                event.key ===
+                "ArrowLeft"
             ) {
                 const button =
                     document.querySelector(
@@ -1644,8 +2363,13 @@ function setupKeyboardNavigation() {
                 }
             }
 
+
+            /*
+             * Next related question.
+             */
             if (
-                event.key === "ArrowRight"
+                event.key ===
+                "ArrowRight"
             ) {
                 const button =
                     document.querySelector(
@@ -1675,7 +2399,14 @@ function setupBrowserNavigation() {
             const questionId =
                 getQuestionIdFromURL();
 
-            if (!questionId) return;
+            if (!questionId) {
+                return;
+            }
+
+            const normalizedId =
+                String(questionId)
+                    .trim()
+                    .toLowerCase();
 
             const index =
                 questions.findIndex(
@@ -1687,13 +2418,13 @@ function setupBrowserNavigation() {
                         )
                             .trim()
                             .toLowerCase() ===
-                        String(questionId)
-                            .trim()
-                            .toLowerCase()
+                        normalizedId
                 );
 
             if (index !== -1) {
-                displayQuestion(index);
+                displayQuestion(
+                    index
+                );
             }
         }
     );
