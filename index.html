@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -16,175 +18,265 @@
     <title>AIBrainBox - AI Questions & Practice</title>
 
     <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
-    <link
         rel="stylesheet"
         href="style.css"
     >
+
 </head>
+
 
 <body>
 
-    <!-- Background -->
-    <div
-        id="background-overlay"
-        aria-hidden="true"
-    ></div>
+    <!-- =====================================================
+         BACKGROUND
+         ===================================================== -->
+
+    <div id="background-overlay"></div>
 
 
-    <!-- Main Application -->
-    <main class="app-container">
+    <!-- =====================================================
+         MAIN APPLICATION
+         ===================================================== -->
 
-        <!-- Top Header -->
+    <div class="app-container">
+
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
         <header class="brain-box-header">
 
-            <!-- Brand -->
+
+            <!-- BRAND -->
+
             <div class="brand-section">
-                <h1>AIBrainBox</h1>
-                <p class="brand-subtitle">
+
+                <h1>
+                    AIBrainBox
+                </h1>
+
+                <div class="brand-subtitle">
                     AI Questions &amp; Practice...
-                </p>
+                </div>
+
             </div>
 
 
-            <!-- Current Streak -->
+            <!-- CURRENT STREAK -->
+
             <div
                 id="score-display"
                 class="score-display"
             >
-                🔥 Current streak:
-                <strong>0/0</strong>
+                Current streak:
+                <strong>0</strong>
             </div>
 
 
-            <!-- Quote -->
+            <!-- QUOTE -->
+
             <div class="quote-section">
 
                 <div
                     id="quote-text"
                     class="quote-text"
-                >
-                    “Keep learning. Keep improving.”
-                </div>
+                ></div>
 
                 <div
                     id="quote-author"
                     class="quote-author"
-                >
-                    — AIBrainBox
-                </div>
+                ></div>
 
             </div>
+
 
         </header>
 
 
-        <!-- Loading -->
+        <!-- =================================================
+             LOADING
+             ================================================= -->
+
         <div
             id="loading"
             class="loading"
         >
+
             <div class="loading-spinner"></div>
 
-            <p>
+            <div>
                 Loading question...
-            </p>
+            </div>
+
         </div>
 
 
-        <!-- Error -->
+        <!-- =================================================
+             ERROR
+             ================================================= -->
+
         <div
             id="error"
             class="error hidden"
-            role="alert"
-        >
-            Unable to load the question database.
-            Please check that xi-questions.csv exists
-            in the repository.
-        </div>
+        ></div>
 
 
-        <!-- Question Area -->
-        <section
+        <!-- =================================================
+             QUESTION CONTAINER
+             ================================================= -->
+
+        <main
             id="question-container"
             class="question-container hidden"
         >
 
-            <!-- Question -->
-            <div class="question-section">
 
-                <div
-                    id="question"
-                    class="question"
-                ></div>
+            <!-- =============================================
+                 PREVIOUS / NEXT
+                 ============================================= -->
+
+            <div class="related-navigation">
+
+
+                <button
+                    id="previous-question"
+                    class="related-question"
+                    type="button"
+                    aria-label="Previous related question"
+                    title="Previous related question"
+                >
+                    ←
+                </button>
+
+
+                <button
+                    id="next-question"
+                    class="related-question"
+                    type="button"
+                    aria-label="Next related question"
+                    title="Next related question"
+                >
+                    →
+                </button>
+
 
             </div>
 
 
-            <!-- Options -->
-            <div
-                id="options"
-                class="options"
-                role="group"
-                aria-label="Answer options"
-            ></div>
+            <!-- =============================================
+                 TWO-PANE CONTENT
+                 ============================================= -->
+
+            <div class="question-content">
 
 
-            <!-- Result -->
-            <div
-                id="result"
-                class="result"
-                aria-live="polite"
-            ></div>
+                <!-- =========================================
+                     LEFT PANE - QUESTION
+                     ========================================= -->
+
+                <section class="question-pane">
 
 
-            <!-- Explanation -->
-            <section
-                id="explanation"
-                class="explanation hidden"
-            >
-
-                <div class="explanation-header">
-                    <span class="explanation-icon">
-                        💡
-                    </span>
-
-                    <span>
-                        Explanation
-                    </span>
-                </div>
-
-                <div
-                    id="explanation-text"
-                    class="explanation-text"
-                ></div>
-
-            </section>
-
-        </section>
-
-    </main>
+                    <div class="question-label">
+                        QUESTION
+                    </div>
 
 
-    <!-- Application Script -->
+                    <div
+                        id="question"
+                        class="question"
+                    ></div>
+
+
+                </section>
+
+
+                <!-- =========================================
+                     RIGHT PANE - OPTIONS
+                     ========================================= -->
+
+                <section class="options-pane">
+
+
+                    <div class="question-label">
+                        SELECT YOUR ANSWER
+                    </div>
+
+
+                    <div
+                        id="options"
+                        class="options"
+                    ></div>
+
+
+                    <!-- =====================================
+                         RESULT
+                         ===================================== -->
+
+                    <div
+                        id="result"
+                        class="result"
+                    ></div>
+
+
+                    <!-- =====================================
+                         EXPLANATION
+                         ===================================== -->
+
+                    <div
+                        id="explanation"
+                        class="explanation hidden"
+                    >
+
+
+                        <div
+                            class="explanation-header"
+                        >
+
+                            <span
+                                class="explanation-icon"
+                            >
+                                💡
+                            </span>
+
+                            <span>
+                                Explanation
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="explanation-text"
+                            class="explanation-text"
+                        ></div>
+
+
+                    </div>
+
+
+                </section>
+
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
     <script
         src="app.js"
         defer
     ></script>
 
 </body>
+
 </html>
