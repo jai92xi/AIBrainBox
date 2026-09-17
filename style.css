@@ -1,5 +1,5 @@
 /* =========================================================
-   AI Brain Box - style.css
+   AIBrainBox - style.css
    ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -19,31 +19,34 @@ html {
 
 body {
     margin: 0;
-    padding: 0;
-
     min-height: 100vh;
 
     font-family:
-        'Inter',
-        'Segoe UI',
+        "Inter",
+        "Segoe UI",
         Arial,
         sans-serif;
 
     color: #172033;
 
-    background: #eef3f8;
+    background:
+        linear-gradient(
+            135deg,
+            #eef6ff 0%,
+            #f5f3ff 50%,
+            #eef7ff 100%
+        );
 
     overflow-x: hidden;
 }
 
 
 /* =========================================================
-   BACKGROUND
+   AI BACKGROUND
    ========================================================= */
 
 #background-overlay {
     position: fixed;
-
     inset: 0;
 
     z-index: -10;
@@ -52,15 +55,21 @@ body {
     height: 100%;
 
     background:
-        linear-gradient(
-            135deg,
-            #e0f2fe,
-            #ede9fe
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(96, 165, 250, 0.18),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 85% 25%,
+            rgba(139, 92, 246, 0.16),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 90%,
+            rgba(59, 130, 246, 0.12),
+            transparent 32%
         );
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 
     pointer-events: none;
 }
@@ -69,46 +78,40 @@ body {
     content: "";
 
     position: absolute;
-
     inset: 0;
 
     background:
-        rgba(255, 255, 255, 0.58);
+        rgba(255, 255, 255, 0.35);
 
     pointer-events: none;
 }
 
 
 /* =========================================================
-   APP CONTAINER
+   MAIN CONTAINER
    ========================================================= */
 
 .app-container {
+    position: relative;
+    z-index: 1;
+
     width: min(
-        1180px,
-        calc(100% - 32px)
+        1200px,
+        calc(100% - 36px)
     );
 
     margin:
         28px auto
         50px;
-
-    position: relative;
-
-    z-index: 1;
 }
 
 
 /* =========================================================
-   TOP HEADER
+   HEADER
    ========================================================= */
 
 .brain-box-header {
     position: relative;
-
-    width: 100%;
-
-    min-height: 130px;
 
     display: grid;
 
@@ -119,31 +122,31 @@ body {
 
     align-items: center;
 
-    gap: 24px;
+    min-height: 125px;
 
     padding:
         22px 28px;
 
     margin-bottom: 22px;
 
+    border:
+        1px solid
+        rgba(99, 102, 241, 0.18);
+
     border-radius: 20px;
 
     background:
-        linear-gradient(
-            135deg,
-            rgba(224, 242, 254, 0.97),
-            rgba(237, 233, 254, 0.96)
-        );
-
-    border:
-        1px solid
-        rgba(99, 102, 241, 0.22);
+        rgba(255, 255, 255, 0.88);
 
     box-shadow:
-        0 10px 30px
-        rgba(31, 41, 55, 0.12);
+        0 12px 35px
+        rgba(30, 41, 59, 0.10);
 
-    overflow: hidden;
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
 }
 
 
@@ -152,8 +155,6 @@ body {
    ========================================================= */
 
 .brand-section {
-    min-width: 0;
-
     justify-self: start;
 
     text-align: left;
@@ -164,25 +165,20 @@ body {
 
     color: #172554;
 
-    font-size: clamp(
-        27px,
-        3vw,
-        38px
-    );
+    font-size:
+        clamp(28px, 3.2vw, 40px);
 
     line-height: 1.1;
 
     font-weight: 800;
 
-    letter-spacing: -1px;
+    letter-spacing: -1.2px;
 }
 
 .brand-subtitle {
-    margin:
-        7px 0
-        0;
+    margin-top: 7px;
 
-    color: #475569;
+    color: #64748b;
 
     font-size: 14px;
 
@@ -197,43 +193,37 @@ body {
    ========================================================= */
 
 .score-display {
-    position: relative;
-
-    z-index: 5;
-
     justify-self: center;
 
-    margin: 0;
-
-    min-width: 165px;
+    min-width: 175px;
 
     padding:
-        11px 18px;
+        11px 20px;
+
+    border:
+        1px solid
+        rgba(59, 130, 246, 0.20);
 
     border-radius: 12px;
 
     background:
-        rgba(255, 255, 255, 0.90);
+        rgba(239, 246, 255, 0.85);
 
-    border:
-        1px solid
-        rgba(59, 130, 246, 0.22);
-
-    box-shadow:
-        0 5px 16px
-        rgba(30, 64, 175, 0.10);
-
-    color: #1e3a8a;
+    color: #334155;
 
     font-size: 14px;
 
-    font-weight: 600;
-
     line-height: 1.4;
+
+    font-weight: 600;
 
     text-align: center;
 
     white-space: nowrap;
+
+    box-shadow:
+        0 5px 15px
+        rgba(37, 99, 235, 0.07);
 }
 
 .score-display strong {
@@ -250,8 +240,6 @@ body {
    ========================================================= */
 
 .quote-section {
-    min-width: 0;
-
     justify-self: end;
 
     max-width: 330px;
@@ -260,9 +248,9 @@ body {
 }
 
 .quote-text {
-    color: #334155;
+    color: #475569;
 
-    font-size: 14px;
+    font-size: 13px;
 
     line-height: 1.55;
 
@@ -274,11 +262,9 @@ body {
 .quote-author {
     margin-top: 5px;
 
-    color: #64748b;
+    color: #94a3b8;
 
-    font-size: 12px;
-
-    line-height: 1.4;
+    font-size: 11px;
 
     font-weight: 600;
 }
@@ -291,38 +277,75 @@ body {
 .question-container {
     width: 100%;
 
-    padding:
-        30px;
+    padding: 30px;
 
-    border-radius: 20px;
+    border:
+        1px solid
+        rgba(148, 163, 184, 0.22);
+
+    border-radius: 22px;
 
     background:
         rgba(255, 255, 255, 0.94);
 
-    border:
-        1px solid
-        rgba(148, 163, 184, 0.25);
-
     box-shadow:
-        0 12px 35px
+        0 15px 40px
         rgba(15, 23, 42, 0.10);
 
     backdrop-filter:
-        blur(10px);
+        blur(12px);
 
     -webkit-backdrop-filter:
-        blur(10px);
+        blur(12px);
 }
 
 
 /* =========================================================
-   QUESTION SECTION
+   QUESTION + OPTIONS LAYOUT
    ========================================================= */
 
-.question-section {
-    width: 100%;
+.question-content {
+    display: grid;
 
-    margin-bottom: 24px;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 42px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   LEFT QUESTION PANE
+   ========================================================= */
+
+.question-pane {
+    min-width: 0;
+
+    padding:
+        12px 20px 20px 8px;
+
+    border-right:
+        1px solid
+        #e2e8f0;
+}
+
+.question-label {
+    margin-bottom: 14px;
+
+    color: #2563eb;
+
+    font-size: 12px;
+
+    line-height: 1.4;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
 }
 
 .question {
@@ -330,106 +353,30 @@ body {
 
     color: #172033;
 
-    font-size: 20px;
+    font-size:
+        clamp(20px, 2vw, 26px);
 
-    line-height: 1.65;
+    line-height: 1.55;
 
     font-weight: 650;
 
-    letter-spacing: -0.15px;
+    letter-spacing: -0.25px;
 
     text-align: left;
 
     overflow-wrap: anywhere;
 }
 
-.question strong {
-    color: #1d4ed8;
-
-    font-weight: 800;
-}
-
 
 /* =========================================================
-   RELATED NAVIGATION
+   RIGHT OPTIONS PANE
    ========================================================= */
 
-.related-navigation {
-    width: 100%;
+.options-pane {
+    min-width: 0;
 
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 22px;
-}
-
-.related-question {
-    width: 44px;
-    height: 44px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    border:
-        1px solid
-        #cbd5e1;
-
-    background:
-        rgba(248, 250, 252, 0.95);
-
-    color: #334155;
-
-    font-family:
-        'Inter',
-        'Segoe UI',
-        Arial,
-        sans-serif;
-
-    font-size: 22px;
-
-    font-weight: 700;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        color 0.18s ease,
-        transform 0.18s ease,
-        box-shadow 0.18s ease;
-}
-
-.related-question:hover:not(:disabled) {
-    background:
-        #eff6ff;
-
-    border-color:
-        #93c5fd;
-
-    color:
-        #2563eb;
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 5px 14px
-        rgba(37, 99, 235, 0.12);
-}
-
-.related-question:disabled {
-    opacity: 0.35;
-
-    cursor: not-allowed;
+    padding:
+        4px 4px 10px 0;
 }
 
 
@@ -446,7 +393,7 @@ body {
 
     gap: 12px;
 
-    margin-bottom: 22px;
+    margin: 0;
 }
 
 
@@ -464,24 +411,24 @@ body {
     display: grid;
 
     grid-template-columns:
-        40px
+        38px
         minmax(0, 1fr);
 
     align-items: center;
 
-    column-gap: 12px;
+    gap: 12px;
 
     padding:
-        12px 16px;
+        10px 15px;
+
+    border:
+        1px solid
+        #d8e0ea;
 
     border-radius: 12px;
 
     background:
-        #f8fafc;
-
-    border:
-        1px solid
-        #dbe3ec;
+        #ffffff;
 
     color: #172033;
 
@@ -490,43 +437,43 @@ body {
     text-align: left;
 
     font-family:
-        'Inter',
-        'Segoe UI',
+        "Inter",
+        "Segoe UI",
         Arial,
         sans-serif;
 
     transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
         transform 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease,
         box-shadow 0.18s ease;
-
-    user-select: none;
 
     appearance: none;
 
     -webkit-appearance: none;
+
+    user-select: none;
 }
 
 .option:hover:not(:disabled) {
-    background:
-        #eff6ff;
+    transform:
+        translateY(-2px);
 
     border-color:
         #93c5fd;
 
-    transform:
-        translateY(-1px);
+    background:
+        #f8fbff;
 
     box-shadow:
-        0 5px 14px
-        rgba(37, 99, 235, 0.08);
+        0 6px 16px
+        rgba(37, 99, 235, 0.09);
 }
 
 .option:focus-visible {
     outline:
         3px solid
-        rgba(59, 130, 246, 0.25);
+        rgba(59, 130, 246, 0.22);
 
     outline-offset: 2px;
 }
@@ -537,7 +484,7 @@ body {
 
 
 /* =========================================================
-   OPTION LABEL
+   OPTION LETTER
    ========================================================= */
 
 .option-label {
@@ -552,18 +499,16 @@ body {
     border-radius: 50%;
 
     background:
-        #e0ecff;
+        #eff6ff;
 
     color:
-        #1d4ed8;
+        #2563eb;
 
     font-size: 13px;
 
-    font-weight: 800;
-
     line-height: 1;
 
-    flex-shrink: 0;
+    font-weight: 800;
 }
 
 
@@ -575,29 +520,27 @@ body {
     min-width: 0;
 
     color:
-        #172033;
+        #1e293b;
 
-    font-size: 17px;
+    font-size:
+        16px;
 
-    line-height: 1.55;
+    line-height:
+        1.55;
 
-    font-weight: 500;
+    font-weight:
+        500;
 
-    text-align: left;
+    text-align:
+        left;
 
-    overflow-wrap: anywhere;
-}
-
-.option-text strong {
-    color:
-        #1d4ed8;
-
-    font-weight: 800;
+    overflow-wrap:
+        anywhere;
 }
 
 
 /* =========================================================
-   CORRECT OPTION
+   CORRECT ANSWER
    ========================================================= */
 
 .option.correct,
@@ -608,12 +551,9 @@ body {
     border-color:
         #4ade80;
 
-    color:
-        #166534;
-
     box-shadow:
-        0 5px 16px
-        rgba(34, 197, 94, 0.12);
+        0 6px 18px
+        rgba(34, 197, 94, 0.13);
 }
 
 .option.correct .option-label,
@@ -629,17 +569,14 @@ body {
 .option.correct-answer .option-text {
     color:
         #166534;
-}
 
-.option.correct .option-text strong,
-.option.correct-answer .option-text strong {
-    color:
-        #15803d;
+    font-weight:
+        600;
 }
 
 
 /* =========================================================
-   WRONG OPTION
+   WRONG ANSWER
    ========================================================= */
 
 .option.wrong,
@@ -650,12 +587,9 @@ body {
     border-color:
         #fb7185;
 
-    color:
-        #be123c;
-
     box-shadow:
-        0 5px 16px
-        rgba(244, 63, 94, 0.10);
+        0 6px 18px
+        rgba(244, 63, 94, 0.11);
 }
 
 .option.wrong .option-label,
@@ -671,12 +605,9 @@ body {
 .option.wrong-answer .option-text {
     color:
         #9f1239;
-}
 
-.option.wrong .option-text strong,
-.option.wrong-answer .option-text strong {
-    color:
-        #be123c;
+    font-weight:
+        600;
 }
 
 
@@ -687,19 +618,23 @@ body {
 .result {
     width: 100%;
 
-    min-height: 26px;
+    min-height: 28px;
 
     margin:
-        8px 0
+        16px 0
+        8px;
+
+    font-size:
         16px;
 
-    font-size: 17px;
+    line-height:
+        1.5;
 
-    line-height: 1.5;
+    font-weight:
+        700;
 
-    font-weight: 700;
-
-    text-align: center;
+    text-align:
+        center;
 }
 
 .correct-result {
@@ -714,29 +649,60 @@ body {
 
 
 /* =========================================================
-   EXPLANATION
+   EXPLANATION POPUP / CARD
    ========================================================= */
 
 .explanation {
+    position: relative;
+
     width: 100%;
 
-    margin-top: 20px;
+    margin-top: 18px;
 
     padding:
-        20px 22px;
-
-    border-radius: 14px;
-
-    background:
-        #f8fafc;
+        18px 20px;
 
     border:
         1px solid
-        #dbeafe;
+        #bfdbfe;
+
+    border-radius:
+        14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fbff,
+            #f5f3ff
+        );
 
     box-shadow:
-        0 5px 16px
-        rgba(15, 23, 42, 0.05);
+        0 10px 28px
+        rgba(37, 99, 235, 0.10);
+
+    animation:
+        explanationPopup
+        0.28s
+        ease-out;
+}
+
+@keyframes explanationPopup {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(12px)
+            scale(0.97);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
 }
 
 .explanation-header {
@@ -744,141 +710,139 @@ body {
 
     align-items: center;
 
-    gap: 9px;
+    gap: 8px;
 
-    margin-bottom: 10px;
+    margin-bottom: 9px;
 
     color:
         #1e3a8a;
 
-    font-size: 16px;
+    font-size:
+        15px;
 
-    line-height: 1.4;
+    line-height:
+        1.4;
 
-    font-weight: 800;
+    font-weight:
+        800;
 }
 
 .explanation-icon {
-    font-size: 19px;
+    font-size:
+        18px;
 
-    line-height: 1;
+    line-height:
+        1;
 }
 
 .explanation-text {
     color:
         #334155;
 
-    font-size: 15px;
+    font-size:
+        14px;
 
-    line-height: 1.7;
+    line-height:
+        1.7;
 
-    font-weight: 400;
+    font-weight:
+        400;
 
-    text-align: left;
+    text-align:
+        left;
 
-    overflow-wrap: anywhere;
-}
-
-.explanation-text strong {
-    color:
-        #1d4ed8;
-
-    font-weight: 800;
+    overflow-wrap:
+        anywhere;
 }
 
 
 /* =========================================================
-   LOADING
+   RELATED QUESTION NAVIGATION
    ========================================================= */
 
-.loading {
-    min-height: 260px;
+.related-navigation {
+    width: 100%;
 
     display: flex;
 
-    flex-direction: column;
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.related-question {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
 
     align-items: center;
     justify-content: center;
 
-    gap: 14px;
-
-    color:
-        #475569;
-
-    font-size: 15px;
-
-    font-weight: 500;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
+    border:
+        1px solid
+        #cbd5e1;
 
     border-radius: 50%;
 
-    border:
-        4px solid
-        #dbeafe;
-
-    border-top-color:
-        #2563eb;
-
-    animation:
-        spin 0.85s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform:
-            rotate(360deg);
-    }
-}
-
-
-/* =========================================================
-   ERROR
-   ========================================================= */
-
-.error {
-    width: 100%;
-
-    padding:
-        18px 20px;
-
-    border-radius: 12px;
-
     background:
-        #fff1f2;
-
-    border:
-        1px solid
-        #fecdd3;
+        #ffffff;
 
     color:
-        #be123c;
+        #334155;
 
-    font-size: 15px;
+    font-family:
+        "Inter",
+        sans-serif;
 
-    line-height: 1.55;
+    font-size:
+        21px;
 
-    font-weight: 600;
+    font-weight:
+        700;
 
-    text-align: center;
+    cursor:
+        pointer;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.related-question:hover:not(:disabled) {
+    transform:
+        translateY(-2px);
+
+    background:
+        #eff6ff;
+
+    border-color:
+        #93c5fd;
+
+    color:
+        #2563eb;
+
+    box-shadow:
+        0 5px 14px
+        rgba(37, 99, 235, 0.10);
+}
+
+.related-question:disabled {
+    opacity:
+        0.35;
+
+    cursor:
+        not-allowed;
 }
 
 
 /* =========================================================
-   HIDDEN
-   ========================================================= */
-
-.hidden {
-    display: none !important;
-}
-
-
-/* =========================================================
-   FLOATING FEEDBACK EMOJIS
+   FLOATING EMOJI FEEDBACK
    ========================================================= */
 
 .floating-feedback {
@@ -890,17 +854,26 @@ body {
 
     display: block;
 
+    width: auto;
+    height: auto;
+
+    margin: 0;
+    padding: 0;
+
     font-family:
         "Segoe UI Emoji",
         "Apple Color Emoji",
         "Noto Color Emoji",
         sans-serif;
 
-    font-size: 46px;
+    font-size:
+        46px;
 
-    line-height: 1;
+    line-height:
+        1;
 
-    opacity: 0;
+    opacity:
+        0;
 
     will-change:
         transform,
@@ -920,31 +893,33 @@ body {
 
 
 /* =========================================================
-   EMOJI FLOATING ANIMATION
+   FLOATING EMOJI ANIMATION
    ========================================================= */
 
 @keyframes emojiFloat {
 
     0% {
-        opacity: 0;
+        opacity:
+            0;
 
         transform:
             translate3d(
                 0,
-                80px,
+                70px,
                 0
             )
-            scale(0.4)
+            scale(0.45)
             rotate(-15deg);
     }
 
     10% {
-        opacity: 1;
+        opacity:
+            1;
 
         transform:
             translate3d(
                 0,
-                20px,
+                15px,
                 0
             )
             scale(1.15)
@@ -952,7 +927,8 @@ body {
     }
 
     30% {
-        opacity: 1;
+        opacity:
+            1;
 
         transform:
             translate3d(
@@ -961,16 +937,17 @@ body {
                 0
             )
             scale(1)
-            rotate(-6deg);
+            rotate(-7deg);
     }
 
     55% {
-        opacity: 1;
+        opacity:
+            1;
 
         transform:
             translate3d(
                 0,
-                -150px,
+                -155px,
                 0
             )
             scale(1.05)
@@ -978,72 +955,190 @@ body {
     }
 
     80% {
-        opacity: 0.8;
+        opacity:
+            0.75;
 
         transform:
             translate3d(
                 0,
-                -250px,
+                -255px,
                 0
             )
-            scale(0.9)
+            scale(0.88)
             rotate(-10deg);
     }
 
     100% {
-        opacity: 0;
+        opacity:
+            0;
 
         transform:
             translate3d(
                 0,
-                -360px,
+                -370px,
                 0
             )
-            scale(0.65)
+            scale(0.60)
             rotate(15deg);
     }
 }
 
 
 /* =========================================================
-   NATURAL VARIATION
+   EMOJI SIZE VARIATIONS
    ========================================================= */
 
 .floating-feedback:nth-child(2n) {
-    animation-duration: 3.1s;
+    animation-duration:
+        3.1s;
 }
 
 .floating-feedback:nth-child(3n) {
-    animation-duration: 2.5s;
+    animation-duration:
+        2.5s;
 }
 
 .floating-feedback:nth-child(4n) {
-    animation-duration: 3.4s;
+    animation-duration:
+        3.4s;
 }
 
 .floating-feedback:nth-child(5n) {
-    animation-duration: 2.7s;
+    animation-duration:
+        2.7s;
 }
 
 
 /* =========================================================
-   RESPONSIVE - TABLET
+   LOADING
    ========================================================= */
 
-@media (
-    max-width: 900px
-) {
+.loading {
+    min-height:
+        280px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        14px;
+
+    color:
+        #64748b;
+
+    font-size:
+        15px;
+
+    font-weight:
+        500;
+}
+
+.loading-spinner {
+    width:
+        40px;
+
+    height:
+        40px;
+
+    border:
+        4px solid
+        #dbeafe;
+
+    border-top-color:
+        #2563eb;
+
+    border-radius:
+        50%;
+
+    animation:
+        spin
+        0.85s
+        linear
+        infinite;
+}
+
+@keyframes spin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error {
+    width:
+        100%;
+
+    padding:
+        18px 20px;
+
+    border:
+        1px solid
+        #fecdd3;
+
+    border-radius:
+        12px;
+
+    background:
+        #fff1f2;
+
+    color:
+        #be123c;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.55;
+
+    font-weight:
+        600;
+
+    text-align:
+        center;
+}
+
+
+/* =========================================================
+   HIDDEN
+   ========================================================= */
+
+.hidden {
+    display:
+        none !important;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
 
     .brain-box-header {
         grid-template-columns:
-            1fr
-            auto;
+            1fr auto;
 
         grid-template-areas:
             "brand score"
             "quote quote";
 
-        gap: 16px;
+        gap:
+            15px;
 
         padding:
             20px 22px;
@@ -1076,28 +1171,36 @@ body {
             center;
     }
 
-    .question-container {
-        padding:
-            24px;
+    .question-content {
+        gap:
+            28px;
+    }
+
+    .question-pane {
+        padding-right:
+            18px;
+    }
+
+    .question {
+        font-size:
+            20px;
     }
 }
 
 
 /* =========================================================
-   RESPONSIVE - MOBILE
+   MOBILE
    ========================================================= */
 
-@media (
-    max-width: 640px
-) {
+@media (max-width: 700px) {
 
     .app-container {
         width:
             calc(100% - 20px);
 
         margin:
-            10px auto
-            28px;
+            12px auto
+            30px;
     }
 
     .brain-box-header {
@@ -1109,14 +1212,11 @@ body {
             "score"
             "quote";
 
-        min-height:
-            auto;
-
         padding:
-            20px 18px;
+            20px 17px;
 
         border-radius:
-            16px;
+            17px;
 
         text-align:
             center;
@@ -1135,17 +1235,9 @@ body {
             30px;
     }
 
-    .brand-subtitle {
-        font-size:
-            13px;
-    }
-
     .score-display {
         justify-self:
             center;
-
-        min-width:
-            160px;
     }
 
     .quote-section {
@@ -1161,26 +1253,64 @@ body {
             18px 14px;
 
         border-radius:
-            16px;
+            17px;
+    }
+
+    /*
+     * Mobile:
+     * question above options.
+     */
+    .question-content {
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        gap:
+            22px;
+    }
+
+    .question-pane {
+        width:
+            100%;
+
+        padding:
+            5px 2px 20px;
+
+        border-right:
+            none;
+
+        border-bottom:
+            1px solid
+            #e2e8f0;
+    }
+
+    .options-pane {
+        width:
+            100%;
+
+        padding:
+            0;
     }
 
     .question {
         font-size:
-            18px;
+            19px;
 
         line-height:
-            1.6;
+            1.55;
     }
 
     .option {
         min-height:
-            54px;
+            55px;
 
         grid-template-columns:
-            36px
+            35px
             minmax(0, 1fr);
 
-        column-gap:
+        gap:
             10px;
 
         padding:
@@ -1200,7 +1330,7 @@ body {
 
     .option-text {
         font-size:
-            16px;
+            15px;
 
         line-height:
             1.5;
@@ -1214,20 +1344,6 @@ body {
     .explanation-text {
         font-size:
             14px;
-
-        line-height:
-            1.65;
-    }
-
-    .related-question {
-        width:
-            40px;
-
-        height:
-            40px;
-
-        font-size:
-            20px;
     }
 
     .floating-feedback {
@@ -1238,46 +1354,39 @@ body {
 
 
 /* =========================================================
-   VERY SMALL SCREENS
+   SMALL MOBILE
    ========================================================= */
 
-@media (
-    max-width: 380px
-) {
+@media (max-width: 400px) {
 
     .app-container {
         width:
-            calc(100% - 14px);
+            calc(100% - 12px);
     }
 
     .brain-box-header {
         padding:
-            17px 13px;
+            17px 12px;
     }
 
     .question-container {
         padding:
-            15px 11px;
+            15px 10px;
+    }
+
+    .brand-section h1 {
+        font-size:
+            27px;
     }
 
     .question {
         font-size:
-            17px;
+            18px;
     }
 
     .option-text {
         font-size:
-            15px;
-    }
-
-    .score-display {
-        font-size:
-            13px;
-    }
-
-    .score-display strong {
-        font-size:
-            16px;
+            14px;
     }
 
     .floating-feedback {
@@ -1291,9 +1400,7 @@ body {
    REDUCED MOTION
    ========================================================= */
 
-@media (
-    prefers-reduced-motion: reduce
-) {
+@media (prefers-reduced-motion: reduce) {
 
     html {
         scroll-behavior:
@@ -1311,31 +1418,27 @@ body {
     @keyframes emojiFloatReduced {
 
         0% {
-            opacity: 0;
+            opacity:
+                0;
 
             transform:
                 scale(0.7);
         }
 
         30% {
-            opacity: 1;
+            opacity:
+                1;
 
             transform:
                 scale(1.1);
         }
 
         100% {
-            opacity: 0;
+            opacity:
+                0;
 
             transform:
                 scale(1);
         }
-    }
-
-    *,
-    *::before,
-    *::after {
-        transition-duration:
-            0.01ms !important;
     }
 }
