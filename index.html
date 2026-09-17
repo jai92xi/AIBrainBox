@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,10 +11,26 @@
 
     <meta
         name="description"
-        content="AI Brain Box — Test your AI and Machine Learning knowledge."
+        content="AIBrainBox - AI Questions & Practice"
     >
 
-    <title>AI Brain Box</title>
+    <title>AIBrainBox - AI Questions & Practice</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <link
         rel="stylesheet"
@@ -21,66 +38,41 @@
     >
 </head>
 
-<body class="light-theme">
+<body>
 
-    <!-- =====================================================
-         BACKGROUND
-         app.js dynamically inserts the selected background
-         from Backgrounds_Folder.
-         ===================================================== -->
-
+    <!-- Background -->
     <div
         id="background-overlay"
         aria-hidden="true"
     ></div>
 
 
-    <!-- =====================================================
-         MAIN PAGE
-         ===================================================== -->
+    <!-- Main Application -->
+    <main class="app-container">
 
-    <main class="page-wrapper">
-
-        <!-- =================================================
-             TOP HEADER
-             ================================================= -->
-
+        <!-- Top Header -->
         <header class="brain-box-header">
 
-            <div class="brand-area">
-
-                <div class="brand-title">
-                    🧠 AI Brain Box
-                </div>
-
-                <!-- Caption intentionally removed -->
-                <div
-                    class="brand-subtitle"
-                    style="display:none;"
-                ></div>
-
+            <!-- Brand -->
+            <div class="brand-section">
+                <h1>AIBrainBox</h1>
+                <p class="brand-subtitle">
+                    AI Questions &amp; Practice...
+                </p>
             </div>
 
 
-            <!-- =================================================
-                 CURRENT STREAK
-                 ================================================= -->
-
+            <!-- Current Streak -->
             <div
                 id="score-display"
                 class="score-display"
-                aria-live="polite"
             >
                 🔥 Current streak:
                 <strong>0/0</strong>
             </div>
 
 
-            <!-- =================================================
-                 QUOTE
-                 Quote is kept INSIDE the top box.
-                 ================================================= -->
-
+            <!-- Quote -->
             <div class="quote-section">
 
                 <div
@@ -102,148 +94,85 @@
         </header>
 
 
-        <!-- =================================================
-             PAGE CONTENT
-             ================================================= -->
+        <!-- Loading -->
+        <div
+            id="loading"
+            class="loading"
+        >
+            <div class="loading-spinner"></div>
 
+            <p>
+                Loading question...
+            </p>
+        </div>
+
+
+        <!-- Error -->
+        <div
+            id="error"
+            class="error hidden"
+            role="alert"
+        >
+            Unable to load the question database.
+            Please check that xi-questions.csv exists
+            in the repository.
+        </div>
+
+
+        <!-- Question Area -->
         <section
-            id="quiz-area"
-            class="quiz-area"
+            id="question-container"
+            class="question-container hidden"
         >
 
-            <!-- =================================================
-                 LOADING
-                 ================================================= -->
+            <!-- Question -->
+            <div class="question-section">
 
-            <div
-                id="loading"
-                class="loading"
-            >
-                Loading question...
+                <div
+                    id="question"
+                    class="question"
+                ></div>
+
             </div>
 
 
-            <!-- =================================================
-                 ERROR
-                 ================================================= -->
-
+            <!-- Options -->
             <div
-                id="error"
-                class="error hidden"
-                role="alert"
+                id="options"
+                class="options"
+                role="group"
+                aria-label="Answer options"
             ></div>
 
 
-            <!-- =================================================
-                 QUESTION CONTAINER
-                 ================================================= -->
+            <!-- Result -->
+            <div
+                id="result"
+                class="result"
+                aria-live="polite"
+            ></div>
 
+
+            <!-- Explanation -->
             <section
-                id="question-container"
-                class="question-container hidden"
+                id="explanation"
+                class="explanation hidden"
             >
 
-                <!--
-                    Previous / Next related-question arrows
-                    are inserted here by app.js.
+                <div class="explanation-header">
+                    <span class="explanation-icon">
+                        💡
+                    </span>
 
-                    They remain at the top and do not move
-                    downward with the question/options.
-                -->
-
-
-                <!-- =================================================
-                     TWO-COLUMN QUIZ LAYOUT
-                     ================================================= -->
-
-                <div class="quiz-columns">
-
-
-                    <!-- =============================================
-                         LEFT HALF — QUESTION
-                         ============================================= -->
-
-                    <section
-                        class="question-pane"
-                        aria-labelledby="question"
-                    >
-
-                        <div class="pane-label">
-                            Question
-                        </div>
-
-                        <div
-                            id="question"
-                            class="question"
-                        >
-                        </div>
-
-                    </section>
-
-
-                    <!-- =============================================
-                         RIGHT HALF — OPTIONS
-                         ============================================= -->
-
-                    <section
-                        class="options-pane"
-                        aria-label="Answer options"
-                    >
-
-                        <div class="pane-label">
-                            Choose your answer
-                        </div>
-
-
-                        <!-- =========================================
-                             OPTIONS
-                             ========================================= -->
-
-                        <div
-                            id="options"
-                            class="options"
-                        >
-                        </div>
-
-
-                        <!-- =========================================
-                             ANSWER RESULT
-                             ========================================= -->
-
-                        <div
-                            id="result"
-                            class="result"
-                            aria-live="polite"
-                        >
-                        </div>
-
-
-                        <!-- =========================================
-                             EXPLANATION
-                             app.js displays this immediately
-                             after selecting an option.
-                             ========================================= -->
-
-                        <div
-                            id="explanation"
-                            class="explanation hidden"
-                        >
-
-                            <div class="explanation-title">
-                                💡 Explanation
-                            </div>
-
-                            <div
-                                id="explanation-text"
-                                class="explanation-text"
-                            >
-                            </div>
-
-                        </div>
-
-                    </section>
-
+                    <span>
+                        Explanation
+                    </span>
                 </div>
+
+                <div
+                    id="explanation-text"
+                    class="explanation-text"
+                ></div>
 
             </section>
 
@@ -252,10 +181,7 @@
     </main>
 
 
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
-
+    <!-- Application Script -->
     <script
         src="app.js"
         defer
@@ -263,3 +189,4 @@
 
 </body>
 </html>
+```
