@@ -31,8 +31,7 @@ body {
 
     color: #172033;
 
-    background:
-        #eef3f8;
+    background: #eef3f8;
 
     overflow-x: hidden;
 }
@@ -879,74 +878,151 @@ body {
 
 
 /* =========================================================
-   FLOATING FEEDBACK
+   FLOATING FEEDBACK EMOJIS
    ========================================================= */
 
 .floating-feedback {
     position: fixed;
 
-    z-index: 9999;
+    z-index: 99999;
 
     pointer-events: none;
 
-    font-size:
-        clamp(
-            28px,
-            4vw,
-            48px
-        );
+    display: block;
+
+    font-family:
+        "Segoe UI Emoji",
+        "Apple Color Emoji",
+        "Noto Color Emoji",
+        sans-serif;
+
+    font-size: 46px;
 
     line-height: 1;
 
-    filter:
-        drop-shadow(
-            0 4px 8px
-            rgba(15, 23, 42, 0.16)
-        );
+    opacity: 0;
+
+    will-change:
+        transform,
+        opacity;
 
     animation:
-        feedbackFloat
-        2.2s
-        ease-out
+        emojiFloat
+        2.8s
+        cubic-bezier(
+            0.22,
+            0.61,
+            0.36,
+            1
+        )
         forwards;
 }
 
-@keyframes feedbackFloat {
+
+/* =========================================================
+   EMOJI FLOATING ANIMATION
+   ========================================================= */
+
+@keyframes emojiFloat {
+
     0% {
         opacity: 0;
 
         transform:
-            translateY(40px)
-            scale(0.45)
-            rotate(-12deg);
+            translate3d(
+                0,
+                80px,
+                0
+            )
+            scale(0.4)
+            rotate(-15deg);
     }
 
-    12% {
+    10% {
         opacity: 1;
 
         transform:
-            translateY(0)
+            translate3d(
+                0,
+                20px,
+                0
+            )
             scale(1.15)
-            rotate(5deg);
+            rotate(8deg);
     }
 
-    45% {
+    30% {
         opacity: 1;
 
         transform:
-            translateY(-80px)
+            translate3d(
+                0,
+                -60px,
+                0
+            )
             scale(1)
-            rotate(-4deg);
+            rotate(-6deg);
+    }
+
+    55% {
+        opacity: 1;
+
+        transform:
+            translate3d(
+                0,
+                -150px,
+                0
+            )
+            scale(1.05)
+            rotate(8deg);
+    }
+
+    80% {
+        opacity: 0.8;
+
+        transform:
+            translate3d(
+                0,
+                -250px,
+                0
+            )
+            scale(0.9)
+            rotate(-10deg);
     }
 
     100% {
         opacity: 0;
 
         transform:
-            translateY(-230px)
-            scale(0.75)
-            rotate(12deg);
+            translate3d(
+                0,
+                -360px,
+                0
+            )
+            scale(0.65)
+            rotate(15deg);
     }
+}
+
+
+/* =========================================================
+   NATURAL VARIATION
+   ========================================================= */
+
+.floating-feedback:nth-child(2n) {
+    animation-duration: 3.1s;
+}
+
+.floating-feedback:nth-child(3n) {
+    animation-duration: 2.5s;
+}
+
+.floating-feedback:nth-child(4n) {
+    animation-duration: 3.4s;
+}
+
+.floating-feedback:nth-child(5n) {
+    animation-duration: 2.7s;
 }
 
 
@@ -957,6 +1033,7 @@ body {
 @media (
     max-width: 900px
 ) {
+
     .brain-box-header {
         grid-template-columns:
             1fr
@@ -1013,6 +1090,7 @@ body {
 @media (
     max-width: 640px
 ) {
+
     .app-container {
         width:
             calc(100% - 20px);
@@ -1151,6 +1229,11 @@ body {
         font-size:
             20px;
     }
+
+    .floating-feedback {
+        font-size:
+            38px;
+    }
 }
 
 
@@ -1161,6 +1244,7 @@ body {
 @media (
     max-width: 380px
 ) {
+
     .app-container {
         width:
             calc(100% - 14px);
@@ -1195,6 +1279,11 @@ body {
         font-size:
             16px;
     }
+
+    .floating-feedback {
+        font-size:
+            34px;
+    }
 }
 
 
@@ -1205,20 +1294,47 @@ body {
 @media (
     prefers-reduced-motion: reduce
 ) {
+
     html {
         scroll-behavior:
             auto;
     }
 
+    .floating-feedback {
+        animation:
+            emojiFloatReduced
+            1.2s
+            ease-out
+            forwards;
+    }
+
+    @keyframes emojiFloatReduced {
+
+        0% {
+            opacity: 0;
+
+            transform:
+                scale(0.7);
+        }
+
+        30% {
+            opacity: 1;
+
+            transform:
+                scale(1.1);
+        }
+
+        100% {
+            opacity: 0;
+
+            transform:
+                scale(1);
+        }
+    }
+
     *,
     *::before,
     *::after {
-        animation-duration:
-            0.01ms !important;
-
-        animation-iteration-count:
-            1 !important;
-
         transition-duration:
             0.01ms !important;
     }
