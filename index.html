@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -15,15 +14,15 @@
         content="AIBrainBox - AI Questions & Practice"
     >
 
-    <title>AIBrainBox - AI Questions & Practice</title>
+    <title>
+        AIBrainBox - AI Questions & Practice
+    </title>
 
     <link
         rel="stylesheet"
         href="style.css"
     >
-
 </head>
-
 
 <body>
 
@@ -47,9 +46,6 @@
 
         <header class="brain-box-header">
 
-
-            <!-- BRAND -->
-
             <div class="brand-section">
 
                 <h1>
@@ -63,7 +59,7 @@
             </div>
 
 
-            <!-- CURRENT STREAK -->
+            <!-- Current streak -->
 
             <div
                 id="score-display"
@@ -74,7 +70,7 @@
             </div>
 
 
-            <!-- QUOTE -->
+            <!-- Quote -->
 
             <div class="quote-section">
 
@@ -90,8 +86,8 @@
 
             </div>
 
-
         </header>
+
 
 
         <!-- =================================================
@@ -112,6 +108,7 @@
         </div>
 
 
+
         <!-- =================================================
              ERROR
              ================================================= -->
@@ -120,6 +117,7 @@
             id="error"
             class="error hidden"
         ></div>
+
 
 
         <!-- =================================================
@@ -133,11 +131,10 @@
 
 
             <!-- =============================================
-                 PREVIOUS / NEXT
+                 RELATED QUESTION NAVIGATION
                  ============================================= -->
 
             <div class="related-navigation">
-
 
                 <button
                     id="previous-question"
@@ -160,23 +157,22 @@
                     →
                 </button>
 
-
             </div>
 
 
+
             <!-- =============================================
-                 TWO-PANE CONTENT
+                 QUESTION + OPTIONS
                  ============================================= -->
 
             <div class="question-content">
 
 
                 <!-- =========================================
-                     LEFT PANE - QUESTION
+                     QUESTION PANE
                      ========================================= -->
 
                 <section class="question-pane">
-
 
                     <div class="question-label">
                         QUESTION
@@ -188,26 +184,28 @@
                         class="question"
                     ></div>
 
-
                 </section>
 
 
+
                 <!-- =========================================
-                     RIGHT PANE - OPTIONS
+                     OPTIONS PANE
                      ========================================= -->
 
                 <section class="options-pane">
-
 
                     <div class="question-label">
                         SELECT YOUR ANSWER
                     </div>
 
 
+                    <!-- Options are dynamically generated -->
+
                     <div
                         id="options"
                         class="options"
                     ></div>
+
 
 
                     <!-- =====================================
@@ -220,6 +218,7 @@
                     ></div>
 
 
+
                     <!-- =====================================
                          EXPLANATION
                          ===================================== -->
@@ -229,14 +228,9 @@
                         class="explanation hidden"
                     >
 
+                        <div class="explanation-header">
 
-                        <div
-                            class="explanation-header"
-                        >
-
-                            <span
-                                class="explanation-icon"
-                            >
+                            <span class="explanation-icon">
                                 💡
                             </span>
 
@@ -252,20 +246,16 @@
                             class="explanation-text"
                         ></div>
 
-
                     </div>
-
 
                 </section>
 
-
             </div>
-
 
         </main>
 
-
     </div>
+
 
 
     <!-- =====================================================
