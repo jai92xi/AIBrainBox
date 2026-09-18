@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -21,13 +22,18 @@
     >
 </head>
 
+
 <body class="light-theme">
 
-    <!-- Background -->
+    <!-- =================================================
+         BACKGROUND
+         ================================================= -->
+
     <div
         id="background-overlay"
         aria-hidden="true"
     ></div>
+
 
     <main class="page-wrapper">
 
@@ -51,6 +57,7 @@
 
             </div>
 
+
             <!-- Current Streak -->
             <div
                 id="score-display"
@@ -61,7 +68,8 @@
                 <strong>0</strong>
             </div>
 
-            <!-- Quote inside header -->
+
+            <!-- Quote -->
             <div class="quote-section">
 
                 <div
@@ -118,10 +126,40 @@
                 class="question-container hidden"
             >
 
-                <!--
-                    Previous / next navigation arrows
-                    are inserted here by app.js.
-                -->
+                <!-- =================================================
+                     PREVIOUS / NEXT NAVIGATION
+                     Required by app.js
+                     ================================================= -->
+
+                <div
+                    class="related-navigation"
+                    aria-label="Related question navigation"
+                >
+
+                    <!-- Previous question -->
+                    <button
+                        id="previous-question"
+                        class="related-question previous-related"
+                        type="button"
+                        aria-label="Previous related question"
+                        title="Previous related question"
+                    >
+                        ←
+                    </button>
+
+
+                    <!-- Next question -->
+                    <button
+                        id="next-question"
+                        class="related-question next-related"
+                        type="button"
+                        aria-label="Next related question"
+                        title="Next related question"
+                    >
+                        →
+                    </button>
+
+                </div>
 
 
                 <!-- =================================================
@@ -129,6 +167,7 @@
                      ================================================= -->
 
                 <div class="quiz-columns">
+
 
                     <!-- =============================================
                          LEFT: QUESTION
@@ -218,4 +257,5 @@
     ></script>
 
 </body>
+
 </html>
