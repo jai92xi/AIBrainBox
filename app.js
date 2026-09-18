@@ -1,145 +1,235 @@
-const QUESTIONS_FILE = "./xi-questions.csv";
-const QUOTES_FILE = "./xi-Quotes.csv";
+/* =========================================================
+   AI Brain Box - app.js
+   ========================================================= */
+
+const CSV_URL = "./xi-questions.csv";
+const QUOTES_URL = "./xi-Quotes.csv";
+
+const BACKGROUNDS_API =
+    "https://api.github.com/repos/jai92xi/AIBrainBox/contents/Backgrounds_Folder";
+
+const BACKGROUND_SESSION_KEY =
+    "aibrainbox-session-background";
 
 let questions = [];
 let quotes = [];
 
 let currentQuestion = null;
-let currentQuestionIndex = -1;
+let currentQuestionIndex = 0;
+
 let currentStreak = 0;
 let answerSelected = false;
 
 
-// ============================================================
-// DOM ELEMENTS
-// ============================================================
+/* ============================================================
+   DOM ELEMENTS
+   ============================================================ */
 
-const loadingElement = document.getElementById("loading");
-const errorElement = document.getElementById("error");
-const questionContainer = document.getElementById("question-container");
+const questionContainer =
+    document.getElementById("question-container");
 
-const questionElement = document.getElementById("question");
-const optionsElement = document.getElementById("options");
-const resultElement = document.getElementById("result");
+const questionElement =
+    document.getElementById("question");
 
-const explanationElement = document.getElementById("explanation");
-const explanationTextElement = document.getElementById("explanation-text");
+const optionsElement =
+    document.getElementById("options");
 
-const scoreElement = document.getElementById("score-display");
+const resultElement =
+    document.getElementById("result");
 
-const previousButton = document.getElementById("previous-question");
-const nextButton = document.getElementById("next-question");
+const explanationElement =
+    document.getElementById("explanation");
 
-const quoteTextElement = document.getElementById("quote-text");
-const quoteAuthorElement = document.getElementById("quote-author");
+const explanationTextElement =
+    document.getElementById("explanation-text");
+
+const scoreElement =
+    document.getElementById("score-display");
+
+const loadingElement =
+    document.getElementById("loading");
+
+const errorElement =
+    document.getElementById("error");
+
+const quoteTextElement =
+    document.getElementById("quote-text");
+
+const quoteAuthorElement =
+    document.getElementById("quote-author");
+
+const previousButton =
+    document.querySelector(".previous-related");
+
+const nextButton =
+    document.querySelector(".next-related");
 
 
-// ============================================================
-// INITIALIZE
-// ============================================================
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
 
-document.addEventListener("DOMContentLoaded", initializeApp);
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeApp
+);
+
 
 async function initializeApp() {
-    try {
-        showLoading();
 
-        await loadQuestions();
-        await loadQuotes();
+    document.body.classList.add(
+        "light-theme"
+    );
 
-        setupNavigation();
-        setupBrowserNavigation();
-
-        displayRandomQuote();
-        loadQuestionFromURL();
-
-        hideLoading();
-
-    } catch (error) {
-        console.error("Application initialization failed:", error);
-
-        showError(
-            "Unable to load the question database. Please check that xi-questions.csv exists in the repository."
+    const subtitle =
+        document.querySelector(
+            ".brand-subtitle"
         );
+
+    if (subtitle) {
+        subtitle.textContent = "";
+        subtitle.style.display = "none";
     }
+
+    setupNavigation();
+
+    await Promise.all([
+        loadQuestions(),
+        loadQuotes(),
+        loadSessionBackground()
+    ]);
+
 }
 
 
-// ============================================================
-// CSV LOADING
-// ============================================================
+/* ============================================================
+   LOAD QUESTIONS
+   ============================================================ */
 
 async function loadQuestions() {
-    const response = await fetch(QUESTIONS_FILE, {
-        cache: "no-store"
-    });
 
-    if (!response.ok) {
-        throw new Error(
-            `Unable to load ${QUESTIONS_FILE}`
+    showLoading();
+
+    try {
+
+        const response =
+            await fetch(
+                `${CSV_URL}?v=${Date.now()}`,
+                {
+                    cache: "no-store"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                `Unable to load ${CSV_URL}`
+            );
+        }
+
+        const csvText =
+            await response.text();
+
+        questions =
+            parseCSV(csvText);
+
+        if (
+            !questions ||
+            questions.length === 0
+        ) {
+            throw new Error(
+                "No questions found."
+            );
+        }
+
+        loadQuestionFromURL();
+
+    } catch (error) {
+
+        console.error(
+            "Questions could not be loaded:",
+            error
+        );
+
+        showError(
+            "Unable to load questions. Please check the CSV file."
         );
     }
 
-    const csvText = await response.text();
-
-    questions = parseCSV(csvText);
-
-    if (!questions.length) {
-        throw new Error("No questions found in CSV.");
-    }
-
-    console.log(
-        `Loaded ${questions.length} questions.`
-    );
 }
 
 
+/* ============================================================
+   LOAD QUOTES
+   ============================================================ */
+
 async function loadQuotes() {
+
     try {
-        const response = await fetch(QUOTES_FILE, {
-            cache: "no-store"
-        });
+
+        const response =
+            await fetch(
+                `${QUOTES_URL}?v=${Date.now()}`,
+                {
+                    cache: "no-store"
+                }
+            );
 
         if (!response.ok) {
+
             console.warn(
-                `Unable to load ${QUOTES_FILE}`
+                `Unable to load ${QUOTES_URL}`
             );
+
             return;
         }
 
-        const csvText = await response.text();
+        const csvText =
+            await response.text();
 
-        quotes = parseCSV(csvText);
+        quotes =
+            parseCSV(csvText);
 
         console.log(
             `Loaded ${quotes.length} quotes.`
         );
 
+        displayRandomQuote();
+
     } catch (error) {
+
         console.warn(
             "Quotes could not be loaded:",
             error
         );
     }
+
 }
 
 
-// ============================================================
-// CSV PARSER
-// ============================================================
+/* ============================================================
+   CSV PARSER
+   ============================================================ */
 
 function parseCSV(text) {
 
     const rows = [];
+
     let row = [];
     let value = "";
 
     let insideQuotes = false;
 
-    for (let i = 0; i < text.length; i++) {
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
 
-        const character = text[i];
-        const nextCharacter = text[i + 1];
+        const character =
+            text[i];
+
+        const nextCharacter =
+            text[i + 1];
 
         if (character === '"') {
 
@@ -147,10 +237,15 @@ function parseCSV(text) {
                 insideQuotes &&
                 nextCharacter === '"'
             ) {
+
                 value += '"';
+
                 i++;
+
             } else {
-                insideQuotes = !insideQuotes;
+
+                insideQuotes =
+                    !insideQuotes;
             }
 
         } else if (
@@ -159,10 +254,14 @@ function parseCSV(text) {
         ) {
 
             row.push(value);
+
             value = "";
 
         } else if (
-            (character === "\n" || character === "\r") &&
+            (
+                character === "\n" ||
+                character === "\r"
+            ) &&
             !insideQuotes
         ) {
 
@@ -170,17 +269,21 @@ function parseCSV(text) {
                 character === "\r" &&
                 nextCharacter === "\n"
             ) {
+
                 i++;
             }
 
             row.push(value);
+
             value = "";
 
             if (
                 row.some(
-                    cell => cell.trim() !== ""
+                    cell =>
+                        cell.trim() !== ""
                 )
             ) {
+
                 rows.push(row);
             }
 
@@ -192,26 +295,36 @@ function parseCSV(text) {
         }
     }
 
-    if (value !== "" || row.length > 0) {
+    if (
+        value !== "" ||
+        row.length > 0
+    ) {
 
         row.push(value);
 
         if (
             row.some(
-                cell => cell.trim() !== ""
+                cell =>
+                    cell.trim() !== ""
             )
         ) {
+
             rows.push(row);
         }
     }
 
-    if (rows.length === 0) {
+    if (
+        rows.length === 0
+    ) {
+
         return [];
     }
 
-    const headers = rows[0].map(
-        header => header.trim()
-    );
+    const headers =
+        rows[0].map(
+            header =>
+                header.trim()
+        );
 
     return rows
         .slice(1)
@@ -223,7 +336,10 @@ function parseCSV(text) {
                 (header, index) => {
 
                     object[header] =
-                        (row[index] || "").trim();
+                        (
+                            row[index] ||
+                            ""
+                        ).trim();
                 }
             );
 
@@ -232,28 +348,46 @@ function parseCSV(text) {
 }
 
 
-// ============================================================
-// GET CSV VALUE
-// ============================================================
+/* ============================================================
+   GET CSV VALUE
+   ============================================================ */
 
-function getValue(object, possibleNames) {
+function getValue(
+    object,
+    possibleNames
+) {
 
     if (!object) {
         return "";
     }
 
-    const keys = Object.keys(object);
+    const keys =
+        Object.keys(object);
 
-    for (const name of possibleNames) {
+    for (
+        const name of possibleNames
+    ) {
 
-        const matchingKey = keys.find(
-            key =>
-                key.trim().toLowerCase() ===
-                name.trim().toLowerCase()
-        );
+        const matchingKey =
+            keys.find(
+                key =>
+                    key
+                        .trim()
+                        .toLowerCase() ===
+                    name
+                        .trim()
+                        .toLowerCase()
+            );
 
-        if (matchingKey !== undefined) {
-            return object[matchingKey] || "";
+        if (
+            matchingKey !==
+            undefined
+        ) {
+
+            return (
+                object[matchingKey] ||
+                ""
+            );
         }
     }
 
@@ -261,11 +395,13 @@ function getValue(object, possibleNames) {
 }
 
 
-// ============================================================
-// QUESTION ID
-// ============================================================
+/* ============================================================
+   QUESTION ID
+   ============================================================ */
 
-function getQuestionId(question) {
+function getQuestionId(
+    question
+) {
 
     return getValue(
         question,
@@ -291,9 +427,9 @@ function getQuestionIdFromURL() {
 }
 
 
-// ============================================================
-// FIND QUESTION
-// ============================================================
+/* ============================================================
+   FIND QUESTION
+   ============================================================ */
 
 function findQuestionById(id) {
 
@@ -307,14 +443,15 @@ function findQuestionById(id) {
                 getQuestionId(question)
                     .toLowerCase() ===
                 id.toLowerCase()
-        ) || null
+        ) ||
+        null
     );
 }
 
 
-// ============================================================
-// LOAD QUESTION FROM URL
-// ============================================================
+/* ============================================================
+   LOAD QUESTION FROM URL
+   ============================================================ */
 
 function loadQuestionFromURL() {
 
@@ -331,9 +468,13 @@ function loadQuestionFromURL() {
             );
     }
 
-    if (!question && questions.length) {
+    if (
+        !question &&
+        questions.length
+    ) {
 
-        question = questions[0];
+        question =
+            questions[0];
     }
 
     if (question) {
@@ -349,12 +490,13 @@ function loadQuestionFromURL() {
             "No questions are available."
         );
     }
+
 }
 
 
-// ============================================================
-// DISPLAY QUESTION
-// ============================================================
+/* ============================================================
+   DISPLAY QUESTION
+   ============================================================ */
 
 function displayQuestion(
     question,
@@ -365,24 +507,34 @@ function displayQuestion(
         return;
     }
 
-    currentQuestion = question;
+    currentQuestion =
+        question;
 
     currentQuestionIndex =
-        questions.indexOf(question);
+        questions.indexOf(
+            question
+        );
 
-    answerSelected = false;
+    answerSelected =
+        false;
 
     const questionId =
-        getQuestionId(question);
+        getQuestionId(
+            question
+        );
 
-    if (updateURL && questionId) {
+    if (
+        updateURL &&
+        questionId
+    ) {
 
         const newURL =
             `${window.location.pathname}?id=${encodeURIComponent(questionId)}`;
 
         window.history.pushState(
             {
-                questionId: questionId
+                questionId:
+                    questionId
             },
             "",
             newURL
@@ -404,8 +556,9 @@ function displayQuestion(
             ]
         );
 
-    // Use innerHTML so <b>...</b> in CSV
-    // is rendered as bold text.
+    // Use innerHTML so <b>...</b>
+    // in CSV is rendered as bold text.
+
     questionElement.innerHTML =
         questionText;
 
@@ -414,14 +567,17 @@ function displayQuestion(
     // OPTIONS
     // --------------------------------------------------------
 
-    renderOptions(question);
+    renderOptions(
+        question
+    );
 
 
     // --------------------------------------------------------
     // RESET RESULT
     // --------------------------------------------------------
 
-    resultElement.textContent = "";
+    resultElement.textContent =
+        "";
 
     resultElement.className =
         "result";
@@ -431,7 +587,8 @@ function displayQuestion(
     // RESET EXPLANATION
     // --------------------------------------------------------
 
-    explanationTextElement.innerHTML = "";
+    explanationTextElement.innerHTML =
+        "";
 
     explanationElement.classList.add(
         "hidden"
@@ -459,16 +616,20 @@ function displayQuestion(
     // --------------------------------------------------------
 
     setupQuestionLayout();
+
 }
 
 
-// ============================================================
-// RENDER OPTIONS
-// ============================================================
+/* ============================================================
+   RENDER OPTIONS
+   ============================================================ */
 
-function renderOptions(question) {
+function renderOptions(
+    question
+) {
 
-    optionsElement.innerHTML = "";
+    optionsElement.innerHTML =
+        "";
 
     const optionValues = [
 
@@ -522,7 +683,10 @@ function renderOptions(question) {
 
 
     optionValues.forEach(
-        (optionText, index) => {
+        (
+            optionText,
+            index
+        ) => {
 
             if (!optionText) {
                 return;
@@ -533,7 +697,8 @@ function renderOptions(question) {
                     "button"
                 );
 
-            optionButton.type = "button";
+            optionButton.type =
+                "button";
 
             optionButton.className =
                 "option";
@@ -566,6 +731,7 @@ function renderOptions(question) {
                 "option-text";
 
             // Render HTML such as <b>...</b>
+
             optionContent.innerHTML =
                 optionText;
 
@@ -594,16 +760,20 @@ function renderOptions(question) {
             optionsElement.appendChild(
                 optionButton
             );
+
         }
     );
+
 }
 
 
-// ============================================================
-// GET CORRECT ANSWER
-// ============================================================
+/* ============================================================
+   GET CORRECT ANSWER
+   ============================================================ */
 
-function getCorrectAnswer(question) {
+function getCorrectAnswer(
+    question
+) {
 
     return getValue(
         question,
@@ -619,22 +789,29 @@ function getCorrectAnswer(question) {
 }
 
 
-// ============================================================
-// NORMALIZE ANSWER
-// ============================================================
+/* ============================================================
+   NORMALIZE ANSWER
+   ============================================================ */
 
-function normalizeAnswer(answer) {
+function normalizeAnswer(
+    answer
+) {
 
-    return String(answer || "")
+    return String(
+        answer || ""
+    )
         .trim()
-        .replace(/\s+/g, " ")
+        .replace(
+            /\s+/g,
+            " "
+        )
         .toLowerCase();
 }
 
 
-// ============================================================
-// SELECT ANSWER
-// ============================================================
+/* ============================================================
+   SELECT ANSWER
+   ============================================================ */
 
 function selectAnswer(
     selectedButton,
@@ -645,7 +822,8 @@ function selectAnswer(
         return;
     }
 
-    answerSelected = true;
+    answerSelected =
+        true;
 
 
     const correctAnswer =
@@ -654,9 +832,46 @@ function selectAnswer(
         );
 
 
+    /*
+     * ========================================================
+     * FIX:
+     *
+     * The CSV stores Correct Answer as A/B/C/D.
+     *
+     * The selected option contains the FULL option text.
+     *
+     * Therefore compare the selected option's INDEX/LABEL
+     * with the CSV correct-answer value.
+     *
+     * Example:
+     *
+     * Correct Answer = C
+     * Selected button = option C
+     *
+     * => Correct
+     *
+     * ========================================================
+     */
+
+    const labels = [
+        "A",
+        "B",
+        "C",
+        "D"
+    ];
+
+    const selectedIndex =
+        Number(
+            selectedButton.dataset.index
+        );
+
+    const selectedLabel =
+        labels[selectedIndex] || "";
+
+
     const selectedNormalized =
         normalizeAnswer(
-            selectedAnswer
+            selectedLabel
         );
 
     const correctNormalized =
@@ -665,9 +880,43 @@ function selectAnswer(
         );
 
 
-    const isCorrect =
+    /*
+     * Primary comparison:
+     *
+     * A/B/C/D label
+     * against
+     * CSV Correct Answer
+     */
+
+    let isCorrect =
         selectedNormalized ===
         correctNormalized;
+
+
+    /*
+     * Fallback:
+     *
+     * If a CSV happens to store the FULL
+     * answer text instead of A/B/C/D,
+     * still support that format.
+     */
+
+    if (!isCorrect) {
+
+        const selectedTextNormalized =
+            normalizeAnswer(
+                selectedAnswer
+            );
+
+        const correctTextNormalized =
+            normalizeAnswer(
+                correctAnswer
+            );
+
+        isCorrect =
+            selectedTextNormalized ===
+            correctTextNormalized;
+    }
 
 
     // --------------------------------------------------------
@@ -682,7 +931,8 @@ function selectAnswer(
     allOptions.forEach(
         option => {
 
-            option.disabled = true;
+            option.disabled =
+                true;
         }
     );
 
@@ -705,7 +955,9 @@ function selectAnswer(
 
         currentStreak++;
 
-        showFloatingFeedback(true);
+        showFloatingFeedback(
+            true
+        );
 
     }
 
@@ -726,19 +978,52 @@ function selectAnswer(
         resultElement.className =
             "result wrong-result";
 
-        currentStreak = 0;
+        currentStreak =
+            0;
+
 
         // Highlight the correct option
+
         allOptions.forEach(
             option => {
 
-                const optionAnswer =
-                    option.dataset.answer;
+                const optionIndex =
+                    Number(
+                        option.dataset.index
+                    );
+
+                const optionLabel =
+                    labels[optionIndex] ||
+                    "";
+
+                /*
+                 * Compare the OPTION LABEL
+                 * against the CSV answer.
+                 */
 
                 if (
                     normalizeAnswer(
-                        optionAnswer
-                    ) === correctNormalized
+                        optionLabel
+                    ) ===
+                    correctNormalized
+                ) {
+
+                    option.classList.add(
+                        "correct"
+                    );
+                }
+
+                /*
+                 * Also support a CSV where
+                 * Correct Answer contains the
+                 * full option text.
+                 */
+
+                else if (
+                    normalizeAnswer(
+                        option.dataset.answer
+                    ) ===
+                    correctNormalized
                 ) {
 
                     option.classList.add(
@@ -748,7 +1033,9 @@ function selectAnswer(
             }
         );
 
-        showFloatingFeedback(false);
+        showFloatingFeedback(
+            false
+        );
     }
 
 
@@ -766,14 +1053,17 @@ function selectAnswer(
     showExplanation(
         currentQuestion
     );
+
 }
 
 
-// ============================================================
-// SHOW EXPLANATION
-// ============================================================
+/* ============================================================
+   SHOW EXPLANATION
+   ============================================================ */
 
-function showExplanation(question) {
+function showExplanation(
+    question
+) {
 
     const explanation =
         getValue(
@@ -787,7 +1077,6 @@ function showExplanation(question) {
             ]
         );
 
-
     explanationTextElement.innerHTML =
         explanation ||
         "No explanation is available for this question.";
@@ -796,12 +1085,13 @@ function showExplanation(question) {
     explanationElement.classList.remove(
         "hidden"
     );
+
 }
 
 
-// ============================================================
-// UPDATE SCORE
-// ============================================================
+/* ============================================================
+   UPDATE SCORE
+   ============================================================ */
 
 function updateScore() {
 
@@ -814,9 +1104,9 @@ function updateScore() {
 }
 
 
-// ============================================================
-// RELATED QUESTION NAVIGATION
-// ============================================================
+/* ============================================================
+   RELATED QUESTION NAVIGATION
+   ============================================================ */
 
 function updateRelatedNavigation() {
 
@@ -891,12 +1181,13 @@ function updateRelatedNavigation() {
         nextButton.disabled =
             true;
     }
+
 }
 
 
-// ============================================================
-// NAVIGATION BUTTONS
-// ============================================================
+/* ============================================================
+   NAVIGATION BUTTONS
+   ============================================================ */
 
 function setupNavigation() {
 
@@ -908,8 +1199,10 @@ function setupNavigation() {
                 !currentQuestion ||
                 previousButton.disabled
             ) {
+
                 return;
             }
+
 
             const previousId =
                 getValue(
@@ -923,10 +1216,12 @@ function setupNavigation() {
                     ]
                 );
 
+
             const previousQuestion =
                 findQuestionById(
                     previousId
                 );
+
 
             if (previousQuestion) {
 
@@ -939,6 +1234,7 @@ function setupNavigation() {
                     behavior: "smooth"
                 });
             }
+
         }
     );
 
@@ -951,8 +1247,10 @@ function setupNavigation() {
                 !currentQuestion ||
                 nextButton.disabled
             ) {
+
                 return;
             }
+
 
             const nextId =
                 getValue(
@@ -966,10 +1264,12 @@ function setupNavigation() {
                     ]
                 );
 
+
             const nextQuestion =
                 findQuestionById(
                     nextId
                 );
+
 
             if (nextQuestion) {
 
@@ -982,14 +1282,16 @@ function setupNavigation() {
                     behavior: "smooth"
                 });
             }
+
         }
     );
+
 }
 
 
-// ============================================================
-// BROWSER BACK / FORWARD
-// ============================================================
+/* ============================================================
+   BROWSER BACK / FORWARD
+   ============================================================ */
 
 function setupBrowserNavigation() {
 
@@ -1000,27 +1302,32 @@ function setupBrowserNavigation() {
             loadQuestionFromURL();
         }
     );
+
 }
 
 
-// ============================================================
-// KEYBOARD NAVIGATION
-// ============================================================
+/* ============================================================
+   KEYBOARD NAVIGATION
+   ============================================================ */
 
 document.addEventListener(
     "keydown",
     event => {
 
         if (
-            event.target.tagName === "INPUT" ||
-            event.target.tagName === "TEXTAREA"
+            event.target.tagName ===
+                "INPUT" ||
+            event.target.tagName ===
+                "TEXTAREA"
         ) {
+
             return;
         }
 
 
         if (
-            event.key === "ArrowLeft" &&
+            event.key ===
+            "ArrowLeft" &&
             !previousButton.disabled
         ) {
 
@@ -1029,19 +1336,21 @@ document.addEventListener(
 
 
         if (
-            event.key === "ArrowRight" &&
+            event.key ===
+            "ArrowRight" &&
             !nextButton.disabled
         ) {
 
             nextButton.click();
         }
+
     }
 );
 
 
-// ============================================================
-// FLOATING FEEDBACK
-// ============================================================
+/* ============================================================
+   FLOATING FEEDBACK
+   ============================================================ */
 
 function showFloatingFeedback(
     isCorrect
@@ -1087,7 +1396,11 @@ function showFloatingFeedback(
             : 8;
 
 
-    for (let i = 0; i < count; i++) {
+    for (
+        let i = 0;
+        i < count;
+        i++
+    ) {
 
         const emoji =
             document.createElement(
@@ -1150,15 +1463,20 @@ function showFloatingFeedback(
                 emoji.remove();
 
             },
-            (duration + delay) * 1000 + 500
+            (
+                duration +
+                delay
+            ) * 1000 + 500
         );
+
     }
+
 }
 
 
-// ============================================================
-// RANDOM QUOTE
-// ============================================================
+/* ============================================================
+   RANDOM QUOTE
+   ============================================================ */
 
 function displayRandomQuote() {
 
@@ -1166,6 +1484,7 @@ function displayRandomQuote() {
         !quotes ||
         quotes.length === 0
     ) {
+
         return;
     }
 
@@ -1222,12 +1541,13 @@ function displayRandomQuote() {
                 ? `— ${quoteAuthor}`
                 : "";
     }
+
 }
 
 
-// ============================================================
-// QUESTION LAYOUT
-// ============================================================
+/* ============================================================
+   QUESTION LAYOUT
+   ============================================================ */
 
 function setupQuestionLayout() {
 
@@ -1247,10 +1567,12 @@ function setupQuestionLayout() {
             ".question-content"
         );
 
+
     const questionPane =
         document.querySelector(
             ".question-pane"
         );
+
 
     const optionsPane =
         document.querySelector(
@@ -1263,14 +1585,16 @@ function setupQuestionLayout() {
         questionPane &&
         optionsPane
     ) {
+
         return;
     }
+
 }
 
 
-// ============================================================
-// LOADING STATE
-// ============================================================
+/* ============================================================
+   LOADING STATE
+   ============================================================ */
 
 function showLoading() {
 
@@ -1281,12 +1605,14 @@ function showLoading() {
         );
     }
 
+
     if (questionContainer) {
 
         questionContainer.classList.add(
             "hidden"
         );
     }
+
 }
 
 
@@ -1298,10 +1624,13 @@ function hideLoading() {
             "hidden"
         );
     }
+
 }
 
 
-function showError(message) {
+function showError(
+    message
+) {
 
     hideLoading();
 
@@ -1323,4 +1652,264 @@ function showError(message) {
             "hidden"
         );
     }
+
+}
+
+
+/* ============================================================
+   BACKGROUND
+   ============================================================ */
+
+async function loadSessionBackground() {
+
+    const overlay =
+        document.getElementById(
+            "background-overlay"
+        );
+
+    if (!overlay) {
+        return;
+    }
+
+
+    try {
+
+        let selectedBackground =
+            sessionStorage.getItem(
+                BACKGROUND_SESSION_KEY
+            );
+
+
+        if (!selectedBackground) {
+
+            const response =
+                await fetch(
+                    `${BACKGROUNDS_API}?v=${Date.now()}`,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Background API failed (${response.status})`
+                );
+            }
+
+
+            const files =
+                await response.json();
+
+
+            /*
+             * Do NOT restrict this to .mp4.
+             * Any file in Backgrounds_Folder
+             * can be selected.
+             */
+
+            const validFiles =
+                files.filter(
+                    file =>
+                        file &&
+                        file.type ===
+                            "file" &&
+                        file.download_url
+                );
+
+
+            if (
+                validFiles.length === 0
+            ) {
+
+                throw new Error(
+                    "No background files found."
+                );
+            }
+
+
+            const selected =
+                validFiles[
+                    Math.floor(
+                        Math.random() *
+                        validFiles.length
+                    )
+                ];
+
+
+            selectedBackground =
+                selected.download_url;
+
+
+            sessionStorage.setItem(
+                BACKGROUND_SESSION_KEY,
+                selectedBackground
+            );
+
+        }
+
+
+        applyBackground(
+            selectedBackground
+        );
+
+
+    } catch (error) {
+
+        console.warn(
+            "Background loading failed:",
+            error
+        );
+
+
+        overlay.style.background =
+            "linear-gradient(135deg, #e0f2fe, #ede9fe)";
+    }
+
+}
+
+
+/* ============================================================
+   APPLY BACKGROUND
+   ============================================================ */
+
+function applyBackground(
+    url
+) {
+
+    const overlay =
+        document.getElementById(
+            "background-overlay"
+        );
+
+
+    if (
+        !overlay ||
+        !url
+    ) {
+
+        return;
+    }
+
+
+    const cleanUrl =
+        String(url)
+            .split("?")[0]
+            .toLowerCase();
+
+
+    const videoExtensions = [
+        ".mp4",
+        ".webm",
+        ".ogg",
+        ".mov",
+        ".m4v"
+    ];
+
+
+    const isVideo =
+        videoExtensions.some(
+            extension =>
+                cleanUrl.endsWith(
+                    extension
+                )
+        );
+
+
+    if (isVideo) {
+
+        const existingVideo =
+            document.getElementById(
+                "background-video"
+            );
+
+
+        if (existingVideo) {
+
+            existingVideo.remove();
+        }
+
+
+        const video =
+            document.createElement(
+                "video"
+            );
+
+
+        video.id =
+            "background-video";
+
+        video.src =
+            url;
+
+        video.autoplay =
+            true;
+
+        video.loop =
+            true;
+
+        video.muted =
+            true;
+
+        video.playsInline =
+            true;
+
+
+        video.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        video.style.position =
+            "absolute";
+
+        video.style.inset =
+            "0";
+
+        video.style.width =
+            "100%";
+
+        video.style.height =
+            "100%";
+
+        video.style.objectFit =
+            "cover";
+
+        video.style.pointerEvents =
+            "none";
+
+
+        overlay.innerHTML =
+            "";
+
+        overlay.appendChild(
+            video
+        );
+
+
+        video.play().catch(
+            () => {}
+        );
+
+
+    } else {
+
+        overlay.innerHTML =
+            "";
+
+        overlay.style.backgroundImage =
+            `url("${url}")`;
+
+        overlay.style.backgroundSize =
+            "cover";
+
+        overlay.style.backgroundPosition =
+            "center";
+
+        overlay.style.backgroundRepeat =
+            "no-repeat";
+    }
+
 }
