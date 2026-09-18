@@ -1,230 +1,221 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
 
-```
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<meta
-    name="description"
-    content="AI Brain Box — Test your AI and Machine Learning knowledge."
->
+    <meta
+        name="description"
+        content="AI Brain Box — Test your AI and Machine Learning knowledge."
+    >
 
-<title>AI Brain Box</title>
+    <title>AI Brain Box</title>
 
-<link
-    rel="stylesheet"
-    href="style.css"
->
-```
-
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body class="light-theme">
 
-```
-<!-- Background -->
-<div
-    id="background-overlay"
-    aria-hidden="true"
-></div>
+    <!-- Background -->
+    <div
+        id="background-overlay"
+        aria-hidden="true"
+    ></div>
 
+    <main class="page-wrapper">
 
-<main class="page-wrapper">
+        <!-- =================================================
+             HEADER
+             ================================================= -->
 
-    <!-- =================================================
-         HEADER
-         ================================================= -->
+        <header class="brain-box-header">
 
-    <header class="brain-box-header">
+            <div class="brand-area">
 
-        <div class="brand-area">
+                <div class="brand-title">
+                    🧠 AI Brain Box
+                </div>
 
-            <div class="brand-title">
-                🧠 AI Brain Box
+                <!-- Caption intentionally hidden -->
+                <div
+                    class="brand-subtitle"
+                    style="display: none;"
+                ></div>
+
             </div>
 
-            <!-- Caption intentionally hidden -->
+            <!-- Current Streak -->
             <div
-                class="brand-subtitle"
-                style="display: none;"
-            ></div>
-
-        </div>
-
-
-        <!-- Current Streak -->
-        <div
-            id="score-display"
-            class="score-display"
-            aria-live="polite"
-        >
-            Current streak:
-            <strong>0</strong>
-        </div>
-
-
-        <!-- Quote inside header -->
-        <div class="quote-section">
-
-            <div
-                id="quote-text"
-                class="quote-text"
+                id="score-display"
+                class="score-display"
+                aria-live="polite"
             >
-                “Keep learning. Keep improving.”
+                Current streak:
+                <strong>0</strong>
             </div>
 
-            <div
-                id="quote-author"
-                class="quote-author"
-            >
-                — AIBrainBox
+            <!-- Quote inside header -->
+            <div class="quote-section">
+
+                <div
+                    id="quote-text"
+                    class="quote-text"
+                >
+                    “Keep learning. Keep improving.”
+                </div>
+
+                <div
+                    id="quote-author"
+                    class="quote-author"
+                >
+                    — AIBrainBox
+                </div>
+
             </div>
 
-        </div>
-
-    </header>
-
-
-    <!-- =================================================
-         QUIZ AREA
-         ================================================= -->
-
-    <section
-        id="quiz-area"
-        class="quiz-area"
-    >
-
-        <!-- Loading -->
-        <div
-            id="loading"
-            class="loading"
-        >
-            Loading question...
-        </div>
-
-
-        <!-- Error -->
-        <div
-            id="error"
-            class="error hidden"
-            role="alert"
-        ></div>
+        </header>
 
 
         <!-- =================================================
-             QUESTION CONTAINER
+             QUIZ AREA
              ================================================= -->
 
         <section
-            id="question-container"
-            class="question-container hidden"
+            id="quiz-area"
+            class="quiz-area"
         >
 
-            <!--
-                app.js inserts the
-                previous / next arrows here.
-            -->
+            <!-- Loading -->
+            <div
+                id="loading"
+                class="loading"
+            >
+                Loading question...
+            </div>
+
+
+            <!-- Error -->
+            <div
+                id="error"
+                class="error hidden"
+                role="alert"
+            ></div>
 
 
             <!-- =================================================
-                 TWO COLUMN QUIZ LAYOUT
+                 QUESTION CONTAINER
                  ================================================= -->
 
-            <div class="quiz-columns">
+            <section
+                id="question-container"
+                class="question-container hidden"
+            >
+
+                <!--
+                    Previous / next navigation arrows
+                    are inserted here by app.js.
+                -->
 
 
-                <!-- =============================================
-                     LEFT: QUESTION
-                     ============================================= -->
+                <!-- =================================================
+                     TWO COLUMN QUIZ LAYOUT
+                     ================================================= -->
 
-                <section
-                    class="question-pane"
-                    aria-labelledby="question"
-                >
+                <div class="quiz-columns">
 
-                    <div class="pane-label">
-                        Question
-                    </div>
+                    <!-- =============================================
+                         LEFT: QUESTION
+                         ============================================= -->
 
-                    <div
-                        id="question"
-                        class="question"
-                    ></div>
-
-                </section>
-
-
-                <!-- =============================================
-                     RIGHT: OPTIONS
-                     ============================================= -->
-
-                <section
-                    class="options-pane"
-                    aria-label="Answer options"
-                >
-
-                    <div class="pane-label">
-                        Choose your answer
-                    </div>
-
-
-                    <!-- Options inserted by app.js -->
-                    <div
-                        id="options"
-                        class="options"
-                    ></div>
-
-
-                    <!-- Result -->
-                    <div
-                        id="result"
-                        class="result"
-                        aria-live="polite"
-                    ></div>
-
-
-                    <!-- Explanation -->
-                    <div
-                        id="explanation"
-                        class="explanation hidden"
+                    <section
+                        class="question-pane"
+                        aria-labelledby="question"
                     >
 
-                        <div class="explanation-title">
-                            💡 Explanation
+                        <div class="pane-label">
+                            Question
                         </div>
 
                         <div
-                            id="explanation-text"
-                            class="explanation-text"
+                            id="question"
+                            class="question"
                         ></div>
 
-                    </div>
+                    </section>
 
-                </section>
 
-            </div>
+                    <!-- =============================================
+                         RIGHT: OPTIONS
+                         ============================================= -->
+
+                    <section
+                        class="options-pane"
+                        aria-label="Answer options"
+                    >
+
+                        <div class="pane-label">
+                            Choose your answer
+                        </div>
+
+
+                        <!-- Options inserted by app.js -->
+                        <div
+                            id="options"
+                            class="options"
+                        ></div>
+
+
+                        <!-- Result -->
+                        <div
+                            id="result"
+                            class="result"
+                            aria-live="polite"
+                        ></div>
+
+
+                        <!-- Explanation -->
+                        <div
+                            id="explanation"
+                            class="explanation hidden"
+                        >
+
+                            <div class="explanation-title">
+                                💡 Explanation
+                            </div>
+
+                            <div
+                                id="explanation-text"
+                                class="explanation-text"
+                            ></div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+            </section>
 
         </section>
 
-    </section>
+    </main>
 
-</main>
 
-<!-- =================================================
-     JAVASCRIPT
-     ================================================= -->
+    <!-- =================================================
+         JAVASCRIPT
+         ================================================= -->
 
-<script
-    src="app.js"
-    defer
-></script>
-```
+    <script
+        src="app.js"
+        defer
+    ></script>
 
 </body>
 </html>
