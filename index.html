@@ -1,183 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
 
+<html lang="en">
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+```
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <meta
-        name="description"
-        content="AIBrainBox - AI Questions & Practice"
-    >
+<meta
+    name="description"
+    content="AI Brain Box — Test your AI and Machine Learning knowledge."
+>
 
-    <title>
-        AIBrainBox - AI Questions & Practice
-    </title>
+<title>AI Brain Box</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+```
+
 </head>
 
-<body>
+<body class="light-theme">
 
-    <!-- =====================================================
-         BACKGROUND
-         ===================================================== -->
-
-    <div id="background-overlay"></div>
-
-
-    <!-- =====================================================
-         MAIN APPLICATION
-         ===================================================== -->
-
-    <div class="app-container">
+```
+<!-- Background -->
+<div
+    id="background-overlay"
+    aria-hidden="true"
+></div>
 
 
-        <!-- =================================================
-             HEADER
-             ================================================= -->
+<main class="page-wrapper">
 
-        <header class="brain-box-header">
+    <!-- =================================================
+         HEADER
+         ================================================= -->
 
-            <div class="brand-section">
+    <header class="brain-box-header">
 
-                <h1>
-                    AIBrainBox
-                </h1>
+        <div class="brand-area">
 
-                <div class="brand-subtitle">
-                    AI Questions &amp; Practice...
-                </div>
-
+            <div class="brand-title">
+                🧠 AI Brain Box
             </div>
 
-
-            <!-- Current streak -->
-
+            <!-- Caption intentionally hidden -->
             <div
-                id="score-display"
-                class="score-display"
-            >
-                Current streak:
-                <strong>0</strong>
-            </div>
-
-
-            <!-- Quote -->
-
-            <div class="quote-section">
-
-                <div
-                    id="quote-text"
-                    class="quote-text"
-                ></div>
-
-                <div
-                    id="quote-author"
-                    class="quote-author"
-                ></div>
-
-            </div>
-
-        </header>
-
-
-
-        <!-- =================================================
-             LOADING
-             ================================================= -->
-
-        <div
-            id="loading"
-            class="loading"
-        >
-
-            <div class="loading-spinner"></div>
-
-            <div>
-                Loading question...
-            </div>
+                class="brand-subtitle"
+                style="display: none;"
+            ></div>
 
         </div>
 
 
+        <!-- Current Streak -->
+        <div
+            id="score-display"
+            class="score-display"
+            aria-live="polite"
+        >
+            Current streak:
+            <strong>0</strong>
+        </div>
 
-        <!-- =================================================
-             ERROR
-             ================================================= -->
 
+        <!-- Quote inside header -->
+        <div class="quote-section">
+
+            <div
+                id="quote-text"
+                class="quote-text"
+            >
+                “Keep learning. Keep improving.”
+            </div>
+
+            <div
+                id="quote-author"
+                class="quote-author"
+            >
+                — AIBrainBox
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         QUIZ AREA
+         ================================================= -->
+
+    <section
+        id="quiz-area"
+        class="quiz-area"
+    >
+
+        <!-- Loading -->
+        <div
+            id="loading"
+            class="loading"
+        >
+            Loading question...
+        </div>
+
+
+        <!-- Error -->
         <div
             id="error"
             class="error hidden"
+            role="alert"
         ></div>
-
 
 
         <!-- =================================================
              QUESTION CONTAINER
              ================================================= -->
 
-        <main
+        <section
             id="question-container"
             class="question-container hidden"
         >
 
+            <!--
+                app.js inserts the
+                previous / next arrows here.
+            -->
 
-            <!-- =============================================
-                 RELATED QUESTION NAVIGATION
-                 ============================================= -->
 
-            <div class="related-navigation">
+            <!-- =================================================
+                 TWO COLUMN QUIZ LAYOUT
+                 ================================================= -->
 
-                <button
-                    id="previous-question"
-                    class="related-question"
-                    type="button"
-                    aria-label="Previous related question"
-                    title="Previous related question"
+            <div class="quiz-columns">
+
+
+                <!-- =============================================
+                     LEFT: QUESTION
+                     ============================================= -->
+
+                <section
+                    class="question-pane"
+                    aria-labelledby="question"
                 >
-                    ←
-                </button>
 
-
-                <button
-                    id="next-question"
-                    class="related-question"
-                    type="button"
-                    aria-label="Next related question"
-                    title="Next related question"
-                >
-                    →
-                </button>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 QUESTION + OPTIONS
-                 ============================================= -->
-
-            <div class="question-content">
-
-
-                <!-- =========================================
-                     QUESTION PANE
-                     ========================================= -->
-
-                <section class="question-pane">
-
-                    <div class="question-label">
-                        QUESTION
+                    <div class="pane-label">
+                        Question
                     </div>
-
 
                     <div
                         id="question"
@@ -187,59 +160,44 @@
                 </section>
 
 
+                <!-- =============================================
+                     RIGHT: OPTIONS
+                     ============================================= -->
 
-                <!-- =========================================
-                     OPTIONS PANE
-                     ========================================= -->
+                <section
+                    class="options-pane"
+                    aria-label="Answer options"
+                >
 
-                <section class="options-pane">
-
-                    <div class="question-label">
-                        SELECT YOUR ANSWER
+                    <div class="pane-label">
+                        Choose your answer
                     </div>
 
 
-                    <!-- Options are dynamically generated -->
-
+                    <!-- Options inserted by app.js -->
                     <div
                         id="options"
                         class="options"
                     ></div>
 
 
-
-                    <!-- =====================================
-                         RESULT
-                         ===================================== -->
-
+                    <!-- Result -->
                     <div
                         id="result"
                         class="result"
+                        aria-live="polite"
                     ></div>
 
 
-
-                    <!-- =====================================
-                         EXPLANATION
-                         ===================================== -->
-
+                    <!-- Explanation -->
                     <div
                         id="explanation"
                         class="explanation hidden"
                     >
 
-                        <div class="explanation-header">
-
-                            <span class="explanation-icon">
-                                💡
-                            </span>
-
-                            <span>
-                                Explanation
-                            </span>
-
+                        <div class="explanation-title">
+                            💡 Explanation
                         </div>
-
 
                         <div
                             id="explanation-text"
@@ -252,21 +210,22 @@
 
             </div>
 
-        </main>
+        </section>
 
-    </div>
+    </section>
+
+</main>
 
 
+<!-- =================================================
+     JAVASCRIPT
+     ================================================= -->
 
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
-
-    <script
-        src="app.js"
-        defer
-    ></script>
+<script
+    src="app.js"
+    defer
+></script>
+```
 
 </body>
-
 </html>
