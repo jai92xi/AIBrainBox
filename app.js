@@ -53,7 +53,6 @@ const previousButton =
 const nextButton =
     document.getElementById("next-question");
 
-
 /* =========================================================
    INITIALIZATION
    ========================================================= */
@@ -543,10 +542,6 @@ function displayQuestion(
 
     /* =====================================================
        QUESTION
-       IMPORTANT:
-       CSV already contains <b>...</b> around keywords.
-       We intentionally keep innerHTML here so ONLY those
-       marked keywords become bold.
        ===================================================== */
 
     const questionText =
@@ -725,11 +720,6 @@ function renderOptions(
             optionContent.className =
                 "option-text";
 
-
-            /*
-             * Keep CSV <b>...</b>
-             * formatting.
-             */
 
             optionContent.innerHTML =
                 optionText;
@@ -1053,25 +1043,31 @@ function showExplanation(
 
 
     /*
-     * Keep <b>...</b> from CSV.
-     *
      * IMPORTANT:
-     * Convert real CSV line breaks into <br>
-     * elements so each paragraph / bullet appears
-     * on its own line in the webpage.
+     *
+     * Keep the <b>...</b> HTML from the CSV.
+     *
+     * Convert actual line breaks from the CSV
+     * into <br> elements so that every paragraph
+     * and bullet appears on a separate line.
+     *
+     * This is the only functional change made
+     * for the explanation display.
      */
 
-    const formattedExplanation =
-        explanation
-            ? explanation.replace(
+    if (explanation) {
+
+        explanationTextElement.innerHTML =
+            explanation.replace(
                 /\r\n|\r|\n/g,
                 "<br>"
-            )
-            : "No explanation is available for this question.";
+            );
 
+    } else {
 
-    explanationTextElement.innerHTML =
-        formattedExplanation;
+        explanationTextElement.innerHTML =
+            "No explanation is available for this question.";
+    }
 
 
     explanationElement.classList.remove(
