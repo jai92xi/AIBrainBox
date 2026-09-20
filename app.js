@@ -13,7 +13,6 @@ let currentQuestionIndex = 0;
 let currentStreak = 0;
 let answerSelected = false;
 
-
 /* =========================================================
    DOM ELEMENTS
    ========================================================= */
@@ -523,7 +522,6 @@ function displayQuestion(
             question
         );
 
-
     if (
         updateURL &&
         questionId
@@ -545,7 +543,6 @@ function displayQuestion(
 
     /* =====================================================
        QUESTION
-
        IMPORTANT:
        CSV already contains <b>...</b> around keywords.
        We intentionally keep innerHTML here so ONLY those
@@ -733,6 +730,7 @@ function renderOptions(
              * Keep CSV <b>...</b>
              * formatting.
              */
+
             optionContent.innerHTML =
                 optionText;
 
@@ -823,7 +821,6 @@ function selectAnswer(
 
     answerSelected =
         true;
-
 
     const correctAnswer =
         getCorrectAnswer(
@@ -935,7 +932,6 @@ function selectAnswer(
 
         currentStreak++;
 
-
         showFloatingFeedback(
             true
         );
@@ -963,6 +959,7 @@ function selectAnswer(
          * Preserve the current GitHub logic:
          * wrong answer resets the streak.
          */
+
         currentStreak =
             0;
 
@@ -1057,11 +1054,24 @@ function showExplanation(
 
     /*
      * Keep <b>...</b> from CSV.
+     *
+     * IMPORTANT:
+     * Convert real CSV line breaks into <br>
+     * elements so each paragraph / bullet appears
+     * on its own line in the webpage.
      */
 
+    const formattedExplanation =
+        explanation
+            ? explanation.replace(
+                /\r\n|\r|\n/g,
+                "<br>"
+            )
+            : "No explanation is available for this question.";
+
+
     explanationTextElement.innerHTML =
-        explanation ||
-        "No explanation is available for this question.";
+        formattedExplanation;
 
 
     explanationElement.classList.remove(
@@ -1466,7 +1476,9 @@ function showFloatingFeedback(
 
         setTimeout(
             () => {
+
                 emoji.remove();
+
             },
             (
                 duration +
