@@ -331,3 +331,18 @@ Users
 Therefore, the most directly relevant optimization is <b>Dynamic padding / length-based batching</b>.
 
 <b>Correct answer: A. Dynamic padding / length-based batching</b>","BERT","Inference optimization, Dynamic padding, Length-based batching","",""
+"Xi-00009","A production <b>Llama 3.1 8B</b> application is fine-tuned for a customer-support task. The model performs well on training data, but after fine-tuning, its performance on general customer questions decreases significantly.
+
+The team wants to adapt the model to the new task while <b>preserving most of the pretrained knowledge</b> and reducing GPU memory and training cost.
+
+Which approach is most suitable?","Use <b>LoRA</b> to train a small set of adapter parameters while keeping the base model mostly frozen","Fine-tune all model parameters with a very small learning rate to minimize changes to the pretrained weights","","","A","<b>LoRA (Low-Rank Adaptation)</b> is the most suitable approach because it adapts a pretrained model by training a relatively small number of additional <b>adapter parameters</b> while keeping most of the original model weights frozen.
+
+This is especially useful when the goal is to adapt a model to a new task without significantly changing its pretrained capabilities. Because the original weights are mostly preserved, LoRA can help reduce the risk of <b>catastrophic forgetting</b>, where fine-tuning causes the model to lose knowledge or capabilities learned during pretraining.
+
+LoRA also reduces <b>GPU memory usage</b> and <b>training cost</b> because gradients and optimizer states are primarily maintained for the much smaller set of trainable adapter parameters rather than for the entire model. For example, instead of updating all parameters of a Llama 3.1 8B model, the training process can keep the base model frozen and learn small low-rank updates for selected layers.
+
+The practical flow is: <b>Pretrained Llama 3.1 8B → freeze base weights → train LoRA adapters → combine or apply adapters during inference</b>.
+
+Option B can reduce the magnitude of weight changes by using a small learning rate, but it still requires training and maintaining optimizer states for the full model. It therefore generally uses substantially more memory and computation and does not provide the same parameter-efficient adaptation benefits as LoRA.
+
+Therefore, the correct answer is <b>A. Use LoRA to train a small set of adapter parameters while keeping the base model mostly frozen.</b>","Generative AI","LoRA, Parameter-Efficient Fine-Tuning, Catastrophic Forgetting",,
