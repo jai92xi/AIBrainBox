@@ -376,4 +376,69 @@ The database may correctly reject unauthorized data access, but the agent is sti
 Use <b>prompt-injection detection</b> as one defense layer, but enforce <b>tool-level authorization outside the LLM</b>. The agent can request an action, while the authorization layer makes the final allow-or-block decision.
 
 <b>Correct answer: A</b>.","LLM / AI Agents","Prompt Injection, Tool Authorization, Agent Security, Access Control",,
-Xi-00011,"A production <b>Transformer encoder</b> is used for a legal-document classification system. The model uses <b>BERT-base</b> and receives documents with highly variable lengths. The team notices that simply truncating every document to <b>512 tokens</b> causes important information near the end of some documents to be lost. However, increasing BERT's maximum sequence length to <b>2,048 tokens</b> causes a large increase in GPU memory usage and inference latency. The team wants to preserve information from the entire document without simply running full self-attention over all 2,048 tokens. Which architecture is the <b>most appropriate</b>?","Use a <b>hierarchical Transformer</b>: split the document into smaller chunks, encode each chunk with BERT, then combine the chunk-level representations with a second-level Transformer or attention layer.","Increase BERT's <b>hidden dimension</b> from 768 to 1,536 while keeping the sequence length at 512, allowing the model to encode more information from the truncated document.",,,"A","<b>BERT-base</b> is an encoder-only Transformer that was originally designed with a maximum sequence length of <b>512 tokens</b>. Modern decoder-only LLMs can support much larger context windows, such as 128K tokens or more, but context length is not determined simply by whether a model is an encoder or decoder. It depends on the specific model architecture, positional encoding, training setup, and implementation.\n\nThe problem here is that truncating a long legal document to 512 tokens can remove important information. For example, if a critical clause appears around token 1,800, truncation would discard it:\n\n2,000-token legal document → first 512 tokens → important clause lost\n\nSimply increasing the sequence length to 2,048 allows more information to be retained, but <b>self-attention</b> has approximately <b>O(n²)</b> complexity with respect to sequence length. Increasing the sequence from 512 to 2,048 therefore causes a substantial increase in attention computation and memory requirements.\n\nA <b>hierarchical Transformer</b> addresses both problems by processing the document in smaller chunks first:\n\nLong document → split into chunks → BERT encodes each chunk → chunk representations → document-level Transformer/attention → final document representation → classification\n\nEach BERT encoder only performs self-attention within its own smaller chunk. A second-level model then combines the chunk-level representations so information from the entire document can contribute to the final prediction.\n\nThis is similar to having multiple workers understand individual sections of a long legal contract and then having a manager combine those section-level findings into one document-level understanding.\n\nOption B does not solve the main problem. Increasing the <b>hidden dimension</b> from 768 to 1,536 does not recover information that was already removed by truncating the document at 512 tokens. The important content near the end would still never reach the model.\n\nThe key engineering lesson is that a larger context window is not automatically the best solution for long documents. When full attention over the entire document becomes expensive, changing the processing architecture can preserve more information while controlling computational cost.\n\n<b>Correct answer: A — Use a hierarchical Transformer.</b>","Transformers","BERT, hierarchical Transformer, self-attention, long-context processing, document classification","",""
+Xi-00011,"A production <b>Transformer encoder</b> is used for a legal-document classification system. The model uses <b>BERT-base</b> and receives documents with highly variable lengths. The team notices that simply truncating every document to <b>512 tokens</b> causes important information near the end of some documents to be lost. However, increasing BERT's maximum sequence length to <b>2,048 tokens</b> causes a large increase in GPU memory usage and inference latency. The team wants to preserve information from the entire document without simply running full self-attention over all 2,048 tokens. Which architecture is the <b>most appropriate</b>?","Use a <b>hierarchical Transformer</b>: split the document into smaller chunks, encode each chunk with BERT, then combine the chunk-level representations with a second-level Transformer or attention layer.","Increase BERT's <b>hidden dimension</b> from 768 to 1,536 while keeping the sequence length at 512, allowing the model to encode more information from the truncated document.",,,"A","<b>Key hints in the question:</b>
+
+• <b>BERT-base</b> is an encoder-only Transformer with an original maximum sequence length of <b>512 tokens</b>.
+• Important information may appear <b>near the end of the document</b>, so simple truncation can lose critical information.
+• Increasing the sequence length to <b>2,048 tokens</b> increases memory usage and inference latency because self-attention becomes more expensive as sequence length grows.
+• The goal is to process the <b>entire document</b> without applying full self-attention across all tokens at once.
+
+<b>Problem 1 — Why does BERT stop at 512 tokens?</b>
+
+The original <b>BERT</b> architecture was designed around a maximum sequence length of <b>512 tokens</b>. This is different from many modern LLMs that support much larger context windows.
+
+Modern GPT-style models can support context windows such as <b>128K tokens or more</b>, but it is incorrect to conclude that:
+
+Encoder = 512 tokens
+Decoder = 128K tokens
+
+Context length depends on the <b>specific model architecture, positional encoding, training setup, and implementation</b>.
+
+<b>Problem 2 — Why is 2,048-token full attention expensive?</b>
+
+BERT uses <b>self-attention</b>, where tokens can attend to other tokens in the sequence. The attention computation grows approximately as <b>O(n²)</b> with sequence length.
+
+For example:
+
+512 tokens → 512 × 512 attention relationships
+
+2,048 tokens → 2,048 × 2,048 attention relationships
+
+Therefore, increasing the sequence length can significantly increase <b>GPU memory usage and inference latency</b>.
+
+<b>Problem 3 — Why is truncation not enough?</b>
+
+Consider a 2,000-token legal document:
+
+2,000-token document
+→ Keep first 512 tokens
+→ Important clause at token 1,800
+→ Important information is lost
+
+The model may be efficient, but it can no longer use information that was removed during preprocessing.
+
+<b>Solution — Hierarchical Transformer</b>
+
+A <b>hierarchical Transformer</b> processes the document in smaller sections instead of forcing one BERT model to attend to the entire document at once.
+
+A typical architecture looks like:
+
+Long legal document
+→ Split into smaller chunks
+→ BERT encodes each chunk
+→ Chunk-level representations
+→ Document-level Transformer / attention
+→ Final document representation
+→ Classification
+
+Each BERT encoder performs self-attention only within its own smaller chunk. The second-level model then combines the resulting <b>chunk representations</b> so information from the entire document can contribute to the final prediction.
+
+This is similar to having multiple workers analyze different sections of a long legal contract and then having a manager combine their findings into one document-level understanding.
+
+<b>Why Option B is insufficient:</b>
+
+Increasing the <b>hidden dimension</b> from 768 to 1,536 does not recover information that was already removed by truncating the document to 512 tokens. The important content near token 1,800 would still never reach the model.
+
+The key engineering lesson is that a larger context window is not automatically the best solution for a long-document problem. When full attention across the entire document becomes expensive, changing the <b>processing architecture</b> can preserve information while controlling computational cost.
+
+<b>Correct answer: A — Use a hierarchical Transformer.</b>","Transformers","BERT, Hierarchical Transformer, Self-Attention, Long-Context Processing, Document Classification",,
