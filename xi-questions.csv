@@ -535,3 +535,53 @@ Adapted extension:
 The key engineering lesson is that increasing the configured context window is not the same as teaching a model how to use that context. <b>Long-context extension requires an appropriate positional scaling strategy and often additional adaptation.</b>
 
 <b>Correct answer: A — Use an appropriate long-context RoPE scaling/extension strategy with additional training or adaptation.</b>","Transformers","RoPE, Positional Encoding, Long Context, RoPE Scaling, Positional Extrapolation","", ""
+XI-00013,"Why is <b>RoPE (Rotary Position Embedding)</b> applied to the <b>Query (Q)</b> and <b>Key (K)</b> vectors, but not usually to the <b>Value (V)</b> vectors?","Because positional information is needed when calculating <b>attention scores (Q·K)</b>, while V mainly carries the <b>content/information</b> that attention has selected.","Because V cannot contain <b>positional information</b>, while Q and K can.","Because rotating V would make the <b>attention scores quadratic instead of linear</b>.","","A","<b>Key hints in the question:</b>
+
+• Attention scores are calculated using <b>Q · K</b>.
+• RoPE is designed to inject <b>positional information</b> into this interaction.
+• <b>V carries the content</b> that is passed forward after attention weights are calculated.
+• Therefore, rotating V is not necessary for RoPE's main purpose.
+
+<b>Problem — Why Q and K?</b>
+
+Self-attention works roughly like:
+
+Q × Kᵀ → attention scores → softmax → attention weights × V
+
+RoPE applies a position-dependent <b>rotation</b> to Q and K:
+
+Q → <b>RoPE(Q)</b>
+K → <b>RoPE(K)</b>
+
+When the rotated Q and K interact, their dot product contains information about the <b>relative positions</b> of the tokens. This allows the attention mechanism to consider both content and positional relationships when deciding which tokens should attend to each other.
+
+<b>Why not V?</b>
+
+The <b>Value (V)</b> vectors mainly carry the actual content or information that is retrieved after the attention weights have been calculated.
+
+A simple way to remember the roles is:
+
+Q/K → <b>What should I attend to?</b>
+V → <b>What information should I retrieve?</b>
+
+RoPE's main purpose is to influence <b>how attention scores are calculated</b>, so applying it to Q and K is sufficient for that purpose. Rotating V is therefore normally unnecessary.
+
+<b>Why Option B is incorrect:</b>
+
+V can contain information associated with the token and its context. The reason RoPE is normally not applied to V is not that V is incapable of containing positional information. The key point is that RoPE is designed to affect the <b>Q-K attention interaction</b>.
+
+<b>Why Option C is incorrect:</b>
+
+Rotating V does not change the fundamental quadratic complexity of self-attention. The <b>O(n²)</b> cost comes primarily from computing interactions between Q and K across the sequence.
+
+<b>Practical flow:</b>
+
+Token representations → Q, K, V
+→ Apply RoPE to Q and K
+→ Q·Kᵀ → attention scores
+→ Softmax → attention weights
+→ weights × V → output
+
+The key idea is: <b>Q and K determine where attention goes, while V carries the information retrieved.</b>
+
+<b>Correct answer: A — RoPE is applied to Q and K because positional information is needed in the attention-score calculation, while V mainly carries the content selected by attention.</b>","Transformers","RoPE, Rotary Position Embeddings, Self-Attention, Query, Key, Value",,
