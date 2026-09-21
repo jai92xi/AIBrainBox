@@ -585,3 +585,61 @@ Token representations → Q, K, V
 The key idea is: <b>Q and K determine where attention goes, while V carries the information retrieved.</b>
 
 <b>Correct answer: A — RoPE is applied to Q and K because positional information is needed in the attention-score calculation, while V mainly carries the content selected by attention.</b>","Transformers","RoPE, Rotary Position Embeddings, Self-Attention, Query, Key, Value",XI-00012,
+XI-00014,"A production neural network for credit-risk prediction uses <b>ReLU</b> in most hidden layers. During training, some neurons consistently produce <b>zero output</b>, and their weights stop updating. Which change most directly addresses this issue?","Replace ReLU with <b>Leaky ReLU</b>, allowing a small gradient when the input is negative.","Increase the <b>learning rate</b>, so zero-output neurons receive larger updates and become active again.","","","A","<b>Key hints in the question:</b>
+
+• The network uses <b>ReLU</b> in hidden layers.
+• Some neurons consistently produce <b>zero output</b>.
+• Their weights have <b>stopped updating</b>.
+• The question asks for the change that most directly addresses this behavior.
+
+<b>Problem — The dying ReLU problem</b>
+
+ReLU is commonly defined as:
+
+ReLU(x) = max(0, x)
+
+This means:
+
+Positive input → positive output → gradient can flow
+
+Negative input → <b>zero output</b> → gradient becomes zero
+
+If a neuron's inputs remain negative during training, the ReLU activation continues to output zero. Because the gradient through that ReLU is also zero in the negative region, the neuron may stop receiving useful gradient updates.
+
+This is known as the <b>dying ReLU</b> problem.
+
+<b>Solution — Leaky ReLU</b>
+
+Leaky ReLU modifies the negative region so that it still has a small slope:
+
+Negative input → <b>small negative output</b> → <b>small gradient</b> → neuron can continue learning
+
+For example, instead of producing exactly zero for a negative input, Leaky ReLU may produce a small negative value. This allows some gradient to pass through and helps prevent neurons from becoming permanently inactive.
+
+<b>Why Option B is incorrect:</b>
+
+Increasing the <b>learning rate</b> does not directly solve the underlying problem. If the neuron is in the negative region of ReLU, its gradient is zero. A larger learning rate multiplied by a zero gradient still results in no effective update.
+
+The key distinction is:
+
+ReLU → negative input → <b>zero gradient</b> → neuron may stop learning
+
+Leaky ReLU → negative input → <b>small gradient</b> → neuron can continue learning
+
+<b>Practical example:</b>
+
+Suppose a neuron repeatedly receives negative values:
+
+Input → -2
+ReLU → 0
+Gradient → 0
+Weight update → effectively no update
+
+With Leaky ReLU:
+
+Input → -2
+Leaky ReLU → small negative value
+Gradient → small but non-zero
+Weight update → neuron can continue adapting
+
+<b>Correct answer: A — Replace ReLU with Leaky ReLU.</b>","Neural Networks","ReLU, Leaky ReLU, Dying ReLU, Activation Functions, Gradient Flow",,
