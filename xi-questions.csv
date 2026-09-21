@@ -534,7 +534,7 @@ Adapted extension:
 
 The key engineering lesson is that increasing the configured context window is not the same as teaching a model how to use that context. <b>Long-context extension requires an appropriate positional scaling strategy and often additional adaptation.</b>
 
-<b>Correct answer: A — Use an appropriate long-context RoPE scaling/extension strategy with additional training or adaptation.</b>","Transformers","RoPE, Positional Encoding, Long Context, RoPE Scaling, Positional Extrapolation","", ""
+<b>Correct answer: A — Use an appropriate long-context RoPE scaling/extension strategy with additional training or adaptation.</b>","Transformers","RoPE, Positional Encoding, Long Context, RoPE Scaling, Positional Extrapolation","", "XI-00013"
 XI-00013,"Why is <b>RoPE (Rotary Position Embedding)</b> applied to the <b>Query (Q)</b> and <b>Key (K)</b> vectors, but not usually to the <b>Value (V)</b> vectors?","Because positional information is needed when calculating <b>attention scores (Q·K)</b>, while V mainly carries the <b>content/information</b> that attention has selected.","Because V cannot contain <b>positional information</b>, while Q and K can.","Because rotating V would make the <b>attention scores quadratic instead of linear</b>.","","A","<b>Key hints in the question:</b>
 
 • Attention scores are calculated using <b>Q · K</b>.
@@ -584,4 +584,4 @@ Token representations → Q, K, V
 
 The key idea is: <b>Q and K determine where attention goes, while V carries the information retrieved.</b>
 
-<b>Correct answer: A — RoPE is applied to Q and K because positional information is needed in the attention-score calculation, while V mainly carries the content selected by attention.</b>","Transformers","RoPE, Rotary Position Embeddings, Self-Attention, Query, Key, Value",,
+<b>Correct answer: A — RoPE is applied to Q and K because positional information is needed in the attention-score calculation, while V mainly carries the content selected by attention.</b>","Transformers","RoPE, Rotary Position Embeddings, Self-Attention, Query, Key, Value",XI-00012,
