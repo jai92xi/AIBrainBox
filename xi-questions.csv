@@ -460,3 +460,78 @@ Increasing the <b>hidden dimension</b> from 768 to 1,536 does not recover inform
 The key engineering lesson is that a larger context window is not automatically the best solution for a long-document problem. When full attention across the entire document becomes expensive, changing the <b>processing architecture</b> can preserve information while controlling computational cost.
 
 <b>Correct answer: A — Use a hierarchical Transformer.</b>","Transformers","BERT, Hierarchical Transformer, Self-Attention, Long-Context Processing, Document Classification",,
+XI-00012,"A production <b>Llama 3.1 8B</b> application uses <b>RoPE (Rotary Position Embeddings)</b> to encode token positions. After deployment, the team wants to extend the model from its original context length to <b>128K tokens</b>. They discover that simply changing the configuration to allow 128K tokens causes the model's quality to degrade badly on long-context tasks, even though the model still runs without crashing. Which explanation is <b>most accurate</b>?","RoPE's positional representation was trained over a shorter context range, so simply increasing the maximum sequence length can cause <b>positional extrapolation problems</b>; the model needs an appropriate <b>long-context extension/scaling strategy</b> and usually additional training or adaptation.","RoPE only stores the <b>absolute position</b> of each token, so extending the context requires replacing RoPE with absolute positional embeddings before the model can correctly process 128K tokens.","","","A","<b>Key hints in the question:</b>
+
+• The model uses <b>RoPE (Rotary Position Embeddings)</b>.
+• The original model was trained with a much shorter <b>context length</b>.
+• Simply changing the configuration to 128K allows the model to run, but <b>long-context quality degrades</b>.
+• The problem is related to <b>positional extrapolation</b>, not whether the model can technically accept more tokens.
+
+<b>Problem 1 — Why do we need positional information?</b>
+
+Transformers process tokens largely <b>in parallel</b>, so self-attention does not inherently provide the sequential order that an RNN gets from processing tokens one after another.
+
+For example:
+
+A killed B
+B killed A
+
+The same words appear, but their meaning is different because the <b>token positions</b> are different.
+
+Positional methods provide the model with information about where tokens occur and, depending on the method, how positions relate to one another.
+
+<b>Common positional approaches:</b>
+
+• <b>Absolute</b> → “Where am I?” → Gives tokens information about their position.
+• <b>Relative</b> → “How far are we?” → Represents relationships or distances between positions.
+• <b>RoPE</b> → “Rotate by position.” → Rotates the <b>Q/K representations</b> according to token position.
+• <b>ALiBi</b> → “Distance affects attention.” → Adds distance-based bias to attention.
+
+<b>Easy memory:</b>
+
+Absolute = <b>Where</b> | Relative = <b>Distance</b> | RoPE = <b>Rotate</b> | ALiBi = <b>Bias</b>
+
+<b>Problem 2 — Why doesn't changing 8K to 128K automatically work?</b>
+
+Suppose the model was trained primarily with an effective context length of <b>8K tokens</b>.
+
+Simply changing the configuration:
+
+8K → 128K
+
+may allow the model to technically accept longer inputs. However, the model has not necessarily learned to represent and use positions throughout the new <b>128K range</b> effectively.
+
+When the positional representation is pushed far beyond the range seen during training, the model can experience <b>positional extrapolation problems</b>. The result can be degraded attention patterns and poor performance on long-context tasks, even though inference completes successfully.
+
+<b>Solution — RoPE scaling / long-context adaptation</b>
+
+A suitable <b>RoPE scaling</b> or other long-context extension strategy can modify how positional information is represented over the expanded context range.
+
+In practice, reliable long-context extension often also requires <b>additional training or adaptation</b> so the model learns to use the extended positional range effectively.
+
+The important distinction is:
+
+Configuration change → Model accepts longer input
+
+Long-context adaptation → Model can <b>effectively use</b> the longer context
+
+<b>Why Option B is incorrect:</b>
+
+RoPE does not simply store the <b>absolute position</b> of each token in the same way as traditional absolute positional embeddings. It applies position-dependent <b>rotations to query and key representations</b>, allowing attention to incorporate positional relationships.
+
+Therefore, extending the context does not inherently require replacing RoPE with absolute positional embeddings.
+
+<b>Practical example:</b>
+
+Original training:
+8K tokens → RoPE behavior learned over this range
+
+Naive extension:
+8K → 128K configuration change → model runs but long-context quality degrades
+
+Adapted extension:
+8K → <b>RoPE scaling + long-context training/adaptation</b> → model learns to operate effectively over the expanded range
+
+The key engineering lesson is that increasing the configured context window is not the same as teaching a model how to use that context. <b>Long-context extension requires an appropriate positional scaling strategy and often additional adaptation.</b>
+
+<b>Correct answer: A — Use an appropriate long-context RoPE scaling/extension strategy with additional training or adaptation.</b>","Transformers","RoPE, Positional Encoding, Long Context, RoPE Scaling, Positional Extrapolation","", ""
