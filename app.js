@@ -13,6 +13,7 @@ let currentQuestionIndex = 0;
 let currentStreak = 0;
 let answerSelected = false;
 
+
 /* =========================================================
    DOM ELEMENTS
    ========================================================= */
@@ -52,6 +53,7 @@ const previousButton =
 
 const nextButton =
     document.getElementById("next-question");
+
 
 /* =========================================================
    INITIALIZATION
@@ -458,6 +460,16 @@ function loadQuestionFromURL() {
 
     let question = null;
 
+
+    /*
+     * If a question ID is provided in the URL,
+     * load that exact question.
+     *
+     * Example:
+     *
+     * ?id=Xi-00005
+     */
+
     if (requestedId) {
 
         question =
@@ -466,14 +478,30 @@ function loadQuestionFromURL() {
             );
     }
 
+
+    /*
+     * If no valid question ID exists in
+     * the URL, start with a RANDOM question
+     * instead of questions[0].
+     *
+     * This removes dependency on CSV order.
+     */
+
     if (
         !question &&
         questions.length
     ) {
 
+        const randomIndex =
+            Math.floor(
+                Math.random() *
+                questions.length
+            );
+
         question =
-            questions[0];
+            questions[randomIndex];
     }
+
 
     if (question) {
 
@@ -504,13 +532,16 @@ function displayQuestion(
         return;
     }
 
+
     currentQuestion =
         question;
+
 
     currentQuestionIndex =
         questions.indexOf(
             question
         );
+
 
     answerSelected =
         false;
@@ -520,6 +551,7 @@ function displayQuestion(
         getQuestionId(
             question
         );
+
 
     if (
         updateURL &&
@@ -687,6 +719,7 @@ function renderOptions(
                     "button"
                 );
 
+
             optionButton.type =
                 "button";
 
@@ -719,7 +752,6 @@ function renderOptions(
 
             optionContent.className =
                 "option-text";
-
 
             optionContent.innerHTML =
                 optionText;
@@ -809,8 +841,10 @@ function selectAnswer(
         return;
     }
 
+
     answerSelected =
         true;
+
 
     const correctAnswer =
         getCorrectAnswer(
@@ -922,6 +956,7 @@ function selectAnswer(
 
         currentStreak++;
 
+
         showFloatingFeedback(
             true
         );
@@ -946,8 +981,7 @@ function selectAnswer(
 
 
         /*
-         * Preserve the current GitHub logic:
-         * wrong answer resets the streak.
+         * Wrong answer resets the streak.
          */
 
         currentStreak =
@@ -1043,16 +1077,10 @@ function showExplanation(
 
 
     /*
-     * IMPORTANT:
-     *
      * Keep the <b>...</b> HTML from the CSV.
      *
      * Convert actual line breaks from the CSV
-     * into <br> elements so that every paragraph
-     * and bullet appears on a separate line.
-     *
-     * This is the only functional change made
-     * for the explanation display.
+     * into <br> elements.
      */
 
     if (explanation) {
@@ -1092,7 +1120,80 @@ function updateScore() {
 
 
 /* =========================================================
-   RELATED QUESTION NAVIGATION
+   RANDOM QUESTION HELPER
+   ========================================================= */
+
+/*
+ * Returns a random question from the CSV.
+ *
+ * IMPORTANT:
+ *
+ * The current question is excluded whenever
+ * there is more than one question available.
+ *
+ * This means:
+ *
+ * Current Question = Q10
+ *
+ * Clicking Next/Previous can return:
+ * Q1, Q2, Q3, Q4...
+ * but NOT Q10.
+ *
+ * The CSV order is completely ignored.
+ */
+
+function getRandomQuestion() {
+
+    if (
+        !questions ||
+        questions.length === 0
+    ) {
+        return null;
+    }
+
+
+    /*
+     * If there is only one question,
+     * return that question.
+     */
+
+    if (questions.length === 1) {
+        return questions[0];
+    }
+
+
+    /*
+     * Build a list excluding the
+     * currently displayed question.
+     */
+
+    const availableQuestions =
+        questions.filter(
+            question =>
+                question !==
+                currentQuestion
+        );
+
+
+    /*
+     * Select a random question.
+     */
+
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            availableQuestions.length
+        );
+
+
+    return availableQuestions[
+        randomIndex
+    ];
+}
+
+
+/* =========================================================
+   QUESTION NAVIGATION
    ========================================================= */
 
 function updateRelatedNavigation() {
@@ -1102,6 +1203,37 @@ function updateRelatedNavigation() {
     }
 
 
+    /*
+     * =====================================================
+     * OLD CSV-BASED NAVIGATION
+     * =====================================================
+     *
+     * The previous version of AIBrainBox used:
+     *
+     * "previous related question"
+     * "Previous Related Question"
+     * "previous question"
+     * "Previous Question"
+     *
+     * and:
+     *
+     * "next related question"
+     * "Next Related Question"
+     * "next question"
+     * "Next Question"
+     *
+     * from the CSV.
+     *
+     * That logic has intentionally been COMMENTED OUT.
+     *
+     * Navigation is now completely RANDOM.
+     *
+     * The CSV question order and the
+     * previous/next columns are NOT used.
+     */
+
+
+    /*
     const previousId =
         getValue(
             currentQuestion,
@@ -1126,53 +1258,44 @@ function updateRelatedNavigation() {
                 "Next Question"
             ]
         );
+    */
 
 
     /* =====================================================
-       PREVIOUS
+       PREVIOUS BUTTON
        ===================================================== */
 
     if (previousButton) {
 
-        if (previousId) {
+        /*
+         * There is no longer a CSV-defined
+         * previous question.
+         *
+         * Therefore Previous is enabled whenever
+         * at least one other question exists.
+         */
 
-            const previousQuestion =
-                findQuestionById(
-                    previousId
-                );
-
-            previousButton.disabled =
-                !previousQuestion;
-
-        } else {
-
-            previousButton.disabled =
-                true;
-        }
+        previousButton.disabled =
+            questions.length <= 1;
     }
 
 
     /* =====================================================
-       NEXT
+       NEXT BUTTON
        ===================================================== */
 
     if (nextButton) {
 
-        if (nextId) {
+        /*
+         * There is no longer a CSV-defined
+         * next question.
+         *
+         * Therefore Next is enabled whenever
+         * at least one other question exists.
+         */
 
-            const nextQuestion =
-                findQuestionById(
-                    nextId
-                );
-
-            nextButton.disabled =
-                !nextQuestion;
-
-        } else {
-
-            nextButton.disabled =
-                true;
-        }
+        nextButton.disabled =
+            questions.length <= 1;
     }
 }
 
@@ -1182,6 +1305,10 @@ function updateRelatedNavigation() {
    ========================================================= */
 
 function setupNavigation() {
+
+    /* =====================================================
+       PREVIOUS BUTTON
+       ===================================================== */
 
     if (previousButton) {
 
@@ -1197,23 +1324,41 @@ function setupNavigation() {
                 }
 
 
-                const previousId =
-                    getValue(
-                        currentQuestion,
-                        [
-                            "previous related question",
-                            "Previous Related Question",
-                            "Previous Related question",
-                            "previous question",
-                            "Previous Question"
-                        ]
-                    );
+                /*
+                 * OLD LOGIC — COMMENTED OUT
+                 *
+                 * Previously, Previous used the
+                 * "previous related question"
+                 * column from the CSV.
+                 *
+                 * const previousId =
+                 *     getValue(
+                 *         currentQuestion,
+                 *         [
+                 *             "previous related question",
+                 *             "Previous Related Question",
+                 *             "Previous Related question",
+                 *             "previous question",
+                 *             "Previous Question"
+                 *         ]
+                 *     );
+                 *
+                 * const previousQuestion =
+                 *     findQuestionById(
+                 *         previousId
+                 *     );
+                 */
 
+
+                /*
+                 * NEW LOGIC
+                 *
+                 * Select a completely random question
+                 * from the CSV.
+                 */
 
                 const previousQuestion =
-                    findQuestionById(
-                        previousId
-                    );
+                    getRandomQuestion();
 
 
                 if (previousQuestion) {
@@ -1221,6 +1366,7 @@ function setupNavigation() {
                     displayQuestion(
                         previousQuestion
                     );
+
 
                     window.scrollTo({
                         top: 0,
@@ -1231,6 +1377,10 @@ function setupNavigation() {
         );
     }
 
+
+    /* =====================================================
+       NEXT BUTTON
+       ===================================================== */
 
     if (nextButton) {
 
@@ -1246,23 +1396,41 @@ function setupNavigation() {
                 }
 
 
-                const nextId =
-                    getValue(
-                        currentQuestion,
-                        [
-                            "next related question",
-                            "Next Related Question",
-                            "Next Related question",
-                            "next question",
-                            "Next Question"
-                        ]
-                    );
+                /*
+                 * OLD LOGIC — COMMENTED OUT
+                 *
+                 * Previously, Next used the
+                 * "next related question"
+                 * column from the CSV.
+                 *
+                 * const nextId =
+                 *     getValue(
+                 *         currentQuestion,
+                 *         [
+                 *             "next related question",
+                 *             "Next Related Question",
+                 *             "Next Related question",
+                 *             "next question",
+                 *             "Next Question"
+                 *         ]
+                 *     );
+                 *
+                 * const nextQuestion =
+                 *     findQuestionById(
+                 *         nextId
+                 *     );
+                 */
 
+
+                /*
+                 * NEW LOGIC
+                 *
+                 * Select a completely random question
+                 * from the CSV.
+                 */
 
                 const nextQuestion =
-                    findQuestionById(
-                        nextId
-                    );
+                    getRandomQuestion();
 
 
                 if (nextQuestion) {
@@ -1270,6 +1438,7 @@ function setupNavigation() {
                     displayQuestion(
                         nextQuestion
                     );
+
 
                     window.scrollTo({
                         top: 0,
