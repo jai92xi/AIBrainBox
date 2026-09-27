@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -20,10 +21,12 @@
         rel="stylesheet"
         href="style.css"
     >
+
 </head>
 
 
 <body class="light-theme">
+
 
     <!-- =================================================
          GEN-Z BACKGROUND
@@ -37,11 +40,13 @@
 
     <main class="page-wrapper">
 
+
         <!-- =================================================
              HEADER
              ================================================= -->
 
         <header class="brain-box-header">
+
 
             <div class="brand-area">
 
@@ -49,9 +54,11 @@
                     🧠AIBrainBox
                 </div>
 
+
                 <div class="brand-tagline">
                     A box full of ahaaaaaaa8 questions!!
                 </div>
+
 
                 <!-- Caption intentionally hidden -->
 
@@ -63,7 +70,9 @@
             </div>
 
 
-            <!-- Current Streak -->
+            <!-- =================================================
+                 CURRENT STREAK
+                 ================================================= -->
 
             <div
                 id="score-display"
@@ -75,7 +84,9 @@
             </div>
 
 
-            <!-- Quote -->
+            <!-- =================================================
+                 QUOTE
+                 ================================================= -->
 
             <div class="quote-section">
 
@@ -85,6 +96,7 @@
                 >
                     “Keep learning. Keep improving.”
                 </div>
+
 
                 <div
                     id="quote-author"
@@ -107,7 +119,10 @@
             class="quiz-area"
         >
 
-            <!-- Error -->
+
+            <!-- =================================================
+                 ERROR
+                 ================================================= -->
 
             <div
                 id="error"
@@ -125,29 +140,50 @@
                 class="question-container hidden"
             >
 
-                <!-- Previous / Next -->
+
+                <!-- =================================================
+                     RANDOM QUESTION NAVIGATION
+                     
+                     IMPORTANT:
+                     Previous and Next are now RANDOM.
+                     
+                     They no longer follow:
+                     - CSV order
+                     - Previous Related Question
+                     - Next Related Question
+                     ================================================= -->
 
                 <div
                     class="related-navigation"
-                    aria-label="Related question navigation"
+                    aria-label="Random question navigation"
                 >
+
+
+                    <!-- =================================================
+                         RANDOM PREVIOUS QUESTION
+                         ================================================= -->
 
                     <button
                         id="previous-question"
                         class="related-question previous-related"
                         type="button"
-                        aria-label="Previous related question"
-                        title="Previous related question"
+                        aria-label="Previous random question"
+                        title="Previous random question"
                     >
                         ←
                     </button>
+
+
+                    <!-- =================================================
+                         RANDOM NEXT QUESTION
+                         ================================================= -->
 
                     <button
                         id="next-question"
                         class="related-question next-related"
                         type="button"
-                        aria-label="Next related question"
-                        title="Next related question"
+                        aria-label="Next random question"
+                        title="Next random question"
                     >
                         →
                     </button>
@@ -175,6 +211,7 @@
                             Question
                         </div>
 
+
                         <div
                             id="question"
                             class="question"
@@ -196,13 +233,16 @@
                             Choose your answer
                         </div>
 
+
                         <div
                             id="options"
                             class="options"
                         ></div>
 
 
-                        <!-- Result -->
+                        <!-- =================================================
+                             RESULT
+                             ================================================= -->
 
                         <div
                             id="result"
@@ -211,7 +251,9 @@
                         ></div>
 
 
-                        <!-- Explanation -->
+                        <!-- =================================================
+                             EXPLANATION
+                             ================================================= -->
 
                         <div
                             id="explanation"
@@ -221,6 +263,7 @@
                             <div class="explanation-title">
                                 💡 Explanation
                             </div>
+
 
                             <div
                                 id="explanation-text"
@@ -248,6 +291,7 @@
         src="app.js"
         defer
     ></script>
+
 
 </body>
 
