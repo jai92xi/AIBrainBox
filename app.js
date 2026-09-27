@@ -13,6 +13,19 @@ let currentQuestionIndex = 0;
 let currentStreak = 0;
 let answerSelected = false;
 
+/*
+ * =========================================================
+ * RANDOM QUESTION HISTORY
+ * =========================================================
+ *
+ * Stores question IDs already displayed in the
+ * current random cycle.
+ *
+ * A question will NOT be shown again until all
+ * questions in the CSV have been displayed.
+ */
+let shownQuestionIds = new Set();
+
 
 /* =========================================================
    DOM ELEMENTS
@@ -121,6 +134,7 @@ async function loadQuestions() {
             );
 
         if (!response.ok) {
+
             throw new Error(
                 `Unable to load ${CSV_URL}`
             );
@@ -136,6 +150,7 @@ async function loadQuestions() {
             !questions ||
             questions.length === 0
         ) {
+
             throw new Error(
                 "No questions found."
             );
@@ -216,7 +231,6 @@ function parseCSV(text) {
 
     let row = [];
     let value = "";
-
     let insideQuotes = false;
 
     for (
@@ -239,7 +253,6 @@ function parseCSV(text) {
             ) {
 
                 value += '"';
-
                 i++;
 
             } else {
@@ -254,7 +267,6 @@ function parseCSV(text) {
         ) {
 
             row.push(value);
-
             value = "";
 
         } else if (
@@ -273,7 +285,6 @@ function parseCSV(text) {
             }
 
             row.push(value);
-
             value = "";
 
             if (
@@ -282,6 +293,7 @@ function parseCSV(text) {
                         cell.trim() !== ""
                 )
             ) {
+
                 rows.push(row);
             }
 
@@ -307,6 +319,7 @@ function parseCSV(text) {
                     cell.trim() !== ""
             )
         ) {
+
             rows.push(row);
         }
     }
@@ -315,6 +328,7 @@ function parseCSV(text) {
     if (
         rows.length === 0
     ) {
+
         return [];
     }
 
@@ -333,7 +347,10 @@ function parseCSV(text) {
             const object = {};
 
             headers.forEach(
-                (header, index) => {
+                (
+                    header,
+                    index
+                ) => {
 
                     object[header] =
                         (
@@ -380,8 +397,7 @@ function getValue(
             );
 
         if (
-            matchingKey !==
-            undefined
+            matchingKey !== undefined
         ) {
 
             return (
@@ -428,7 +444,7 @@ function getQuestionIdFromURL() {
 
 
 /* =========================================================
-   FIND QUESTION
+   FIND QUESTION BY ID
    ========================================================= */
 
 function findQuestionById(id) {
@@ -450,6 +466,160 @@ function findQuestionById(id) {
 
 
 /* =========================================================
+   MARK QUESTION AS SHOWN
+   ========================================================= */
+
+function markQuestionAsShown(
+    question
+) {
+
+    if (!question) {
+        return;
+    }
+
+    const questionId =
+        getQuestionId(question);
+
+    if (questionId) {
+
+        shownQuestionIds.add(
+            questionId
+        );
+    }
+}
+
+
+/* =========================================================
+   GET RANDOM UNSEEN QUESTION
+   ========================================================= */
+
+/*
+ * Selects a random question that has NOT already
+ * been displayed during the current cycle.
+ *
+ * The current question is excluded as well.
+ *
+ * IMPORTANT:
+ *
+ * CSV order is completely ignored.
+ *
+ * Example:
+ *
+ * CSV:
+ * Q1
+ * Q2
+ * Q3
+ * Q4
+ * Q5
+ *
+ * User sees:
+ *
+ * Q3 → Q1 → Q5 → Q2 → Q4
+ *
+ * No question repeats.
+ *
+ * After Q4, a new cycle begins.
+ */
+
+function getRandomUnseenQuestion() {
+
+    if (
+        !questions ||
+        questions.length === 0
+    ) {
+
+        return null;
+    }
+
+
+    const currentId =
+        currentQuestion
+            ? getQuestionId(
+                currentQuestion
+            )
+            : null;
+
+
+    /*
+     * Find all questions that:
+     *
+     * 1. Have not been shown
+     * 2. Are not the current question
+     */
+
+    let availableQuestions =
+        questions.filter(
+            question => {
+
+                const id =
+                    getQuestionId(
+                        question
+                    );
+
+                return (
+                    id &&
+                    !shownQuestionIds.has(id) &&
+                    id !== currentId
+                );
+            }
+        );
+
+
+    /*
+     * If there are no unseen questions left,
+     * start a completely new random cycle.
+     */
+
+    if (
+        availableQuestions.length === 0
+    ) {
+
+        shownQuestionIds =
+            new Set();
+
+
+        /*
+         * Do not immediately show the
+         * current question again.
+         */
+
+        availableQuestions =
+            questions.filter(
+                question => {
+
+                    const id =
+                        getQuestionId(
+                            question
+                        );
+
+                    return (
+                        id &&
+                        id !== currentId
+                    );
+                }
+            );
+    }
+
+
+    /*
+     * Select a random question from
+     * the remaining available questions.
+     */
+
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            availableQuestions.length
+        );
+
+
+    return availableQuestions[
+        randomIndex
+    ];
+}
+
+
+/* =========================================================
    LOAD QUESTION FROM URL
    ========================================================= */
 
@@ -462,12 +632,10 @@ function loadQuestionFromURL() {
 
 
     /*
-     * If a question ID is provided in the URL,
-     * load that exact question.
+     * If ?id=XXXX exists, load that exact
+     * question first.
      *
-     * Example:
-     *
-     * ?id=Xi-00005
+     * This preserves shareable question URLs.
      */
 
     if (requestedId) {
@@ -480,11 +648,8 @@ function loadQuestionFromURL() {
 
 
     /*
-     * If no valid question ID exists in
-     * the URL, start with a RANDOM question
-     * instead of questions[0].
-     *
-     * This removes dependency on CSV order.
+     * If there is no valid ID in the URL,
+     * select a random question.
      */
 
     if (
@@ -492,14 +657,8 @@ function loadQuestionFromURL() {
         questions.length
     ) {
 
-        const randomIndex =
-            Math.floor(
-                Math.random() *
-                questions.length
-            );
-
         question =
-            questions[randomIndex];
+            getRandomUnseenQuestion();
     }
 
 
@@ -543,6 +702,18 @@ function displayQuestion(
         );
 
 
+    /*
+     * IMPORTANT:
+     *
+     * Every displayed question is added
+     * to the shown-question history.
+     */
+
+    markQuestionAsShown(
+        question
+    );
+
+
     answerSelected =
         false;
 
@@ -552,6 +723,11 @@ function displayQuestion(
             question
         );
 
+
+    /*
+     * Update browser URL without
+     * reloading the page.
+     */
 
     if (
         updateURL &&
@@ -585,6 +761,7 @@ function displayQuestion(
                 "Questions"
             ]
         );
+
 
     questionElement.innerHTML =
         questionText;
@@ -787,7 +964,7 @@ function renderOptions(
 
 
 /* =========================================================
-   CORRECT ANSWER
+   GET CORRECT ANSWER
    ========================================================= */
 
 function getCorrectAnswer(
@@ -884,10 +1061,7 @@ function selectAnswer(
 
 
     /*
-     * Primary comparison:
-     *
-     * Selected A/B/C/D
-     * against CSV Correct Answer.
+     * First compare A/B/C/D.
      */
 
     let isCorrect =
@@ -897,7 +1071,7 @@ function selectAnswer(
 
     /*
      * Fallback:
-     * support full answer text as well.
+     * compare the complete answer text.
      */
 
     if (!isCorrect) {
@@ -980,16 +1154,12 @@ function selectAnswer(
             "result wrong-result";
 
 
-        /*
-         * Wrong answer resets the streak.
-         */
-
         currentStreak =
             0;
 
 
         /*
-         * Highlight correct answer.
+         * Highlight the correct option.
          */
 
         allOptions.forEach(
@@ -1076,13 +1246,6 @@ function showExplanation(
         );
 
 
-    /*
-     * Keep the <b>...</b> HTML from the CSV.
-     *
-     * Convert actual line breaks from the CSV
-     * into <br> elements.
-     */
-
     if (explanation) {
 
         explanationTextElement.innerHTML =
@@ -1114,81 +1277,9 @@ function updateScore() {
         return;
     }
 
+
     scoreElement.innerHTML =
         `Current streak: <strong>${currentStreak}</strong>`;
-}
-
-
-/* =========================================================
-   RANDOM QUESTION HELPER
-   ========================================================= */
-
-/*
- * Returns a random question from the CSV.
- *
- * IMPORTANT:
- *
- * The current question is excluded whenever
- * there is more than one question available.
- *
- * This means:
- *
- * Current Question = Q10
- *
- * Clicking Next/Previous can return:
- * Q1, Q2, Q3, Q4...
- * but NOT Q10.
- *
- * The CSV order is completely ignored.
- */
-
-function getRandomQuestion() {
-
-    if (
-        !questions ||
-        questions.length === 0
-    ) {
-        return null;
-    }
-
-
-    /*
-     * If there is only one question,
-     * return that question.
-     */
-
-    if (questions.length === 1) {
-        return questions[0];
-    }
-
-
-    /*
-     * Build a list excluding the
-     * currently displayed question.
-     */
-
-    const availableQuestions =
-        questions.filter(
-            question =>
-                question !==
-                currentQuestion
-        );
-
-
-    /*
-     * Select a random question.
-     */
-
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            availableQuestions.length
-        );
-
-
-    return availableQuestions[
-        randomIndex
-    ];
 }
 
 
@@ -1205,31 +1296,20 @@ function updateRelatedNavigation() {
 
     /*
      * =====================================================
-     * OLD CSV-BASED NAVIGATION
+     * OLD CSV-BASED NAVIGATION — COMMENTED OUT
      * =====================================================
      *
-     * The previous version of AIBrainBox used:
+     * Previous version used:
      *
      * "previous related question"
-     * "Previous Related Question"
-     * "previous question"
-     * "Previous Question"
-     *
-     * and:
-     *
      * "next related question"
-     * "Next Related Question"
-     * "next question"
-     * "Next Question"
      *
      * from the CSV.
      *
-     * That logic has intentionally been COMMENTED OUT.
+     * That behavior is intentionally disabled.
      *
-     * Navigation is now completely RANDOM.
-     *
-     * The CSV question order and the
-     * previous/next columns are NOT used.
+     * Navigation is now random and does not depend
+     * on CSV question order or related-question columns.
      */
 
 
@@ -1261,38 +1341,14 @@ function updateRelatedNavigation() {
     */
 
 
-    /* =====================================================
-       PREVIOUS BUTTON
-       ===================================================== */
-
     if (previousButton) {
-
-        /*
-         * There is no longer a CSV-defined
-         * previous question.
-         *
-         * Therefore Previous is enabled whenever
-         * at least one other question exists.
-         */
 
         previousButton.disabled =
             questions.length <= 1;
     }
 
 
-    /* =====================================================
-       NEXT BUTTON
-       ===================================================== */
-
     if (nextButton) {
-
-        /*
-         * There is no longer a CSV-defined
-         * next question.
-         *
-         * Therefore Next is enabled whenever
-         * at least one other question exists.
-         */
 
         nextButton.disabled =
             questions.length <= 1;
@@ -1327,44 +1383,29 @@ function setupNavigation() {
                 /*
                  * OLD LOGIC — COMMENTED OUT
                  *
-                 * Previously, Previous used the
-                 * "previous related question"
-                 * column from the CSV.
+                 * Previous question was retrieved
+                 * from the CSV's previous-related-question
+                 * field.
                  *
-                 * const previousId =
-                 *     getValue(
-                 *         currentQuestion,
-                 *         [
-                 *             "previous related question",
-                 *             "Previous Related Question",
-                 *             "Previous Related question",
-                 *             "previous question",
-                 *             "Previous Question"
-                 *         ]
-                 *     );
-                 *
-                 * const previousQuestion =
-                 *     findQuestionById(
-                 *         previousId
-                 *     );
+                 * It is no longer used.
                  */
 
 
                 /*
-                 * NEW LOGIC
+                 * NEW LOGIC:
                  *
-                 * Select a completely random question
-                 * from the CSV.
+                 * Get a random question that has
+                 * not already been shown.
                  */
 
-                const previousQuestion =
-                    getRandomQuestion();
+                const randomQuestion =
+                    getRandomUnseenQuestion();
 
 
-                if (previousQuestion) {
+                if (randomQuestion) {
 
                     displayQuestion(
-                        previousQuestion
+                        randomQuestion
                     );
 
 
@@ -1399,44 +1440,29 @@ function setupNavigation() {
                 /*
                  * OLD LOGIC — COMMENTED OUT
                  *
-                 * Previously, Next used the
-                 * "next related question"
-                 * column from the CSV.
+                 * Next question was retrieved
+                 * from the CSV's next-related-question
+                 * field.
                  *
-                 * const nextId =
-                 *     getValue(
-                 *         currentQuestion,
-                 *         [
-                 *             "next related question",
-                 *             "Next Related Question",
-                 *             "Next Related question",
-                 *             "next question",
-                 *             "Next Question"
-                 *         ]
-                 *     );
-                 *
-                 * const nextQuestion =
-                 *     findQuestionById(
-                 *         nextId
-                 *     );
+                 * It is no longer used.
                  */
 
 
                 /*
-                 * NEW LOGIC
+                 * NEW LOGIC:
                  *
-                 * Select a completely random question
-                 * from the CSV.
+                 * Get a random question that has
+                 * not already been shown.
                  */
 
-                const nextQuestion =
-                    getRandomQuestion();
+                const randomQuestion =
+                    getRandomUnseenQuestion();
 
 
-                if (nextQuestion) {
+                if (randomQuestion) {
 
                     displayQuestion(
-                        nextQuestion
+                        randomQuestion
                     );
 
 
@@ -1483,8 +1509,7 @@ document.addEventListener(
 
 
         if (
-            event.key ===
-            "ArrowLeft" &&
+            event.key === "ArrowLeft" &&
             previousButton &&
             !previousButton.disabled
         ) {
@@ -1494,8 +1519,7 @@ document.addEventListener(
 
 
         if (
-            event.key ===
-            "ArrowRight" &&
+            event.key === "ArrowRight" &&
             nextButton &&
             !nextButton.disabled
         ) {
@@ -1557,11 +1581,6 @@ function showFloatingFeedback(
             ? happyEmojis
             : sadEmojis;
 
-
-    /*
-     * Increased from the previous
-     * 12 / 8 to 24 / 16.
-     */
 
     const count =
         isCorrect
