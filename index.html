@@ -27,9 +27,8 @@
 
 <body class="light-theme">
 
-
     <!-- =================================================
-         GEN-Z BACKGROUND
+         BACKGROUND
          ================================================= -->
 
     <div
@@ -37,6 +36,10 @@
         aria-hidden="true"
     ></div>
 
+
+    <!-- =================================================
+         MAIN PAGE
+         ================================================= -->
 
     <main class="page-wrapper">
 
@@ -47,21 +50,17 @@
 
         <header class="brain-box-header">
 
-
             <div class="brand-area">
 
                 <div class="brand-title">
-                    🧠AIBrainBox
+                    🧠 AIBrainBox
                 </div>
-
 
                 <div class="brand-tagline">
                     A box full of ahaaaaaaa8 questions!!
                 </div>
 
-
-                <!-- Caption intentionally hidden -->
-
+                <!-- Kept for app.js compatibility -->
                 <div
                     class="brand-subtitle"
                     style="display: none;"
@@ -71,7 +70,7 @@
 
 
             <!-- =================================================
-                 CURRENT STREAK
+                 SCORE / STREAK
                  ================================================= -->
 
             <div
@@ -85,7 +84,7 @@
 
 
             <!-- =================================================
-                 QUOTE
+                 DAILY / RANDOM QUOTE
                  ================================================= -->
 
             <div class="quote-section">
@@ -96,7 +95,6 @@
                 >
                     “Keep learning. Keep improving.”
                 </div>
-
 
                 <div
                     id="quote-author"
@@ -121,7 +119,7 @@
 
 
             <!-- =================================================
-                 ERROR
+                 ERROR MESSAGE
                  ================================================= -->
 
             <div
@@ -142,25 +140,31 @@
 
 
                 <!-- =================================================
-                     RANDOM QUESTION NAVIGATION
-                     
+                     RANDOM NAVIGATION
+
                      IMPORTANT:
-                     Previous and Next are now RANDOM.
-                     
-                     They no longer follow:
-                     - CSV order
-                     - Previous Related Question
-                     - Next Related Question
+
+                     Previous and Next are RANDOM.
+
+                     They do NOT use:
+
+                     - CSV row order
+                     - previous related question
+                     - next related question
+
+                     app.js maintains a history of already
+                     displayed questions so questions do not
+                     repeat until the current cycle is complete.
                      ================================================= -->
 
-                <div
+                <nav
                     class="related-navigation"
                     aria-label="Random question navigation"
                 >
 
 
                     <!-- =================================================
-                         RANDOM PREVIOUS QUESTION
+                         PREVIOUS RANDOM QUESTION
                          ================================================= -->
 
                     <button
@@ -168,14 +172,16 @@
                         class="related-question previous-related"
                         type="button"
                         aria-label="Previous random question"
-                        title="Previous random question"
+                        title="Random question"
                     >
-                        ←
+                        <span aria-hidden="true">
+                            ←
+                        </span>
                     </button>
 
 
                     <!-- =================================================
-                         RANDOM NEXT QUESTION
+                         NEXT RANDOM QUESTION
                          ================================================= -->
 
                     <button
@@ -183,31 +189,36 @@
                         class="related-question next-related"
                         type="button"
                         aria-label="Next random question"
-                        title="Next random question"
+                        title="Random question"
                     >
-                        →
+                        <span aria-hidden="true">
+                            →
+                        </span>
                     </button>
 
-                </div>
+                </nav>
 
 
                 <!-- =================================================
-                     TWO COLUMN LAYOUT
+                     QUIZ TWO-COLUMN LAYOUT
                      ================================================= -->
 
                 <div class="quiz-columns">
 
 
                     <!-- =================================================
-                         QUESTION
+                         QUESTION PANE
                          ================================================= -->
 
                     <section
                         class="question-pane"
-                        aria-labelledby="question"
+                        aria-labelledby="question-label"
                     >
 
-                        <div class="pane-label">
+                        <div
+                            id="question-label"
+                            class="pane-label"
+                        >
                             Question
                         </div>
 
@@ -221,7 +232,7 @@
 
 
                     <!-- =================================================
-                         OPTIONS
+                         ANSWER OPTIONS PANE
                          ================================================= -->
 
                     <section
@@ -234,6 +245,17 @@
                         </div>
 
 
+                        <!-- =================================================
+                             OPTIONS
+
+                             app.js dynamically creates:
+
+                             A
+                             B
+                             C
+                             D
+                             ================================================= -->
+
                         <div
                             id="options"
                             class="options"
@@ -241,7 +263,7 @@
 
 
                         <!-- =================================================
-                             RESULT
+                             ANSWER RESULT
                              ================================================= -->
 
                         <div
@@ -284,14 +306,13 @@
 
 
     <!-- =================================================
-         JAVASCRIPT
+         APPLICATION JAVASCRIPT
          ================================================= -->
 
     <script
         src="app.js"
         defer
     ></script>
-
 
 </body>
 
