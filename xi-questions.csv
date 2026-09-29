@@ -643,3 +643,74 @@ Gradient → small but non-zero
 Weight update → neuron can continue adapting
 
 <b>Correct answer: A — Replace ReLU with Leaky ReLU.</b>","Neural Networks","ReLU, Leaky ReLU, Dying ReLU, Activation Functions, Gradient Flow",,
+XI-00015,"You use <b>early stopping</b> with patience on validation loss, but your validation loss is very noisy because the validation set is small. Which is the <b>most likely consequence</b>?","Stopping too late, because noise hides the true minimum.","Stopping at an <b>unstable epoch</b>, and the chosen checkpoint has a larger <b>optimistic bias</b>, since the minimum of a noisier curve is more extreme.","Noise has no effect as long as <b>patience is greater than 1</b>.","Stopping too early always, because any upward spike triggers termination.","B","<b>Key hints in the question:</b>
+
+• The validation set is <b>small</b>, so validation loss can contain substantial random noise.
+• <b>Early stopping</b> selects a checkpoint based on observed validation performance.
+• A noisy curve can contain unusually low <b>lucky dips</b> that do not represent true generalization performance.
+• The minimum of a noisier signal can become more <b>extreme</b> simply because there are more random fluctuations.
+
+<b>Problem — Why does noisy validation affect early stopping?</b>
+
+Early stopping typically monitors validation loss and saves the checkpoint that achieves the best observed validation loss.
+
+With a stable validation set, the curve may look roughly like:
+
+Training → validation loss decreases → reaches a meaningful minimum → starts increasing
+
+But with a small validation set, random variation can make the curve look like:
+
+True loss → smooth trend
+Observed loss → smooth trend + random fluctuations
+
+A model may therefore get a temporarily very low validation loss at an epoch simply because of a <b>lucky noise fluctuation</b>.
+
+<b>Extreme minima</b>
+
+When you observe many noisy validation-loss values, the minimum observed value can become unusually low compared with the underlying true loss.
+
+For example:
+
+True minimum → Epoch 50 → Loss 0.50
+
+Noisy observation → Epoch 64 → Loss 0.40
+
+The model may appear to perform exceptionally well at Epoch 64 on that particular validation set, even though the low value is partly caused by random noise.
+
+This creates an <b>optimistic bias</b>: the selected checkpoint looks better on the validation set than its actual generalization performance would suggest.
+
+<b>Why the checkpoint can be unstable:</b>
+
+Validation loss → random fluctuations
+→ lucky downward spike
+→ checkpoint appears unusually good
+→ early stopping selects that checkpoint
+→ performance on a larger unseen dataset may be worse
+
+The important point is that <b>patience does not eliminate validation noise</b>. Patience can reduce sensitivity to temporary fluctuations, but it does not make the underlying validation estimate more reliable.
+
+<b>Why Option A is not the best answer:</b>
+
+Noise can sometimes delay stopping, but the more important issue described here is that noisy validation measurements can create an artificially low observed minimum. Early stopping may therefore select a checkpoint based on an unstable, noise-driven improvement.
+
+<b>Why Option C is incorrect:</b>
+
+Having patience greater than 1 does not make noise disappear. Patience only controls how many consecutive epochs without a new improvement are tolerated before stopping.
+
+<b>Why Option D is incorrect:</b>
+
+A single upward spike does not necessarily trigger termination when <b>patience</b> is being used. The stopping mechanism normally waits for the specified number of non-improving epochs.
+
+<b>Methods to reduce the problem:</b>
+
+• <b>EMA / smoothing</b> → Smooth the validation-loss signal so isolated lucky dips have less influence.
+• <b>K-fold cross-validation</b> → Use multiple validation splits to obtain a more stable estimate when the dataset is small.
+• <b>Increase patience</b> → Tolerate temporary fluctuations before stopping.
+• <b>Use min_delta</b> → Ignore very small improvements that may simply be noise.
+• <b>Monitor an appropriate metric</b> → Use a metric that reflects the actual production objective, such as F1, Recall, ROC-AUC, or MAE.
+
+<b>Core idea:</b>
+
+Noisy validation → unstable validation signal → potentially misleading minimum → unstable checkpoint selection.
+
+<b>Correct answer: B — Stopping at an unstable epoch, with a larger optimistic bias because the minimum of a noisier validation curve can be more extreme.</b>","Machine Learning","Early Stopping, Validation Loss, Optimistic Bias, Overfitting, Model Selection",,
