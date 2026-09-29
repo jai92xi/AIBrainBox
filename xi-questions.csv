@@ -714,3 +714,66 @@ A single upward spike does not necessarily trigger termination when <b>patience<
 Noisy validation → unstable validation signal → potentially misleading minimum → unstable checkpoint selection.
 
 <b>Correct answer: B — Stopping at an unstable epoch, with a larger optimistic bias because the minimum of a noisier validation curve can be more extreme.</b>","Machine Learning","Early Stopping, Validation Loss, Optimistic Bias, Overfitting, Model Selection",,
+XI-00016,"You train a deep network with <b>sigmoid activations</b> in every hidden layer. During backpropagation, you notice the <b>gradients for the earliest layers are tiny</b> compared to the last layers. Which statement is most accurate?","<b>A.</b> The forward pass caused it, because sigmoid outputs are bounded in (0, 1), so activations shrink layer by layer.","<b>B.</b> Backprop multiplies one local derivative per layer via the <b>chain rule</b>, and sigmoid's derivative is at most <b>0.25</b>, so the product shrinks roughly exponentially with depth, even if the weights are well initialized.","<b>C.</b> It only happens if the weights are initialized to zero, since then every gradient is zero.","<b>D.</b> Backprop computes gradients layer by layer independently, so early layers get small gradients only when their own loss contribution is small.","B","<b>Key hints in the question:</b>
+
+• <b>Gradients for the earliest layers are tiny</b> compared to the last layers.
+• The network uses <b>sigmoid activations</b> in every hidden layer.
+• Sigmoid has a maximum derivative of <b>0.25</b>.
+• The key mechanism is the <b>chain rule</b> during backpropagation.
+
+<b>What is happening?</b>
+
+During backpropagation, gradients are calculated using the <b>chain rule</b>. The gradient reaching an early layer depends on the gradients propagated through all the layers between that layer and the output.
+
+Because the sigmoid derivative is small, the gradient gets repeatedly multiplied by small values as it moves backward through many layers.
+
+For example:
+
+Gradient
+   ↓
+Small derivative
+   ↓
+Repeated multiplication
+   ↓
+Very small gradient
+   ↓
+Early layer learns slowly
+
+As the network becomes deeper, this effect becomes stronger. This is called the <b>vanishing gradient problem</b>.
+
+<b>What is the issue?</b>
+
+A very small gradient means the weights in the early layers receive <b>very small updates</b>. Therefore, those layers learn much more slowly than the later layers.
+
+The overall flow is:
+
+Sigmoid activations
+       ↓
+Small derivatives
+       ↓
+Repeated multiplication during backpropagation
+       ↓
+Gradient becomes smaller
+       ↓
+Early layers learn slowly
+       ↓
+<b>Vanishing gradient</b>
+
+This is especially problematic in <b>deep neural networks</b>, where the gradient must pass through many layers.
+
+<b>How can this problem be reduced?</b>
+
+Common approaches include:
+
+• Use <b>ReLU</b> or variants such as <b>Leaky ReLU</b> in hidden layers.
+• Use appropriate <b>weight initialization</b>.
+• Use <b>residual/skip connections</b> to provide shorter paths for gradient flow.
+• Use suitable <b>normalization techniques</b> to improve training stability.
+
+<b>Practical example:</b>
+
+Imagine a deep network with many sigmoid layers. During backpropagation, each layer passes only a fraction of the gradient to the previous layer. After passing through many layers, the gradient reaching the first few layers can become extremely small.
+
+Those early layers then make almost no meaningful weight updates, so learning becomes slow.
+
+<b>Correct answer: B</b>. Sigmoid activations can cause the gradient to shrink repeatedly during backpropagation, producing the <b>vanishing gradient problem</b> in deep networks.","Neural Networks","Sigmoid, Vanishing Gradient, Backpropagation, Chain Rule, ReLU, Gradient Flow",,
