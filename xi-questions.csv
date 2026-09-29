@@ -1,92 +1,70 @@
 ID,Question,A,B,C,D,Correct Answer,Explaination,Topic,Sub Topics,previous related question,next related question
-"Xi-00001","Your <b>RAG system</b> retrieves 10 chunks for every query. Testing shows that 7 of those chunks contain almost identical information, while some useful information is missing.
-What would be the <b>best approach</b>?","Increase top-k from 10 to 30","Use <b>MMR</b> or another <b>diversity-aware retrieval/reranking strategy</b>","Increase LLM temperature","Increase chunk size","B","A traditional similarity search asks:
-
+"Xi-00001","Your <b>RAG system</b> retrieves <b>10 chunks</b> for every query. Testing shows that <b>7 of those chunks contain almost identical information</b>, while some useful information is missing.
+What would be the <b>best approach</b>?","Increase <b>top-k<b> from 10 to 30","Use <b>MMR</b> or another <b>diversity-aware retrieval/reranking strategy</b>","Increase LLM <b>temperature</b>","Increase <b>chunk size</b>","B","A traditional similarity search asks:
 <b>Which chunks are most similar to my query?</b>
-
 User query → Search vector DB → Retrieve relevant chunks
 
 But what if the retrieved chunks contain nearly identical information?
-
-We are effectively <b>wasting the context window</b> on duplicate information, while potentially missing other useful information.
+We are effectively <b>wasting the context window</b> on duplicate information, while <b>potentially missing other useful information</b>.
 
 <b>This is where MMR helps.</b>
 
 <b>MMR — Maximal Marginal Relevance</b> helps retrieve <b>less redundant and more diverse/complementary chunks</b>.
 
 MMR considers two things:
-
 • <b>Relevant to the query</b>
 • <b>Different from the chunks already selected</b>
 
 So instead of retrieving:
-
 <b>Chunk 1:</b> Coverage details
 <b>Chunk 2:</b> Same coverage details
 <b>Chunk 3:</b> Same coverage details
 <b>Chunk 4:</b> Same coverage details
 
 MMR can select:
-
 <b>Chunk 1:</b> Coverage details
 <b>Chunk 2:</b> Waiting period
 <b>Chunk 3:</b> Exclusions
 <b>Chunk 4:</b> Claim process
 
 Now the LLM gets <b>relevant + complementary information</b> instead of repeated information.
-
 That's why <b>MMR is a diversity-aware retrieval technique</b>. It helps improve <b>context utilization</b> and reduces wasting the LLM's context window on duplicate information.","RAG","MMR","","Xi-00003"
-"Xi-00002","You are building a <b>fraud detection model</b> for a fintech company. The model has 20 hidden layers and a large number of parameters. During training, the model reaches a point where adding more hidden layers or increasing the number of neurons provides almost no improvement. The model performs well on simple patterns but struggles to learn complex relationships between transaction amount, location, device, transaction frequency, and user behavior.
+"Xi-00002","You are building a <b>fraud detection model</b> for a fintech company. The model has 20 hidden layers and a large number of parameters. During training, the model reaches a point where adding more hidden layers or increasing the number of neurons <b>provides almost no improvement</b>. The <b>model performs well on simple patterns</b> but <b>struggles to learn complex relationships</b> between transaction amount, location, device, transaction frequency, and user behavior.
 You have two possible architectural changes. Which one you choose?","Change the hidden-layer design so that each layer can introduce <b>non-linear transformations</b>","Add few more hidden layers and increase the number of neurons in the existing layers","","","A","Regardless of how many layers a deep neural network has, without <b>activation functions</b>, it would behave like a <b>linear model</b>. Activation functions introduce <b>non-linearity</b> into the model.
 
 What does introducing non-linearity mean?
-
 The model can learn <b>curves, complex patterns, and non-linear relationships</b>, not just straight-line relationships.
 
 Suppose we have two layers without activation functions:
-
 y₁ = w₁x + b₁
 y₂ = w₂y₁ + b₂
 
 Substitute y₁:
-
 y₂ = w₂(w₁x + b₁) + b₂
 y₂ = w₂w₁x + w₂b₁ + b₂
 y₂ = (w₂w₁)x + (w₂b₁ + b₂)
 y₂ = w'x + b'
 
 This shows that without an activation function, multiple layers can be mathematically collapsed into a <b>single linear transformation</b>.
-
 Even if we have 10, 100, or 1000 layers, we can effectively combine the weights and biases and reduce the whole network to:
-
 <b>y = Wx + b</b>
 
 So, simply adding more linear layers does not allow the network to learn more complex patterns.
-
 Now, let's introduce an activation function such as <b>ReLU</b>:
-
 y₁ = ReLU(w₁x + b₁)
 
 where:
-
 <b>ReLU(z) = max(0, z)</b>
 
 Then:
-
 y₂ = w₂y₁ + b₂
-
 or:
-
 y₂ = w₂ReLU(w₁x + b₁) + b₂
 
 Now we cannot simply multiply w₁ and w₂ together, because ReLU is applied between the two layers and changes the output <b>non-linearly</b>.
-
 So the structure becomes:
-
 <b>Input → Linear → ReLU → Linear → Output</b>
-
 The linear layers transform the data, while the activation function introduces <b>non-linearity</b>.
-
 This allows the neural network to learn <b>complex patterns, curves, and non-linear decision boundaries</b>.","Neural Network","Activation Functions","","Xi-00004"
 "Xi-00003","A production <b>NLP system</b> uses a <b>Transformer-based model</b> for classifying customer support tickets. The model performs well during training and validation. However, after deployment, latency becomes too high when ticket text is long.
 
@@ -122,7 +100,7 @@ Each token attends only to tokens within a predefined local window.
 <b>Sparse attention:</b> Selected tokens according to a predefined pattern
 
 <b>Global + local attention:</b> Nearby tokens + selected global or important tokens","Transformers","Self-attention; Sparse/Local Attention","Xi-00001","Xi-00005"
-"Xi-00004","A <b>production team</b> is fine-tuning <b>BERT</b> for an insurance ticket-classification system with 8 intent classes such as ""Health Claim"", ""Auto Claim"", ""Policy Renewal"", and ""Claim Rejection"".
+"Xi-00004","A <b>production team</b> is fine-tuning <b>BERT</b> for an insurance ticket-<b>classification</b> system with 8 intent classes such as ""Health Claim"", ""Auto Claim"", ""Policy Renewal"", and ""Claim Rejection"".
 
 During training:
 
