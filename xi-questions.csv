@@ -760,7 +760,7 @@ XI-00017,"You monitor <b>validation accuracy</b> for early stopping, and <b>trai
 
 <b>Validation accuracy has plateaued</b>, but <b>validation loss has started rising</b>.
 
-What is the most likely explanation?","<b>A.</b> The model is becoming <b>overconfident on its wrong predictions</b>, so loss rises while accuracy stays flat.","<b>B.</b> The validation set has been corrupted by <b>data leakage</b>.","<b>C.</b> Accuracy is a <b>lagging indicator</b> and will always start rising again.","<b>D.</b> The <b>learning rate is too low</b>, so the loss surface isn't being explored.","A","<b>Key hints in the question:</b>
+What is the most likely explanation?","The model is becoming <b>overconfident on its wrong predictions</b>, so loss rises while accuracy stays flat.","The validation set has been corrupted by <b>data leakage</b>.","Accuracy is a <b>lagging indicator</b> and will always start rising again."," The <b>learning rate is too low</b>, so the loss surface isn't being explored.","A","<b>Key hints in the question:</b>
 
 • <b>Training loss is still decreasing</b>.
 • <b>Validation accuracy has plateaued</b>.
