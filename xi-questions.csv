@@ -755,3 +755,64 @@ Imagine a deep network with many sigmoid layers. During backpropagation, each la
 Those early layers then make almost no meaningful weight updates, so learning becomes slow.
 
 <b>Correct answer: B</b>. Sigmoid activations can cause the gradient to shrink repeatedly during backpropagation, producing the <b>vanishing gradient problem</b> in deep networks.","Neural Networks","Sigmoid, Vanishing Gradient, Backpropagation, Chain Rule, ReLU, Gradient Flow",,
+
+XI-00017,"You monitor <b>validation accuracy</b> for early stopping, and <b>training loss is still decreasing</b>.
+
+<b>Validation accuracy has plateaued</b>, but <b>validation loss has started rising</b>.
+
+What is the most likely explanation?","<b>A.</b> The model is becoming <b>overconfident on its wrong predictions</b>, so loss rises while accuracy stays flat.","<b>B.</b> The validation set has been corrupted by <b>data leakage</b>.","<b>C.</b> Accuracy is a <b>lagging indicator</b> and will always start rising again.","<b>D.</b> The <b>learning rate is too low</b>, so the loss surface isn't being explored.","A","<b>Key hints in the question:</b>
+
+• <b>Training loss is still decreasing</b>.
+• <b>Validation accuracy has plateaued</b>.
+• <b>Validation loss is rising</b>.
+• The key difference is between <b>accuracy</b> and <b>loss</b>.
+
+<b>What is happening?</b>
+
+<b>Accuracy</b> only checks whether the final prediction is correct or incorrect. It does not care much about how confident the model is.
+
+<b>Loss</b>, such as cross-entropy loss, also considers the model's <b>prediction confidence</b>.
+
+During overfitting, the model can become increasingly <b>confident in incorrect predictions</b> on validation examples.
+
+For example:
+
+Correct prediction → stays correct → accuracy unchanged
+
+Wrong prediction → becomes more confident → accuracy still unchanged
+
+But the highly confident wrong prediction receives a <b>much larger loss penalty</b>.
+
+Therefore:
+
+<b>Validation accuracy</b> → remains roughly flat
+
+<b>Validation loss</b> → continues increasing
+
+<b>Why does this happen?</b>
+
+Suppose a validation example is already classified incorrectly.
+
+If the model predicts the wrong class with moderate confidence, the loss is relatively limited.
+
+As training continues, the model may become increasingly confident in that same wrong class. The prediction is still wrong, so <b>accuracy does not change</b>, but the confidence is now much worse from the perspective of the loss function.
+
+This is a common sign that the model is <b>overfitting</b>.
+
+<b>Why this matters for early stopping:</b>
+
+If validation accuracy is the only metric being monitored, this deterioration can be missed because accuracy may appear stable.
+
+Monitoring <b>validation loss</b> can reveal that the model is becoming increasingly poorly calibrated or overconfident on validation mistakes.
+
+<b>Practical example:</b>
+
+Imagine 100 validation samples.
+
+The model correctly classifies 90 and incorrectly classifies 10.
+
+If those 10 incorrect predictions remain on the wrong side of the decision boundary, accuracy stays at 90%.
+
+However, if the model becomes increasingly confident in those 10 wrong predictions, the <b>validation loss can rise significantly</b> even though accuracy remains at 90%.
+
+<b>Correct answer: A</b>. The model is becoming <b>overconfident on its wrong predictions</b>, causing validation loss to rise while validation accuracy remains roughly unchanged.","Machine Learning","Early Stopping, Validation Loss, Validation Accuracy, Overfitting, Cross-Entropy, Model Calibration",,
