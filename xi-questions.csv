@@ -864,3 +864,58 @@ Increasing the <b>context length</b>, <b>batch size</b>, number of <b>layers</b>
 Using <b>GQA</b> reduces memory because multiple query heads share fewer KV heads.
 
 <b>Correct answer: 4 GiB</b>. The total KV cache is approximately <b>4 GiB</b> for the given model, batch size, context length, KV heads, head dimension, and FP16 precision.","LLM / Transformers","KV Cache, Grouped-Query Attention, GQA, Memory Optimization, LLM Inference, FP16",,
+XI-00019,"You're serving a <b>decoder-only transformer</b> with <b>standard multi-head attention (MHA)</b> and a <b>KV cache</b>.
+
+During <b>autoregressive decoding</b> of a single sequence, at step <i>t</i> (generating token <i>t+1</i>), which statement is correct?","The model recomputes <b>K and V</b> for all <i>t</i> previous tokens at every step, but the cache avoids recomputing the <b>feed-forward layers</b>.","The model computes <b>Q, K, V only for the newest token</b>, appends the new K and V to the cache, and attends the new Q over <b>all cached K/V</b>. Per-step attention compute grows <b>linearly with <i>t</i></b>, and cache memory grows <b>linearly with <i>t</i></b>.","The model computes <b>Q, K, V only for the newest token</b>, and caches Q along with K and V so earlier queries can be reused in later steps.","With a <b>KV cache</b>, per-step attention compute becomes constant in <i>t</i>, since earlier keys and values are already stored.","The model computes Q, K, V only for the newest token, appends the new K and V to the cache, and attends the new Q over all cached K/V. Per-step attention compute grows linearly with t, and cache memory grows linearly with t.","<b>Key hints in the question:</b>
+
+• <b>Decoder-only transformer</b>
+• <b>Autoregressive decoding</b>
+• <b>KV cache</b>
+• The model generates <b>one new token at a time</b>.
+• The new query must attend to <b>all previous tokens</b>.
+
+<b>What is happening?</b>
+
+During autoregressive decoding, the model only needs to compute <b>Q, K, and V for the newly generated token</b>.
+
+The new <b>K and V</b> are then appended to the existing KV cache.
+
+The new <b>Q</b> attends over the complete cached sequence of K/V values:
+
+New token
+   ↓
+Compute Q, K, V
+   ↓
+Append K and V to KV cache
+   ↓
+New Q attends to all cached K/V
+   ↓
+Generate next token
+
+<b>Why does attention compute still grow with sequence length?</b>
+
+Although previous K and V vectors do not need to be recomputed, the new query still needs to compare against <b>all cached keys</b> and combine information from <b>all cached values</b>.
+
+Therefore, at decoding step <i>t</i>, the new query attends over approximately <b>t cached tokens</b>.
+
+So:
+
+• <b>Per-step attention compute</b> grows linearly with sequence length.
+• <b>KV cache memory</b> also grows linearly with sequence length.
+• The KV cache mainly avoids repeatedly recomputing the <b>keys and values of previous tokens</b>.
+
+<b>Important distinction:</b>
+
+A KV cache does <b>not</b> make attention computation constant with respect to sequence length.
+
+It removes the need to recompute historical K/V representations, but the new query still has to attend over the growing cached sequence.
+
+<b>Practical example:</b>
+
+At an early decoding step, the new token may attend over a few hundred cached tokens.
+
+Later, after generating thousands of tokens, the new query must attend over thousands of cached K/V entries.
+
+The cache prevents recomputing those historical K/V representations, but the attention operation still processes the growing cached sequence.
+
+<b>Correct answer:</b> The model computes <b>Q, K, V only for the newest token</b>, appends the new K and V to the cache, and attends the new Q over <b>all cached K/V</b>. Per-step attention compute and KV-cache memory both grow <b>linearly with sequence length</b>.","LLM / Transformers","KV Cache, Multi-Head Attention, Autoregressive Decoding, LLM Inference, Attention Compute",,
