@@ -984,3 +984,174 @@ For a 8,000-token prompt, prefill processes those prompt tokens and builds the i
 After that, if the model generates 100 new tokens, those 100 tokens are produced sequentially during the <b>decode phase</b>, with the KV cache growing after each generated token.
 
 <b>Correct answer:</b> The <b>whole prompt is processed in parallel</b>, K and V are computed and stored for every prompt token, and the prefill phase is typically <b>compute-bound</b> and largely determines <b>TTFT</b>.","LLM / Transformers","KV Cache, Prefill, Decode, LLM Inference, Time to First Token, Compute-Bound vs Memory-Bound","XI-00019","XI-00021"
+XI-00021,"Which option correctly defines <b>Multi-Query Attention (MQA)</b> and its effect on the <b>KV cache</b>?","Each query head has its own <b>K and V heads</b>, and the cache is compressed afterwards by storing only the most recent tokens.","All query heads share a <b>single K head and a single V head</b>, so the KV cache per token shrinks by a factor equal to the <b>number of query heads</b>, at some possible cost in model quality.","Queries from multiple users are batched together into one attention computation so they can <b>share one KV cache</b> across all users.","The query projection is shared across all heads while each head keeps its own <b>K and V</b>, reducing the cache by lowering the head dimension.","All query heads share a <b>single K head and a single V head</b>, so the KV cache per token shrinks by a factor equal to the <b>number of query heads</b>, at some possible cost in model quality.","<b>Key hints in the question:</b>
+
+• <b>Multi-Query Attention (MQA)</b>
+• <b>All query heads share</b> the same K and V heads.
+• The KV cache becomes much smaller.
+• The tradeoff can involve <b>model quality</b>.
+
+<b>What is MQA?</b>
+
+In standard <b>Multi-Head Attention (MHA)</b>, every query head has its own Key and Value head.
+
+In <b>Multi-Query Attention (MQA)</b>, all query heads share:
+
+• <b>One K head</b>
+• <b>One V head</b>
+
+The query heads remain separate, but they all attend using the same K and V representations.
+
+The simplified structure is:
+
+Multiple Q heads
+      ↓
+Shared K + Shared V
+      ↓
+Attention
+      ↓
+Output
+
+<b>Effect on the KV cache:</b>
+
+Because there is only <b>one K head and one V head</b>, the model stores dramatically fewer K/V values for every token.
+
+For example, if a model has <b>32 query heads</b>:
+
+MHA → 32 K heads + 32 V heads
+
+MQA → 1 K head + 1 V head
+
+Therefore, the KV cache can be approximately <b>32× smaller</b> than MHA for the same layers, sequence length, and head dimension.
+
+<b>Why is this useful?</b>
+
+During the <b>decode phase</b>, the model repeatedly reads the KV cache for every generated token.
+
+A smaller KV cache means:
+
+• Less <b>GPU memory</b> is required.
+• Less KV-cache data needs to be <b>read from memory</b>.
+• More sequences can fit in the same GPU memory.
+• <b>Inference latency and serving throughput</b> can improve, especially during memory-bandwidth-bound decoding.
+
+<b>Tradeoff:</b>
+
+Sharing a single K/V head is a strong form of compression and can cause some <b>quality degradation</b> compared with full MHA, depending on the model and training setup.
+
+This leads to an important middle ground: <b>Grouped-Query Attention (GQA)</b>.
+
+<b>MQA vs GQA vs MHA:</b>
+
+• <b>MQA:</b> All query heads share 1 K/V head.
+• <b>GQA:</b> Query heads are divided into groups, and each group shares its own K/V heads.
+• <b>MHA:</b> Every query head has its own K/V heads.
+
+So GQA sits between MQA and MHA:
+
+MQA → fewer KV heads → smaller cache
+
+GQA → intermediate number of KV heads → balance between cache efficiency and model quality
+
+MHA → one KV pair per query head → largest cache
+
+Modern LLM architectures can use <b>GQA</b> as a practical compromise because it substantially reduces KV-cache memory while retaining more model quality than aggressive MQA sharing.
+
+<b>Important connection to the previous KV-cache questions:</b>
+
+The main benefit of MQA and GQA appears during <b>decode</b>, where KV-cache access can become a major memory-bandwidth bottleneck.
+
+Reducing the number of KV heads reduces the amount of cached K/V data that must be stored and read for each generated token.
+
+<b>Correct answer:</b> All query heads share a <b>single K head and a single V head</b>, greatly reducing KV-cache size, with a possible <b>model-quality tradeoff</b>.","LLM / Transformers","Multi-Query Attention, MQA, KV Cache, Grouped-Query Attention, GQA, Multi-Head Attention, LLM Inference","XI-00020","XI-00022"
+XI-00022,"Which option correctly defines <b>prefix caching</b> (automatic prefix caching, as in vLLM)?","It stores the <b>final generated text</b> for identical prompts and returns it without running the model again.","It reuses the stored <b>K/V tensors of an identical leading token sequence</b> (for example, a shared system prompt) across requests, so <b>prefill for that prefix is skipped</b>. This is valid because, under causal attention, a token's K/V depends only on the tokens before it.","It reuses <b>K/V for any matching chunk of tokens</b> anywhere in a new prompt, regardless of what comes before it, since identical tokens always produce identical K/V.","It caches the outputs of only the <b>first few transformer layers</b>, so that the remaining layers are the only ones recomputed for new requests.","It reuses the stored <b>K/V tensors of an identical leading token sequence</b> across requests, so <b>prefill for that prefix is skipped</b>.","<b>Key hints in the question:</b>
+
+• <b>Prefix caching</b> is also called prompt caching or context caching.
+• It works across <b>different inference requests</b>.
+• The requests must share the same <b>leading token sequence</b>.
+• The cached data is the <b>K/V tensors</b>.
+• The main benefit is skipping <b>prefill computation</b> for the matching prefix.
+
+<b>What is prefix caching?</b>
+
+Prefix caching allows an LLM serving system to <b>reuse the KV cache</b> from a previous request when a new request begins with the same token sequence.
+
+For example:
+
+Request 1:
+<b>System prompt + Company documents + User question 1</b>
+
+Request 2:
+<b>System prompt + Company documents + User question 2</b>
+
+The shared system prompt and company documents form an <b>identical leading prefix</b>.
+
+Instead of running prefill again for that shared prefix, the serving system can reuse its cached K/V tensors and only process the new portion of the request.
+
+The flow is:
+
+First request
+   ↓
+Process shared prefix
+   ↓
+Store K/V in cache
+   ↓
+Second request with same prefix
+   ↓
+Reuse cached K/V
+   ↓
+Prefill only the new portion
+
+<b>Why must it be an exact leading prefix?</b>
+
+Under <b>causal attention</b>, a token can attend only to tokens before it.
+
+Therefore, the representation produced for a token depends on the <b>context that comes before it</b>.
+
+If an early token changes, the representations of subsequent tokens can also change.
+
+For example:
+
+Request 1:
+<b>System prompt → Document A → User question</b>
+
+Request 2:
+<b>System prompt → Document B → User question</b>
+
+Even if part of the text later in the prompt is identical, the K/V representations cannot simply be reused because the preceding context is different.
+
+This is why prefix caching requires an <b>exact matching prefix</b> rather than an arbitrary matching chunk.
+
+<b>Why is prefix caching useful?</b>
+
+Prefix caching is especially useful when many requests share a large static prefix, such as:
+
+• <b>System prompts</b>
+• Large <b>documents</b>
+• Few-shot examples
+• Common instructions
+• Shared conversation history
+
+The larger the repeated prefix, the more <b>prefill computation</b> can potentially be avoided.
+
+<b>Practical architecture:</b>
+
+Static content
+   ↓
+System prompt + documents
+   ↓
+<b>Cached prefix</b>
+   ↓
+Variable content
+   ↓
+User question
+   ↓
+LLM generation
+
+A useful serving pattern is to place <b>static content first</b> and frequently changing content later, so the reusable portion forms the longest possible prefix.
+
+<b>Important distinction:</b>
+
+Prefix caching does <b>not</b> mean storing the final generated answer. It stores intermediate <b>KV tensors</b> that can be reused by later requests with the same prefix.
+
+<b>Correct answer:</b> Prefix caching reuses the stored <b>K/V tensors of an identical leading token sequence</b> across requests, allowing the system to <b>skip prefill for the cached prefix</b>.","LLM / Transformers","Prefix Caching, Automatic Prefix Caching, Prompt Caching, KV Cache, vLLM, Prefill Optimization","XI-00021","XI-00023"
