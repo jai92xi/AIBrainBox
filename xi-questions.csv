@@ -1155,3 +1155,86 @@ A useful serving pattern is to place <b>static content first</b> and frequently 
 Prefix caching does <b>not</b> mean storing the final generated answer. It stores intermediate <b>KV tensors</b> that can be reused by later requests with the same prefix.
 
 <b>Correct answer:</b> Prefix caching reuses the stored <b>K/V tensors of an identical leading token sequence</b> across requests, allowing the system to <b>skip prefill for the cached prefix</b>.","LLM / Transformers","Prefix Caching, Automatic Prefix Caching, Prompt Caching, KV Cache, vLLM, Prefill Optimization","XI-00021","XI-00023"
+XI-00023,"A serving system pre-allocates a contiguous KV buffer of <b>max_length = 4,096 tokens</b> for every request. Most real requests end up using only <b>300 to 1,500 tokens</b>.
+
+Which statement about <b>PagedAttention</b> (as used in vLLM) is correct?","It shrinks the KV cache for each token by <b>quantizing keys and values</b> to lower precision.","It splits each sequence's <b>KV cache into fixed-size blocks</b> that need not be contiguous in memory, tracked through a <b>block table</b>. This removes most fragmentation and over-reservation, allows <b>larger batches</b>, and lets sequences share blocks, such as a common prompt prefix, with <b>copy-on-write</b>.","It reduces per-step attention compute from <b>O(t) to O(1)</b> by only attending to the most recent block.","It keeps the <b>KV cache permanently in CPU memory</b> and fetches blocks to the GPU on demand, so GPU memory no longer limits batch size.","It splits each sequence's <b>KV cache into fixed-size blocks</b> that need not be contiguous in memory, tracked through a <b>block table</b>. This removes most fragmentation and over-reservation, allows <b>larger batches</b>, and lets sequences share blocks, such as a common prompt prefix, with <b>copy-on-write</b>.","<b>Key hints in the question:</b>
+
+• The system pre-allocates a <b>4,096-token buffer</b> for every request.
+• Most requests use only <b>300 to 1,500 tokens</b>.
+• The problem is <b>wasted memory and fragmentation</b>.
+• The key concept is <b>PagedAttention</b>.
+• PagedAttention divides the KV cache into <b>fixed-size blocks</b>.
+
+<b>What is happening?</b>
+
+With a traditional contiguous KV-cache allocation, the system may reserve space for the maximum sequence length even when the request uses only a small portion of it.
+
+For example:
+
+Maximum capacity → 4,096 tokens
+
+Actual request → 500 tokens
+
+A large portion of the reserved memory remains unused.
+
+<b>How PagedAttention solves this:</b>
+
+PagedAttention divides the KV cache into smaller, fixed-size <b>blocks</b>.
+
+These blocks do not need to be stored contiguously in GPU memory. A <b>block table</b> keeps track of where the blocks belonging to each sequence are located.
+
+The structure is roughly:
+
+Sequence
+   ↓
+Block table
+   ↓
+Block 1 → Block 7 → Block 12 → Block 20
+   ↓
+KV cache blocks
+
+Only the blocks actually needed by the sequence have to be allocated.
+
+<b>Why does this improve memory utilization?</b>
+
+Instead of reserving one large contiguous buffer for the maximum possible sequence length, memory is allocated in smaller blocks as the sequence grows.
+
+This greatly reduces <b>over-reservation</b> and <b>fragmentation</b>.
+
+The main remaining waste is typically the unused space in the final partially filled block.
+
+Better GPU memory utilization means the serving system can fit <b>more concurrent sequences</b> into the same GPU memory, improving batching and overall inference throughput.
+
+<b>Block sharing:</b>
+
+PagedAttention can also allow sequences to <b>share physical KV-cache blocks</b> when they have the same content, such as a common prompt prefix.
+
+For example:
+
+Shared system prompt
+        ↓
+   Shared blocks
+      ↙   ↘
+Request 1  Request 2
+   ↓          ↓
+Own blocks  Own blocks
+
+When a sequence needs to modify a shared block, <b>copy-on-write</b> can create a separate copy instead of modifying the block used by other sequences.
+
+<b>Important distinction:</b>
+
+PagedAttention is primarily a <b>memory-management technique</b>. It does not reduce the amount of KV data stored per token through lower precision.
+
+<b>KV quantization</b> is a separate optimization that reduces memory by storing K/V values in lower precision. It can be combined with PagedAttention, but it is not what PagedAttention itself does.
+
+PagedAttention also does <b>not</b> make attention constant-time by attending only to the latest block. The model still needs to attend over the relevant <b>full context</b>.
+
+The KV cache also remains primarily a <b>GPU-resident resource</b>; CPU offloading or swapping can be used as an additional technique, but that is not the defining mechanism of PagedAttention.
+
+<b>Practical example:</b>
+
+If a server receives many requests with maximum length 4,096 but most requests use only a few hundred tokens, contiguous allocation can waste substantial GPU memory.
+
+PagedAttention allocates KV-cache blocks as needed, allowing that memory to be used more efficiently across requests and enabling <b>larger batches</b>.
+
+<b>Correct answer:</b> PagedAttention divides each sequence's KV cache into <b>fixed-size blocks</b> that can be placed non-contiguously and tracked through a <b>block table</b>, reducing memory fragmentation and over-reservation while enabling efficient block sharing.","LLM / Transformers","PagedAttention, KV Cache, vLLM, Memory Management, GPU Memory, Block Tables, Copy-on-Write","XI-00022","XI-00024"
