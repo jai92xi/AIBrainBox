@@ -816,3 +816,51 @@ If those 10 incorrect predictions remain on the wrong side of the decision bound
 However, if the model becomes increasingly confident in those 10 wrong predictions, the <b>validation loss can rise significantly</b> even though accuracy remains at 90%.
 
 <b>Correct answer: A</b>. The model is becoming <b>overconfident on its wrong predictions</b>, causing validation loss to rise while validation accuracy remains roughly unchanged.","Machine Learning","Early Stopping, Validation Loss, Validation Accuracy, Overfitting, Cross-Entropy, Model Calibration",,
+
+XI-00018,"A model has <b>32 layers</b>, <b>32 query heads</b>, and uses <b>Grouped-Query Attention with 8 KV heads</b>.
+
+The <b>head dimension is 128</b>, and the KV cache is stored in <b>FP16</b>.
+
+You serve a <b>batch of 4 sequences</b>, each with <b>8,192 tokens</b> in context.
+
+What is the <b>total KV cache size</b>?","16 GiB","8 GiB","4 GiB","2 GiB","4 GiB","<b>Key hints in the question:</b>
+
+• <b>32 layers</b>
+• <b>8 KV heads</b> because the model uses Grouped-Query Attention
+• <b>8,192 tokens</b> per sequence
+• <b>Batch size = 4</b>
+• <b>Head dimension = 128</b>
+• <b>FP16 = 2 bytes</b> per value
+• KV cache stores both <b>Keys and Values</b>
+
+<b>What is happening?</b>
+
+For every token, each transformer layer needs to store both a <b>Key</b> and a <b>Value</b> vector in the KV cache.
+
+So the memory depends on:
+
+<b>Layers × Tokens × Batch × KV heads × Head dimension × 2</b>
+
+The final multiplication by <b>2</b> accounts for storing both <b>K and V</b>.
+
+The KV cache size is therefore:
+
+2 × 32 × 8,192 × 4 × 8 × 128 × 2 bytes
+
+This gives approximately <b>4 GiB</b> of KV-cache memory.
+
+<b>Why are KV heads important?</b>
+
+The model has <b>32 query heads</b>, but only <b>8 KV heads</b> because it uses <b>Grouped-Query Attention (GQA)</b>.
+
+The KV cache is stored for the <b>KV heads</b>, not for all 32 query heads.
+
+Therefore, using 8 KV heads significantly reduces KV-cache memory compared with storing separate K and V tensors for all 32 heads.
+
+<b>Practical intuition:</b>
+
+Increasing the <b>context length</b>, <b>batch size</b>, number of <b>layers</b>, or <b>KV heads</b> directly increases KV-cache memory.
+
+Using <b>GQA</b> reduces memory because multiple query heads share fewer KV heads.
+
+<b>Correct answer: 4 GiB</b>. The total KV cache is approximately <b>4 GiB</b> for the given model, batch size, context length, KV heads, head dimension, and FP16 precision.","LLM / Transformers","KV Cache, Grouped-Query Attention, GQA, Memory Optimization, LLM Inference, FP16",,
