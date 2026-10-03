@@ -1439,3 +1439,102 @@ LLM
 This approach helps the system recover both <b>lexical matches</b> and <b>semantic matches</b> while reducing redundant context sent to the LLM.
 
 <b>Correct answer:</b> Add <b>BM25</b> alongside dense retrieval, use <b>RRF</b> to fuse their ranked results, and then apply <b>MMR</b> to reduce redundancy while preserving relevant and diverse chunks.","RAG","Hybrid Retrieval, BM25, Dense Retrieval, RRF, MMR, Recall, Diversity, Reranking","XI-00024","XI-00026"
+XI-00026,"Which of these is a **genuine limitation of RRF**?","It uses only <b>rank positions</b>, so <b>score magnitude is discarded</b>. A result that beats everything else in one list by a huge margin gets no more credit than a result that wins by a hair.","It needs <b>labelled training data</b> to learn the weights for each retriever before it can be used.","It can only fuse <b>exactly two ranked lists</b>.","It requires all retrievers to return <b>scores on the same scale</b>, such as cosine similarity in [0, 1].","It uses only <b>rank positions</b>, so <b>score magnitude is discarded</b>. A result that beats everything else in one list by a huge margin gets no more credit than a result that wins by a hair.","<b>Key hints in the question:</b>
+• RRF works with <b>rank positions</b>, not the original retrieval scores.
+• It is designed to combine retrievers with <b>different score scales</b>.
+• Standard RRF does not require <b>labelled training data</b>.
+
+<b>What is the limitation?</b>
+RRF converts each retriever's result into a contribution based on its <b>rank</b>. Because the original score value is not used, <b>score magnitude is discarded</b>.
+
+For example, suppose a document is ranked first with a huge score margin over the second result. RRF treats that document as rank 1, but it does not give extra credit for how large that score margin was. A result that narrowly achieves rank 1 receives the same rank-based contribution.
+
+<b>Why is this also a trade-off?</b>
+Discarding score magnitude is what makes RRF useful for <b>hybrid retrieval</b>. BM25 and dense retrievers can produce scores on very different scales, so directly combining their raw scores can be problematic. RRF avoids needing those scores to be comparable.
+
+<b>Why the other choices are incorrect:</b>
+• Standard RRF is <b>unsupervised</b>; it does not need labelled training data. Weighted RRF can optionally use manually chosen or learned weights, but that is not required by standard RRF.
+• RRF can fuse <b>multiple ranked lists</b>, not just two.
+• RRF does <b>not require scores to share the same scale</b>; this is one of its main advantages.
+
+<b>Correct answer:</b> RRF uses only <b>rank positions</b>, so <b>score magnitude is discarded</b>.","RAG","RRF; rank-based fusion; hybrid retrieval; score magnitude","XI-00025","XI-00027"
+XI-00027,"You select <b>k = 5</b> chunks with <b>MMR</b> from a candidate pool of <b>N = 50</b>. Which statement is correct?","The greedy selection computes similarities between each remaining candidate and the chunks already selected at every step, so the cost is roughly <b>O(k · N)</b> similarity evaluations on top of the retrieval cost. Because the choice is <b>greedy</b>, the result is not guaranteed to be the globally optimal set of 5.","MMR is <b>globally optimal</b>. It evaluates all <b>C(50, 5)</b> subsets and returns the one with the best relevance-diversity trade-off.","MMR only compares each candidate to the <b>query</b>, so its cost is <b>O(N)</b>. The diversity term is applied afterwards by sorting.","Increasing the candidate pool <b>N</b> always improves final quality, because MMR can only benefit from more candidates.","The greedy selection computes similarities between each remaining candidate and the chunks already selected at every step, so the cost is roughly <b>O(k · N)</b> similarity evaluations on top of the retrieval cost. Because the choice is <b>greedy</b>, the result is not guaranteed to be the globally optimal set of 5.","<b>Key hints in the question:</b>
+• MMR uses <b>greedy selection</b>.
+• It balances <b>relevance to the query</b> with <b>redundancy between chunks</b>.
+• Only <b>k = 5</b> chunks are selected from the <b>N = 50</b> candidate pool.
+
+<b>What is happening?</b>
+MMR first selects the candidate with the best relevance-diversity trade-off. After that, each new selection considers how similar a candidate is to the <b>chunks already selected</b>, so redundant chunks are penalized.
+
+With a cached running maximum similarity to the selected set, each newly selected chunk only requires updating the remaining candidates against that new chunk. Across <b>k selections</b>, this is roughly <b>O(k · N)</b> similarity evaluations on top of the retrieval cost.
+
+<b>Why is it not globally optimal?</b>
+MMR is a <b>greedy approximation</b>. It makes the best choice available at each step rather than evaluating every possible set of 5. Finding the globally best set would require considering <b>C(50, 5) = 2,118,760</b> possible subsets, which becomes impractical as N and k grow.
+
+<b>Important point:</b>
+The diversity term requires <b>chunk-to-chunk similarity</b>. MMR does not simply rank candidates by query similarity and apply diversity afterward.
+
+A larger candidate pool also does <b>not always improve quality</b>. It increases computation and can introduce weakly relevant candidates; with an inappropriate relevance-diversity balance, MMR may select diverse but less relevant chunks.
+
+<b>Correct answer:</b> The MMR selection is <b>greedy</b>, costs roughly <b>O(k · N)</b> similarity evaluations with the running-max optimization, and is <b>not guaranteed to find the globally optimal set</b>.","RAG","MMR; greedy selection; relevance-diversity trade-off; time complexity","XI-00026","XI-00028"
+XI-00028,"You fuse <b>BM25</b> results from a search engine index using <b>512-token chunks</b> with dense results from a vector database using <b>256-token chunks</b> via <b>RRF</b>.
+You notice that documents almost never get a boost from appearing in both lists, even for queries where both retrievers clearly find the same content. What is the most likely cause?","<b>k</b> is too small, so the top ranks dominate and the agreement boost is lost.","RRF matches results by <b>identifier</b>. The two indexes chunk the text differently, so the same content carries different IDs, and RRF treats them as unrelated results. Fix it by using the <b>same chunking</b> or by mapping chunks to a <b>shared parent document ID</b> before fusing.","RRF cannot fuse <b>sparse and dense retrievers</b>, because their scores are on different scales.","The dense scores need to be <b>min-max normalized</b> before fusion, otherwise the cosine scores swamp the BM25 contribution.","RRF matches results by <b>identifier</b>. The two indexes chunk the text differently, so the same content carries different IDs, and RRF treats them as unrelated results. Fix it by using the <b>same chunking</b> or by mapping chunks to a <b>shared parent document ID</b> before fusing.","<b>Key hints in the question:</b>
+• BM25 uses <b>512-token chunks</b>, while dense retrieval uses <b>256-token chunks</b>.
+• Both retrievers find the <b>same content</b>, but the results rarely receive an agreement boost.
+• RRF combines results based on <b>rank and result identity</b>, not semantic similarity.
+
+<b>What is happening?</b>
+RRF can only give a result an agreement contribution when the corresponding result is recognized as the <b>same item</b> across the ranked lists.
+
+Different chunking creates different chunk boundaries and therefore different IDs. For example:
+
+<b>Original document:</b>
+[------------------------------------------------]
+                 Original document
+[------------------------------------------------]
+
+<b>BM25 uses 512-token chunks:</b>
+[------------------------ Chunk A ------------------------]
+[------------------------ Chunk B ------------------------]
+
+<b>Dense retrieval uses 256-token chunks:</b>
+[------------ X ------------][------------ Y ------------]
+[------------ Z ------------][------------ W ------------]
+
+The same information might be found in different chunks:
+
+<b>BM25:</b>
+[---------------- Chunk A ----------------]
+                 ↑
+          password instructions
+
+<b>Dense:</b>
+[------ X ------][------ Y ------]
+                         ↑
+                  same instructions
+
+So a human can say:
+“Both BM25 and dense retrieval found the password instructions.”
+
+But RRF may see:
+
+BM25 → Chunk A → ID 123
+Dense → Chunk Y → ID 456
+
+Because <b>ID 123 ≠ ID 456</b>, RRF treats them as different results. The same underlying content therefore does not receive the expected <b>agreement boost</b>.
+
+<b>Practical fix:</b>
+• Use <b>consistent chunking</b> across both indexes, or
+• Map chunks from both indexes to a common <b>parent document ID</b> before fusion.
+
+For example:
+
+BM25 → Chunk A → Parent Doc 42
+Dense → Chunk Y → Parent Doc 42
+
+Now both results can be recognized as belonging to the <b>same parent document</b> during fusion.
+
+<b>Important distinction:</b>
+RRF does <b>not use raw retrieval scores</b>. Therefore, BM25 and dense scores do not need to be normalized to a common scale. Hybrid sparse + dense retrieval is actually a common use case for RRF.
+
+<b>Correct answer:</b> Different <b>chunking and identifiers</b> cause the same underlying content to appear as different results, preventing RRF from recognizing the cross-retriever agreement.","RAG","RRF; hybrid retrieval; chunking; result identity; document mapping","XI-00027","XI-00029"
