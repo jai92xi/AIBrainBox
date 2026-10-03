@@ -919,3 +919,68 @@ Later, after generating thousands of tokens, the new query must attend over thou
 The cache prevents recomputing those historical K/V representations, but the attention operation still processes the growing cached sequence.
 
 <b>Correct answer:</b> The model computes <b>Q, K, V only for the newest token</b>, appends the new K and V to the cache, and attends the new Q over <b>all cached K/V</b>. Per-step attention compute and KV-cache memory both grow <b>linearly with sequence length</b>.","LLM / Transformers","KV Cache, Multi-Head Attention, Autoregressive Decoding, LLM Inference, Attention Compute",,
+XI-00020,"Which option correctly defines the <b>prefill phase</b> of LLM inference with a <b>KV cache</b>?","The phase where <b>output tokens are generated one at a time</b>, each reading the cached keys and values of all earlier tokens.","The phase where the <b>whole prompt is processed in parallel</b> in one forward pass, computing and storing <b>K and V for every prompt token</b>. It is typically <b>compute-bound</b> and largely determines <b>time-to-first-token</b>.","The phase where an <b>empty KV cache</b> is allocated in GPU memory before any input is seen, so that decoding can begin without delay.","The phase where <b>model weights are loaded from disk into GPU memory</b> and the cache is warmed up with dummy tokens.","The phase where the <b>whole prompt is processed in parallel</b> in one forward pass, computing and storing <b>K and V for every prompt token</b>. It is typically <b>compute-bound</b> and largely determines <b>time-to-first-token</b>.","<b>Key hints in the question:</b>
+
+• <b>Prefill phase</b>
+• <b>KV cache</b>
+• The <b>whole prompt</b> is processed before autoregressive generation begins.
+• K and V are computed and <b>stored for the prompt tokens</b>.
+• Prefill is typically <b>compute-bound</b>.
+
+<b>What is the prefill phase?</b>
+
+The <b>prefill phase</b> is the initial stage of LLM inference where the model processes the <b>entire input prompt</b> in a forward pass.
+
+Instead of generating tokens one at a time, the prompt tokens can be processed <b>in parallel</b>.
+
+During this phase, the model computes the <b>Key and Value representations</b> for the prompt tokens and stores them in the <b>KV cache</b>.
+
+The flow is:
+
+User prompt
+   ↓
+<b>Prefill</b>
+   ↓
+Process all prompt tokens
+   ↓
+Compute K and V
+   ↓
+Store K/V in cache
+   ↓
+First token generated
+   ↓
+<b>Decode phase</b>
+
+<b>What happens after prefill?</b>
+
+Once prefill is complete, the model enters the <b>decode phase</b>.
+
+During decoding, the model generates <b>one new token at a time</b>. For each new token, it computes the new K and V, appends them to the KV cache, and uses the new query to attend over the cached K/V.
+
+So:
+
+<b>Prefill:</b> Process the prompt and build the initial KV cache.
+
+<b>Decode:</b> Generate new tokens one by one while continuously extending and reading the KV cache.
+
+<b>Prefill and TTFT:</b>
+
+The duration of prefill <b>largely determines Time to First Token (TTFT)</b>, because the first token is generated after the prompt has been processed.
+
+However, <b>TTFT is not identical to prefill duration</b>. TTFT can also include factors such as <b>queueing and scheduling delay</b> before prefill begins.
+
+The first generated token comes from the <b>logits produced at the end of the prompt's forward pass</b>; it does not require a separate decode step just to produce that first token.
+
+<b>Compute-bound vs. memory-bound:</b>
+
+Prefill is typically <b>compute-bound</b> because the model processes many prompt tokens together and performs substantial matrix computation.
+
+Decode is typically more <b>memory-bandwidth-bound</b>, especially at lower batch sizes, because each new token requires repeatedly reading model weights and accessing the growing KV cache.
+
+<b>Practical example:</b>
+
+For a 8,000-token prompt, prefill processes those prompt tokens and builds the initial KV cache.
+
+After that, if the model generates 100 new tokens, those 100 tokens are produced sequentially during the <b>decode phase</b>, with the KV cache growing after each generated token.
+
+<b>Correct answer:</b> The <b>whole prompt is processed in parallel</b>, K and V are computed and stored for every prompt token, and the prefill phase is typically <b>compute-bound</b> and largely determines <b>TTFT</b>.","LLM / Transformers","KV Cache, Prefill, Decode, LLM Inference, Time to First Token, Compute-Bound vs Memory-Bound","XI-00019","XI-00021"
