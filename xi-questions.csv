@@ -1238,3 +1238,204 @@ If a server receives many requests with maximum length 4,096 but most requests u
 PagedAttention allocates KV-cache blocks as needed, allowing that memory to be used more efficiently across requests and enabling <b>larger batches</b>.
 
 <b>Correct answer:</b> PagedAttention divides each sequence's KV cache into <b>fixed-size blocks</b> that can be placed non-contiguously and tracked through a <b>block table</b>, reducing memory fragmentation and over-reservation while enabling efficient block sharing.","LLM / Transformers","PagedAttention, KV Cache, vLLM, Memory Management, GPU Memory, Block Tables, Copy-on-Write","XI-00022","XI-00024"
+XI-00024,"Two retrievers return these ranked lists:
+
+<b>BM25:</b> A (rank 1), B (rank 2), C (rank 3)
+
+<b>Dense:</b> B (rank 1), D (rank 2), A (rank 3)
+
+You fuse them with <b>Reciprocal Rank Fusion (RRF)</b> using <b>k = 60</b>.
+
+What is the <b>final fused order</b>, from highest to lowest score?","A, B, D, C","B, A, D, C","B, A, C, D","A, B, C, D","B, A, D, C","<b>Key hints in the question:</b>
+
+• Two different retrievers are being combined: <b>BM25</b> and <b>Dense retrieval</b>.
+• RRF uses the <b>rank position</b> of each document from each retriever.
+• A document appearing in multiple ranked lists receives contributions from each list.
+• The question uses <b>k = 60</b>.
+
+<b>What is RRF?</b>
+
+<b>Reciprocal Rank Fusion (RRF)</b> combines ranked results from multiple retrieval systems without requiring their raw scores to be directly comparable.
+
+For each document, RRF gives a contribution based on its rank:
+
+<b>RRF score = sum of 1 / (k + rank)</b>
+
+A document ranked highly receives a larger contribution than one ranked lower.
+
+<b>Calculate the scores:</b>
+
+<b>Document A:</b>
+
+• BM25 rank = 1
+• Dense rank = 3
+• RRF score = 1/61 + 1/63 ≈ <b>0.03226</b>
+
+<b>Document B:</b>
+
+• BM25 rank = 2
+• Dense rank = 1
+• RRF score = 1/62 + 1/61 ≈ <b>0.03252</b>
+
+<b>Document C:</b>
+
+• BM25 rank = 3
+• Dense rank = not present
+• RRF score = 1/63 ≈ <b>0.01587</b>
+
+<b>Document D:</b>
+
+• BM25 rank = not present
+• Dense rank = 2
+• RRF score = 1/62 ≈ <b>0.01613</b>
+
+<b>Final ranking:</b>
+
+B → 0.03252
+A → 0.03226
+D → 0.01613
+C → 0.01587
+
+Therefore:
+
+<b>B → A → D → C</b>
+
+<b>Important RRF intuition:</b>
+
+B ranks <b>#1 in Dense</b> and #2 in BM25, while A ranks #1 in BM25 and #3 in Dense.
+
+Because B performs strongly in <b>both retrievers</b>, its combined RRF score is slightly higher than A's.
+
+RRF is useful in <b>hybrid search</b> because BM25 and dense retrieval produce scores on different scales. Instead of trying to directly combine their raw scores, RRF combines their <b>rank positions</b>.
+
+<b>Correct answer:</b> <b>B, A, D, C</b>.","RAG","Reciprocal Rank Fusion, RRF, Hybrid Search, BM25, Dense Retrieval, Rank Fusion",,"XI-00025"
+XI-00025,"A RAG system uses only <b>dense retrieval</b>. During evaluation, you notice two problems:
+
+• Exact keyword-heavy queries often fail to retrieve important chunks.
+• The retrieved results frequently contain <b>near-identical chunks</b> with overlapping information.
+
+Which approach best addresses both problems?","Add <b>BM25 sparse retrieval</b> alongside dense retrieval, combine both ranked lists using <b>RRF</b>, and then apply <b>MMR</b> to the fused candidate pool to reduce redundant chunks.","Increase the <b>top-k</b> of dense retrieval and use RRF directly on the larger dense-only result set to remove near-duplicate chunks.","Use <b>RRF</b> alone because it combines retrieval results and automatically penalizes redundant chunks.","Use <b>MMR</b> first to remove redundant dense-retrieval results, then use RRF with a lower λ value to improve keyword matching.","Add <b>BM25 sparse retrieval</b> alongside dense retrieval, combine both ranked lists using <b>RRF</b>, and then apply <b>MMR</b> to the fused candidate pool to reduce redundant chunks.","<b>Key hints in the question:</b>
+
+• Dense retrieval can miss <b>exact keyword matches</b>.
+• Keyword-heavy queries benefit from <b>sparse retrieval such as BM25</b>.
+• The system has <b>near-identical chunks</b>, creating redundancy.
+• <b>RRF</b> is used to combine ranked results from different retrievers.
+• <b>MMR</b> is used to balance relevance and diversity.
+
+<b>Problem 1: Dense retrieval alone</b>
+
+Dense retrieval is good at finding semantically similar content, but it can miss important <b>exact keyword matches</b>, such as product names, error codes, IDs, legal terms, or specific technical phrases.
+
+For example, a query containing an exact error code may be better handled by <b>BM25</b> because BM25 explicitly considers lexical term matching.
+
+Therefore, combine:
+
+<b>Dense retrieval</b> → semantic similarity
+
+<b>BM25</b> → exact keyword / lexical matching
+
+Using both creates a <b>hybrid retrieval</b> system and can improve recall by covering different types of queries.
+
+<b>Problem 2: Redundant chunks</b>
+
+After retrieving candidates from both systems, the results can contain <b>near-identical chunks</b>.
+
+For example:
+
+Chunk 1 → explains a policy in one way
+
+Chunk 2 → contains almost the same policy information
+
+Chunk 3 → repeats most of the same information
+
+Sending all of them to the LLM wastes context space and can reduce the diversity of useful information.
+
+<b>Solution: RRF + MMR</b>
+
+First, use <b>RRF</b> to combine the ranked results from BM25 and dense retrieval.
+
+The flow is:
+
+BM25
+   ↓
+Sparse ranked results
+   ↘
+     <b>RRF fusion</b>
+   ↗
+Dense retrieval
+   ↓
+Dense ranked results
+   ↓
+Fused candidate pool
+   ↓
+<b>MMR</b>
+   ↓
+Relevant + diverse chunks
+   ↓
+LLM
+
+<b>Why RRF?</b>
+
+RRF combines the <b>rank positions</b> from BM25 and dense retrieval without requiring their raw scores to be directly comparable.
+
+This allows documents that rank well across either retrieval method to receive a strong combined ranking.
+
+<b>Why MMR?</b>
+
+MMR considers both:
+
+• <b>Relevance to the query</b>
+• <b>Similarity to chunks already selected</b>
+
+It therefore prefers chunks that are relevant while reducing excessive redundancy.
+
+MMR does not necessarily delete exact duplicates. For true duplicate documents, <b>deduplication during ingestion</b> is more appropriate.
+
+<b>Important ordering:</b>
+
+The typical flow is:
+
+<b>BM25 + Dense retrieval</b>
+        ↓
+<b>RRF fusion</b>
+        ↓
+Fused candidate pool
+        ↓
+<b>MMR reranking</b>
+        ↓
+Final diverse chunks
+        ↓
+LLM
+
+MMR is applied <b>after fusion</b> because it operates on the candidate pool and selects a relevant, diverse final set.
+
+<b>Important distinction:</b>
+
+RRF itself does <b>not</b> penalize redundancy. It only combines ranked lists.
+
+MMR is the component that introduces a <b>relevance-versus-diversity tradeoff</b>.
+
+Also, RRF scores are <b>not similarity scores</b>. MMR still needs a query-relevance signal and a chunk-to-chunk similarity signal to make its selection decisions.
+
+<b>Practical example:</b>
+
+For a legal RAG system:
+
+User query
+   ↓
+BM25 → exact legal terms
+Dense → semantic matches
+   ↓
+<b>RRF</b>
+   ↓
+Top candidate pool
+   ↓
+<b>MMR</b>
+   ↓
+Relevant and less-redundant chunks
+   ↓
+LLM
+
+This approach helps the system recover both <b>lexical matches</b> and <b>semantic matches</b> while reducing redundant context sent to the LLM.
+
+<b>Correct answer:</b> Add <b>BM25</b> alongside dense retrieval, use <b>RRF</b> to fuse their ranked results, and then apply <b>MMR</b> to reduce redundancy while preserving relevant and diverse chunks.","RAG","Hybrid Retrieval, BM25, Dense Retrieval, RRF, MMR, Recall, Diversity, Reranking","XI-00024","XI-00026"
