@@ -1630,3 +1630,49 @@ Cross-attention is different. The entire English source sentence has already bee
 The encoder processes the source sentence once. Its <b>K and V representations can then be reused</b> at every decoder step while new decoder queries are generated.
 
 <b>Correct answer:</b> Queries come from the <b>decoder</b>, while keys and values come from the <b>encoder outputs</b>; cross-attention is <b>not causally masked over the source</b>, and the encoder's K/V can be reused during decoding.","Transformers","Cross-attention; encoder-decoder Transformer; QKV; causal masking; machine translation",,"XI-00032"
+XI-00032,"Which statement about <b>local (window) attention</b> and <b>global attention</b>, as combined in models like <b>Longformer</b>, is correct?","Local window attention with window size <b>w</b> costs <b>O(w²)</b> in total, independent of the sequence length <b>n</b>.","Local window attention costs <b>O(n · w)</b> instead of O(n²). A token can still be influenced by <b>distant tokens</b>, because stacking layers grows the effective receptive field with depth. Global tokens, such as <b>[CLS]</b>, attend to every token and every token attends to them, so for a fixed number of global tokens the cost stays <b>linear in n</b>.","Local window attention costs <b>O(n · w)</b>, but a token can never be influenced by anything outside its window, no matter how many layers are stacked, so long-range dependencies are impossible.","Global tokens only attend <b>to all tokens</b>, but ordinary tokens never attend to the global tokens, so global attention is strictly one-directional.","Local window attention costs <b>O(n · w)</b> instead of O(n²). A token can still be influenced by <b>distant tokens</b>, because stacking layers grows the effective receptive field with depth. Global tokens, such as <b>[CLS]</b>, attend to every token and every token attends to them, so for a fixed number of global tokens the cost stays <b>linear in n</b>.","<b>Key hints in the question:</b>
+• Standard full self-attention has <b>O(n²)</b> complexity.
+• Local attention restricts each token to a <b>window of size w</b>.
+• Longformer combines local attention with a small number of <b>global attention tokens</b>.
+• Multiple layers can expand the <b>effective receptive field</b>.
+
+<b>Local window attention:</b>
+Instead of allowing every token to attend to every other token, each token attends only to nearby tokens within a window.
+
+For a sequence of length <b>n</b> and window size <b>w</b>, each of the n tokens attends to roughly w neighboring tokens:
+
+<b>n tokens × w attention connections → O(n · w)</b>
+
+When w is fixed, this scales approximately <b>linearly with sequence length</b>, rather than quadratically like full attention.
+
+<b>How can distant tokens still influence each other?</b>
+A single layer only provides local communication. But information can move across the sequence through <b>multiple layers</b>.
+
+Conceptually:
+
+Layer 1:
+Token A → nearby tokens
+
+Layer 2:
+Information moves another window
+
+Layer 3:
+Information travels farther
+
+So stacking layers increases the token's <b>effective receptive field</b>, allowing information from distant positions to influence a token even though each individual attention operation is local.
+
+<b>What do global tokens do?</b>
+Special global tokens, such as <b>[CLS]</b>, can attend to every token, while ordinary tokens can also attend to the global tokens.
+
+This creates a communication path between distant regions:
+
+Local tokens → <b>global token</b> → distant local tokens
+
+If the number of global tokens is fixed, the extra global-attention cost remains <b>linear in n</b>.
+
+<b>Why the other options are incorrect:</b>
+• Local attention is not O(w²) overall; across n tokens it is approximately <b>O(n · w)</b>.
+• Local attention does not permanently prevent long-range information flow because <b>stacked layers expand the receptive field</b>.
+• Global attention in this architecture is not strictly one-directional; ordinary tokens can attend to the <b>global tokens</b> as well.
+
+<b>Correct answer:</b> Local attention reduces complexity to approximately <b>O(n · w)</b>, while stacked layers allow <b>long-range information flow</b>. Global tokens provide an additional efficient path for communication across the sequence.","Transformers","Longformer; local attention; global attention; attention complexity; receptive field","XI-00031","XI-00033"
