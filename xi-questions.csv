@@ -1572,3 +1572,31 @@ A high learning rate makes every optimizer step larger. Reducing it makes the up
 <b>Correct answer:</b> <b>Exploding gradients</b>; apply <b>gradient clipping</b> and consider <b>reducing the learning rate</b>.
 
 The strongest clues are <b>extremely large gradients + high learning rate + rapidly increasing loss + NaN</b>.","Neural Networks","Exploding gradients; gradient clipping; learning rate; backpropagation","XI-00016",
+XI-00030,"Which statement about the <b>cause and remedies of exploding gradients</b> is correct?","Exploding gradients occur only in <b>recurrent networks</b>, because only RNNs reuse weights across steps. Deep feedforward networks cannot suffer from them.","Backprop multiplies one <b>Jacobian per layer</b> (or per time step). If the norms of these Jacobians are consistently above 1, for example from <b>badly scaled initialization</b>, the gradient norm can grow exponentially with depth. So exploding gradients also occur in <b>deep feedforward networks</b>, and remedies include proper initialization such as <b>Xavier/He</b>, <b>normalization layers</b>, <b>residual connections</b>, and <b>gradient clipping</b>.","Replacing ReLU with <b>sigmoid</b> is the standard fix, because sigmoid's derivative is at most 0.25, which guarantees that gradient norms stay bounded in deep networks.","Exploding gradients show up as the <b>training loss decreasing unusually fast</b>, so they are detected by watching for a very steep loss curve.","Backprop multiplies one <b>Jacobian per layer</b> (or per time step). If the norms of these Jacobians are consistently above 1, for example from <b>badly scaled initialization</b>, the gradient norm can grow exponentially with depth. So exploding gradients also occur in <b>deep feedforward networks</b>, and remedies include proper initialization such as <b>Xavier/He</b>, <b>normalization layers</b>, <b>residual connections</b>, and <b>gradient clipping</b>.","<b>Key hints in the question:</b>
+• Exploding gradients are caused by gradients becoming <b>extremely large</b>.
+• Backpropagation repeatedly applies derivatives/Jacobians across <b>layers</b>.
+• If these transformations consistently amplify gradients, their magnitude can grow rapidly with depth.
+• This problem is not limited to RNNs.
+
+<b>What causes exploding gradients?</b>
+During backpropagation, the gradient is propagated through each layer. Conceptually, this means repeatedly multiplying by the layer's <b>Jacobian</b>.
+
+If the Jacobian norms tend to be <b>greater than 1</b>, each layer can amplify the gradient. Repeating this across many layers can cause the gradient magnitude to grow <b>exponentially with depth</b>.
+
+This can happen in <b>deep feedforward networks</b> as well as recurrent networks. Poorly scaled initialization, unstable architectures, or excessively large updates can contribute to the problem.
+
+<b>Common remedies:</b>
+• <b>Xavier/He initialization</b> helps keep activation and gradient scales controlled.
+• <b>Normalization layers</b> help stabilize the scale of activations and gradients.
+• <b>Residual connections</b> provide more stable gradient pathways through deep networks.
+• <b>Gradient clipping</b> directly limits excessively large gradients before the optimizer update.
+
+<b>Why not sigmoid?</b>
+Sigmoid is not a standard solution for exploding gradients. Its derivative being at most 0.25 can actually contribute to <b>vanishing gradients</b> when multiplied repeatedly across many layers. The previous vanishing-gradient question covered this opposite failure mode.
+
+<b>Why not the other options?</b>
+• Exploding gradients can occur in <b>deep feedforward networks</b>, not only RNNs.
+• Sigmoid does not guarantee stable gradients; repeated small derivatives can cause <b>vanishing gradients</b>.
+• Exploding gradients are associated with <b>unstable or excessively large updates</b>, not unusually fast healthy loss reduction.
+
+<b>Correct answer:</b> Backpropagation can repeatedly amplify gradients when Jacobian norms are above 1, causing <b>exploding gradients</b>. Remedies include <b>proper initialization, normalization, residual connections, and gradient clipping</b>.","Neural Networks","Exploding gradients; Jacobians; initialization; normalization; residual connections; gradient clipping","XI-00016","XI-00031"
