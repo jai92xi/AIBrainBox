@@ -1538,3 +1538,37 @@ Now both results can be recognized as belonging to the <b>same parent document</
 RRF does <b>not use raw retrieval scores</b>. Therefore, BM25 and dense scores do not need to be normalized to a common scale. Hybrid sparse + dense retrieval is actually a common use case for RRF.
 
 <b>Correct answer:</b> Different <b>chunking and identifiers</b> cause the same underlying content to appear as different results, preventing RRF from recognizing the cross-retriever agreement.","RAG","RRF; hybrid retrieval; chunking; result identity; document mapping","XI-00027","XI-00029"
+XI-00029,"A deep neural network is being trained for a <b>binary classification</b> problem. During training, you notice that the <b>training loss suddenly becomes extremely large and then turns into NaN</b>, while the validation loss also becomes unstable. The model uses a <b>relatively high learning rate</b>, and the gradients of several layers are found to have <b>extremely large magnitudes</b>.
+
+What is the <b>most likely cause and appropriate first fix</b>?","Vanishing gradients; increase the learning rate so early layers receive <b>larger updates</b>.","<b>Exploding gradients</b>; apply <b>gradient clipping</b> and consider <b>reducing the learning rate</b>.","Overfitting; increase <b>dropout</b> because the training loss is too low.","Dying ReLU; replace all <b>ReLU activations</b> with sigmoid.","<b>Exploding gradients</b>; apply <b>gradient clipping</b> and consider <b>reducing the learning rate</b>.","<b>Key hints in the question:</b>
+• Training loss becomes <b>extremely large</b>.
+• Loss eventually becomes <b>NaN</b>.
+• Validation loss is <b>unstable</b>.
+• Several layers have <b>extremely large gradients</b>.
+• The model uses a <b>relatively high learning rate</b>.
+
+<b>What is happening?</b>
+During neural network training, <b>backpropagation</b> calculates gradients that tell the optimizer how much each weight should change.
+
+Here, the gradients are extremely large. Combined with a high learning rate, this can produce <b>huge weight updates</b>. The weights can jump to extreme values, causing subsequent gradients to become even larger.
+
+The training process can follow this pattern:
+
+<b>Very large gradients → huge weight updates → numerical overflow → Inf → NaN loss</b>
+
+<b>Why gradient clipping?</b>
+<b>Gradient clipping</b> limits the size of the gradients before the optimizer updates the weights. If the gradient norm becomes too large, it is scaled down to a controlled range.
+
+This prevents a single training step from making an excessively large update and helps stabilize training.
+
+<b>Why reduce the learning rate?</b>
+A high learning rate makes every optimizer step larger. Reducing it makes the updates more conservative and can prevent the model from repeatedly overshooting during optimization.
+
+<b>Why not the other options?</b>
+• <b>Vanishing gradients</b> means gradients become very small, not extremely large.
+• <b>Overfitting</b> is typically characterized by improving training loss while validation performance deteriorates; it does not explain extremely large gradients and NaN loss.
+• <b>Dying ReLU</b> occurs when ReLU neurons become inactive and produce zero or very small gradients, which is the opposite of exploding gradients.
+
+<b>Correct answer:</b> <b>Exploding gradients</b>; apply <b>gradient clipping</b> and consider <b>reducing the learning rate</b>.
+
+The strongest clues are <b>extremely large gradients + high learning rate + rapidly increasing loss + NaN</b>.","Neural Networks","Exploding gradients; gradient clipping; learning rate; backpropagation","XI-00016",
