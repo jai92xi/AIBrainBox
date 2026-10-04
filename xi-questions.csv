@@ -1599,4 +1599,4 @@ Sigmoid is not a standard solution for exploding gradients. Its derivative being
 • Sigmoid does not guarantee stable gradients; repeated small derivatives can cause <b>vanishing gradients</b>.
 • Exploding gradients are associated with <b>unstable or excessively large updates</b>, not unusually fast healthy loss reduction.
 
-<b>Correct answer:</b> Backpropagation can repeatedly amplify gradients when Jacobian norms are above 1, causing <b>exploding gradients</b>. Remedies include <b>proper initialization, normalization, residual connections, and gradient clipping</b>.","Neural Networks","Exploding gradients; Jacobians; initialization; normalization; residual connections; gradient clipping","XI-00016","XI-00031"
+<b>Correct answer:</b> Backpropagation can repeatedly amplify gradients when Jacobian norms are above 1, causing <b>exploding gradients</b>. Remedies include <b>proper initialization, normalization, residual connections, and gradient clipping</b>.","Neural Networks","Exploding gradients; Jacobians; initialization; normalization; residual connections; gradient clipping","XI-00029","XI-00031"
