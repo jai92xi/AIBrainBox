@@ -1600,3 +1600,33 @@ Sigmoid is not a standard solution for exploding gradients. Its derivative being
 • Exploding gradients are associated with <b>unstable or excessively large updates</b>, not unusually fast healthy loss reduction.
 
 <b>Correct answer:</b> Backpropagation can repeatedly amplify gradients when Jacobian norms are above 1, causing <b>exploding gradients</b>. Remedies include <b>proper initialization, normalization, residual connections, and gradient clipping</b>.","Neural Networks","Exploding gradients; Jacobians; initialization; normalization; residual connections; gradient clipping","XI-00029","XI-00031"
+XI-00031,"In a standard <b>encoder-decoder Transformer</b> for translation (English → French), which statement about <b>cross-attention</b> is correct?","Queries come from the <b>encoder outputs</b>, and keys and values come from the decoder's hidden states, because the encoder needs to look up what the decoder has generated so far.","Queries, keys and values all come from the <b>decoder's own hidden states</b>. Cross-attention is just self-attention with a different mask.","Queries come from the <b>decoder's hidden states</b>, and keys and values come from the <b>encoder's final outputs</b>. No causal mask is needed over the encoder positions, since the whole source sentence is available. At inference the encoder's <b>K and V are computed once and reused</b> at every decoding step.","Queries come from the <b>decoder</b>, and keys and values come from the <b>encoder</b>, but a causal mask must still be applied over the encoder positions, because the source tokens are also ordered in time.","Queries come from the <b>decoder's hidden states</b>, and keys and values come from the <b>encoder's final outputs</b>. No causal mask is needed over the encoder positions, since the whole source sentence is available. At inference the encoder's <b>K and V are computed once and reused</b> at every decoding step.","<b>Key hints in the question:</b>
+• This is an <b>encoder-decoder Transformer</b>.
+• Cross-attention connects the <b>decoder</b> to the <b>encoder output</b>.
+• The decoder is generating French while looking at the encoded English sentence.
+• The source sentence is completely available, so cross-attention does not need a <b>causal mask</b> over encoder positions.
+
+<b>How cross-attention works:</b>
+Unlike self-attention, where Q, K and V come from the same sequence, cross-attention gets them from <b>different sequences</b>:
+
+Decoder hidden states → <b>Q</b>
+Encoder final outputs → <b>K, V</b>
+
+The decoder's query represents what information it currently needs to generate the next target token. The encoder's keys help determine which source positions are relevant, and the corresponding values provide the information.
+
+For example:
+
+English:
+<b>"The cat is sleeping"</b>
+
+The decoder generating a French word can use its current hidden state as Q and attend to the encoder representations of <b>"cat"</b>, <b>"sleeping"</b>, etc., to obtain the relevant source information.
+
+<b>Masking:</b>
+Decoder <b>self-attention</b> uses a causal mask so a target token cannot see future target tokens.
+
+Cross-attention is different. The entire English source sentence has already been encoded, so the decoder can attend to <b>all encoder positions</b>. No causal mask is required over the encoder sequence.
+
+<b>Inference optimization:</b>
+The encoder processes the source sentence once. Its <b>K and V representations can then be reused</b> at every decoder step while new decoder queries are generated.
+
+<b>Correct answer:</b> Queries come from the <b>decoder</b>, while keys and values come from the <b>encoder outputs</b>; cross-attention is <b>not causally masked over the source</b>, and the encoder's K/V can be reused during decoding.","Transformers","Cross-attention; encoder-decoder Transformer; QKV; causal masking; machine translation",,"XI-00032"
