@@ -1610,7 +1610,7 @@ Why the other options are incorrect:
 
 Correct answer: <b>Local attention</b> reduces complexity to approximately <b>O(n · w)</b>, while stacked layers allow long-range information flow. <b>Global tokens</b> provide an additional efficient path for communication across the sequence.","Transformers","Longformer; Local Attention; Global Attention; Attention Complexity; Receptive Field","Xi-00003","XI-00031"
 "XI-00033","Which statement correctly describes how <b>BatchNorm</b> behaves at <b>training time</b> vs <b>inference time</b>?","At inference it recomputes the mean and variance from the current batch of test inputs, so a sample's prediction can depend on which other samples are in the batch.","At training it normalizes with running averages of the statistics, and at inference it normalizes with the statistics of the current batch.","At training it normalizes with the current mini-batch's mean and variance, while also updating running (moving-average) estimates of the mean and variance. At inference it uses those stored <b>running estimates</b>, so each sample's output is independent of the rest of the batch. The learnable <b>γ</b> and <b>β</b> are used in both modes.","It always uses the current batch's statistics and keeps no <b>running estimates</b>, so inference with a batch of size 1 works exactly as well as with a large batch.","","At training it normalizes with the current <b>mini-batch statistics</b> and updates <b>running estimates</b>. At inference it uses the stored <b>running mean and variance</b>, making predictions independent of other samples in the batch. The learnable <b>γ</b> (scale) and <b>β</b> (shift) parameters are applied in both training and inference. This difference is important because using test-<b>batch statistics</b> during inference could make the same sample produce different predictions depending on which other samples are processed alongside it. For example, if one image is classified alone versus inside a batch containing very different images, its normalized values should remain consistent during inference. Therefore, <b>BatchNorm</b> uses <b>batch statistics</b> during training but stored running statistics during inference.","Deep Learning","Batch Normalization; Training vs Inference; Running Mean and Variance; Batch Statistics","",""
-XI-00034,"A fraud detection model is deployed in production. During offline evaluation, it achieves <b>99.2% accuracy</b> and looks excellent. After deployment, the fraud team reports that many <b>fraudulent transactions are still being missed</b>.
+"XI-00034","A fraud detection model is deployed in production. During offline evaluation, it achieves <b>99.2% accuracy</b> and looks excellent. After deployment, the fraud team reports that many <b>fraudulent transactions are still being missed</b>.
 
 Data:
 • <b>1,000,000</b> total transactions
@@ -1618,7 +1618,7 @@ Data:
 • <b>5,000</b> fraudulent transactions
 • The model predicts <b>all transactions as legitimate</b>
 
-What is the <b>most important metric</b> to prioritize for evaluating this fraud model?","Precision","Recall","Accuracy","R²","<b>Recall</b> is the most important metric here because the main business problem is <b>missing fraudulent transactions</b>.
+What is the <b>most important metric</b> to prioritize for evaluating this fraud model?","Precision","Recall","Accuracy","R²","B","<b>Recall</b> is the most important metric here because the main business problem is <b>missing fraudulent transactions</b>.
 
 <b>Key hints in the question:</b>
 • The dataset is <b>highly imbalanced</b>: only 5,000 out of 1,000,000 transactions are fraudulent.
@@ -1641,4 +1641,4 @@ Precision answers a different question: among transactions predicted as fraud, h
 • <b>Fix the algorithm/decision:</b> class weighting, threshold tuning, imbalance-aware ensembles, anomaly detection
 • <b>Fix the evaluation:</b> recall, precision, F1-score, PR-AUC, stratified cross-validation
 
-<b>Correct answer:</b> Recall","Classical ML","Imbalanced Classification; Fraud Detection; Recall; Precision; PR-AUC","XI-00025","XI-00035"
+<b>Correct answer:</b> Recall","Classical ML","Imbalanced Classification; Fraud Detection; Recall; Precision; PR-AUC","XI-00025",""
