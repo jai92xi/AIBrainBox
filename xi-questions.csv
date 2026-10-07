@@ -1642,3 +1642,37 @@ Precision answers a different question: among transactions predicted as fraud, h
 • <b>Fix the evaluation:</b> recall, precision, F1-score, PR-AUC, stratified cross-validation
 
 <b>Correct answer:</b> Recall","Classical ML","Imbalanced Classification; Fraud Detection; Recall; Precision; PR-AUC","XI-00025",""
+"XI-00035","You're building a <b>semantic search</b> system over <b>500K product descriptions</b> using <b>text-embedding-3-small</b> and <b>FAISS (IndexFlatIP)</b> for exact cosine similarity. A user complains that searching <b>""waterproof hiking boots""</b> returns results more related to <b>""waterproof jackets""</b> and <b>""waterproof backpacks""</b> than actual hiking boots, even though boot products with <b>""waterproof""</b> in the description clearly exist in the catalog and rank lower.
+
+What is the <b>most likely cause</b> of this ranking behavior, and what's the <b>most effective fix</b>?","The embedding model is biased toward frequent terms; re-weight embeddings using <b>TF-IDF</b> before indexing","<b>""Waterproof""</b> dominates the embedding's semantic direction more than <b>""hiking boots""</b> due to how dense embeddings capture token-level semantics; use <b>hybrid search (dense + BM25/sparse)</b> to ensure lexical term matches are also weighted","FAISS <b>IndexFlatIP</b> is returning approximate results; switch to <b>IndexFlatL2</b> for exact search","The product descriptions are too short to generate meaningful embeddings; concatenate with <b>product reviews</b> before embedding","B","<b>Option 2</b> is the correct answer because this is a classic limitation of relying on <b>dense semantic retrieval alone</b> when exact lexical matching is important.
+
+<b>Key hints in the question:</b>
+• The query contains a highly important exact term: <b>""waterproof""</b>.
+• Products containing <b>""waterproof"" + ""hiking boots""</b> exist but rank below semantically related jackets and backpacks.
+• <b>IndexFlatIP</b> performs exact similarity search, so the problem is not approximate-nearest-neighbor retrieval.
+
+<b>What is happening?</b>
+Dense embeddings capture the overall <b>semantic meaning</b> of the query rather than guaranteeing that every important keyword receives enough ranking weight. The query <b>""waterproof hiking boots""</b> can therefore be close in embedding space to products about waterproof jackets or backpacks because they share the strong concept <b>""waterproof""</b>.
+
+However, in product search, the exact lexical term <b>""boots""</b> is highly important. A dense-only system may not give that exact keyword match enough influence.
+
+<b>Most effective fix:</b>
+Use <b>hybrid retrieval</b>:
+
+Dense retrieval → captures semantic similarity
++
+BM25 / sparse retrieval → captures important exact keywords
+→ <b>Fuse the results</b> using RRF or another ranking method
+→ return the final candidates
+
+This allows the dense retriever to understand semantic relationships while BM25 gives strong signals to products containing important terms such as <b>""hiking""</b> and <b>""boots""</b>.
+
+<b>Why the other approaches are not the best fix:</b>
+• <b>TF-IDF re-weighting embeddings:</b> not a standard or reliable way to modify pretrained embedding representations.
+• <b>IndexFlatL2:</b> IndexFlatIP already performs <b>exact</b> similarity search; changing the distance metric does not solve the lexical-ranking problem.
+• <b>Adding reviews:</b> more text may add useful information, but it does not directly address the need for <b>lexical matching</b>.
+
+<b>Practical production pattern:</b>
+Dense embeddings + BM25 → <b>Hybrid Retrieval</b> → RRF → optional reranker → final results.
+
+<b>Correct answer:</b> ""Waterproof"" can dominate the semantic representation, so use <b>hybrid search with dense + BM25/sparse retrieval</b>.","RAG","Semantic Search; Dense Retrieval; Hybrid Search; BM25; RRF","XI-00025",""
