@@ -1738,3 +1738,41 @@ Imagine 1,000 queries. A <b>recall</b>@20 of 95% means the correct chunk is retr
 Under the simplifying assumption that all 620 correct answers come from those 950 queries, up to 330 queries with retrieved evidence remain incorrect. This illustrates why improving the ranking and use of existing evidence may offer more value than simply retrieving more chunks. The exact number recoverable through re-ranking must be measured experimentally.
 
 <b>Correct answer:</b> Re-rank with a <b>cross-encoder</b>, pass only the <b>top 3–5 relevant chunks</b>, and order the evidence carefully.",RAG,Cross-Encoder Reranking; Lost in the Middle,XI-00035,
+"XI-00038","You’ve built a <b>conversational RAG assistant</b> for a SaaS product’s documentation using Pinecone and GPT-4o-mini. A user asks, <b>""How does billing work for the Team plan?""</b> and gets a great answer. They follow up with, <b>""What about the Enterprise one?""</b> and the assistant returns irrelevant chunks about enterprise security certifications.
+
+Your retrieval step embeds only the <b>latest user message</b>. Your latency budget is tight (<b>p95 under 1.5 seconds end to end</b>), and conversations often run 10+ turns across multiple topics.
+
+What is the <b>most effective fix</b>?","Embed the <b>entire conversation history</b> concatenated with the latest message, so the query vector carries full context","Use a <b>small, fast LLM call</b> to rewrite the latest message plus recent turns into a <b>standalone query</b> (""How does billing work for the Enterprise plan?"") before retrieval","Apply <b>HyDE</b>: generate a hypothetical answer to the follow-up message and embed that instead of the raw question","Increase <b>top_k</b> and apply a <b>cross-encoder re-ranker</b> so the right billing chunks surface from the broader candidate set","B","<b>Query rewriting</b> is the most effective fix because the follow-up message depends on conversational context that is missing from the current retrieval query.
+
+<b>1. Key hints in the question</b>
+• The follow-up, <b>""What about the Enterprise one?""</b>, is ambiguous when viewed alone.
+• The previous question established the topic: <b>billing for the Team plan</b>.
+• Retrieval embeds only the latest message, so the billing intent is lost.
+• The system has a tight <b>p95 latency budget</b> and conversations can span many topics.
+
+<b>2. What is happening?</b>
+This is a <b>context-dependent follow-up retrieval</b> problem. The embedding model receives ""What about the Enterprise one?"" without enough information to identify the intended subject. It may retrieve documents about Enterprise security, certifications, or other topics instead of billing.
+
+<b>3. Solution: Rewrite the query</b>
+Use a small, fast LLM call to resolve the follow-up using the relevant recent conversation context.
+
+Original follow-up:
+""What about the Enterprise one?""
+
+Rewritten standalone query:
+""How does billing work for the Enterprise plan?""
+
+Embed the rewritten query and search Pinecone. The query now contains both the <b>correct intent (billing)</b> and the <b>correct entity (Enterprise plan)</b>.
+
+<b>4. Why this fits the latency constraint</b>
+A small model can often rewrite a short follow-up quickly, and better retrieval may reduce downstream retries and answer failures. However, the additional LLM call still adds latency, so measure end-to-end p95 and use a fast model, a strict output limit, and a rewrite only when the message is context-dependent. For standalone questions, retrieve directly.
+
+<b>5. Why the other options are weaker</b>
+• <b>Embed the entire conversation:</b> adds unrelated topics, increases input size, and can blur the current intent in long conversations.
+• <b>HyDE:</b> generates hypothetical answer-like text, but does not directly resolve the missing conversational reference as reliably as an explicit rewrite.
+• <b>Increase top_k and rerank:</b> may improve ordering, but cannot reliably recover the intended meaning if the initial query retrieves the wrong topic.
+
+<b>Production pattern:</b>
+Latest message + relevant conversation turns → <b>Query rewriting</b> → Embedding → Pinecone retrieval → GPT-4o-mini answer.
+
+<b>Correct answer:</b> Use a <b>small, fast LLM to rewrite the follow-up into a standalone query</b> before retrieval.","RAG","Conversational RAG; Query Rewriting; Contextual Retrieval; Pinecone; Latency Optimization","XI-00037",""
