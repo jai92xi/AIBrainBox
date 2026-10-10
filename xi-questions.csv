@@ -1,3 +1,4 @@
+"ID","Question","A","B","C","D","Correct Answer","Explaination","Topic","Sub Topics","previous related question","next related question"
 "Xi-00001","Your <b>RAG system</b> retrieves <b>10 chunks</b> for every query. Testing shows that <b>7 of those chunks</b> contain <b>almost identical information</b>, while some useful information is missing.
 What would be the <b>best approach</b>?","Increase <b>top-k</b> from 10 to 30","Use <b>MMR</b> or another <b>diversity-aware retrieval/reranking strategy</b>","Increase LLM <b>temperature</b>","Increase <b>chunk size</b>","B","A traditional similarity search asks: Which chunks are most similar to my query?
 
