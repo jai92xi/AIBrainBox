@@ -1676,6 +1676,28 @@ This allows the dense retriever to understand semantic relationships while BM25 
 Dense embeddings + BM25 → <b>Hybrid Retrieval</b> → RRF → optional reranker → final results.
 
 <b>Correct answer:</b> ""Waterproof"" can dominate the semantic representation, so use <b>hybrid search with dense + BM25/sparse retrieval</b>.","RAG","Semantic Search; Dense Retrieval; Hybrid Search; BM25; RRF","XI-00025",""
+"XI-00036","You train a <b>linear regression</b> model with <b>500 features</b>, many of which are irrelevant. You compare <b>L1 (Lasso)</b> and <b>L2 (Ridge)</b> regularization with the same strength λ. Which statement is correct?","L2 drives many coefficients to <b>exactly zero</b>, performing feature selection. L1 only shrinks coefficients toward zero without ever making them exactly zero.","L1 adds <b>λ · Σ|wᵢ|</b> to the loss. Its gradient has constant magnitude <b>λ·sign(wᵢ)</b>, which keeps pushing small weights all the way to <b>exactly zero</b>, giving sparse solutions. L2 adds <b>λ · Σwᵢ²</b>. Its gradient <b>2λwᵢ</b> shrinks as wᵢ shrinks, so weights get small but rarely become exactly zero.","L1 and L2 both produce <b>sparse solutions</b>. The difference is that L2 penalizes large weights more heavily, so it needs a larger λ to reach sparsity.","L1 is preferred when <b>most features are relevant and correlated</b>. L2 is preferred when only a few features matter.","B","<b>L1 (Lasso)</b> is the correct choice when you want regularization that can perform <b>feature selection</b>.
+
+<b>Key hints in the question:</b>
+• There are <b>500 features</b>, and many are irrelevant.
+• The question specifically compares <b>L1 vs L2 regularization</b>.
+• The key distinction is whether coefficients become <b>exactly zero</b>.
+
+<b>Why L1 creates sparse solutions:</b>
+L1 adds a penalty based on the <b>absolute value of each coefficient</b>. Its gradient has a constant magnitude, so even when a coefficient becomes very small, the regularization continues pushing it toward <b>exactly zero</b>. As a result, many irrelevant features can receive zero coefficients and effectively be removed from the model.
+
+<b>Why L2 behaves differently:</b>
+L2 penalizes the <b>squared magnitude</b> of coefficients. Its gradient becomes smaller as the coefficient approaches zero. Therefore, L2 strongly shrinks large weights and usually makes coefficients <b>small rather than exactly zero</b>.
+
+<b>Practical example:</b>
+Suppose a model has 500 features but only 30 contain useful predictive information. With L1 regularization, many of the remaining 470 feature coefficients can become exactly <b>zero</b>, producing a sparse model. With L2, those coefficients are typically retained but heavily shrunk.
+
+<b>Rule of thumb:</b>
+• <b>L1 / Lasso</b> → sparsity + feature selection
+• <b>L2 / Ridge</b> → coefficient shrinkage + useful when many features contribute
+• <b>Elastic Net</b> → combines L1 and L2, often useful when features are highly correlated
+
+<b>Correct answer:</b> L1 adds the absolute-value penalty and can drive coefficients to <b>exactly zero</b>, while L2 mainly shrinks coefficients toward zero.","Classical ML","Regularization; L1 Lasso; L2 Ridge; Feature Selection","XI-00034",""
 "XI-00037","You're running a <b>RAG assistant</b> over <b>40,000 internal HR policy documents</b> using GPT-4o. Each query retrieves the <b>top 20 chunks</b> (~500 tokens each, or ~10K tokens of context) from Azure AI Search and passes them to the model in retrieval-score order.
 
 Offline evaluation shows the correct chunk appears somewhere in the top 20 for <b>95% of queries (recall@20 = 95%)</b>, yet answer accuracy is only <b>62%</b>. Looking at the failures, the correct chunk usually sits at <b>positions 8 to 14</b> in the prompt, and the model often answers from a tangential chunk near the top or says the information isn't available. Token cost per query is also high.
