@@ -1676,3 +1676,43 @@ This allows the dense retriever to understand semantic relationships while BM25 
 Dense embeddings + BM25 → <b>Hybrid Retrieval</b> → RRF → optional reranker → final results.
 
 <b>Correct answer:</b> ""Waterproof"" can dominate the semantic representation, so use <b>hybrid search with dense + BM25/sparse retrieval</b>.","RAG","Semantic Search; Dense Retrieval; Hybrid Search; BM25; RRF","XI-00025",""
+"XI-00037","You're running a <b>RAG assistant</b> over <b>40,000 internal HR policy documents</b> using GPT-4o. Each query retrieves the <b>top 20 chunks</b> (~500 tokens each, or ~10K tokens of context) from Azure AI Search and passes them to the model in retrieval-score order.
+
+Offline evaluation shows the correct chunk appears somewhere in the top 20 for <b>95% of queries (recall@20 = 95%)</b>, yet answer accuracy is only <b>62%</b>. Looking at the failures, the correct chunk usually sits at <b>positions 8 to 14</b> in the prompt, and the model often answers from a tangential chunk near the top or says the information isn't available. Token cost per query is also high.
+
+What is the <b>most effective fix</b>?","Increase <b>top_k from 20 to 40</b> so the correct chunk is even more likely to be included","<b>Re-rank</b> the retrieved chunks with a <b>cross-encoder</b>, pass only the <b>top 3 to 5</b>, and order them so the most relevant chunks sit at the start and end of the prompt","Fine-tune the <b>embedding model</b> on HR documents to push recall@20 from 95% toward 99%","Switch to a model with a <b>larger context window</b> so all 20 chunks are processed with less truncation risk","B","<b>Re-ranking with a cross-encoder and reducing the context to the most relevant chunks</b> is the most effective fix because retrieval is already finding the correct information, but the model is not consistently using it.
+
+<b>1. Key hints in the question</b>
+• <b>Recall@20 = 95%</b>: the correct chunk is already present in the retrieved results for most queries.
+• <b>Answer accuracy = 62%</b>: there is a substantial gap between retrieval success and answer quality.
+• The correct chunk often appears at <b>positions 8 to 14</b>, surrounded by less relevant content.
+• The context contains approximately <b>10K tokens</b>, and token cost is high.
+
+<b>2. What is happening?</b>
+The initial retriever ranks chunks using a relevance signal that may not perfectly reflect how useful each chunk is for answering the query. As a result, the correct evidence can appear too far down the list.
+
+This also creates a potential <b>lost-in-the-middle effect</b>: models may use information at the beginning or end of a long context more reliably than information buried in the middle. Distracting chunks can further reduce answer quality.
+
+<b>3. Example</b>
+Query: How many days of parental leave are available to adoptive parents?
+
+The correct policy chunk is at position 11, while the first few chunks discuss general parental leave. The model may use the wrong policy or claim the answer is unavailable, even though the correct evidence was retrieved.
+
+<b>4. Solution</b>
+Use this production pipeline:
+
+Azure AI Search → Retrieve top 20 candidates → <b>Cross-encoder re-ranking</b> → Keep top 3–5 chunks → Build a concise, well-ordered prompt → GPT-4o.
+
+A cross-encoder evaluates the query and each candidate chunk together, allowing it to rank relevance more precisely. Passing fewer, stronger chunks reduces distracting context, token usage, and potentially latency. Place the strongest evidence prominently, including near the beginning or end when appropriate.
+
+<b>5. Why the other options are weaker</b>
+• <b>Increase top_k to 40:</b> adds more candidates, noise, and cost without addressing poor ordering.
+• <b>Fine-tune embeddings:</b> may improve retrieval recall, but recall@20 is already high; it does not directly solve the problem of relevant evidence being buried.
+• <b>Use a larger context window:</b> increases capacity but does not guarantee better use of the evidence or eliminate positional bias.
+
+<b>6. Understanding the metrics</b>
+Imagine 1,000 queries. A recall@20 of 95% means the correct chunk is retrieved for approximately 950 queries. An end-to-end accuracy of 62% means approximately 620 queries are answered correctly overall.
+
+Under the simplifying assumption that all 620 correct answers come from those 950 queries, up to 330 queries with retrieved evidence remain incorrect. This illustrates why improving the ranking and use of existing evidence may offer more value than simply retrieving more chunks. The exact number recoverable through re-ranking must be measured experimentally.
+
+<b>Correct answer:</b> Re-rank with a <b>cross-encoder</b>, pass only the <b>top 3–5 relevant chunks</b>, and order the evidence carefully.","RAG","Reranking; Cross-Encoder; Lost in the Middle; Context Optimization; Retrieval Evaluation","XI-00035",""
