@@ -1776,3 +1776,48 @@ A small model can often rewrite a short follow-up quickly, and better retrieval 
 Latest message + relevant conversation turns → <b>Query rewriting</b> → Embedding → Pinecone retrieval → GPT-4o-mini answer.
 
 <b>Correct answer:</b> Use a <b>small, fast LLM to rewrite the follow-up into a standalone query</b> before retrieval.","RAG","Conversational RAG; Query Rewriting; Contextual Retrieval; Pinecone; Latency Optimization","XI-00037",""
+"XI-00039","A data engineering team deploys a <b>real-time fraud prediction service</b> using a trained XGBoost model. During offline testing, the model performs well. In production, predictions are occasionally incorrect for a small percentage of requests, even though the model version and input schema appear unchanged.
+
+After investigation, the team discovers that one feature is calculated differently in the training pipeline and the production pipeline.
+
+• <b>Training:</b> Missing transaction amounts are replaced with the <b>median computed from the training dataset</b>.
+• <b>Production:</b> Missing transaction amounts are replaced with <b>0</b>.
+
+What is the <b>most likely issue</b>?","<b>Concept drift</b> — the relationship between transaction features and fraud has changed.","<b>Training-serving skew</b> — the same feature is processed differently during training and inference.","","","B","<b>Training-serving skew</b> is the correct answer because the same feature, <b>transaction_amount</b>, is processed differently during training and production.
+
+<b>Key hints in the question:</b>
+• The model performs well during <b>offline testing</b> but has occasional prediction errors in production.
+• The model version and input schema are unchanged.
+• Missing values are replaced with different values in the two pipelines.
+• Training uses a <b>training-data median</b>, while production uses <b>0</b>.
+
+<b>What is happening?</b>
+The model learns patterns from the feature values it receives during training. If missing transaction amounts are replaced with the training median, the model learns using that preprocessing rule.
+
+Suppose the training median is ₹500.
+
+<b>Training pipeline:</b>
+Missing transaction amount → Replace with ₹500 → XGBoost prediction
+
+<b>Production pipeline:</b>
+Missing transaction amount → Replace with ₹0 → XGBoost prediction
+
+The model receives different feature values for equivalent missing-data cases. Because XGBoost makes decisions using learned feature thresholds, this inconsistency can send a transaction down a different decision path and change its predicted fraud probability.
+
+<b>Why not concept drift?</b>
+<b>Concept drift</b> occurs when the relationship between input features and the target changes over time. For example, fraudsters might change their behavior so that patterns previously associated with fraud are no longer reliable.
+
+In this scenario, there is no evidence that the underlying relationship has changed. The identified problem is that the <b>preprocessing logic differs between training and inference</b>.
+
+<b>How to prevent training-serving skew:</b>
+• <b>Training:</b> Calculate preprocessing values such as medians, means, and category mappings using the training data.
+• <b>Save:</b> Store the fitted preprocessing pipeline and its learned values alongside the model.
+• <b>Production:</b> Reuse those exact saved values for incoming requests instead of recalculating them or substituting different defaults.
+• <b>Testing:</b> Run identical inputs through both pipelines and verify that the resulting features match.
+• <b>Deployment:</b> Version and deploy the preprocessing pipeline and model together.
+
+For example, if the training median is ₹300, a missing transaction amount in production should also be replaced with ₹300, not ₹0.
+
+The production service does not need access to the original training dataset. It needs the <b>trained model and the fitted preprocessing rules and values</b>.
+
+<b>Correct answer:</b> Training-serving skew — the same feature is processed differently during training and inference.","MLOps","Training-Serving Skew; Data Preprocessing; Feature Consistency; Concept Drift; XGBoost","XI-00034",""
