@@ -1870,3 +1870,31 @@ With <b>max pooling</b>, the contract receives the highest window risk score, 0.
 The 300 ms latency target is not guaranteed by batching alone. Benchmark end-to-end inference on the actual GPU, including tokenization, all windows, and aggregation. Mixed-precision inference, optimized batching, and a stride of 384 rather than 128 may help. Validate recall on risky clauses and contract-level F1 before deployment. For high-risk legal decisions, tune the classification threshold to reflect the cost of missed risks.
 
 <b>Correct answer:</b> Split the contract into overlapping windows, process them with the existing BERT model, and aggregate the window-level scores. This addresses truncation while avoiding the need to train a new large model from scratch.","Deep Learning","BERT; Long Documents; Sliding Window; Overlapping Chunks; Score Aggregation; Max Pooling; Attention Pooling; Inference Latency","XI-00037",""
+"XI-00042","You want to serve <b>Llama-3.1-70B-Instruct</b> with <b>vLLM</b> on 2 × A100 80GB GPUs (160GB total) using tensor parallelism. The internal assistant must support approximately 40 concurrent users, each with an average context of 4K tokens. In FP16, the weights require approximately 140GB, and the KV cache for these sessions needs about 50GB more. The deployment fails with <b>out-of-memory (OOM)</b> errors at startup, and the budget allows only these two GPUs. What is the most appropriate fix?","Switch to pipeline parallelism instead of tensor parallelism, because it shards the model more efficiently and reduces total memory usage.","Quantize the weights to 4-bit using AWQ or GPTQ, freeing memory for the KV cache, and validate model quality on your evaluation set before rollout.","Offload part of the model layers to CPU RAM so the GPUs only hold the portions that fit.","Reduce maximum context length and concurrency until the FP16 model fits, because prediction quality should remain unchanged.","B","<b>Key hints in the question:</b>
+• <b>70B parameters in FP16:</b> The weights require approximately 140GB.
+• <b>KV cache:</b> The estimated requirement is another 50GB for 40 concurrent sessions.
+• <b>GPU budget:</b> Only two A100 80GB GPUs are available, providing 160GB of physical GPU memory.
+• <b>Startup OOM:</b> The deployment cannot accommodate the required model and runtime memory.
+
+<b>What is happening?</b>
+The estimated combined requirement is approximately 190GB for weights and KV cache alone, before accounting for CUDA graphs, activations, and other runtime allocations. This exceeds the available 160GB. vLLM also manages GPU memory according to its configured memory utilization, so not all physical memory is necessarily available to the KV cache and runtime.
+
+<b>Why 4-bit quantization is the best answer:</b>
+Weight quantization represents model parameters with fewer bits, substantially reducing the memory required to load the model. A 70B model's raw 4-bit weights require approximately 35GB in decimal units, with additional memory needed for quantization scales, metadata, and implementation overhead. An actual deployment may use roughly 40GB or more for quantized weights, depending on the method.
+
+This frees substantial GPU memory for the KV cache, batching, and runtime overhead. Methods such as <b>AWQ</b> and <b>GPTQ</b> support 4-bit weight quantization in compatible inference configurations. The quantized model must be tested with the chosen vLLM version and hardware.
+
+<b>Practical deployment example:</b>
+• Quantized weights: approximately 40GB, depending on the checkpoint.
+• KV cache: approximately 50GB, based on the question's estimate.
+• Remaining GPU memory: available for runtime allocations and additional headroom.
+
+The total estimate is around 90GB before runtime overhead, making this approach much more feasible within the two-GPU budget. Actual KV-cache capacity depends on the model configuration, cache dtype, supported block allocation, and vLLM settings.
+
+<b>Why the other options are less suitable:</b>
+• <b>Pipeline parallelism:</b> It distributes layers across GPUs but does not reduce the total memory occupied by FP16 weights and KV-cache entries. Tensor parallelism already shards the model across the two GPUs.
+• <b>CPU offloading:</b> It can reduce GPU memory pressure, but moving model data between CPU RAM and GPU memory can significantly hurt latency and throughput, especially for interactive serving with many concurrent users.
+• <b>Reducing context and concurrency:</b> This reduces KV-cache demand, but the FP16 weights alone consume approximately 140GB of the 160GB total. There is insufficient room for reliable runtime operation, and reducing context can prevent users from processing longer conversations.
+
+<b>Production caution:</b>
+Four-bit quantization can affect accuracy differently across reasoning, coding, and other tasks. Evaluate the quantized checkpoint against representative prompts and task-specific metrics before deployment. Also benchmark time to first token, inter-token latency, throughput, and concurrency under realistic load. Quantization makes the deployment more feasible; it does not by itself guarantee the required latency or support for all 40 concurrent users.","LLM Inference","Llama 3.1 70B; vLLM; GPU Memory Optimization; 4-bit Quantization; AWQ; GPTQ; KV Cache; Tensor Parallelism; Concurrent Inference","XI-00023",""
