@@ -1821,3 +1821,24 @@ For example, if the training median is ₹300, a missing transaction amount in p
 The production service does not need access to the original training dataset. It needs the <b>trained model and the fitted preprocessing rules and values</b>.
 
 <b>Correct answer:</b> Training-serving skew — the same feature is processed differently during training and inference.","MLOps","Training-Serving Skew; Data Preprocessing; Feature Consistency; Concept Drift; XGBoost","XI-00034",""
+"XI-00040","A bank deploys an <b>XGBoost</b> model to predict loan defaults. After three months, the model's recall drops from 85% to 62%. The ML team finds that the distributions of input features, such as income, credit score, and loan amount, have remained almost unchanged. However, the overall loan default rate has increased from 5% to 12%. Further investigation reveals that, for customers with similar feature values, the relationship between those features and default risk has changed because lending conditions and borrower behavior have shifted. What is the <b>primary type of drift</b> affecting the model?","Data drift — because the model's performance has declined in production.","Concept drift — because the relationship between input features and the target outcome has changed.","Training-serving skew — because production data is being processed differently from training data.","Label drift — because the proportion of default and non-default outcomes has changed.","B","<b>Key hints in the question:</b>
+• The distributions of input features, such as income and credit score, remain almost unchanged.
+• The default rate increases from 5% to 12%.
+• Most importantly, the relationship between customer features and default risk has changed.
+
+<b>What is happening?</b>
+The model learned patterns from historical lending conditions and borrower behavior. However, those patterns no longer describe the current environment accurately. For example, customers with similar incomes and credit scores may now have different default risks because borrowing costs, repayment behavior, or economic conditions have changed.
+
+<b>Why concept drift is correct:</b>
+<b>Concept drift</b> occurs when the relationship between input features (X) and the target outcome (Y) changes over time. In this scenario, the relationship between customer characteristics and loan defaults has changed, reducing the model's ability to identify future defaults.
+
+<b>Why the other options are incorrect:</b>
+• <b>Data drift:</b> This refers to changes in the distribution of input features, such as a shift toward lower credit scores. The question states that these distributions have remained almost unchanged.
+• <b>Training-serving skew:</b> This occurs when training and production use inconsistent feature processing or transformations. There is no evidence of such a mismatch.
+• <b>Label drift:</b> The proportion of default outcomes has increased from 5% to 12%, so label drift is also present. However, the question explicitly confirms that the relationship between features and default risk has changed, making concept drift the primary answer.
+
+<b>Important distinction:</b>
+Data drift concerns changes in input distributions. Label drift concerns changes in the overall target proportions. Concept drift concerns changes in the relationship between inputs and outcomes. Prediction drift concerns changes in model score distributions, while model performance drift means metrics such as recall or accuracy have deteriorated. These phenomena can occur together.
+
+<b>Practical response:</b>
+The team should investigate feature-to-outcome relationships, monitor recall and precision, evaluate the model on recent labeled data, and consider retraining with representative recent examples. They should also investigate why the default rate changed rather than assuming retraining alone will solve the problem.","MLOps","Concept Drift; Data Drift; Label Drift; Prediction Drift; Model Performance Drift; Drift Monitoring","XI-00039",""
