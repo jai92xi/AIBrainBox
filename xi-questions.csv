@@ -1842,3 +1842,31 @@ Data drift concerns changes in input distributions. Label drift concerns changes
 
 <b>Practical response:</b>
 The team should investigate feature-to-outcome relationships, monitor recall and precision, evaluate the model on recent labeled data, and consider retraining with representative recent examples. They should also investigate why the default rate changed rather than assuming retraining alone will solve the problem.","MLOps","Concept Drift; Data Drift; Label Drift; Prediction Drift; Model Performance Drift; Drift Monitoring","XI-00039",""
+"XI-00041","You’re building a <b>contract-risk classifier</b> with <b>bert-base-uncased</b> that labels each contract as high risk or normal. Contracts average 8,000 tokens, and risky clauses, such as uncapped liability or auto-renewal traps, can appear anywhere in the document. The current pipeline truncates each contract to the first 512 tokens and achieves F1 = 0.64. You have a single GPU, a latency budget of 300 ms per contract, and cannot afford to retrain a large model from scratch. What is the most effective approach?","Extend BERT’s position embeddings to 8,192 tokens and fine-tune it so attention covers the entire contract at once.","Split each contract into overlapping 512-token windows, such as stride 128, batch them through BERT, and aggregate the per-window risk scores using max pooling or attention pooling to produce a contract-level prediction.","Truncate each contract to the first 256 and last 256 tokens, since the opening and closing sections usually contain the key terms.","Switch to Longformer-base with a 4,096-token window and truncate each contract to 4,096 tokens.","B","<b>Key hints in the question:</b>
+• <b>8,000-token contracts:</b> Important clauses may occur anywhere, including the middle.
+• <b>BERT's 512-token limit:</b> The current pipeline discards most of the document.
+• <b>Single GPU and 300 ms latency budget:</b> The solution must be evaluated for both inference cost and predictive performance.
+• <b>No training from scratch:</b> Reuse the existing pretrained BERT model.
+
+<b>Why the sliding-window approach is correct:</b>
+Split each contract into overlapping chunks that fit within BERT's 512-token input limit. With a window size of 512 and stride of 384, an 8,000-token contract requires approximately 21 windows. A smaller stride, such as 128, creates more overlap and requires approximately 59 windows, increasing inference cost.
+
+Process the windows in batches on the GPU and obtain a risk score for each window. Then combine those scores into one contract-level prediction.
+
+<b>Example:</b>
+• Window 1: Normal — risk score 0.08
+• Window 2: Normal — risk score 0.17
+• Window 3: High risk — risk score 0.94
+• Remaining windows: Lower risk scores
+
+With <b>max pooling</b>, the contract receives the highest window risk score, 0.94, and can be classified as high risk if that score exceeds the chosen threshold. <b>Attention pooling</b> can learn to assign greater importance to informative windows, but requires training the aggregation component.
+
+<b>Why the other options are less suitable:</b>
+• <b>Extending BERT to 8,192 tokens:</b> BERT-base was pretrained with shorter positional embeddings. Extending its context requires careful positional adaptation and fine-tuning; standard full self-attention also becomes much more expensive as sequence length increases.
+• <b>Keeping only the first and last 256 tokens:</b> This misses risky clauses in the middle of the contract, directly violating the requirement that clauses can appear anywhere.
+• <b>Switching to Longformer-base:</b> Its sparse attention supports longer sequences more efficiently than standard full attention, but a 4,096-token input still omits part of an 8,000-token contract.
+
+<b>Production consideration:</b>
+The 300 ms latency target is not guaranteed by batching alone. Benchmark end-to-end inference on the actual GPU, including tokenization, all windows, and aggregation. Mixed-precision inference, optimized batching, and a stride of 384 rather than 128 may help. Validate recall on risky clauses and contract-level F1 before deployment. For high-risk legal decisions, tune the classification threshold to reflect the cost of missed risks.
+
+<b>Correct answer:</b> Split the contract into overlapping windows, process them with the existing BERT model, and aggregate the window-level scores. This addresses truncation while avoiding the need to train a new large model from scratch.","Deep Learning","BERT; Long Documents; Sliding Window; Overlapping Chunks; Score Aggregation; Max Pooling; Attention Pooling; Inference Latency","XI-00037",""
