@@ -1,8 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -12,7 +12,7 @@
 
     <meta
         name="description"
-        content="A box full of ahaaaaaaa8 questions!!"
+        content="A box full of Ahaaaaaaa questions!!"
     >
 
     <title>AIBrainBox</title>
@@ -21,33 +21,20 @@
         rel="stylesheet"
         href="style.css"
     >
-
 </head>
-
 
 <body class="light-theme">
 
-    <!-- =================================================
-         BACKGROUND
-         ================================================= -->
-
+    <!-- Background -->
     <div
         id="background-overlay"
         aria-hidden="true"
     ></div>
 
-
-    <!-- =================================================
-         MAIN PAGE
-         ================================================= -->
-
+    <!-- Main Page -->
     <main class="page-wrapper">
 
-
-        <!-- =================================================
-             HEADER
-             ================================================= -->
-
+        <!-- Combined Header Box -->
         <header class="brain-box-header">
 
             <div class="brand-area">
@@ -57,10 +44,10 @@
                 </div>
 
                 <div class="brand-tagline">
-                    A box full of ahaaaaaaa8 questions!!
+                    A box full of Ahaaaaaaa questions!!
                 </div>
 
-                <!-- Kept for app.js compatibility -->
+                <!-- Retained for app.js compatibility -->
                 <div
                     class="brand-subtitle"
                     style="display: none;"
@@ -68,11 +55,7 @@
 
             </div>
 
-
-            <!-- =================================================
-                 SCORE / STREAK
-                 ================================================= -->
-
+            <!-- Current Streak -->
             <div
                 id="score-display"
                 class="score-display"
@@ -82,11 +65,7 @@
                 <strong>0</strong>
             </div>
 
-
-            <!-- =================================================
-                 DAILY / RANDOM QUOTE
-                 ================================================= -->
-
+            <!-- Motivational Quote -->
             <div class="quote-section">
 
                 <div
@@ -107,109 +86,58 @@
 
         </header>
 
-
-        <!-- =================================================
-             QUIZ AREA
-             ================================================= -->
-
+        <!-- Quiz Area -->
         <section
             id="quiz-area"
             class="quiz-area"
         >
 
-
-            <!-- =================================================
-                 ERROR MESSAGE
-                 ================================================= -->
-
+            <!-- Error Message -->
             <div
                 id="error"
                 class="error hidden"
                 role="alert"
             ></div>
 
-
-            <!-- =================================================
-                 QUESTION CONTAINER
-                 ================================================= -->
-
+            <!-- Question Container -->
             <section
                 id="question-container"
                 class="question-container hidden"
             >
 
-
-                <!-- =================================================
-                     RANDOM NAVIGATION
-
-                     IMPORTANT:
-
-                     Previous and Next are RANDOM.
-
-                     They do NOT use:
-
-                     - CSV row order
-                     - previous related question
-                     - next related question
-
-                     app.js maintains a history of already
-                     displayed questions so questions do not
-                     repeat until the current cycle is complete.
-                     ================================================= -->
-
+                <!-- Sequential Question Navigation -->
                 <nav
                     class="related-navigation"
-                    aria-label="Random question navigation"
+                    aria-label="Sequential question navigation"
                 >
-
-
-                    <!-- =================================================
-                         PREVIOUS RANDOM QUESTION
-                         ================================================= -->
 
                     <button
                         id="previous-question"
                         class="related-question previous-related"
                         type="button"
-                        aria-label="Previous random question"
-                        title="Random question"
+                        aria-label="Previous question"
+                        title="Previous question"
+                        disabled
                     >
-                        <span aria-hidden="true">
-                            ←
-                        </span>
+                        <span aria-hidden="true">←</span>
                     </button>
-
-
-                    <!-- =================================================
-                         NEXT RANDOM QUESTION
-                         ================================================= -->
 
                     <button
                         id="next-question"
                         class="related-question next-related"
                         type="button"
-                        aria-label="Next random question"
-                        title="Random question"
+                        aria-label="Next question"
+                        title="Next question"
                     >
-                        <span aria-hidden="true">
-                            →
-                        </span>
+                        <span aria-hidden="true">→</span>
                     </button>
 
                 </nav>
 
-
-                <!-- =================================================
-                     QUIZ TWO-COLUMN LAYOUT
-                     ================================================= -->
-
+                <!-- Quiz Content -->
                 <div class="quiz-columns">
 
-
-                    <!-- =================================================
-                         QUESTION PANE
-                         ================================================= -->
-
+                    <!-- Question Pane -->
                     <section
                         class="question-pane"
                         aria-labelledby="question-label"
@@ -222,7 +150,6 @@
                             Question
                         </div>
 
-
                         <div
                             id="question"
                             class="question"
@@ -230,11 +157,7 @@
 
                     </section>
 
-
-                    <!-- =================================================
-                         ANSWER OPTIONS PANE
-                         ================================================= -->
-
+                    <!-- Answer Options Pane -->
                     <section
                         class="options-pane"
                         aria-label="Answer options"
@@ -244,39 +167,20 @@
                             Choose your answer
                         </div>
 
-
-                        <!-- =================================================
-                             OPTIONS
-
-                             app.js dynamically creates:
-
-                             A
-                             B
-                             C
-                             D
-                             ================================================= -->
-
+                        <!-- Options generated by app.js -->
                         <div
                             id="options"
                             class="options"
                         ></div>
 
-
-                        <!-- =================================================
-                             ANSWER RESULT
-                             ================================================= -->
-
+                        <!-- Answer Result -->
                         <div
                             id="result"
                             class="result"
                             aria-live="polite"
                         ></div>
 
-
-                        <!-- =================================================
-                             EXPLANATION
-                             ================================================= -->
-
+                        <!-- Explanation -->
                         <div
                             id="explanation"
                             class="explanation hidden"
@@ -285,7 +189,6 @@
                             <div class="explanation-title">
                                 💡 Explanation
                             </div>
-
 
                             <div
                                 id="explanation-text"
@@ -304,11 +207,7 @@
 
     </main>
 
-
-    <!-- =================================================
-         APPLICATION JAVASCRIPT
-         ================================================= -->
-
+    <!-- Application JavaScript -->
     <script
         src="app.js"
         defer
