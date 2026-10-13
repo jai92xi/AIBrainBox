@@ -1,3 +1,4 @@
+
 /* =========================================================
    AIBrainBox - app.js
    ========================================================= */
@@ -7,1765 +8,641 @@ const QUOTES_URL = "./xi-Quotes.csv";
 
 let questions = [];
 let quotes = [];
-
 let currentQuestion = null;
 let currentQuestionIndex = 0;
 let currentStreak = 0;
 let answerSelected = false;
 
-/*
- * =========================================================
- * RANDOM QUESTION HISTORY
- * =========================================================
- *
- * Stores question IDs already displayed in the
- * current random cycle.
- *
- * A question will NOT be shown again until all
- * questions in the CSV have been displayed.
- */
-let shownQuestionIds = new Set();
+const questionContainer = document.getElementById("question-container");
+const questionElement = document.getElementById("question");
+const optionsElement = document.getElementById("options");
+const resultElement = document.getElementById("result");
+const explanationElement = document.getElementById("explanation");
+const explanationTextElement = document.getElementById("explanation-text");
+const scoreElement = document.getElementById("score-display");
+const errorElement = document.getElementById("error");
+const quoteTextElement = document.getElementById("quote-text");
+const quoteAuthorElement = document.getElementById("quote-author");
+const previousButton = document.getElementById("previous-question");
+const nextButton = document.getElementById("next-question");
 
-
-/* =========================================================
-   DOM ELEMENTS
-   ========================================================= */
-
-const questionContainer =
-    document.getElementById("question-container");
-
-const questionElement =
-    document.getElementById("question");
-
-const optionsElement =
-    document.getElementById("options");
-
-const resultElement =
-    document.getElementById("result");
-
-const explanationElement =
-    document.getElementById("explanation");
-
-const explanationTextElement =
-    document.getElementById("explanation-text");
-
-const scoreElement =
-    document.getElementById("score-display");
-
-const errorElement =
-    document.getElementById("error");
-
-const quoteTextElement =
-    document.getElementById("quote-text");
-
-const quoteAuthorElement =
-    document.getElementById("quote-author");
-
-const previousButton =
-    document.getElementById("previous-question");
-
-const nextButton =
-    document.getElementById("next-question");
-
-
-/* =========================================================
-   INITIALIZATION
-   ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeApp
-);
-
+document.addEventListener("DOMContentLoaded", initializeApp);
 
 async function initializeApp() {
+    document.body.classList.add("light-theme");
 
-    document.body.classList.add(
-        "light-theme"
-    );
-
-    const subtitle =
-        document.querySelector(
-            ".brand-subtitle"
-        );
+    const subtitle = document.querySelector(".brand-subtitle");
 
     if (subtitle) {
-        subtitle.textContent = "";
-        subtitle.style.display = "none";
+        subtitle.textContent = "A box full of Ahaaaaaaa questions!!";
+        subtitle.style.display = "";
     }
 
     setupNavigation();
+    updateScore();
 
     try {
-
         await Promise.all([
             loadQuestions(),
             loadQuotes()
         ]);
-
     } catch (error) {
-
-        console.error(
-            "Application initialization failed:",
-            error
-        );
-
-        showError(
-            "Unable to load the question database. Please check xi-questions.csv."
-        );
+        console.error("Application initialization failed:", error);
+        showError("Unable to load the question database. Please check xi-questions.csv.");
     }
 }
 
-
 /* =========================================================
-   LOAD QUESTIONS
+   CSV LOADING
    ========================================================= */
 
 async function loadQuestions() {
+    const response = await fetch(`${CSV_URL}?v=${Date.now()}`, {
+        cache: "no-store"
+    });
 
-    try {
-
-        const response =
-            await fetch(
-                `${CSV_URL}?v=${Date.now()}`,
-                {
-                    cache: "no-store"
-                }
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                `Unable to load ${CSV_URL}`
-            );
-        }
-
-        const csvText =
-            await response.text();
-
-        questions =
-            parseCSV(csvText);
-
-        if (
-            !questions ||
-            questions.length === 0
-        ) {
-
-            throw new Error(
-                "No questions found."
-            );
-        }
-
-        loadQuestionFromURL();
-
-    } catch (error) {
-
-        console.error(
-            "Questions could not be loaded:",
-            error
-        );
-
-        showError(
-            "Unable to load questions. Please check the CSV file."
-        );
-
-        throw error;
+    if (!response.ok) {
+        throw new Error(`Unable to load ${CSV_URL}`);
     }
+
+    const csvText = await response.text();
+
+    questions = parseCSV(csvText);
+
+    if (!questions.length) {
+        throw new Error("No questions found.");
+    }
+
+    // Display questions in ID sequence instead of random order.
+    questions.sort((a, b) =>
+        getQuestionId(a).localeCompare(
+            getQuestionId(b),
+            undefined,
+            { numeric: true, sensitivity: "base" }
+        )
+    );
+
+    loadQuestionFromURL();
 }
-
-
-/* =========================================================
-   LOAD QUOTES
-   ========================================================= */
 
 async function loadQuotes() {
-
     try {
+        const response = await fetch(`${QUOTES_URL}?v=${Date.now()}`, {
+            cache: "no-store"
+        });
 
-        const response =
-            await fetch(
-                `${QUOTES_URL}?v=${Date.now()}`,
-                {
-                    cache: "no-store"
-                }
-            );
+        if (!response.ok) return;
 
-        if (!response.ok) {
-
-            console.warn(
-                `Unable to load ${QUOTES_URL}`
-            );
-
-            return;
-        }
-
-        const csvText =
-            await response.text();
-
-        quotes =
-            parseCSV(csvText);
-
-        console.log(
-            `Loaded ${quotes.length} quotes.`
-        );
-
+        quotes = parseCSV(await response.text());
         displayRandomQuote();
-
     } catch (error) {
-
-        console.warn(
-            "Quotes could not be loaded:",
-            error
-        );
+        console.warn("Quotes could not be loaded:", error);
     }
 }
-
 
 /* =========================================================
    CSV PARSER
+   Supports commas, quoted fields and multiline values.
    ========================================================= */
 
 function parseCSV(text) {
-
     const rows = [];
-
     let row = [];
     let value = "";
     let insideQuotes = false;
 
-    for (
-        let i = 0;
-        i < text.length;
-        i++
-    ) {
-
-        const character =
-            text[i];
-
-        const nextCharacter =
-            text[i + 1];
+    for (let i = 0; i < text.length; i++) {
+        const character = text[i];
+        const nextCharacter = text[i + 1];
 
         if (character === '"') {
-
-            if (
-                insideQuotes &&
-                nextCharacter === '"'
-            ) {
-
+            if (insideQuotes && nextCharacter === '"') {
                 value += '"';
                 i++;
-
             } else {
-
-                insideQuotes =
-                    !insideQuotes;
+                insideQuotes = !insideQuotes;
             }
-
-        } else if (
-            character === "," &&
-            !insideQuotes
-        ) {
-
+        } else if (character === "," && !insideQuotes) {
             row.push(value);
             value = "";
-
         } else if (
-            (
-                character === "\n" ||
-                character === "\r"
-            ) &&
+            (character === "\n" || character === "\r") &&
             !insideQuotes
         ) {
-
-            if (
-                character === "\r" &&
-                nextCharacter === "\n"
-            ) {
+            if (character === "\r" && nextCharacter === "\n") {
                 i++;
             }
 
             row.push(value);
-            value = "";
 
-            if (
-                row.some(
-                    cell =>
-                        cell.trim() !== ""
-                )
-            ) {
-
+            if (row.some(cell => cell.trim() !== "")) {
                 rows.push(row);
             }
 
             row = [];
-
+            value = "";
         } else {
-
             value += character;
         }
     }
 
-
-    if (
-        value !== "" ||
-        row.length > 0
-    ) {
-
+    if (value !== "" || row.length > 0) {
         row.push(value);
 
-        if (
-            row.some(
-                cell =>
-                    cell.trim() !== ""
-            )
-        ) {
-
+        if (row.some(cell => cell.trim() !== "")) {
             rows.push(row);
         }
     }
 
+    if (!rows.length) return [];
 
-    if (
-        rows.length === 0
-    ) {
+    const headers = rows[0].map(header => header.trim());
 
-        return [];
-    }
+    return rows.slice(1).map(rowValues => {
+        const object = {};
 
-
-    const headers =
-        rows[0].map(
-            header =>
-                header.trim()
-        );
-
-
-    return rows
-        .slice(1)
-        .map(row => {
-
-            const object = {};
-
-            headers.forEach(
-                (
-                    header,
-                    index
-                ) => {
-
-                    object[header] =
-                        (
-                            row[index] ||
-                            ""
-                        ).trim();
-                }
-            );
-
-            return object;
+        headers.forEach((header, index) => {
+            object[header] = (rowValues[index] || "").trim();
         });
+
+        return object;
+    });
 }
 
-
 /* =========================================================
-   GET CSV VALUE
+   CSV VALUE HELPERS
    ========================================================= */
 
-function getValue(
-    object,
-    possibleNames
-) {
+function getValue(object, possibleNames) {
+    if (!object) return "";
 
-    if (!object) {
-        return "";
-    }
+    const keys = Object.keys(object);
 
-    const keys =
-        Object.keys(object);
+    for (const name of possibleNames) {
+        const matchingKey = keys.find(key =>
+            key.trim().toLowerCase() === name.trim().toLowerCase()
+        );
 
-    for (
-        const name of possibleNames
-    ) {
-
-        const matchingKey =
-            keys.find(
-                key =>
-                    key
-                        .trim()
-                        .toLowerCase() ===
-                    name
-                        .trim()
-                        .toLowerCase()
-            );
-
-        if (
-            matchingKey !== undefined
-        ) {
-
-            return (
-                object[matchingKey] ||
-                ""
-            );
+        if (matchingKey !== undefined) {
+            return object[matchingKey] || "";
         }
     }
 
     return "";
 }
 
-
-/* =========================================================
-   QUESTION ID
-   ========================================================= */
-
-function getQuestionId(
-    question
-) {
-
-    return getValue(
-        question,
-        [
-            "ID",
-            "Id",
-            "id",
-            "Question ID",
-            "QuestionID"
-        ]
-    );
+function getQuestionId(question) {
+    return getValue(question, [
+        "ID",
+        "Id",
+        "id",
+        "Question ID",
+        "QuestionID"
+    ]);
 }
-
 
 function getQuestionIdFromURL() {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    return params.get("id");
+    return new URLSearchParams(window.location.search).get("id");
 }
-
-
-/* =========================================================
-   FIND QUESTION BY ID
-   ========================================================= */
 
 function findQuestionById(id) {
+    if (!id) return null;
 
-    if (!id) {
-        return null;
-    }
-
-    return (
-        questions.find(
-            question =>
-                getQuestionId(question)
-                    .toLowerCase() ===
-                id.toLowerCase()
-        ) ||
-        null
-    );
+    return questions.find(question =>
+        getQuestionId(question).toLowerCase() === id.toLowerCase()
+    ) || null;
 }
 
-
-/* =========================================================
-   MARK QUESTION AS SHOWN
-   ========================================================= */
-
-function markQuestionAsShown(
-    question
-) {
-
-    if (!question) {
-        return;
-    }
-
-    const questionId =
-        getQuestionId(question);
-
-    if (questionId) {
-
-        shownQuestionIds.add(
-            questionId
-        );
-    }
+function getCorrectAnswer(question) {
+    return getValue(question, [
+        "Correct Answer",
+        "CorrectAnswer",
+        "Correct answer",
+        "Answer",
+        "answer",
+        "Correct"
+    ]);
 }
 
-
-/* =========================================================
-   GET RANDOM UNSEEN QUESTION
-   ========================================================= */
-
-/*
- * Selects a random question that has NOT already
- * been displayed during the current cycle.
- *
- * The current question is excluded as well.
- *
- * IMPORTANT:
- *
- * CSV order is completely ignored.
- *
- * Example:
- *
- * CSV:
- * Q1
- * Q2
- * Q3
- * Q4
- * Q5
- *
- * User sees:
- *
- * Q3 → Q1 → Q5 → Q2 → Q4
- *
- * No question repeats.
- *
- * After Q4, a new cycle begins.
- */
-
-function getRandomUnseenQuestion() {
-
-    if (
-        !questions ||
-        questions.length === 0
-    ) {
-
-        return null;
-    }
-
-
-    const currentId =
-        currentQuestion
-            ? getQuestionId(
-                currentQuestion
-            )
-            : null;
-
-
-    /*
-     * Find all questions that:
-     *
-     * 1. Have not been shown
-     * 2. Are not the current question
-     */
-
-    let availableQuestions =
-        questions.filter(
-            question => {
-
-                const id =
-                    getQuestionId(
-                        question
-                    );
-
-                return (
-                    id &&
-                    !shownQuestionIds.has(id) &&
-                    id !== currentId
-                );
-            }
-        );
-
-
-    /*
-     * If there are no unseen questions left,
-     * start a completely new random cycle.
-     */
-
-    if (
-        availableQuestions.length === 0
-    ) {
-
-        shownQuestionIds =
-            new Set();
-
-
-        /*
-         * Do not immediately show the
-         * current question again.
-         */
-
-        availableQuestions =
-            questions.filter(
-                question => {
-
-                    const id =
-                        getQuestionId(
-                            question
-                        );
-
-                    return (
-                        id &&
-                        id !== currentId
-                    );
-                }
-            );
-    }
-
-
-    /*
-     * Select a random question from
-     * the remaining available questions.
-     */
-
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            availableQuestions.length
-        );
-
-
-    return availableQuestions[
-        randomIndex
-    ];
+function normalizeAnswer(answer) {
+    return String(answer || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
 }
 
+function formatMultilineHTML(value) {
+    return String(value || "").replace(/\r\n|\r|\n/g, "<br>");
+}
 
 /* =========================================================
    LOAD QUESTION FROM URL
    ========================================================= */
 
 function loadQuestionFromURL() {
+    const requestedId = getQuestionIdFromURL();
 
-    const requestedId =
-        getQuestionIdFromURL();
+    let question = requestedId
+        ? findQuestionById(requestedId)
+        : null;
 
-    let question = null;
-
-
-    /*
-     * If ?id=XXXX exists, load that exact
-     * question first.
-     *
-     * This preserves shareable question URLs.
-     */
-
-    if (requestedId) {
-
-        question =
-            findQuestionById(
-                requestedId
-            );
+    if (!question && questions.length) {
+        question = questions[0];
     }
-
-
-    /*
-     * If there is no valid ID in the URL,
-     * select a random question.
-     */
-
-    if (
-        !question &&
-        questions.length
-    ) {
-
-        question =
-            getRandomUnseenQuestion();
-    }
-
 
     if (question) {
-
-        displayQuestion(
-            question,
-            false
-        );
-
+        displayQuestion(question, false);
     } else {
-
-        showError(
-            "No questions are available."
-        );
+        showError("No questions are available.");
     }
 }
-
 
 /* =========================================================
    DISPLAY QUESTION
    ========================================================= */
 
-function displayQuestion(
-    question,
-    updateURL = true
-) {
+function displayQuestion(question, updateURL = true) {
+    if (!question) return;
 
-    if (!question) {
-        return;
-    }
+    currentQuestion = question;
+    currentQuestionIndex = questions.indexOf(question);
+    answerSelected = false;
 
+    const questionId = getQuestionId(question);
 
-    currentQuestion =
-        question;
-
-
-    currentQuestionIndex =
-        questions.indexOf(
-            question
-        );
-
-
-    /*
-     * IMPORTANT:
-     *
-     * Every displayed question is added
-     * to the shown-question history.
-     */
-
-    markQuestionAsShown(
-        question
-    );
-
-
-    answerSelected =
-        false;
-
-
-    const questionId =
-        getQuestionId(
-            question
-        );
-
-
-    /*
-     * Update browser URL without
-     * reloading the page.
-     */
-
-    if (
-        updateURL &&
-        questionId
-    ) {
-
+    if (updateURL && questionId) {
         const newURL =
             `${window.location.pathname}?id=${encodeURIComponent(questionId)}`;
 
         window.history.pushState(
-            {
-                questionId:
-                    questionId
-            },
+            { questionId },
             "",
             newURL
         );
     }
 
+    const questionText = getValue(question, [
+        "Question",
+        "question",
+        "Questions"
+    ]);
 
-    /* =====================================================
-       QUESTION
-       ===================================================== */
+    questionElement.innerHTML = formatMultilineHTML(questionText);
 
-    const questionText =
-        getValue(
-            question,
-            [
-                "Question",
-                "question",
-                "Questions"
-            ]
-        );
+    renderOptions(question);
 
+    resultElement.textContent = "";
+    resultElement.className = "result";
 
-    questionElement.innerHTML =
-        questionText;
-
-
-    /* =====================================================
-       OPTIONS
-       ===================================================== */
-
-    renderOptions(
-        question
-    );
-
-
-    /* =====================================================
-       RESET RESULT
-       ===================================================== */
-
-    resultElement.textContent =
-        "";
-
-    resultElement.className =
-        "result";
-
-
-    /* =====================================================
-       RESET EXPLANATION
-       ===================================================== */
-
-    explanationTextElement.innerHTML =
-        "";
-
-    explanationElement.classList.add(
-        "hidden"
-    );
-
-
-    /* =====================================================
-       NAVIGATION
-       ===================================================== */
+    explanationTextElement.innerHTML = "";
+    explanationElement.classList.add("hidden");
 
     updateRelatedNavigation();
 
+    questionContainer.classList.remove("hidden");
 
-    /* =====================================================
-       SHOW QUESTION
-       ===================================================== */
-
-    questionContainer.classList.remove(
-        "hidden"
-    );
+    if (errorElement) {
+        errorElement.classList.add("hidden");
+    }
 }
-
 
 /* =========================================================
    RENDER OPTIONS
    ========================================================= */
 
-function renderOptions(
-    question
-) {
-
-    optionsElement.innerHTML =
-        "";
-
+function renderOptions(question) {
+    optionsElement.innerHTML = "";
 
     const optionValues = [
-
-        getValue(
-            question,
-            [
-                "Option A",
-                "option A",
-                "A",
-                "OptionA"
-            ]
-        ),
-
-        getValue(
-            question,
-            [
-                "Option B",
-                "option B",
-                "B",
-                "OptionB"
-            ]
-        ),
-
-        getValue(
-            question,
-            [
-                "Option C",
-                "option C",
-                "C",
-                "OptionC"
-            ]
-        ),
-
-        getValue(
-            question,
-            [
-                "Option D",
-                "option D",
-                "D",
-                "OptionD"
-            ]
-        )
+        getValue(question, ["Option A", "option A", "A", "OptionA"]),
+        getValue(question, ["Option B", "option B", "B", "OptionB"]),
+        getValue(question, ["Option C", "option C", "C", "OptionC"]),
+        getValue(question, ["Option D", "option D", "D", "OptionD"])
     ];
 
+    const labels = ["A", "B", "C", "D"];
 
-    const labels = [
-        "A",
-        "B",
-        "C",
-        "D"
-    ];
+    optionValues.forEach((optionText, index) => {
+        if (!optionText) return;
 
+        const optionButton = document.createElement("button");
+        optionButton.type = "button";
+        optionButton.className = "option";
+        optionButton.dataset.answer = optionText;
+        optionButton.dataset.index = String(index);
 
-    optionValues.forEach(
-        (
-            optionText,
-            index
-        ) => {
+        const optionLabel = document.createElement("span");
+        optionLabel.className = "option-label";
+        optionLabel.textContent = labels[index];
 
-            if (!optionText) {
-                return;
-            }
+        const optionContent = document.createElement("span");
+        optionContent.className = "option-text";
+        optionContent.innerHTML = formatMultilineHTML(optionText);
 
+        optionButton.appendChild(optionLabel);
+        optionButton.appendChild(optionContent);
 
-            const optionButton =
-                document.createElement(
-                    "button"
-                );
+        optionButton.addEventListener("click", () => {
+            selectAnswer(optionButton, optionText);
+        });
 
-
-            optionButton.type =
-                "button";
-
-            optionButton.className =
-                "option";
-
-            optionButton.dataset.answer =
-                optionText;
-
-            optionButton.dataset.index =
-                index;
-
-
-            const optionLabel =
-                document.createElement(
-                    "span"
-                );
-
-            optionLabel.className =
-                "option-label";
-
-            optionLabel.textContent =
-                labels[index];
-
-
-            const optionContent =
-                document.createElement(
-                    "span"
-                );
-
-            optionContent.className =
-                "option-text";
-
-            optionContent.innerHTML =
-                optionText;
-
-
-            optionButton.appendChild(
-                optionLabel
-            );
-
-            optionButton.appendChild(
-                optionContent
-            );
-
-
-            optionButton.addEventListener(
-                "click",
-                () => {
-
-                    selectAnswer(
-                        optionButton,
-                        optionText
-                    );
-                }
-            );
-
-
-            optionsElement.appendChild(
-                optionButton
-            );
-        }
-    );
+        optionsElement.appendChild(optionButton);
+    });
 }
-
-
-/* =========================================================
-   GET CORRECT ANSWER
-   ========================================================= */
-
-function getCorrectAnswer(
-    question
-) {
-
-    return getValue(
-        question,
-        [
-            "Correct Answer",
-            "CorrectAnswer",
-            "Correct answer",
-            "Answer",
-            "answer",
-            "Correct"
-        ]
-    );
-}
-
-
-/* =========================================================
-   NORMALIZE ANSWER
-   ========================================================= */
-
-function normalizeAnswer(
-    answer
-) {
-
-    return String(
-        answer || ""
-    )
-        .trim()
-        .replace(
-            /\s+/g,
-            " "
-        )
-        .toLowerCase();
-}
-
 
 /* =========================================================
    SELECT ANSWER
    ========================================================= */
 
-function selectAnswer(
-    selectedButton,
-    selectedAnswer
-) {
+function selectAnswer(selectedButton, selectedAnswer) {
+    if (answerSelected) return;
 
-    if (answerSelected) {
-        return;
-    }
+    answerSelected = true;
 
+    const correctAnswer = getCorrectAnswer(currentQuestion);
+    const labels = ["A", "B", "C", "D"];
 
-    answerSelected =
-        true;
+    const selectedIndex = Number(selectedButton.dataset.index);
+    const selectedLabel = labels[selectedIndex] || "";
 
+    const selectedNormalized = normalizeAnswer(selectedLabel);
+    const correctNormalized = normalizeAnswer(correctAnswer);
 
-    const correctAnswer =
-        getCorrectAnswer(
-            currentQuestion
-        );
-
-
-    const labels = [
-        "A",
-        "B",
-        "C",
-        "D"
-    ];
-
-
-    const selectedIndex =
-        Number(
-            selectedButton.dataset.index
-        );
-
-
-    const selectedLabel =
-        labels[selectedIndex] ||
-        "";
-
-
-    const selectedNormalized =
-        normalizeAnswer(
-            selectedLabel
-        );
-
-
-    const correctNormalized =
-        normalizeAnswer(
-            correctAnswer
-        );
-
-
-    /*
-     * First compare A/B/C/D.
-     */
-
-    let isCorrect =
-        selectedNormalized ===
-        correctNormalized;
-
-
-    /*
-     * Fallback:
-     * compare the complete answer text.
-     */
+    let isCorrect = selectedNormalized === correctNormalized;
 
     if (!isCorrect) {
-
-        const selectedTextNormalized =
-            normalizeAnswer(
-                selectedAnswer
-            );
-
-        const correctTextNormalized =
-            normalizeAnswer(
-                correctAnswer
-            );
-
         isCorrect =
-            selectedTextNormalized ===
-            correctTextNormalized;
+            normalizeAnswer(selectedAnswer) === correctNormalized;
     }
 
+    const allOptions = optionsElement.querySelectorAll(".option");
 
-    /* =====================================================
-       DISABLE OPTIONS
-       ===================================================== */
-
-    const allOptions =
-        optionsElement.querySelectorAll(
-            ".option"
-        );
-
-
-    allOptions.forEach(
-        option => {
-
-            option.disabled =
-                true;
-        }
-    );
-
-
-    /* =====================================================
-       CORRECT
-       ===================================================== */
+    allOptions.forEach(option => {
+        option.disabled = true;
+    });
 
     if (isCorrect) {
+        selectedButton.classList.add("correct");
 
-        selectedButton.classList.add(
-            "correct"
-        );
+        resultElement.textContent = "Correct! Well done.";
+        resultElement.className = "result correct-result";
 
-        resultElement.textContent =
-            "Correct! 🎉";
+        // Correct answer adds one to the current streak.
+        currentStreak += 1;
 
-        resultElement.className =
-            "result correct-result";
+        showFloatingFeedback(true);
+    } else {
+        selectedButton.classList.add("incorrect");
 
+        resultElement.textContent = "Incorrect. Review the correct answer and explanation.";
+        resultElement.className = "result incorrect-result";
 
-        currentStreak++;
+        // Wrong answer adds zero. Do not reset the current streak.
+        currentStreak += 0;
 
+        allOptions.forEach(option => {
+            const optionIndex = Number(option.dataset.index);
+            const optionLabel = labels[optionIndex] || "";
 
-        showFloatingFeedback(
-            true
-        );
-    }
-
-
-    /* =====================================================
-       WRONG
-       ===================================================== */
-
-    else {
-
-        selectedButton.classList.add(
-            "wrong"
-        );
-
-        resultElement.textContent =
-            "Not quite. Try the next one!";
-
-        resultElement.className =
-            "result wrong-result";
-
-
-        currentStreak =
-            0;
-
-
-        /*
-         * Highlight the correct option.
-         */
-
-        allOptions.forEach(
-            option => {
-
-                const optionIndex =
-                    Number(
-                        option.dataset.index
-                    );
-
-
-                const optionLabel =
-                    labels[optionIndex] ||
-                    "";
-
-
-                if (
-                    normalizeAnswer(
-                        optionLabel
-                    ) ===
-                    correctNormalized
-                ) {
-
-                    option.classList.add(
-                        "correct"
-                    );
-
-                } else if (
-                    normalizeAnswer(
-                        option.dataset.answer
-                    ) ===
-                    correctNormalized
-                ) {
-
-                    option.classList.add(
-                        "correct"
-                    );
-                }
+            if (
+                normalizeAnswer(optionLabel) === correctNormalized ||
+                normalizeAnswer(option.dataset.answer) === correctNormalized
+            ) {
+                option.classList.add("correct");
             }
-        );
+        });
 
-
-        showFloatingFeedback(
-            false
-        );
+        showFloatingFeedback(false);
     }
-
-
-    /* =====================================================
-       UPDATE STREAK
-       ===================================================== */
 
     updateScore();
-
-
-    /* =====================================================
-       SHOW EXPLANATION
-       ===================================================== */
-
-    showExplanation(
-        currentQuestion
-    );
+    showExplanation(currentQuestion);
 }
-
 
 /* =========================================================
    SHOW EXPLANATION
    ========================================================= */
 
-function showExplanation(
-    question
-) {
-
-    const explanation =
-        getValue(
-            question,
-            [
-                "Explaination",
-                "Explanation",
-                "explanation",
-                "Explain",
-                "Reason"
-            ]
-        );
-
+function showExplanation(question) {
+    const explanation = getValue(question, [
+        "Explaination",
+        "Explanation",
+        "explanation",
+        "Explain",
+        "Reason"
+    ]);
 
     if (explanation) {
-
-        explanationTextElement.innerHTML =
-            explanation.replace(
-                /\r\n|\r|\n/g,
-                "<br>"
-            );
-
+        explanationTextElement.innerHTML = formatMultilineHTML(explanation);
     } else {
-
-        explanationTextElement.innerHTML =
+        explanationTextElement.textContent =
             "No explanation is available for this question.";
     }
 
-
-    explanationElement.classList.remove(
-        "hidden"
-    );
+    explanationElement.classList.remove("hidden");
 }
 
-
 /* =========================================================
-   UPDATE SCORE
+   UPDATE STREAK
    ========================================================= */
 
 function updateScore() {
-
-    if (!scoreElement) {
-        return;
-    }
-
+    if (!scoreElement) return;
 
     scoreElement.innerHTML =
         `Current streak: <strong>${currentStreak}</strong>`;
 }
 
-
 /* =========================================================
-   QUESTION NAVIGATION
+   SEQUENTIAL QUESTION NAVIGATION
    ========================================================= */
 
 function updateRelatedNavigation() {
-
-    if (!currentQuestion) {
-        return;
-    }
-
-
-    /*
-     * =====================================================
-     * OLD CSV-BASED NAVIGATION — COMMENTED OUT
-     * =====================================================
-     *
-     * Previous version used:
-     *
-     * "previous related question"
-     * "next related question"
-     *
-     * from the CSV.
-     *
-     * That behavior is intentionally disabled.
-     *
-     * Navigation is now random and does not depend
-     * on CSV question order or related-question columns.
-     */
-
-
-    /*
-    const previousId =
-        getValue(
-            currentQuestion,
-            [
-                "previous related question",
-                "Previous Related Question",
-                "Previous Related question",
-                "previous question",
-                "Previous Question"
-            ]
-        );
-
-
-    const nextId =
-        getValue(
-            currentQuestion,
-            [
-                "next related question",
-                "Next Related Question",
-                "Next Related question",
-                "next question",
-                "Next Question"
-            ]
-        );
-    */
-
+    if (!currentQuestion) return;
 
     if (previousButton) {
-
-        previousButton.disabled =
-            questions.length <= 1;
+        previousButton.disabled = currentQuestionIndex <= 0;
     }
-
 
     if (nextButton) {
-
         nextButton.disabled =
-            questions.length <= 1;
+            currentQuestionIndex >= questions.length - 1;
     }
 }
-
-
-/* =========================================================
-   NAVIGATION BUTTONS
-   ========================================================= */
 
 function setupNavigation() {
-
-    /* =====================================================
-       PREVIOUS BUTTON
-       ===================================================== */
-
     if (previousButton) {
+        previousButton.addEventListener("click", () => {
+            if (!currentQuestion || currentQuestionIndex <= 0) return;
 
-        previousButton.addEventListener(
-            "click",
-            () => {
+            displayQuestion(
+                questions[currentQuestionIndex - 1]
+            );
 
-                if (
-                    !currentQuestion ||
-                    previousButton.disabled
-                ) {
-                    return;
-                }
-
-
-                /*
-                 * OLD LOGIC — COMMENTED OUT
-                 *
-                 * Previous question was retrieved
-                 * from the CSV's previous-related-question
-                 * field.
-                 *
-                 * It is no longer used.
-                 */
-
-
-                /*
-                 * NEW LOGIC:
-                 *
-                 * Get a random question that has
-                 * not already been shown.
-                 */
-
-                const randomQuestion =
-                    getRandomUnseenQuestion();
-
-
-                if (randomQuestion) {
-
-                    displayQuestion(
-                        randomQuestion
-                    );
-
-
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
-                }
-            }
-        );
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
     }
-
-
-    /* =====================================================
-       NEXT BUTTON
-       ===================================================== */
 
     if (nextButton) {
-
-        nextButton.addEventListener(
-            "click",
-            () => {
-
-                if (
-                    !currentQuestion ||
-                    nextButton.disabled
-                ) {
-                    return;
-                }
-
-
-                /*
-                 * OLD LOGIC — COMMENTED OUT
-                 *
-                 * Next question was retrieved
-                 * from the CSV's next-related-question
-                 * field.
-                 *
-                 * It is no longer used.
-                 */
-
-
-                /*
-                 * NEW LOGIC:
-                 *
-                 * Get a random question that has
-                 * not already been shown.
-                 */
-
-                const randomQuestion =
-                    getRandomUnseenQuestion();
-
-
-                if (randomQuestion) {
-
-                    displayQuestion(
-                        randomQuestion
-                    );
-
-
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
-                }
+        nextButton.addEventListener("click", () => {
+            if (
+                !currentQuestion ||
+                currentQuestionIndex >= questions.length - 1
+            ) {
+                return;
             }
-        );
+
+            displayQuestion(
+                questions[currentQuestionIndex + 1]
+            );
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
     }
 }
-
 
 /* =========================================================
    BROWSER BACK / FORWARD
    ========================================================= */
 
-window.addEventListener(
-    "popstate",
-    () => {
+window.addEventListener("popstate", () => {
+    const requestedId = getQuestionIdFromURL();
+    const question = findQuestionById(requestedId);
 
-        loadQuestionFromURL();
+    if (question) {
+        displayQuestion(question, false);
     }
-);
-
+});
 
 /* =========================================================
    KEYBOARD NAVIGATION
    ========================================================= */
 
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.target.tagName ===
-                "INPUT" ||
-            event.target.tagName ===
-                "TEXTAREA"
-        ) {
-            return;
-        }
-
-
-        if (
-            event.key === "ArrowLeft" &&
-            previousButton &&
-            !previousButton.disabled
-        ) {
-
-            previousButton.click();
-        }
-
-
-        if (
-            event.key === "ArrowRight" &&
-            nextButton &&
-            !nextButton.disabled
-        ) {
-
-            nextButton.click();
-        }
+document.addEventListener("keydown", event => {
+    if (
+        event.target.tagName === "INPUT" ||
+        event.target.tagName === "TEXTAREA" ||
+        event.target.isContentEditable
+    ) {
+        return;
     }
-);
 
+    if (
+        event.key === "ArrowLeft" &&
+        previousButton &&
+        !previousButton.disabled
+    ) {
+        previousButton.click();
+    }
+
+    if (
+        event.key === "ArrowRight" &&
+        nextButton &&
+        !nextButton.disabled
+    ) {
+        nextButton.click();
+    }
+});
 
 /* =========================================================
    FLOATING FEEDBACK
    ========================================================= */
 
-function showFloatingFeedback(
-    isCorrect
-) {
-
+function showFloatingFeedback(isCorrect) {
     const happyEmojis = [
-        "🎉",
-        "👏",
-        "🥳",
-        "✨",
-        "🙌",
-        "🎊",
-        "💯",
-        "🔥",
-        "⭐",
-        "🤩",
-        "🚀",
-        "🧠",
-        "⚡",
-        "🌟",
-        "🏆",
-        "😎",
-        "💥",
-        "🎯"
+        "🎉", "👏", "🥳", "✨", "🙌", "🎊",
+        "💯", "🔥", "⭐", "🤩", "🚀", "🧠",
+        "⚡", "🌟", "🏆", "😎", "💥", "🎯"
     ];
-
 
     const sadEmojis = [
-        "😢",
-        "😔",
-        "🥲",
-        "💔",
-        "😕",
-        "🙁",
-        "😞",
-        "🥺",
-        "😣",
-        "😩",
-        "😿",
-        "🫠"
+        "😢", "😔", "🥲", "💔", "😕", "🙁",
+        "😞", "🥺", "😣", "😩", "😿", "🫠"
     ];
 
+    const emojis = isCorrect ? happyEmojis : sadEmojis;
+    const count = isCorrect ? 24 : 16;
 
-    const emojis =
-        isCorrect
-            ? happyEmojis
-            : sadEmojis;
+    for (let i = 0; i < count; i++) {
+        const emoji = document.createElement("div");
 
-
-    const count =
-        isCorrect
-            ? 24
-            : 16;
-
-
-    for (
-        let i = 0;
-        i < count;
-        i++
-    ) {
-
-        const emoji =
-            document.createElement(
-                "div"
-            );
-
-
-        emoji.className =
-            "floating-feedback";
-
-
+        emoji.className = "floating-feedback";
         emoji.textContent =
-            emojis[
-                Math.floor(
-                    Math.random() *
-                    emojis.length
-                )
-            ];
+            emojis[Math.floor(Math.random() * emojis.length)];
 
+        const startLeft = Math.random() * 90 + 5;
+        const startTop = Math.random() * 35 + 45;
+        const size = Math.random() * 16 + 22;
+        const delay = Math.random() * 0.9;
+        const duration = Math.random() * 1.6 + 2.8;
 
-        const startLeft =
-            Math.random() * 90 + 5;
+        emoji.style.left = `${startLeft}%`;
+        emoji.style.top = `${startTop}%`;
+        emoji.style.fontSize = `${size}px`;
+        emoji.style.animationDelay = `${delay}s`;
+        emoji.style.animationDuration = `${duration}s`;
 
+        document.body.appendChild(emoji);
 
-        const startTop =
-            Math.random() * 35 + 45;
-
-
-        const size =
-            Math.random() * 16 + 22;
-
-
-        const delay =
-            Math.random() * 0.9;
-
-
-        const duration =
-            Math.random() * 1.6 + 2.8;
-
-
-        emoji.style.left =
-            `${startLeft}%`;
-
-
-        emoji.style.top =
-            `${startTop}%`;
-
-
-        emoji.style.fontSize =
-            `${size}px`;
-
-
-        emoji.style.animationDelay =
-            `${delay}s`;
-
-
-        emoji.style.animationDuration =
-            `${duration}s`;
-
-
-        document.body.appendChild(
-            emoji
-        );
-
-
-        setTimeout(
-            () => {
-
-                emoji.remove();
-
-            },
-            (
-                duration +
-                delay
-            ) * 1000 + 500
-        );
+        setTimeout(() => {
+            emoji.remove();
+        }, (duration + delay) * 1000 + 500);
     }
 }
 
-
 /* =========================================================
-   RANDOM QUOTE
+   RANDOM MOTIVATIONAL QUOTE
    ========================================================= */
 
 function displayRandomQuote() {
+    if (!quotes || quotes.length === 0) return;
 
-    if (
-        !quotes ||
-        quotes.length === 0
-    ) {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const quote = quotes[randomIndex];
 
-        return;
-    }
+    const quoteText = getValue(quote, [
+        "Quote",
+        "quote",
+        "Quotes",
+        "Text",
+        "text"
+    ]);
 
-
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            quotes.length
-        );
-
-
-    const quote =
-        quotes[randomIndex];
-
-
-    const quoteText =
-        getValue(
-            quote,
-            [
-                "Quote",
-                "quote",
-                "Quotes",
-                "Text",
-                "text"
-            ]
-        );
-
-
-    const quoteAuthor =
-        getValue(
-            quote,
-            [
-                "Author",
-                "author",
-                "Quote Author",
-                "quote author"
-            ]
-        );
-
+    const quoteAuthor = getValue(quote, [
+        "Author",
+        "author",
+        "Quote Author",
+        "quote author"
+    ]);
 
     if (quoteTextElement) {
-
-        quoteTextElement.innerHTML =
-            quoteText
-                ? `"${quoteText}"`
-                : "";
+        quoteTextElement.textContent =
+            quoteText ? `"${quoteText}"` : "";
     }
 
-
     if (quoteAuthorElement) {
-
         quoteAuthorElement.textContent =
-            quoteAuthor
-                ? `— ${quoteAuthor}`
-                : "";
+            quoteAuthor ? `— ${quoteAuthor}` : "";
     }
 }
 
-
 /* =========================================================
-   ERROR
+   ERROR HANDLING
    ========================================================= */
 
-function showError(
-    message
-) {
-
+function showError(message) {
     if (questionContainer) {
-
-        questionContainer.classList.add(
-            "hidden"
-        );
+        questionContainer.classList.add("hidden");
     }
 
-
     if (errorElement) {
-
-        errorElement.textContent =
-            message;
-
-        errorElement.classList.remove(
-            "hidden"
-        );
+        errorElement.textContent = message;
+        errorElement.classList.remove("hidden");
     }
 }
