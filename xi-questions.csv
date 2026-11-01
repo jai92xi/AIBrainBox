@@ -1989,3 +1989,75 @@ Before choosing cross-validation, ask yourself two questions:
         - Are multiple rows related to the same entity? If yes, consider group separation.
 If both are true, consider StratifiedGroupKFold.
 <b>Key takeaway:</b> When data contains repeated entities and evaluation must generalize to unseen entities, use group-based validation. When class balance also matters, choose <b>StratifiedGroupKFold</b>.","Machine Learning","Cross-Validation; StratifiedGroupKFold; GroupKFold; Data Leakage; Class Imbalance; Group-Based Splitting; Loan Default Prediction","XI-00046",""
+"XI-00048","A user uploads the same <b>PDF document</b> three times to your production <b>RAG application</b>.
+
+Each upload triggers document parsing, chunking, embedding generation, and vector database insertion.
+
+After the third upload, your vector database contains three copies of the same document's chunks.
+
+<b>How would you prevent this duplication in a production system?</b>","Compare the document <b>filename</b> before ingestion and skip the upload if the filename already exists.","Generate a <b>content-based hash</b>, maintain document metadata and ingestion status, and use <b>deterministic chunk identifiers</b> with <b>upsert operations</b> to prevent duplicate records.","Reduce the number of chunks generated per document so fewer duplicate vectors are stored.","Run a scheduled cleanup job that deletes vectors with similar embeddings after every upload.","B","The best solution is to implement <b>content-based deduplication</b> combined with <b>idempotent ingestion</b> using deterministic chunk IDs and upsert operations.
+
+<b>1. Generate a content-based hash:</b> Calculate a cryptographic hash such as SHA-256 from the document's content. If the same PDF is uploaded again, its content hash will match even if the filename changes. Maintain this hash in document metadata and use it to identify duplicate content.
+
+<b>2. Maintain document metadata and ingestion status:</b> Store the document ID, content hash, version, tenant or user ID, and ingestion status. Possible statuses include Pending, Processing, Completed, and Failed. This helps prevent unnecessary processing and supports recovery after failures.
+
+<b>3. Generate deterministic chunk identifiers:</b> Create stable chunk IDs using the document identity, document version, and chunk index or chunk content hash. Reprocessing the same document produces the same identifiers.
+
+<b>4. Use upsert operations:</b> Instead of blindly inserting vectors, use upsert with deterministic IDs. If a chunk already exists, it is updated rather than inserted as another record.
+
+<b>5. Handle concurrent uploads:</b> Enforce uniqueness on the appropriate document identity and content hash, using an atomic database operation or lock where necessary. This prevents two simultaneous uploads from both starting duplicate ingestion.
+
+<b>Practical example:</b> A PDF is uploaded three times. Each upload produces the same SHA-256 hash and deterministic chunk IDs. The ingestion system recognizes the completed document and skips unnecessary embedding generation, or safely upserts the same chunk records if reprocessing is required.
+
+<b>Why the other choices are weaker:</b>
+- <b>Filename comparison:</b> The same document can have different filenames, and different documents can share a filename.
+- <b>Reducing chunk count:</b> Does not prevent duplicate ingestion.
+- <b>Embedding similarity cleanup:</b> Similarity does not prove that two chunks are duplicates. It may accidentally remove legitimate content.
+
+<b>Key takeaway:</b> Production RAG ingestion should be <b>idempotent</b>. Repeating the same ingestion request should not create duplicate documents or chunks, even after retries or concurrent uploads.","RAG Engineering","Document Ingestion; Content-Based Hashing; SHA-256; Idempotency; Deduplication; Deterministic Chunk IDs; Vector Database; Upsert; Ingestion Status",,"XI-00049"
+"XI-00049","A user uploads a document named <b>employee-policy.pdf</b>. It already exists in your vector database.
+
+Two days later, the user uploads an updated version using the same filename, but the content has changed.
+
+<b>How should your RAG ingestion pipeline handle this update?</b>","Skip the upload because the filename already exists.","Delete all existing vectors immediately, then generate and insert embeddings for the new document.","Detect the content change using a <b>document hash</b>, create a new <b>document version</b>, ingest its chunks, and switch the active version only after successful ingestion; then clean up the old version.","Append the new chunks to the existing vectors without tracking document versions.","C","The correct approach is <b>versioned document ingestion with an atomic active-version switch</b>.
+
+<b>1. Detect the content change:</b> Calculate a content-based hash, such as SHA-256, for the uploaded PDF. Compare it with the hash of the existing document. If the hashes differ, the content has changed, even though the filename is identical.
+
+<b>2. Create a new document version:</b> Assign a new version ID and maintain metadata such as document ID, filename, content hash, version number, ingestion status, and creation timestamp.
+
+<b>3. Ingest the new version:</b> Parse the updated PDF, generate chunks, create embeddings, and store them using version-specific deterministic chunk IDs. Keep the previous version active while the new version is being processed.
+
+<b>4. Switch the active version only after success:</b> Once all chunks and embeddings are successfully stored and validated, atomically update the document metadata to point to the new active version. Retrieval should filter for the active version so users do not receive stale or mixed-version chunks.
+
+<b>5. Clean up the old version:</b> Delete the previous version's vectors after the new version is active. If ingestion fails, retain the previous active version and retry or resume the failed ingestion.
+
+<b>Practical example:</b> Version 1 of employee-policy.pdf contains 100 chunks. The updated document produces 120 chunks. The pipeline stores all 120 chunks under version 2 while version 1 remains available. After successful ingestion, it switches retrieval to version 2 and removes version 1's vectors.
+
+<b>Why the other choices are weaker:</b>
+- <b>Skipping by filename:</b> Misses legitimate document updates.
+- <b>Deleting immediately:</b> If embedding generation fails halfway through, users lose access to the last working version.
+- <b>Appending chunks:</b> Creates stale and duplicate content, and retrieval may return information from both versions.
+
+<b>Key takeaway:</b> Use <b>versioning, staged ingestion, atomic activation, and delayed cleanup</b>. This prevents stale retrieval and avoids making a previously working document unavailable when an update fails.","RAG Engineering","Document Lifecycle; Document Versioning; Content Hashing; SHA-256; Idempotent Ingestion; Atomic Version Switching; Stale Embeddings; Failure Recovery; Vector Database","XI-00048",""
+"XI-00050","Your production <b>RAG application</b> retrieves the correct document chunks, but the LLM frequently generates answers that combine facts from different documents and sometimes produces <b>unsupported conclusions</b>.
+
+Retrieval <b>Recall@5</b> is already high.
+
+What is the best next step?","Increase the number of retrieved chunks from 5 to 20 so the LLM has more information.","Increase the embedding model's dimensions to improve semantic representation.","Introduce a <b>reranking-independent answer validation layer</b> that checks claims against retrieved evidence, enforces <b>citation-to-source alignment</b>, and abstains when evidence is insufficient.","Increase the LLM temperature to encourage more diverse reasoning.","C","The best next step is to introduce an <b>answer validation layer</b> that verifies generated claims against retrieved evidence, checks citation-to-source alignment, and abstains when the evidence is insufficient.
+
+<b>1. Understand the problem:</b> Retrieval Recall@5 is already high, meaning the relevant information is generally being retrieved. However, the LLM is combining facts from different documents and generating conclusions that are not supported by the retrieved content. This indicates an <b>answer grounding and faithfulness problem</b>, rather than primarily a retrieval-recall problem.
+
+<b>2. Validate individual claims:</b> Break the generated answer into atomic claims and check whether each claim is supported by the retrieved document chunks. Claims that are unsupported, contradictory, or only partially supported should be corrected, qualified, or removed.
+
+<b>3. Enforce citation-to-source alignment:</b> Each factual claim should reference the specific document and chunk that supports it. A citation should not merely point to a generally relevant document; its actual content must support the associated claim.
+
+<b>4. Add an abstention mechanism:</b> If the retrieved evidence does not establish an answer, the system should clearly state that the available documents do not provide sufficient information rather than inventing a conclusion.
+
+<b>Practical example:</b> Document A states that an employee is eligible for 20 days of leave. Document B states that managers require approval for extended leave. The LLM combines these facts and incorrectly concludes that every employee needs manager approval for all 20 days. Claim-level validation should reject that unsupported conclusion unless the documents explicitly establish the relationship.
+
+<b>Why the other choices are weaker:</b>
+- <b>Increasing retrieved chunks:</b> Adds more context but may increase conflicting or unrelated information and does not guarantee factual grounding.
+- <b>Increasing embedding dimensions:</b> Does not directly solve the problem because relevant chunks are already being retrieved.
+- <b>Increasing temperature:</b> Encourages more varied generation and can make unsupported conclusions worse.
+
+<b>Key takeaway:</b> High retrieval recall does not guarantee faithful answers. When retrieval is working but the LLM generates unsupported claims, improve <b>grounding, claim-level verification, citation validation, and abstention</b>.","RAG Engineering","RAG Evaluation; Faithfulness; Answer Grounding; Hallucination Prevention; Claim-Level Verification; Citation Validation; Evidence Attribution; Abstention; Retrieval Recall","XI-00049",""
