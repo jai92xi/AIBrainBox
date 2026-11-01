@@ -1470,7 +1470,7 @@ Now both results can be recognized as belonging to the same parent document duri
 Important distinction:
 <b>RRF</b> does not use raw retrieval scores. Therefore, <b>BM25</b> and dense scores do not need to be normalized to a common scale. Hybrid sparse + <b>dense retrieval</b> is actually a common use case for <b>RRF</b>.
 
-Correct answer: Different <b>chunking</b> and identifiers cause the same underlying content to appear as different results, preventing <b>RRF</b> from recognizing the cross-retriever agreement.",RAG,RRF; Chunk Alignment,XI-00026,
+Correct answer: Different <b>chunking</b> and identifiers cause the same underlying content to appear as different results, preventing <b>RRF</b> from recognizing the cross-retriever agreement.",RAG,RRF; Chunk Alignment,XI-00026,"XI-00046"
 XI-00029,"A deep neural network is being trained for a <b>binary classification</b> problem. During training, you notice that the <b>training loss</b> suddenly becomes extremely large and then turns into <b>NaN</b>, while the <b>validation loss</b> also becomes unstable. The model uses a relatively <b>high learning rate</b>, and the <b>gradient</b>s of several layers are found to have extremely <b>large magnitudes</b>.
 
 What is the <mark>most likely cause</mark> and appropriate first fix?",<b>Vanishing gradients</b>; increase the <b>learning rate</b> so early layers receive larger updates.,<b>Exploding gradients</b>; apply <b>gradient clipping</b> and consider reducing the <b>learning rate</b>.,<b>Overfitting</b>; increase <b>dropout</b> because the <b>training loss</b> is too low.,Dying <b>ReLU</b>; replace all <b>ReLU</b> activations with sigmoid.,B,"Key hints in the question:
@@ -1938,3 +1938,51 @@ Which intervention is the best first step to improve serving stability without u
 <b>Why the other choices are weaker:</b> Lowering temperature changes sampling behavior but does not directly address memory pressure. Increasing concurrency can worsen cache exhaustion. Switching to 8-bit weights generally increases weight-memory requirements compared with 4-bit quantization and leaves the KV-cache problem unresolved.
 
 <b>Important trade-off:</b> Admission control may increase queueing latency when capacity is exhausted. Tune the cache budget, request limits, and batching policy using production-like workloads to stabilize p99 latency without unnecessarily reducing throughput.","LLM Inference Optimization","KV Cache; GPU Memory Management; CUDA OOM; P99 Latency; Admission Control; Continuous Batching; PagedAttention; Quantization","XI-00044",""
+"XI-00046","You're building a <b>fraud detection model</b> for an e-commerce company. Your dataset contains 500,000 transactions, with only <b>2% fraudulent transactions</b>. To handle class imbalance, your team applies <b>SMOTE</b> to the entire dataset first. Then they perform <b>5-fold cross-validation</b> using XGBoost.
+
+The model achieves an impressive <b>F1-score of 0.96</b> during cross-validation. However, when deployed in production, the F1-score drops to 0.68.
+
+<b>What is the most likely issue, and how should you fix it?</b>","The model is <b>overfitting</b> because XGBoost is too complex. Reduce the tree depth and increase regularization.","<b>Cross-validation leakage</b> occurred because SMOTE was applied before splitting into folds. Apply SMOTE only to the training portion of each fold using an <b>imbalanced-learn Pipeline</b>.","<b>Data drift</b> occurred because fraudulent transactions are naturally unpredictable. Use a larger training dataset.","The model suffers from <b>underfitting</b> because SMOTE increased the number of training samples. Reduce the number of folds from 5 to 3.","B","The most likely issue is <b>data leakage during cross-validation</b>.
+
+<b>What went wrong?</b> SMOTE creates synthetic minority-class examples by interpolating between existing minority-class samples. When SMOTE is applied to the entire dataset before cross-validation, synthetic samples can be created using information from transactions that later appear in both the training and validation folds.
+
+As a result, the validation fold is no longer fully independent of the training data. The model may effectively learn patterns from synthetic samples influenced by validation transactions, producing an artificially high F1-score of 0.96.
+
+<b>How to fix it:</b>
+1. Split the original dataset into training and test sets before applying SMOTE.
+2. During cross-validation, apply SMOTE only to the training portion of each fold.
+3. Keep the validation fold untouched so it represents the original class distribution.
+4. Use an <b>imbalanced-learn Pipeline</b> containing SMOTE followed by XGBoost. This ensures resampling happens separately inside each training fold.
+5. Evaluate the final model on an untouched test set and use a production-appropriate decision threshold.
+
+<b>Simple example:</b> Suppose a training fold contains 10,000 transactions, including 200 fraudulent transactions. SMOTE generates additional fraudulent examples using only those 200 transactions. The validation fold remains unchanged, containing only its original transactions.
+
+<b>Why the other options are incorrect:</b>
+- <b>Overfitting:</b> It is possible, but the explicit mistake of applying SMOTE before cross-validation is a direct source of leakage.
+- <b>Data drift:</b> This can cause production degradation, but it is not the primary issue indicated by the workflow.
+- <b>Underfitting:</b> Increasing minority-class samples does not inherently cause underfitting, and reducing the number of folds does not fix leakage.
+
+<b>Key takeaway:</b> Always perform preprocessing, feature selection, scaling, and resampling inside the training folds of cross-validation whenever those operations learn information from the dataset.","Machine Learning","Class Imbalance; SMOTE; Data Leakage; Cross-Validation; XGBoost; Imbalanced-Learn Pipeline; Fraud Detection; Model Evaluation","XI-00028","XI-00047"
+"XI-00047","You're developing a <b>loan-default prediction model</b> for a bank. Your dataset contains 80,000 loan applications, but multiple applications can belong to the same borrower. Only <b>4% of applications result in default</b>. The model will eventually be evaluated on borrowers it has never encountered before. You want validation folds to maintain approximately the same default proportion while ensuring that <b>no borrower's records appear in both training and validation data</b>.
+
+Which validation strategy is most appropriate?","Standard <b>StratifiedKFold</b>.","Random train-test split followed by ordinary <b>KFold</b>.","Standard <b>GroupKFold</b>.","<b>StratifiedGroupKFold</b>.","D","The correct strategy is <b>StratifiedGroupKFold</b> because it satisfies both validation requirements: preserving borrower-level separation and maintaining approximately the same proportion of default and non-default applications across folds.
+
+<b>Why grouping is necessary:</b> Multiple applications belong to the same borrower. If applications from one borrower appear in both training and validation folds, the model may learn borrower-specific patterns during training and benefit from that information during validation. This creates <b>data leakage</b> and produces an overly optimistic estimate of performance on genuinely unseen borrowers.
+
+<b>Why stratification is necessary:</b> Only 4% of applications result in default. Without stratification, some folds could contain substantially fewer default cases than others, making evaluation metrics such as recall, precision, and F1-score less reliable.
+
+<b>How StratifiedGroupKFold works:</b>
+1. Assign every application a borrower ID as its group identifier.
+2. Use the default/non-default label for stratification.
+3. Distribute entire borrower groups across folds.
+4. Keep each borrower's applications together in either training or validation, never both.
+5. Attempt to maintain approximately similar default proportions across folds.
+
+<b>Why the other choices are weaker:</b>
+- <b>StratifiedKFold:</b> Maintains class proportions but does not prevent the same borrower from appearing in multiple folds.
+- <b>Random split followed by KFold:</b> Does not guarantee borrower-level separation or consistent class proportions.
+- <b>GroupKFold:</b> Keeps borrower records together but does not explicitly attempt to preserve the default proportion.
+
+<b>Practical implementation:</b> Use scikit-learn's StratifiedGroupKFold with the application default labels as y and borrower IDs as groups. Because groups cannot be split, exact class proportions are not always possible, especially when borrower group sizes vary.
+
+<b>Key takeaway:</b> When data contains repeated entities and evaluation must generalize to unseen entities, use group-based validation. When class balance also matters, choose <b>StratifiedGroupKFold</b>.","Machine Learning","Cross-Validation; StratifiedGroupKFold; GroupKFold; Data Leakage; Class Imbalance; Group-Based Splitting; Loan Default Prediction","XI-00046",""
