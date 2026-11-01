@@ -1984,5 +1984,8 @@ Which validation strategy is most appropriate?","Standard <b>StratifiedKFold</b>
 - <b>GroupKFold:</b> Keeps borrower records together but does not explicitly attempt to preserve the default proportion.
 
 <b>Practical implementation:</b> Use scikit-learn's StratifiedGroupKFold with the application default labels as y and borrower IDs as groups. Because groups cannot be split, exact class proportions are not always possible, especially when borrower group sizes vary.
-
+Before choosing cross-validation, ask yourself two questions:
+        - Is the target class imbalanced? If yes, consider stratification.
+        - Are multiple rows related to the same entity? If yes, consider group separation.
+If both are true, consider StratifiedGroupKFold.
 <b>Key takeaway:</b> When data contains repeated entities and evaluation must generalize to unseen entities, use group-based validation. When class balance also matters, choose <b>StratifiedGroupKFold</b>.","Machine Learning","Cross-Validation; StratifiedGroupKFold; GroupKFold; Data Leakage; Class Imbalance; Group-Based Splitting; Loan Default Prediction","XI-00046",""
