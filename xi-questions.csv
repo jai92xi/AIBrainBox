@@ -2061,3 +2061,28 @@ What is the best next step?","Increase the number of retrieved chunks from 5 to 
 - <b>Increasing temperature:</b> Encourages more varied generation and can make unsupported conclusions worse.
 
 <b>Key takeaway:</b> High retrieval recall does not guarantee faithful answers. When retrieval is working but the LLM generates unsupported claims, improve <b>grounding, claim-level verification, citation validation, and abstention</b>.","RAG Engineering","RAG Evaluation; Faithfulness; Answer Grounding; Hallucination Prevention; Claim-Level Verification; Citation Validation; Evidence Attribution; Abstention; Retrieval Recall","XI-00049",""
+"XI-00051","You’re building a <b>LightGBM demand forecasting model</b> for 500 existing stores to predict daily demand over the next 14 days. Features include <b>lag values</b> (sales 1, 7, and 14 days ago), rolling averages, promotions, and holidays.
+
+Using <b>5-fold cross-validation with shuffled rows</b>, the RMSE is 120 units. After deployment, the live RMSE over the next two weeks is approximately 210. No new stores were added, and the data pipeline has been checked and matches training.
+
+What is the most appropriate fix to your validation approach?","Use <b>time-ordered validation</b> (walk-forward or expanding-window splits), always training on the past and validating on the future, with a gap of at least 14 days between training and validation when features use lags.","Use <b>Stratified K-fold</b> on binned target values, so each fold has a similar distribution of low and high sales.","Repeat the shuffled 5-fold validation several times with different seeds and average the RMSE for a more stable estimate.","Use <b>Group K-fold</b> by store, so that no store appears in both training and validation.","A","The correct approach is <b>time-ordered validation</b>, using walk-forward or expanding-window splits.
+
+<b>1. Identify the key problem:</b> The model is forecasting future demand, but shuffled cross-validation randomly distributes historical and future observations across training and validation folds. This allows the model to learn from future periods when predicting earlier periods, creating <b>temporal data leakage</b> and an overly optimistic validation RMSE.
+
+<b>2. Why production performance drops:</b> During production, the model only has access to historical information. It cannot learn from future sales patterns. Shuffled validation does not simulate this real-world forecasting condition, so its RMSE of 120 does not reliably represent future performance.
+
+<b>3. How to fix it:</b>
+- Use <b>walk-forward validation</b> or expanding-window validation.
+- Train on earlier dates and validate on subsequent dates.
+- Maintain chronological ordering within each store.
+- Use a suitable temporal gap or embargo to prevent overlapping information from crossing the training-validation boundary.
+- Evaluate on multiple future time windows to measure stability.
+
+<b>4. Important clarification about the 14-day gap:</b> A 14-day forecast horizon does not automatically mean every lag feature requires a 14-day gap. The gap should reflect the forecast setup, label horizon, feature availability, and any overlapping target windows. For a 14-day-ahead forecast with overlapping labels, a 14-day embargo may be appropriate. Ensure lag and rolling features are calculated using only information available at the prediction timestamp.
+
+<b>Why the other choices are weaker:</b>
+- <b>Stratified K-fold:</b> Balances target distributions but does not preserve chronological order.
+- <b>Repeated shuffled K-fold:</b> Produces a more stable estimate of the same potentially leaked validation procedure.
+- <b>Group K-fold:</b> Tests generalization to unseen stores, but the actual requirement is forecasting future demand for the existing stores.
+
+<b>Key takeaway:</b> For time-series forecasting, validation must reproduce the production timeline. Always train on the past and validate on the future; random shuffling can make forecasting performance look much better than it really is.","Machine Learning","Time Series Forecasting; Temporal Data Leakage; Walk-Forward Validation; Expanding Window; TimeSeriesSplit; Lag Features; Rolling Averages; LightGBM; RMSE","XI-00047",""
