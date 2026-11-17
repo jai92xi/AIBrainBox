@@ -2341,3 +2341,147 @@ A production system should also validate effective dates and define a fallback w
 "Metadata filtering; Policy versioning; Effective dates; Retrieval consistency; Hallucination prevention",
 "XI-00049",
 ""
+"XI-00058",
+"A company uses a <b>RAG application</b> with <b>Qdrant</b> and a <b>cross-encoder reranker</b>.
+
+During evaluation, the team observes:
+
+- <b>Recall@10 = 96%</b>
+- <b>MRR@10 = 0.42</b>
+- The correct document is usually present in the retrieved top 10.
+- However, it frequently appears at rank 8, 9, or 10.
+- As a result, the LLM receives several less relevant chunks before the most useful evidence.
+
+What should the team prioritize?",
+"Fine-tune the <b>embedding model</b> to improve semantic similarity between user queries and document chunks.",
+"Tune and evaluate the <b>cross-encoder reranking stage</b> to move the most relevant documents higher in the ranking.",
+"Increase Qdrant's HNSW <b>ef_search</b> parameter to improve the ordering of relevant documents in the retrieved results.",
+"Increase the initial retrieval candidate pool from <b>top 10 to top 20</b> so the reranker has more documents to evaluate.",
+"B",
+"The key problem is not that the system cannot find relevant documents. The problem is that it does not rank them high enough.
+
+Let's understand both metrics:
+
+<b>1. Recall@10 = 96%</b>
+
+This indicates that relevant documents are being retrieved successfully within the top 10 results for most queries.
+
+In this question's query-level interpretation, approximately <b>96% of queries have a relevant document in their top 10 results</b>.
+
+This tells us that the initial retrieval stage is already performing well at finding relevant content.
+
+<b>2. MRR@10 = 0.42</b>
+
+MRR stands for <b>Mean Reciprocal Rank</b>.
+
+It measures how early the first relevant document appears in the ranked results.
+
+For an individual query:
+
+- Relevant document at rank 1 → reciprocal rank = 1/1 = 1.00
+- Relevant document at rank 2 → reciprocal rank = 1/2 = 0.50
+- Relevant document at rank 5 → reciprocal rank = 1/5 = 0.20
+- Relevant document at rank 10 → reciprocal rank = 1/10 = 0.10
+
+MRR@10 is the average of these reciprocal ranks across all evaluated queries, considering the first relevant result within the top 10.
+
+An MRR of <b>0.42</b> indicates that the first relevant result is not consistently appearing near the top. It is an aggregate score, not an average rank.
+
+<b>3. How do Recall@10 and MRR@10 work together?</b>
+
+Think of them this way:
+
+- <b>Recall@10:</b> Did we find the relevant document within the top 10?
+- <b>MRR@10:</b> How high did we rank the first relevant document?
+
+In this scenario, Recall@10 is already high, but MRR@10 indicates room for improvement in ranking.
+
+The relevant document is being found, but it is often buried below less relevant results.
+
+<b>4. What should we improve?</b>
+
+Prioritize the <b>cross-encoder reranking stage</b>.
+
+A typical RAG retrieval pipeline works like this:
+
+1. <b>Qdrant:</b> Retrieves an initial set of candidate chunks using vector similarity.
+2. <b>Cross-encoder reranker:</b> Evaluates query-document relevance more precisely and reorders the candidates.
+3. <b>LLM:</b> Receives the highest-ranked chunks as context and generates the answer.
+
+Evaluate the reranker's ranking quality and tune its configuration. If necessary, evaluate a better cross-encoder or domain-specific fine-tuning.
+
+Measure the improvement using <b>MRR@10 and NDCG@10</b>, while ensuring Recall@10 remains high.
+
+Increasing HNSW ef_search mainly improves candidate retrieval, not the cross-encoder's ranking. Increasing the candidate pool may help when relevant documents are missing, but here the relevant document is already being retrieved.
+
+<b>Key takeaway:</b> High Recall@K means relevant documents are found. High MRR@K means the first relevant document is ranked near the top. When recall is already high but ranking is poor, prioritize reranking.","RAG","Cross-encoder reranking; Recall@K; MRR; Ranking optimization; Retrieval evaluation","XI-00048",""
+"XI-00059",
+"A production <b>RAG system</b> uses hybrid retrieval:
+
+- <b>BM25</b> retrieves 20 documents.
+- <b>Dense retrieval</b> retrieves 20 documents.
+- <b>RRF</b> combines the results.
+- A <b>cross-encoder</b> reranks the top 20 documents.
+
+The team notices that exact <b>product codes, claim IDs, and policy numbers</b> are frequently missing from the final top 5, even though BM25 retrieves them at <b>rank 1</b>.
+
+What is the best next step?",
+"Increase the <b>dense retrieval weight</b> in the hybrid retrieval pipeline because semantic similarity can identify relevant documents even when exact identifiers are present.",
+"Investigate <b>RRF rank contributions</b> and retrieval configuration, ensuring exact-match results retain sufficient influence before reranking; evaluate with identifier-specific test queries.",
+"Increase the <b>BM25 retrieval count</b> from 20 to 50 and keep the existing RRF and cross-encoder configurations unchanged.",
+"Increase the <b>cross-encoder's influence</b> by allowing it to independently determine the final ranking without considering the original retrieval signals.",
+"B",
+"The problem is that exact identifiers are being retrieved by BM25, but they are not surviving into the final top 5.
+
+This means we should investigate where those documents lose their ranking position.
+
+<b>1. Understand the retrieval pipeline</b>
+
+The pipeline has four stages:
+
+- <b>BM25:</b> Finds documents using keyword matching. It is particularly useful for exact product codes, policy numbers, and claim IDs.
+- <b>Dense retrieval:</b> Finds semantically similar documents, even when the wording differs.
+- <b>RRF:</b> Combines the ranked lists from BM25 and dense retrieval.
+- <b>Cross-encoder:</b> Evaluates query-document relevance more deeply and produces the final ranking.
+
+<b>2. Why can this problem happen?</b>
+
+Imagine an employee searches for policy number <b>POL-2026-1058</b>.
+
+BM25 retrieves the exact policy document at rank 1.
+
+However, dense retrieval may return several semantically similar policy documents that do not contain the exact policy number.
+
+When RRF combines both ranked lists, the exact-match document may lose its position depending on its rank contributions from both retrieval systems.
+
+The cross-encoder may then further change the ranking based on its relevance scores.
+
+As a result, the exact policy document can disappear from the final top 5, even though BM25 initially found it.
+
+<b>3. What should we investigate?</b>
+
+Follow these steps:
+
+- <b>Inspect RRF contributions:</b> Check how much each document contributes from BM25 and dense retrieval rankings.
+- <b>Tune weighted RRF:</b> Adjust the contribution of keyword and dense retrieval signals based on evaluation results.
+- <b>Introduce exact identifier matching:</b> Preserve or prioritize exact policy IDs, claim IDs, and product codes where the query requires an exact match.
+- <b>Increase the candidate pool if necessary:</b> Retrieve more candidates before reranking when relevant documents are being missed.
+- <b>Evaluate cross-encoder ranking:</b> Check whether the correct document is being pushed down during reranking.
+
+<b>4. Use identifier-specific evaluation</b>
+
+Build a test dataset containing real-world queries involving policy numbers, claim IDs, and product codes.
+
+Measure <b>Recall@5 and MRR@5</b> to verify whether the correct document is retrieved and ranked near the top.
+
+Also inspect rankings at each pipeline stage to identify exactly where the document is lost.
+
+<b>Recommended implementation priority:</b>
+
+1. Identify whether documents disappear during RRF or cross-encoder reranking.
+2. Introduce exact policy/claim ID matching.
+3. Tune weighted RRF.
+4. Increase the candidate pool if retrieval recall is insufficient.
+5. Evaluate using identifier-specific queries.
+
+<b>Key takeaway:</b> Semantic similarity is not a replacement for exact identifier matching. In insurance RAG applications, a document containing the exact policy or claim number must not be pushed down simply because other documents are semantically similar.","RAG","Hybrid retrieval; BM25; Dense retrieval; RRF; Weighted RRF; Exact identifier matching; Cross-encoder reranking; Retrieval evaluation","XI-00024",""
